@@ -22,19 +22,10 @@ Map::Map(int map_number) {
       in.ignore(1);
     }
   }
-
-  // нужно дописать исключения, если файл не найден, если он некорректен
-
-  // нужно будет проверить производительность и в случае необходимости
-  // считывать все доступные карты при первом запуске программы,
-  // а не при переключении карт (чтобы не обращаться постоянно к диску)
 }
 
 void Map::DrawMap(int upper_left_x, int upper_left_y, int lower_right_x,
                   int lower_right_y, QPainter &painter) {
-  // пока будем подразумевать, что все нацело делится
-  // потом, если введем изменение размера окна, надо будет что-то придумать
-
   int cell_width = (lower_right_x - upper_left_x) / map_.size();
   int cell_height = (lower_right_y - upper_left_y) / map_[0].size();
 
