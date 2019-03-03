@@ -2,21 +2,17 @@
 
 [![Build Status](https://travis-ci.com/anevero/tanks.svg?token=rHXfUepVp6qMW4yZAUh7&branch=master)](https://travis-ci.com/anevero/tanks)
 
-Проект автоматически компилируется после каждого нового коммита (обычно это занимает около пяти минут, в это время виджет горит желтым цветом). Если виджет загорается зелёным, всё в порядке. В противном случае (красный цвет) кликните по нему и изучите сообщения об ошибках компиляции.
+Проект автоматически компилируется после каждого нового коммита (обычно это занимает до пяти минут, в это время виджет горит желтым цветом). Если виджет загорается зелёным, всё в порядке. В противном случае (красный цвет) кликните по нему и изучите сообщения об ошибках компиляции.
 
-Внимание: автоматическая проверка Code Style была отключена. Используйте плагин clang-format, встроенный в QT Creator.
+Автоматическая проверка Code Style была отключена. Используйте плагин *clang-format*, встроенный в QT Creator (инструкция по активации находится ниже).
 
-### Статус ветви dev_anevero
+Рекомендуется работать с проектом на Linux-системах (судя по всему, с его сборкой в Windows могут возникнуть проблемы).
 
-[![Build Status](https://travis-ci.com/anevero/tanks.svg?token=rHXfUepVp6qMW4yZAUh7&branch=dev_anevero)](https://travis-ci.com/anevero/tanks)
+## Активация clang-format в QT Creator
 
-### Статус ветви dev_lessyless
-
-[![Build Status](https://travis-ci.com/anevero/tanks.svg?token=rHXfUepVp6qMW4yZAUh7&branch=dev_lessyless)](https://travis-ci.com/anevero/tanks)
-
-### Статус ветви dev_sashhrmz
-
-[![Build Status](https://travis-ci.com/anevero/tanks.svg?token=rHXfUepVp6qMW4yZAUh7&branch=dev_sashhrmz)](https://travis-ci.com/anevero/tanks)
+Установите clang-format с помощью менеджера пакетов вашего дистрибутива Linux. В Ubuntu:
+`sudo apt-get install clang-format`
+В QT Creator пройдите в меню **Help - About Plugins**, где поставьте галочку напротив пункта **Beautifier (experimental)**. Перезагрузите IDE. После этого пройдите в меню **Tools - Options - Beautifier**, где включите форматирование с помощью **clang-format**. Полезной является галочка **Enable auto format on file save** - при ее активации ваш код будет автоматически форматироваться при каждом сохранении файла.
 
 ## О проекте
 
