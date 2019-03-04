@@ -2,10 +2,11 @@
 #define MAP_H
 
 #include <QDebug>
+#include <QFile>
 #include <QPainter>
 #include <QString>
+#include <QTextStream>
 #include <QVector>
-#include <fstream>
 
 enum class CellType {
   Wall,

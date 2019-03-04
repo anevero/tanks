@@ -39,3 +39,6 @@ DISTFILES += \
     maps/map2.txt \
     maps/map3.txt \
     maps/map4.txt
+
+RESOURCES += \
+    resources.qrc

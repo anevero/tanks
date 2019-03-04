@@ -1,17 +1,15 @@
 #include "mainwindow.h"
 
-MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
+MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), map_(1) {
   new_game_button_ = new QPushButton("New game", this);
   swith_map_menu_ = new QComboBox(this);
 
   int map_number = 1;
-  QFileInfo map_file("../tanks/maps/map" + QString::number(map_number) +
-                     ".txt");
+  QFileInfo map_file(":/maps/map" + QString::number(map_number) + ".txt");
   while (map_file.exists() && map_file.isFile()) {
     swith_map_menu_->addItem("Map " + QString::number(map_number));
     map_number++;
-    map_file =
-        QFileInfo("../tanks/maps/map" + QString::number(map_number) + ".txt");
+    map_file = QFileInfo(":/maps/map" + QString::number(map_number) + ".txt");
   }
 
   setMinimumSize(600, 450);

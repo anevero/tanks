@@ -1,14 +1,18 @@
 #include "map.h"
 
 Map::Map(int map_number) {
-  std::fstream in("../tanks/maps/map" + std::to_string(map_number) + ".txt");
+  QFile input_file(":/maps/map" + QString::number(map_number) + ".txt");
+  input_file.open(QIODevice::ReadOnly);
+  QTextStream in(&input_file);
 
   int map_width_in_cells, map_height_in_cells;
   in >> map_width_in_cells >> map_height_in_cells;
+
   map_.resize(map_width_in_cells);
 
   for (int i = 0; i < map_height_in_cells; ++i) {
     for (int j = 0; j < map_width_in_cells; ++j) {
+      in.skipWhiteSpace();
       char temp_value;
       in >> temp_value;
       switch (temp_value) {
@@ -19,9 +23,10 @@ Map::Map(int map_number) {
         map_[j].push_back(CellType::Wall);
         break;
       }
-      in.ignore(1);
     }
   }
+
+  input_file.close();
 }
 
 void Map::DrawMap(int upper_left_x, int upper_left_y, int lower_right_x,

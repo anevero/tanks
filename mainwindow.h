@@ -29,7 +29,7 @@ private slots:
 private:
   QPushButton *new_game_button_;
   QComboBox *swith_map_menu_;
-  Map map_ = Map(1);
+  Map map_;
 
   // размеры и отступы прямоугольника 4*3 внутри окна, в котором
   // отрисовываются все элементы (для того, чтобы клетки были квадратными)
