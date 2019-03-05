@@ -21,13 +21,14 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), map_(1) {
 MainWindow::~MainWindow() {}
 
 void MainWindow::paintEvent(QPaintEvent *) {
+  // координаты правой верхней точки карты и левой нижней точки карты
+  map_.UpdateCoordinates(w_indent + static_cast<int>(0.28 * sq_width),
+                         h_indent + static_cast<int>(0.05 * sq_height),
+                         static_cast<int>(0.68 * sq_width),
+                         static_cast<int>(0.9 * sq_height));
   QPainter p;
   p.begin(this);
-  // координаты правой верхней точки карты и левой нижней точки карты
-  map_.DrawMap(w_indent + static_cast<int>(0.28 * sq_width),
-               h_indent + static_cast<int>(0.05 * sq_height),
-               w_indent + static_cast<int>(0.96 * sq_width),
-               h_indent + static_cast<int>(0.95 * sq_height), p);
+  map_.DrawMap(p);
   p.end();
 }
 

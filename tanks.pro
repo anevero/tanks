@@ -28,11 +28,13 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
     main.cpp \
     mainwindow.cpp \
-    map.cpp
+    map.cpp \
+    tank.cpp
 
 HEADERS += \
     mainwindow.h \
-    map.h
+    map.h \
+    tank.h
 
 DISTFILES += \
     maps/map1.txt \

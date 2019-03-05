@@ -15,14 +15,25 @@ enum class CellType {
 };
 
 class Map {
-public:
+  friend class Tank;
+
+ public:
   explicit Map(int map_number);
 
-  void DrawMap(int upper_left_x, int upper_left_y, int lower_right_x,
-               int lower_right_y, QPainter &painter);
+  void UpdateCoordinates(int upper_left_x, int upper_left_y, int width,
+                         int height);
+  void DrawMap(QPainter &painter);
 
-private:
+ private:
   QVector<QVector<CellType>> map_;
+
+  int cur_upper_left_x_;
+  int cur_upper_left_y_;
+  int cur_width_;
+  int cur_height_;
+
+  int tank_init_cell_x_;
+  int tank_init_cell_y_;
 };
 
-#endif // MAP_H
+#endif  // MAP_H
