@@ -12,7 +12,7 @@
 
 `sudo apt-get install clang-format`
 
-В QT Creator пройдите в меню **Help - About Plugins**, где поставьте галочку напротив пункта **Beautifier (experimental)**. Перезагрузите IDE. После этого пройдите в меню **Tools - Options - Beautifier**, где включите форматирование с помощью **clang-format**. Полезной является галочка **Enable auto format on file save** - при ее активации ваш код будет автоматически форматироваться при каждом сохранении файла.
+В QT Creator пройдите в меню **Help - About Plugins**, где поставьте галочку напротив пункта **Beautifier (experimental)**. Перезагрузите IDE. После этого пройдите в меню **Tools - Options - Beautifier**, где включите форматирование с помощью **clang-format**. Полезной является галочка **Enable auto format on file save** - при ее активации ваш код будет автоматически форматироваться при каждом сохранении файла. Далее пройдите в **Tools - Options - Beautifier**, где в графе **Use predefined style** выберите **Google**.
 
 ## О проекте
 

@@ -8,6 +8,7 @@
 #include <QPainter>
 #include <QPushButton>
 #include <QString>
+#include <algorithm>
 #include "map.h"
 #include "tank.h"
 
@@ -15,7 +16,7 @@ class MainWindow : public QMainWindow {
   Q_OBJECT
 
  public:
-  MainWindow(QWidget *parent = nullptr);
+  explicit MainWindow(QWidget *parent = nullptr);
   ~MainWindow() override = default;
 
  private:

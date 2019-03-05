@@ -13,7 +13,6 @@ void Tank::UpdateCoordinates() {
 
   cur_width_ = static_cast<int>(cur_cell_width / 2);
   cur_height_ = static_cast<int>(cur_cell_height / 2);
-
   cur_upper_left_x_ = map_->cur_upper_left_x_ + (cur_cell_width * cell_x_) +
                       (cur_cell_width / 4);
   cur_upper_left_y_ = map_->cur_upper_left_y_ + (cur_cell_height * cell_y_) +
@@ -25,7 +24,6 @@ void Tank::UpdateCoordinates() {
 
 void Tank::DrawTank(QPainter& painter) {
   painter.setBrush(Qt::black);
-
   painter.drawEllipse(cur_upper_left_x_, cur_upper_left_y_, cur_width_,
                       cur_height_);
 }

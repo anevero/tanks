@@ -8,7 +8,7 @@ class Tank {
   friend class MainWindow;
 
  public:
-  Tank(Map* map);
+  explicit Tank(Map* map);
   void UpdateCoordinates();
   void DrawTank(QPainter& painter);
 
