@@ -27,6 +27,8 @@ Map::Map(int map_number) {
   }
 
   in >> tank_init_cell_x_ >> tank_init_cell_y_;
+  tank_init_cell_x_--;
+  tank_init_cell_y_--;
   input_file.close();
 }
 
