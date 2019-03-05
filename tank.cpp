@@ -1,5 +1,4 @@
 #include "tank.h"
-#include <QtDebug>
 
 Tank::Tank(Map* map)
     : cell_x_(map->tank_init_cell_x_),
@@ -11,15 +10,12 @@ void Tank::UpdateCoordinates() {
   int cur_cell_height =
       static_cast<int>(map_->cur_height_ / map_->map_[0].size());
 
-  cur_width_ = static_cast<int>(cur_cell_width / 2);
-  cur_height_ = static_cast<int>(cur_cell_height / 2);
+  cur_width_ = static_cast<int>(0.5 * cur_cell_width);
+  cur_height_ = static_cast<int>(0.7 * cur_cell_height);
   cur_upper_left_x_ = map_->cur_upper_left_x_ + (cur_cell_width * cell_x_) +
-                      (cur_cell_width / 4);
+                      (static_cast<int>(0.25 * cur_cell_width));
   cur_upper_left_y_ = map_->cur_upper_left_y_ + (cur_cell_height * cell_y_) +
-                      (cur_cell_height / 2);
-
-  qDebug() << cur_width_ << " " << cur_height_ << " " << cur_upper_left_x_
-           << " " << cur_upper_left_y_;
+                      (static_cast<int>(0.3 * cur_cell_height));
 }
 
 void Tank::DrawTank(QPainter& painter) {

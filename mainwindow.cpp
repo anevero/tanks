@@ -16,7 +16,7 @@ MainWindow::MainWindow(QWidget *parent)
   setMinimumSize(600, 450);
   resize(600, 450);
 
-  connect(new_game_button_, SIGNAL(clicked()), this, SLOT(RedrawMap()));
+  connect(new_game_button_, SIGNAL(clicked()), this, SLOT(RedrawContent()));
 }
 
 void MainWindow::paintEvent(QPaintEvent *) {
@@ -26,6 +26,7 @@ void MainWindow::paintEvent(QPaintEvent *) {
                          static_cast<int>(0.68 * sq_width),
                          static_cast<int>(0.9 * sq_height));
   tank_.UpdateCoordinates();
+
   QPainter p;
   p.begin(this);
   map_.DrawMap(p);
@@ -46,12 +47,6 @@ void MainWindow::UpdateIndents() {
   h_indent = (height() - sq_height) / 2;
 }
 
-void MainWindow::RedrawMap() {
-  map_ = Map(swith_map_menu_->currentIndex() + 1);
-  tank_ = Tank(&map_);
-  repaint();
-}
-
 void MainWindow::RedrawButtons() {
   new_game_button_->setGeometry(w_indent + static_cast<int>(0.04 * sq_width),
                                 h_indent + static_cast<int>(0.05 * sq_height),
@@ -64,4 +59,11 @@ void MainWindow::RedrawButtons() {
 
   // карта перерисуется автоматически, так как resizeEvent автоматически
   // вызывает paintEvent
+}
+
+// функция вызывается при смене карты
+void MainWindow::RedrawContent() {
+  map_ = Map(swith_map_menu_->currentIndex() + 1);
+  tank_ = Tank(&map_);
+  repaint();
 }

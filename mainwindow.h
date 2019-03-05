@@ -26,7 +26,7 @@ class MainWindow : public QMainWindow {
  private slots:
   void UpdateIndents();
   void RedrawButtons();
-  void RedrawMap();
+  void RedrawContent();
 
  private:
   QPushButton *new_game_button_;
