@@ -16,7 +16,7 @@ class MainWindow : public QMainWindow {
 
  public:
   MainWindow(QWidget *parent = nullptr);
-  ~MainWindow() override;
+  ~MainWindow() override = default;
 
  private:
   void paintEvent(QPaintEvent *) override;

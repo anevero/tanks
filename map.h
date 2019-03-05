@@ -1,7 +1,6 @@
 #ifndef MAP_H
 #define MAP_H
 
-#include <QDebug>
 #include <QFile>
 #include <QPainter>
 #include <QString>
@@ -19,7 +18,6 @@ class Map {
 
  public:
   explicit Map(int map_number);
-
   void UpdateCoordinates(int upper_left_x, int upper_left_y, int width,
                          int height);
   void DrawMap(QPainter &painter);

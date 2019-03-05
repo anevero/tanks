@@ -18,10 +18,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), map_(1) {
   connect(new_game_button_, SIGNAL(clicked()), this, SLOT(RedrawMap()));
 }
 
-MainWindow::~MainWindow() {}
-
 void MainWindow::paintEvent(QPaintEvent *) {
-  // координаты правой верхней точки карты и левой нижней точки карты
+  // координаты правой верхней точки карты, ее длина и высота
   map_.UpdateCoordinates(w_indent + static_cast<int>(0.28 * sq_width),
                          h_indent + static_cast<int>(0.05 * sq_height),
                          static_cast<int>(0.68 * sq_width),
