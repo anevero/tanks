@@ -29,12 +29,14 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     map.cpp \
-    tank.cpp
+    tank.cpp \
+    movable.cpp
 
 HEADERS += \
     mainwindow.h \
     map.h \
-    tank.h
+    tank.h \
+    movable.h
 
 DISTFILES += \
     maps/map1.txt \

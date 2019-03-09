@@ -30,7 +30,7 @@ void MainWindow::paintEvent(QPaintEvent *) {
   QPainter p;
   p.begin(this);
   map_.DrawMap(p);
-  tank_.DrawTank(p);
+  tank_.Draw(p);
   p.end();
 }
 

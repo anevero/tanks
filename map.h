@@ -14,6 +14,7 @@ enum class CellType {
 };
 
 class Map {
+  friend class Movable;
   friend class Tank;
 
  public:
