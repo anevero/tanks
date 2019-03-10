@@ -3,7 +3,7 @@
 Movable::Movable(Map* map, int cell_x, int cell_y)
     : cell_x_(cell_x), cell_y_(cell_y), map_(map) {}
 
-void Movable::UpdateCoordinates() {
+void Movable::UpdateCoordinates(int time_of_movement) {
   // получаем текущие размеры ячеек из размеров карты
   int cur_cell_width = static_cast<int>(map_->cur_width_ / map_->map_.size());
   int cur_cell_height =
@@ -17,10 +17,31 @@ void Movable::UpdateCoordinates() {
   // непосредственно при отрисовке объекта по вот этим координатам,
   // которая будет происходить в дочерних классах, в соответствующих
   // функциях Draw
+
   cur_width_ = static_cast<int>(0.5 * cur_cell_width);
   cur_height_ = static_cast<int>(0.7 * cur_cell_height);
   cur_upper_left_x_ = map_->cur_upper_left_x_ + (cur_cell_width * cell_x_) +
                       (static_cast<int>(0.25 * cur_cell_width));
   cur_upper_left_y_ = map_->cur_upper_left_y_ + (cur_cell_height * cell_y_) +
                       (static_cast<int>(0.3 * cur_cell_height));
+}
+
+int Movable::GetSpeed() {
+  return speed_of_movement;
+}
+
+int Movable::GetLeftTime() {
+  return left_time;
+}
+
+Direction Movable::GetMoveDirection() {
+  return move_direction;
+}
+
+Direction Movable::GetRotateDirection() {
+  return rotate_direction;
+}
+
+void Movable::EditTimeToMove(int time) {
+  left_time -= time;
 }

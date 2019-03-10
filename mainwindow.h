@@ -8,7 +8,9 @@
 #include <QPainter>
 #include <QPushButton>
 #include <QString>
+#include <QTimer>
 #include <algorithm>
+#include <vector>
 #include "map.h"
 #include "tank.h"
 
@@ -19,9 +21,14 @@ class MainWindow : public QMainWindow {
   explicit MainWindow(QWidget *parent = nullptr);
   ~MainWindow() override = default;
 
+  int GetSpeed();
+
  private:
   void paintEvent(QPaintEvent *) override;
+  void timerEvent(QTimerEvent* event) override;
+  void keyReleaseEvent(QKeyEvent* event) override;
   void resizeEvent(QResizeEvent *) override;
+  void Move();
 
  private slots:
   void UpdateIndents();
@@ -33,6 +40,13 @@ class MainWindow : public QMainWindow {
   QComboBox *swith_map_menu_;
   Map map_;
   Tank tank_;
+  int timerId;
+
+  // все движущиеся объекты
+  std::vector<Movable*> objects;
+
+  // скорость обновления таймера, мб потом изменим
+  int speed = 10;
 
   // размеры и отступы прямоугольника 4*3 внутри окна, в котором
   // отрисовываются все элементы (для того, чтобы клетки были квадратными)

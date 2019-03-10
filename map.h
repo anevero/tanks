@@ -23,6 +23,11 @@ class Map {
                          int height);
   void DrawMap(QPainter &painter);
 
+  // getter-ы для объектов карты
+  CellType GetField(int cell_x, int cell_y);
+  int GetUpperLeftCoordinates();
+  int GetUpperRightCoordinates();
+
  private:
   QVector<QVector<CellType>> map_;
 

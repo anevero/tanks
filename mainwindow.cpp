@@ -1,3 +1,5 @@
+#include <QKeyEvent>
+#include <cmath>
 #include "mainwindow.h"
 
 MainWindow::MainWindow(QWidget *parent)
@@ -25,13 +27,45 @@ void MainWindow::paintEvent(QPaintEvent *) {
                          h_indent + static_cast<int>(0.05 * sq_height),
                          static_cast<int>(0.68 * sq_width),
                          static_cast<int>(0.9 * sq_height));
-  tank_.UpdateCoordinates();
+  tank_.UpdateCoordinates(0);
 
   QPainter p;
   p.begin(this);
   map_.DrawMap(p);
   tank_.Draw(p);
   p.end();
+}
+
+void MainWindow::timerEvent(QTimerEvent *event) {
+  Move();
+  // repaint();
+}
+
+void MainWindow::Move() {
+  for (const auto object : objects) {  
+    object->UpdateCoordinates(std::min(speed, object->GetLeftTime()));
+    object->EditTimeToMove(speed);
+
+    // потом еще дописать проверку на столкновение
+    if (object->GetLeftTime() <= 0) {
+      // нужно выкинуть элемент из вектора,
+      // правда пока не знаю, как сделать это аккуратно
+    }
+  }
+}
+
+void MainWindow::keyReleaseEvent(QKeyEvent *event) {
+  switch(event->key()) {
+    case Qt::Key_W | Qt::ShiftModifier: tank_.SetMoveDirection(Direction::Up); break;
+    case Qt::Key_S | Qt::ShiftModifier: tank_.SetMoveDirection(Direction::Down); break;
+    case Qt::Key_A | Qt::ShiftModifier: tank_.SetMoveDirection(Direction::Left); break;
+    case Qt::Key_D | Qt::ShiftModifier: tank_.SetMoveDirection(Direction::Right); break;
+    case Qt::Key_W: tank_.SetRotateDirection(Direction::Up); break;
+    case Qt::Key_S: tank_.SetRotateDirection(Direction::Down); break;
+    case Qt::Key_A: tank_.SetRotateDirection(Direction::Left); break;
+    case Qt::Key_D: tank_.SetRotateDirection(Direction::Right); break;
+    default: return;
+  }
 }
 
 void MainWindow::resizeEvent(QResizeEvent *) {
@@ -66,4 +100,9 @@ void MainWindow::RedrawContent() {
   map_ = Map(swith_map_menu_->currentIndex() + 1);
   tank_ = Tank(&map_);
   repaint();
+  timerId = startTimer(speed);
+}
+
+int MainWindow::GetSpeed() {
+    return speed;
 }

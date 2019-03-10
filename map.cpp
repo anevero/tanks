@@ -32,6 +32,18 @@ Map::Map(int map_number) {
   input_file.close();
 }
 
+CellType Map::GetField(int cell_x, int cell_y) {
+    return map_[cell_x][cell_y];
+}
+
+int Map::GetUpperLeftCoordinates() {
+    return cur_upper_left_x_;
+}
+
+int Map::GetUpperRightCoordinates() {
+    return cur_upper_left_y_;
+}
+
 void Map::UpdateCoordinates(int upper_left_x, int upper_left_y, int width,
                             int height) {
   cur_upper_left_x_ = upper_left_x;
