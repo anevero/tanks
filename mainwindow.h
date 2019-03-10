@@ -2,15 +2,18 @@
 #define MAINWINDOW_H
 
 #include <QComboBox>
+#include <QDebug>
 #include <QEvent>
 #include <QFileInfo>
+#include <QKeyEvent>
 #include <QMainWindow>
 #include <QPainter>
 #include <QPushButton>
 #include <QString>
 #include <QTimer>
+#include <QVector>
 #include <algorithm>
-#include <vector>
+#include <cmath>
 #include "map.h"
 #include "tank.h"
 
@@ -25,8 +28,8 @@ class MainWindow : public QMainWindow {
 
  private:
   void paintEvent(QPaintEvent *) override;
-  void timerEvent(QTimerEvent* event) override;
-  void keyReleaseEvent(QKeyEvent* event) override;
+  void timerEvent(QTimerEvent *event) override;
+  void keyReleaseEvent(QKeyEvent *) override;
   void resizeEvent(QResizeEvent *) override;
   void Move();
 
@@ -40,13 +43,13 @@ class MainWindow : public QMainWindow {
   QComboBox *swith_map_menu_;
   Map map_;
   Tank tank_;
-  int timerId;
 
   // все движущиеся объекты
-  std::vector<Movable*> objects;
+  // замена на QSet!!!
+  // но пока вообще его не трогаем
+  QVector<Movable *> objects;
 
-  // скорость обновления таймера, мб потом изменим
-  int speed = 10;
+  int timer_speed = 10;
 
   // размеры и отступы прямоугольника 4*3 внутри окна, в котором
   // отрисовываются все элементы (для того, чтобы клетки были квадратными)

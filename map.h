@@ -14,8 +14,8 @@ enum class CellType {
 };
 
 class Map {
-  friend class Movable;
-  friend class Tank;
+  //  friend class Movable;
+  //  friend class Tank;
 
  public:
   explicit Map(int map_number);
@@ -23,10 +23,17 @@ class Map {
                          int height);
   void DrawMap(QPainter &painter);
 
+ public:
   // getter-ы для объектов карты
-  CellType GetField(int cell_x, int cell_y);
-  int GetUpperLeftCoordinates();
-  int GetUpperRightCoordinates();
+  CellType GetField(int cell_x, int cell_y) const;
+  int GetNumberOfCellsHorizontally() const;
+  int GetNumberOfCellsVertically() const;
+  int GetUpperLeftX() const;
+  int GetUpperLeftY() const;
+  int GetWidth() const;
+  int GetHeight() const;
+  int GetTankInitCellX() const;
+  int GetTankInitCellY() const;
 
  private:
   QVector<QVector<CellType>> map_;
