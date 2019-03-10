@@ -46,17 +46,17 @@ class MainWindow : public QMainWindow {
 
   // все движущиеся объекты
   // замена на QSet!!!
-  // но пока вообще его не трогаем
-  QVector<Movable *> objects;
+  // но пока вообще это не трогаем
+  QVector<Movable *> objects_;
 
-  int timer_speed = 10;
+  int timer_duration_ = 10;
 
   // размеры и отступы прямоугольника 4*3 внутри окна, в котором
   // отрисовываются все элементы (для того, чтобы клетки были квадратными)
-  int sq_width;
-  int sq_height;
-  int w_indent;
-  int h_indent;
+  int sq_width_;
+  int sq_height_;
+  int w_indent_;
+  int h_indent_;
 };
 
 #endif  // MAINWINDOW_H

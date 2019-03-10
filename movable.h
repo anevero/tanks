@@ -23,22 +23,22 @@ class Movable {
   int cur_width_;
   int cur_height_;
 
-  // указатель на карту, к которой привязан танк
+  // указатель на карту, к которой привязан объект
   Map* map_;
 
  protected:
-  // эти параметры задаются каждому объекту
-  int speed_of_movement;
-  int left_time;
-  Direction move_direction;
-  Direction rotate_direction;
+  // milliseconds on cell
+  int speed_;
+
+  // for timer
+  int time_to_finish_movement_ = 0;
+
+  Direction cur_direction_;
 
  public:
   int GetSpeed();
-  int GetLeftTime();
-  Direction GetMoveDirection();
-  Direction GetRotateDirection();
-  void EditTimeToMove(int time);
+  int GetTimeToFinishMovement();
+  Direction GetDirection();
 };
 
 #endif  // MOVABLE_H

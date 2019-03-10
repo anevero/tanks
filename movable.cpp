@@ -3,7 +3,7 @@
 Movable::Movable(Map* map, int cell_x, int cell_y)
     : cell_x_(cell_x), cell_y_(cell_y), map_(map) {}
 
-void Movable::UpdateCoordinates(int time_of_movement) {
+void Movable::UpdateCoordinates() {
   // получаем текущие размеры ячеек из размеров карты
   int cur_cell_width =
       static_cast<int>(map_->GetWidth() / map_->GetNumberOfCellsHorizontally());
@@ -12,10 +12,10 @@ void Movable::UpdateCoordinates(int time_of_movement) {
 
   // считаем координаты для отрисовки объекта
   // тут надо все заменить с учетом движения
-  // пока можно считать, что любой наш объект - это квадрат с размерами ячейки
-  // карты :)
-  // кажется, что проще будет потом реализовать уменьшение размеров
-  // непосредственно при отрисовке объекта по вот этим координатам,
+  // будем считать, что любой наш объект - это квадрат с размерами ячейки
+  // карты
+  // реализовывать уменьшение размеров и все такое будем
+  // непосредственно при отрисовке объекта по этим координатам,
   // которая будет происходить в дочерних классах, в соответствующих
   // функциях Draw
 
@@ -27,12 +27,6 @@ void Movable::UpdateCoordinates(int time_of_movement) {
                       (static_cast<int>(0.3 * cur_cell_height));
 }
 
-int Movable::GetSpeed() { return speed_of_movement; }
-
-int Movable::GetLeftTime() { return left_time; }
-
-Direction Movable::GetMoveDirection() { return move_direction; }
-
-Direction Movable::GetRotateDirection() { return rotate_direction; }
-
-void Movable::EditTimeToMove(int time) { left_time -= time; }
+int Movable::GetSpeed() { return speed_; }
+int Movable::GetTimeToFinishMovement() { return time_to_finish_movement_; }
+Direction Movable::GetDirection() { return cur_direction_; }
