@@ -11,9 +11,6 @@ class Tank : public Movable {
  public:
   explicit Tank(Map* map);
   void Draw(QPainter& painter) override;
-
-  void SetMoveDirection(Direction direction);
-  void SetRotateDirection(Direction direction);
 };
 
 #endif  // TANK_H

@@ -22,8 +22,6 @@ MainWindow::MainWindow(QWidget *parent)
 }
 
 void MainWindow::paintEvent(QPaintEvent *) {
-  qDebug() << "Paint Event Called";
-
   // координаты правой верхней точки карты, ее длина и высота
   map_.UpdateCoordinates(w_indent_ + static_cast<int>(0.28 * sq_width_),
                          h_indent_ + static_cast<int>(0.05 * sq_height_),
@@ -44,35 +42,25 @@ void MainWindow::paintEvent(QPaintEvent *) {
 }
 
 void MainWindow::timerEvent(QTimerEvent *event) {
-  qDebug() << "Timer ID: " << event->timerId();
-
+  if (tank_.GetTimeToFinishMovement() != 0) {
+    tank_.Move(timer_duration_);
+  } else {
+    tank_.StartMovement();
+  }
   // Move для танка и для всех объектов в нашем QSet/QVector
 
-  // вызов paintevent
   repaint();
 }
 
-// этой функции место в классе Movable
-
-// void MainWindow::Move() {
-//  for (const auto object : objects) {
-//    object->UpdateCoordinates(std::min(speed, object->GetLeftTime()));
-//    object->EditTimeToMove(speed);
-
-//    // потом еще дописать проверку на столкновение
-//    if (object->GetLeftTime() <= 0) {
-//      // нужно выкинуть элемент из вектора,
-//      // правда пока не знаю, как сделать это аккуратно
-//    }
-//  }
-//}
-
 void MainWindow::keyReleaseEvent(QKeyEvent *event) {
-  // здесь по идее надо не только задать направление, но еще и обнулить
-  // внутренние параметры движения танка
-  // и после этого при следующем срабатывании таймера он пойдет двигаться
+  // два варианта:
+  // 1) нажатая клавиша совпадает с направлением танка
+  // тогда танк - в QSet, и startmovement на одну клетку (вперед или назад)
+  // 2) нажатая клавиша не совпадает с направлением танка
+  // тогда поворот в нужную сторону
+  // поворот реализуем потом
 
-  // и не забыть просто пропускать эти ивэнты, пока танк в движении, то
+  // не забыть просто пропускать эти ивэнты, пока танк в движении, то
   // есть пока timeleft > 0
 
   //  switch (event->key()) {
@@ -88,8 +76,6 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event) {
   //    case Qt::Key_D | Qt::ShiftModifier:
   //      tank_.SetMoveDirection(Direction::Right);
   //      break;
-
-  // с rotate пока не паримся
 
   //    case Qt::Key_W: tank_.SetRotateDirection(Direction::Up); break;
   //    case Qt::Key_S: tank_.SetRotateDirection(Direction::Down); break;

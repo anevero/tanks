@@ -9,9 +9,9 @@
 #include <QMainWindow>
 #include <QPainter>
 #include <QPushButton>
+#include <QSet>
 #include <QString>
 #include <QTimer>
-#include <QVector>
 #include <algorithm>
 #include <cmath>
 #include "map.h"
@@ -45,9 +45,7 @@ class MainWindow : public QMainWindow {
   Tank tank_;
 
   // все движущиеся объекты
-  // замена на QSet!!!
-  // но пока вообще это не трогаем
-  QVector<Movable *> objects_;
+  QSet<Movable *> moving_objects_;
 
   int timer_duration_ = 10;
 
