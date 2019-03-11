@@ -5,7 +5,7 @@
 #include <QVector>
 #include "map.h"
 
-enum class Direction { Up = 0, Down = 1, Left = 2, Right = 3 };
+enum class Direction { Up = 0, Right = 1, Down = 2, Left = 3 };
 
 class Movable {
  public:
@@ -14,6 +14,8 @@ class Movable {
 
   virtual void Move(int milliseconds_passed);
   virtual void StartMovement();
+  virtual void SwitchToNextDirection();
+  virtual void SwitchToPrevDirection();
   virtual void UpdateCoordinates();
   virtual void Draw(QPainter& painter) = 0;
 

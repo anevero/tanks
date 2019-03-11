@@ -11,9 +11,17 @@ Movable::Movable(Map* map, int cell_x, int cell_y, Direction direction,
 }
 
 void Movable::StartMovement() {
-  cell_x_ = cell_x_ + directions_[3] - directions_[2];
-  cell_y_ = cell_y_ + directions_[1] - directions_[0];
+  cell_x_ = cell_x_ + directions_[1] - directions_[3];
+  cell_y_ = cell_y_ + directions_[2] - directions_[0];
   time_to_finish_movement_ += speed_;
+}
+
+void Movable::SwitchToNextDirection() {
+  // todo
+}
+
+void Movable::SwitchToPrevDirection() {
+  // todo
 }
 
 void Movable::Move(int milliseconds_passed) {
@@ -35,32 +43,16 @@ void Movable::UpdateCoordinates() {
 
   cur_upper_left_x_ =
       map_->GetUpperLeftX() + (cur_cell_width * cell_x_) -
-      directions_[3] * static_cast<int>(cur_cell_width * movement_proportion) +
-      directions_[2] * static_cast<int>(cur_cell_width * movement_proportion);
+      directions_[1] * static_cast<int>(cur_cell_width * movement_proportion) +
+      directions_[3] * static_cast<int>(cur_cell_width * movement_proportion);
 
   cur_upper_left_y_ =
       map_->GetUpperLeftY() + (cur_cell_height * cell_y_) -
-      directions_[1] * static_cast<int>(cur_cell_height * movement_proportion) +
+      directions_[2] * static_cast<int>(cur_cell_height * movement_proportion) +
       directions_[0] * static_cast<int>(cur_cell_height * movement_proportion);
 
   qDebug() << movement_proportion << " " << cur_upper_left_x_ << " "
            << cur_upper_left_y_;
-
-  // считаем координаты для отрисовки объекта
-  // тут надо все заменить с учетом движения
-  // будем считать, что любой наш объект - это квадрат с размерами ячейки
-  // карты
-  // реализовывать уменьшение размеров и все такое будем
-  // непосредственно при отрисовке объекта по этим координатам,
-  // которая будет происходить в дочерних классах, в соответствующих
-  // функциях Draw
-
-  //  cur_width_ = static_cast<int>(0.5 * cur_cell_width);
-  //  cur_height_ = static_cast<int>(0.7 * cur_cell_height);
-  //  cur_upper_left_x_ = map_->GetUpperLeftX() + (cur_cell_width * cell_x_) +
-  //                      (static_cast<int>(0.25 * cur_cell_width));
-  //  cur_upper_left_y_ = map_->GetUpperLeftY() + (cur_cell_height * cell_y_) +
-  //                      (static_cast<int>(0.3 * cur_cell_height));
 }
 
 int Movable::GetSpeed() const { return speed_; }
@@ -73,10 +65,10 @@ Direction Movable::GetDirection() const {
     return Direction::Up;
   }
   if (directions_[1] == 1) {
-    return Direction::Down;
+    return Direction::Right;
   }
   if (directions_[2] == 1) {
-    return Direction::Left;
+    return Direction::Down;
   }
-  return Direction::Right;
+  return Direction::Left;
 }

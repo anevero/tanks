@@ -6,10 +6,10 @@
 #include <QEvent>
 #include <QFileInfo>
 #include <QKeyEvent>
+#include <QList>
 #include <QMainWindow>
 #include <QPainter>
 #include <QPushButton>
-#include <QSet>
 #include <QString>
 #include <QTimer>
 #include <algorithm>
@@ -45,7 +45,7 @@ class MainWindow : public QMainWindow {
   Tank tank_;
 
   // все движущиеся объекты
-  QSet<Movable *> moving_objects_;
+  QList<Movable *> moving_objects_;
 
   int timer_duration_ = 10;
 
