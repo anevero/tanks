@@ -3,7 +3,6 @@
 
 #include <QDebug>
 #include <QVector>
-#include <algorithm>
 #include "map.h"
 
 enum class Direction { Up = 0, Right = 1, Down = 2, Left = 3 };
@@ -43,16 +42,17 @@ class Movable {
   Map* map_;
 
  protected:
-  QVector<int> directions_;
+  // направления движения
+  QVector<int> directions_ = {0, 0, 0, 0};
 
-  // milliseconds on cell
+  // миллисекунд на клетку
   int speed_;
 
-  // 1 - if reverse is off
-  // -1 - if reverse is on
+  // 1: если задний ход включен
+  // -1: если задний ход выключен
   int reverse_ = 1;
 
-  // for timer
+  // для таймера
   int time_to_finish_movement_ = 0;
   int cells_to_finish_movement_ = 0;
 };

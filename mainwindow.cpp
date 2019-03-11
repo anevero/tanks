@@ -28,7 +28,6 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event) {
       if (tank_.GetTimeToFinishMovement() != 0) return;
       tank_.TurnReverseOff();
       tank_.StartMovement(1);
-      // qDebug() << "w pressed";
       break;
     case Qt::Key_S:
       if (tank_.GetTimeToFinishMovement() != 0) return;
@@ -101,7 +100,6 @@ void MainWindow::timerEvent(QTimerEvent *) {
       (*it)->Move(timer_duration_);
     }
   }
-
   repaint();
 }
 

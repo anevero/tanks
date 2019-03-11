@@ -2,11 +2,7 @@
 
 Movable::Movable(Map* map, int cell_x, int cell_y, Direction direction,
                  int speed)
-    : cell_x_(cell_x),
-      cell_y_(cell_y),
-      map_(map),
-      directions_({0, 0, 0, 0}),
-      speed_(speed) {
+    : cell_x_(cell_x), cell_y_(cell_y), map_(map), speed_(speed) {
   directions_[static_cast<int>(direction)] = 1;
 }
 
@@ -51,7 +47,6 @@ void Movable::TurnReverseOn() { reverse_ = -1; }
 void Movable::TurnReverseOff() { reverse_ = 1; }
 
 void Movable::UpdateCoordinates() {
-  // получаем текущие размеры ячеек из размеров карты
   int cur_cell_width =
       static_cast<int>(map_->GetWidth() / map_->GetNumberOfCellsHorizontally());
   int cur_cell_height =
@@ -65,17 +60,15 @@ void Movable::UpdateCoordinates() {
 
   cur_upper_left_x_ =
       map_->GetUpperLeftX() + (cur_cell_width * cell_x_) -
-      reverse_ * (directions_[1] *
-                      static_cast<int>(cur_cell_width * movement_proportion) -
-                  directions_[3] *
-                      static_cast<int>(cur_cell_width * movement_proportion));
+      reverse_ * static_cast<int>(
+                     (directions_[1] * cur_cell_width * movement_proportion) -
+                     (directions_[3] * cur_cell_width * movement_proportion));
 
   cur_upper_left_y_ =
       map_->GetUpperLeftY() + (cur_cell_height * cell_y_) -
-      reverse_ * (directions_[2] *
-                      static_cast<int>(cur_cell_height * movement_proportion) -
-                  directions_[0] *
-                      static_cast<int>(cur_cell_height * movement_proportion));
+      reverse_ * static_cast<int>(
+                     (directions_[2] * cur_cell_height * movement_proportion) -
+                     (directions_[0] * cur_cell_height * movement_proportion));
 }
 
 int Movable::GetSpeed() const { return speed_; }

@@ -13,8 +13,6 @@
 #include <QPushButton>
 #include <QString>
 #include <QTimer>
-#include <algorithm>
-#include <cmath>
 #include "map.h"
 #include "tank.h"
 
@@ -43,8 +41,6 @@ class MainWindow : public QMainWindow {
   QComboBox *swith_map_menu_;
   Map map_;
   Tank tank_;
-
-  // все движущиеся объекты
   QList<Movable *> moving_objects_;
 
   int timer_duration_ = 10;
