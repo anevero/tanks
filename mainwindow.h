@@ -6,6 +6,7 @@
 #include <QEvent>
 #include <QFileInfo>
 #include <QKeyEvent>
+#include <QLabel>
 #include <QList>
 #include <QMainWindow>
 #include <QPainter>
@@ -27,11 +28,10 @@ class MainWindow : public QMainWindow {
   int GetSpeed();
 
  private:
-  void paintEvent(QPaintEvent *) override;
-  void timerEvent(QTimerEvent *event) override;
   void keyReleaseEvent(QKeyEvent *) override;
+  void paintEvent(QPaintEvent *) override;
   void resizeEvent(QResizeEvent *) override;
-  void Move();
+  void timerEvent(QTimerEvent *) override;
 
  private slots:
   void UpdateIndents();
@@ -55,6 +55,10 @@ class MainWindow : public QMainWindow {
   int sq_height_;
   int w_indent_;
   int h_indent_;
+
+  // временная штука для вывода направления движения
+  QLabel *rotation_info_label_;
+  QVector<QString> rotation_info_ = {"Up", "Right", "Down", "Left"};
 };
 
 #endif  // MAINWINDOW_H
