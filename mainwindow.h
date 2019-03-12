@@ -24,6 +24,8 @@ class MainWindow : public QMainWindow {
   explicit MainWindow(QWidget *parent = nullptr);
   ~MainWindow() override = default;
 
+  int GetTimerDuration() const;
+
  private:
   void keyReleaseEvent(QKeyEvent *) override;
   void paintEvent(QPaintEvent *) override;

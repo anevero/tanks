@@ -53,8 +53,8 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event) {
         } else {
           rocket->StartMovement(map_.GetNumberOfCellsVertically());
         }
-        break;
       }
+      break;
   }
 
   // в случае обработки других объектов необходимо делать их append
@@ -117,7 +117,7 @@ void MainWindow::timerEvent(QTimerEvent *) {
     }
 
     if (dynamic_cast<Tank *>(*it) != nullptr) {
-        (dynamic_cast<Tank *>(*it))->time_since_last_shot_ += timer_duration_;
+        (dynamic_cast<Tank *>(*it))->SetTimeSinceLastShot(GetTimerDuration());
     }
   }
   repaint();
@@ -157,3 +157,5 @@ void MainWindow::RedrawContent() {
   rotation_info_label_->setText("Up");
   repaint();
 }
+
+int MainWindow::GetTimerDuration() const { return timer_duration_; }

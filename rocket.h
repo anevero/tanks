@@ -6,11 +6,11 @@
 #include "tank.h"
 
 class Rocket : public Movable {
-  friend class MainWindow;
-
  public:
   Rocket(Map* map, Movable* movable, int speed);
   void Draw(QPainter& painter) override;
+
+  void Explosion();
 };
 
 #endif // ROCKET_H

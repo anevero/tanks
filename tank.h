@@ -12,8 +12,9 @@ class Tank : public Movable {
   Tank(Map* map, int speed, int rate_of_fire);
   void Draw(QPainter& painter) override;
 
-  virtual int GetRateOfFire() const;
-  virtual int GetTimeSinceLastShot() const;
+  int GetRateOfFire() const;
+  int GetTimeSinceLastShot() const;
+  void SetTimeSinceLastShot(int delta);
 
  protected:
   // это скорострельность, потому что такой перевод

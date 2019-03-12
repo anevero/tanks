@@ -2,9 +2,7 @@
 
 Tank::Tank(Map* map, int speed, int rate_of_fire)
     : Movable(map, map->GetTankInitCellX(), map->GetTankInitCellY(),
-              Direction::Up, speed) {
-  rate_of_fire_ = rate_of_fire;
-}
+              Direction::Up, speed), rate_of_fire_(rate_of_fire) {}
 
 void Tank::Draw(QPainter& painter) {
   painter.setBrush(Qt::black);
@@ -14,3 +12,7 @@ void Tank::Draw(QPainter& painter) {
 
 int Tank::GetRateOfFire() const { return rate_of_fire_; }
 int Tank::GetTimeSinceLastShot() const { return time_since_last_shot_; }
+
+void Tank::SetTimeSinceLastShot(int delta) {
+  time_since_last_shot_ += delta;
+}
