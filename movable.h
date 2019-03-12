@@ -3,6 +3,7 @@
 
 #include <QDebug>
 #include <QVector>
+#include <QList>
 #include "map.h"
 
 enum class Direction { Up = 0, Right = 1, Down = 2, Left = 3 };
@@ -26,6 +27,9 @@ class Movable {
   virtual int GetCellsToFinishMovement() const;
   virtual int GetReverseState() const;
   virtual Direction GetDirection() const;
+  virtual int GetIntDirection() const;
+  virtual int GetUpperLeftX() const;
+  virtual int GetUpperLeftY() const;
 
  protected:
   // координаты ячейки объекта

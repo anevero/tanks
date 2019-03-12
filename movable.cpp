@@ -19,23 +19,15 @@ void Movable::StartMovement(int number_of_cells) {
 }
 
 void Movable::SwitchToNextDirection() {
-  for (int i = 0; i < 4; ++i) {
-    if (directions_[i] == 1) {
-      directions_[i] = 0;
-      directions_[(i + 1) % 4] = 1;
-      break;
-    }
-  }
+  int current_direction = GetIntDirection();
+  directions_[current_direction] = 0;
+  directions_[(current_direction + 1) % 4] = 1;
 }
 
 void Movable::SwitchToPrevDirection() {
-  for (int i = 0; i < 4; ++i) {
-    if (directions_[i] == 1) {
-      directions_[i] = 0;
-      directions_[(i + 3) % 4] = 1;
-      break;
-    }
-  }
+  int current_direction = GetIntDirection();
+  directions_[current_direction] = 0;
+  directions_[(current_direction + 3) % 4] = 1;
 }
 
 void Movable::Move(int milliseconds_passed) {
@@ -94,4 +86,25 @@ Direction Movable::GetDirection() const {
     return Direction::Down;
   }
   return Direction::Left;
+}
+
+int Movable::GetIntDirection() const {
+  if (directions_[0] == 1) {
+    return 0;
+  }
+  if (directions_[1] == 1) {
+    return 1;
+  }
+  if (directions_[2] == 1) {
+    return 2;
+  }
+  return 3;
+}
+
+int Movable::GetUpperLeftX() const {
+  return cur_upper_left_x_;
+}
+
+int Movable::GetUpperLeftY() const {
+  return cur_upper_left_y_;
 }

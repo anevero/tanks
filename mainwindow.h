@@ -15,6 +15,7 @@
 #include <QTimer>
 #include "map.h"
 #include "tank.h"
+#include "rocket.h"
 
 class MainWindow : public QMainWindow {
   Q_OBJECT

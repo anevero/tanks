@@ -28,7 +28,7 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event) {
       if (tank_.GetTimeToFinishMovement() != 0) return;
       tank_.TurnReverseOff();
       tank_.StartMovement(1);
-      break;
+      break;  
     case Qt::Key_S:
       if (tank_.GetTimeToFinishMovement() != 0) return;
       tank_.TurnReverseOn();
@@ -41,6 +41,10 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event) {
     case Qt::Key_D:
       if (tank_.GetTimeToFinishMovement() != 0) return;
       tank_.SwitchToNextDirection();
+      break;
+    case Qt::Key_P:
+      Rocket* rocket = new Rocket(&map_, dynamic_cast<Movable*>(&tank_), 1000);
+      moving_objects_.append(rocket);
       break;
   }
 

@@ -30,13 +30,15 @@ SOURCES += \
     mainwindow.cpp \
     map.cpp \
     tank.cpp \
-    movable.cpp
+    movable.cpp \
+    rocket.cpp
 
 HEADERS += \
     mainwindow.h \
     map.h \
     tank.h \
-    movable.h
+    movable.h \
+    rocket.h
 
 DISTFILES += \
     maps/map1.txt \
