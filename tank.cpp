@@ -2,7 +2,7 @@
 
 Tank::Tank(Map* map)
     : Movable(map, map->GetTankInitCellX(), map->GetTankInitCellY(),
-              Direction::Up, 600) {}
+              Direction::Up, 750) {}
 
 void Tank::Draw(QPainter& painter) {
   painter.setBrush(Qt::black);

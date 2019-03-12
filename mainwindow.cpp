@@ -1,4 +1,5 @@
 #include "mainwindow.h"
+#include <memory>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), map_(1), tank_(&map_), moving_objects_({&tank_}) {
@@ -28,7 +29,7 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event) {
       if (tank_.GetTimeToFinishMovement() != 0) return;
       tank_.TurnReverseOff();
       tank_.StartMovement(1);
-      break;  
+      break;
     case Qt::Key_S:
       if (tank_.GetTimeToFinishMovement() != 0) return;
       tank_.TurnReverseOn();
@@ -43,8 +44,13 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event) {
       tank_.SwitchToNextDirection();
       break;
     case Qt::Key_P:
-      Rocket* rocket = new Rocket(&map_, dynamic_cast<Movable*>(&tank_), 1000);
+      auto rocket = new Rocket(&map_, &tank_, 250);
       moving_objects_.append(rocket);
+      if (rocket->GetIntDirection() == 1 || rocket->GetIntDirection() == 3) {
+        rocket->StartMovement(map_.GetNumberOfCellsHorizontally());
+      } else {
+        rocket->StartMovement(map_.GetNumberOfCellsVertically());
+      }
       break;
   }
 
@@ -93,14 +99,17 @@ void MainWindow::timerEvent(QTimerEvent *) {
   // - для всех объектов в moving_objects_ вызывается Move
 
   for (auto it = moving_objects_.begin(); it != moving_objects_.end(); ++it) {
-    if ((*it)->GetTimeToFinishMovement() == 0) {
-      if ((*it)->GetCellsToFinishMovement() != 0) {
-        (*it)->StartMovement((*it)->GetCellsToFinishMovement());
-      } else if (dynamic_cast<Tank *>(*it) == nullptr) {
-        moving_objects_.erase(it);
-      }
+    if ((*it)->GetTimeToFinishMovement() == 0 &&
+        (*it)->GetCellsToFinishMovement() != 0) {
+      (*it)->StartMovement((*it)->GetCellsToFinishMovement());
     }
-    if ((*it)->GetTimeToFinishMovement() != 0) {
+    if ((*it)->GetTimeToFinishMovement() == 0 &&
+        dynamic_cast<Tank *>(*it) == nullptr) {
+      delete *it;
+      moving_objects_.erase(it);
+      it--;
+      continue;
+    } else if ((*it)->GetTimeToFinishMovement() != 0) {
       (*it)->Move(timer_duration_);
     }
   }

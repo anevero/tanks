@@ -1,4 +1,6 @@
 #include "movable.h"
+#include "rocket.h"
+#include "tank.h"
 
 Movable::Movable(Map* map, int cell_x, int cell_y, Direction direction,
                  int speed)
@@ -10,8 +12,10 @@ void Movable::StartMovement(int number_of_cells) {
   int new_cell_x = cell_x_ + reverse_ * (directions_[1] - directions_[3]);
   int new_cell_y = cell_y_ + reverse_ * (directions_[2] - directions_[0]);
   if (map_->GetField(new_cell_x, new_cell_y) == CellType::Wall) {
+    cells_to_finish_movement_ = 0;
     return;
   }
+
   cell_x_ = new_cell_x;
   cell_y_ = new_cell_y;
   time_to_finish_movement_ += speed_;
@@ -75,19 +79,6 @@ int Movable::GetCellsToFinishMovement() const {
 
 int Movable::GetReverseState() const { return reverse_; }
 
-Direction Movable::GetDirection() const {
-  if (directions_[0] == 1) {
-    return Direction::Up;
-  }
-  if (directions_[1] == 1) {
-    return Direction::Right;
-  }
-  if (directions_[2] == 1) {
-    return Direction::Down;
-  }
-  return Direction::Left;
-}
-
 int Movable::GetIntDirection() const {
   if (directions_[0] == 1) {
     return 0;
@@ -101,10 +92,11 @@ int Movable::GetIntDirection() const {
   return 3;
 }
 
-int Movable::GetUpperLeftX() const {
-  return cur_upper_left_x_;
+Direction Movable::GetDirection() const {
+  return static_cast<Direction>(GetIntDirection());
 }
 
-int Movable::GetUpperLeftY() const {
-  return cur_upper_left_y_;
-}
+int Movable::GetUpperLeftX() const { return cur_upper_left_x_; }
+int Movable::GetUpperLeftY() const { return cur_upper_left_y_; }
+int Movable::GetCellX() const { return cell_x_; }
+int Movable::GetCellY() const { return cell_y_; }

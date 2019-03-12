@@ -2,8 +2,8 @@
 #define MOVABLE_H
 
 #include <QDebug>
-#include <QVector>
 #include <QList>
+#include <QVector>
 #include "map.h"
 
 enum class Direction { Up = 0, Right = 1, Down = 2, Left = 3 };
@@ -26,10 +26,12 @@ class Movable {
   virtual int GetTimeToFinishMovement() const;
   virtual int GetCellsToFinishMovement() const;
   virtual int GetReverseState() const;
-  virtual Direction GetDirection() const;
   virtual int GetIntDirection() const;
+  virtual Direction GetDirection() const;
   virtual int GetUpperLeftX() const;
   virtual int GetUpperLeftY() const;
+  virtual int GetCellX() const;
+  virtual int GetCellY() const;
 
  protected:
   // координаты ячейки объекта
