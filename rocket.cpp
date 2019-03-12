@@ -3,7 +3,7 @@
 Rocket::Rocket(Map* map, Movable* movable, int speed)
     : Movable(map, movable->GetUpperLeftX(), movable->GetUpperLeftY(),
               movable->GetDirection(), speed) {
-  // StartMovement(10);
+  StartMovement(10);
   qDebug() << "Create";
 }
 
