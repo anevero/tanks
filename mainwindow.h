@@ -24,8 +24,6 @@ class MainWindow : public QMainWindow {
   explicit MainWindow(QWidget *parent = nullptr);
   ~MainWindow() override = default;
 
-  int GetSpeed();
-
  private:
   void keyReleaseEvent(QKeyEvent *) override;
   void paintEvent(QPaintEvent *) override;

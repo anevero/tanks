@@ -2,7 +2,7 @@
 #include <memory>
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent), map_(1), tank_(&map_), moving_objects_({&tank_}) {
+    : QMainWindow(parent), map_(1), tank_(&map_, 750, 500), moving_objects_({&tank_}) {
   new_game_button_ = new QPushButton("New game", this);
   swith_map_menu_ = new QComboBox(this);
 
@@ -43,15 +43,18 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event) {
       if (tank_.GetTimeToFinishMovement() != 0) return;
       tank_.Rotate(RotateDirection::Right);
       break;
-    case Qt::Key_P:
-      auto rocket = new Rocket(&map_, &tank_, 250);
-      moving_objects_.append(rocket);
-      if (rocket->GetIntDirection() == 1 || rocket->GetIntDirection() == 3) {
-        rocket->StartMovement(map_.GetNumberOfCellsHorizontally());
-      } else {
-        rocket->StartMovement(map_.GetNumberOfCellsVertically());
+    case Qt::Key_Q:
+      if (tank_.GetTimeSinceLastShot() > tank_.GetRateOfFire()) {
+        tank_.time_since_last_shot_ = 0;
+        auto rocket = new Rocket(&map_, &tank_, 250);
+        moving_objects_.append(rocket);
+        if (rocket->GetIntDirection() == 1 || rocket->GetIntDirection() == 3) {
+          rocket->StartMovement(map_.GetNumberOfCellsHorizontally());
+        } else {
+          rocket->StartMovement(map_.GetNumberOfCellsVertically());
+        }
+        break;
       }
-      break;
   }
 
   // в случае обработки других объектов необходимо делать их append
@@ -112,6 +115,10 @@ void MainWindow::timerEvent(QTimerEvent *) {
     } else if ((*it)->GetTimeToFinishMovement() != 0) {
       (*it)->Move(timer_duration_);
     }
+
+    if (dynamic_cast<Tank *>(*it) != nullptr) {
+        (dynamic_cast<Tank *>(*it))->time_since_last_shot_ += timer_duration_;
+    }
   }
   repaint();
 }
@@ -144,7 +151,7 @@ void MainWindow::RedrawButtons() {
 // функция вызывается при смене карты
 void MainWindow::RedrawContent() {
   map_ = Map(swith_map_menu_->currentIndex() + 1);
-  tank_ = Tank(&map_);
+  tank_ = Tank(&map_, 750, 500);
   moving_objects_.clear();
   moving_objects_.append(&tank_);
   rotation_info_label_->setText("Up");
