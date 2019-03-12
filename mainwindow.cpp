@@ -2,7 +2,10 @@
 #include <memory>
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent), map_(1), tank_(&map_, 750, 500), moving_objects_({&tank_}) {
+    : QMainWindow(parent),
+      map_(1),
+      tank_(&map_, 750, 500),
+      moving_objects_({&tank_}) {
   new_game_button_ = new QPushButton("New game", this);
   swith_map_menu_ = new QComboBox(this);
 
@@ -46,7 +49,8 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event) {
       tank_.StartRotation();
       break;
     case Qt::Key_Q:
-      if (tank_.GetTimeSinceLastShot() > tank_.GetRateOfFire()) {
+      if (tank_.GetTimeSinceLastShot() > tank_.GetRateOfFire() &&
+          !tank_.IsMovingOrRotating()) {
         tank_.time_since_last_shot_ = 0;
         auto rocket = new Rocket(&map_, &tank_, 250);
         moving_objects_.append(rocket);
@@ -119,7 +123,7 @@ void MainWindow::timerEvent(QTimerEvent *) {
     }
 
     if (dynamic_cast<Tank *>(*it) != nullptr) {
-        (dynamic_cast<Tank *>(*it))->SetTimeSinceLastShot(GetTimerDuration());
+      (dynamic_cast<Tank *>(*it))->SetTimeSinceLastShot(GetTimerDuration());
     }
   }
 
