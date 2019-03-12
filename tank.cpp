@@ -6,8 +6,13 @@ Tank::Tank(Map* map, int speed, int rate_of_fire)
 
 void Tank::Draw(QPainter& painter) {
   painter.setBrush(Qt::black);
-  painter.drawRect(cur_upper_left_x_, cur_upper_left_y_, cur_width_,
+  painter.save();
+  painter.translate(cur_upper_left_x_ + cur_width_ / 2,
+                    cur_upper_left_y_ + cur_height_ / 2);
+  painter.rotate(current_rotate_degree_);
+  painter.drawRect(-cur_width_ / 4, -cur_height_ / 2, cur_width_ / 2,
                    cur_height_);
+  painter.restore();
 }
 
 int Tank::GetRateOfFire() const { return rate_of_fire_; }

@@ -26,22 +26,24 @@ MainWindow::MainWindow(QWidget *parent)
 void MainWindow::keyReleaseEvent(QKeyEvent *event) {
   switch (event->key()) {
     case Qt::Key_W:
-      if (tank_.GetTimeToFinishMovement() != 0) return;
+      if (tank_.IsMovingOrRotating()) return;
       tank_.TurnReverseOff();
       tank_.StartMovement(1);
       break;
     case Qt::Key_S:
-      if (tank_.GetTimeToFinishMovement() != 0) return;
+      if (tank_.IsMovingOrRotating()) return;
       tank_.TurnReverseOn();
       tank_.StartMovement(1);
       break;
     case Qt::Key_A:
-      if (tank_.GetTimeToFinishMovement() != 0) return;
-      tank_.Rotate(RotateDirection::Left);
+      if (tank_.IsMovingOrRotating()) return;
+      tank_.TurnRotationReverseOn();
+      tank_.StartRotation();
       break;
     case Qt::Key_D:
-      if (tank_.GetTimeToFinishMovement() != 0) return;
-      tank_.Rotate(RotateDirection::Right);
+      if (tank_.IsMovingOrRotating()) return;
+      tank_.TurnRotationReverseOff();
+      tank_.StartRotation();
       break;
     case Qt::Key_Q:
       if (tank_.GetTimeSinceLastShot() > tank_.GetRateOfFire()) {
@@ -120,6 +122,13 @@ void MainWindow::timerEvent(QTimerEvent *) {
         (dynamic_cast<Tank *>(*it))->SetTimeSinceLastShot(GetTimerDuration());
     }
   }
+
+  for (auto it = moving_objects_.begin(); it != moving_objects_.end(); ++it) {
+    if ((*it)->GetTimeToFinishRotation() != 0) {
+      (*it)->Rotate(timer_duration_);
+    }
+  }
+
   repaint();
 }
 

@@ -22,13 +22,25 @@ void Movable::StartMovement(int number_of_cells) {
   cells_to_finish_movement_ = number_of_cells - 1;
 }
 
-void Movable::Rotate(RotateDirection direction) {
-  // todo
-  if (direction == RotateDirection::Right) {
+void Movable::Move(int milliseconds_passed) {
+  time_to_finish_movement_ -= milliseconds_passed;
+}
+
+void Movable::TurnReverseOn() { reverse_ = -1; }
+
+void Movable::TurnReverseOff() { reverse_ = 1; }
+
+void Movable::StartRotation() {
+  if (rotate_reverse_ == 1) {
     SwitchToNextDirection();
   } else {
     SwitchToPrevDirection();
   }
+  time_to_finish_rotation_ = speed_;
+}
+
+void Movable::Rotate(int milliseconds_passed) {
+  time_to_finish_rotation_ -= milliseconds_passed;
 }
 
 void Movable::SwitchToNextDirection() {
@@ -43,13 +55,9 @@ void Movable::SwitchToPrevDirection() {
   directions_[(current_direction + 3) % 4] = 1;
 }
 
-void Movable::Move(int milliseconds_passed) {
-  time_to_finish_movement_ -= milliseconds_passed;
-}
+void Movable::TurnRotationReverseOn() { rotate_reverse_ = -1; }
 
-void Movable::TurnReverseOn() { reverse_ = -1; }
-
-void Movable::TurnReverseOff() { reverse_ = 1; }
+void Movable::TurnRotationReverseOff() { rotate_reverse_ = 1; }
 
 void Movable::UpdateCoordinates() {
   int cur_cell_width =
@@ -74,6 +82,13 @@ void Movable::UpdateCoordinates() {
       reverse_ * static_cast<int>(
                      (directions_[2] * cur_cell_height * movement_proportion) -
                      (directions_[0] * cur_cell_height * movement_proportion));
+
+  double rotation_proportion =
+      static_cast<double>(time_to_finish_rotation_) / speed_;
+  current_rotate_degree_ =
+      GetIntDirection() * 90 -
+      rotate_reverse_ * static_cast<int>(90 * rotation_proportion);
+  current_rotate_degree_ %= 360;
 }
 
 int Movable::GetSpeed() const { return speed_; }
@@ -86,7 +101,17 @@ int Movable::GetCellsToFinishMovement() const {
   return cells_to_finish_movement_;
 }
 
+int Movable::GetTimeToFinishRotation() const {
+  return time_to_finish_rotation_;
+}
+
+bool Movable::IsMovingOrRotating() const {
+  return (GetTimeToFinishMovement() != 0 || GetTimeToFinishRotation() != 0);
+}
+
 int Movable::GetReverseState() const { return reverse_; }
+
+int Movable::GetRotationReverseState() const { return rotate_reverse_; }
 
 int Movable::GetIntDirection() const {
   if (directions_[0] == 1) {

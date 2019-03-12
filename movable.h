@@ -7,29 +7,39 @@
 #include "map.h"
 
 enum class Direction { Up = 0, Right = 1, Down = 2, Left = 3 };
-enum class RotateDirection { Right = 1, Left = -1 };
 
 class Movable {
  public:
   Movable(Map* map, int cell_x, int cell_y, Direction direction, int speed);
   virtual ~Movable() = default;
 
+  virtual void StartMovement(int number_of_cells);
   virtual void Move(int milliseconds_passed);
   virtual void TurnReverseOn();
   virtual void TurnReverseOff();
-  virtual void StartMovement(int number_of_cells);
-  virtual void Rotate(RotateDirection direction);
+
+  virtual void StartRotation();
+  virtual void Rotate(int milliseconds_passed);
   virtual void SwitchToNextDirection();
   virtual void SwitchToPrevDirection();
+  virtual void TurnRotationReverseOn();
+  virtual void TurnRotationReverseOff();
+
   virtual void UpdateCoordinates();
   virtual void Draw(QPainter& painter) = 0;
 
   virtual int GetSpeed() const;
+
   virtual int GetTimeToFinishMovement() const;
   virtual int GetCellsToFinishMovement() const;
+  virtual int GetTimeToFinishRotation() const;
+  virtual bool IsMovingOrRotating() const;
+
   virtual int GetReverseState() const;
+  virtual int GetRotationReverseState() const;
   virtual int GetIntDirection() const;
   virtual Direction GetDirection() const;
+
   virtual int GetUpperLeftX() const;
   virtual int GetUpperLeftY() const;
   virtual int GetCellX() const;
@@ -54,6 +64,7 @@ class Movable {
   QVector<int> directions_ = {0, 0, 0, 0};
 
   // миллисекунд на клетку
+  // в том числе на поворот внутри клетки
   int speed_;
 
   // 1: если задний ход включен
@@ -63,6 +74,17 @@ class Movable {
   // для таймера
   int time_to_finish_movement_ = 0;
   int cells_to_finish_movement_ = 0;
+
+  // текущий (временный) угол поворота (обновляется во время поворота)
+  // реальный считается по формуле GetIntDirection * 90
+  int current_rotate_degree_ = 0;
+
+  // для таймера
+  int time_to_finish_rotation_ = 0;
+
+  // 1: если поворот вправо
+  // -1: если поворот влево
+  int rotate_reverse_ = 1;
 };
 
 #endif  // MOVABLE_H
