@@ -37,11 +37,11 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event) {
       break;
     case Qt::Key_A:
       if (tank_.GetTimeToFinishMovement() != 0) return;
-      tank_.SwitchToPrevDirection();
+      tank_.Rotate(RotateDirection::Left);
       break;
     case Qt::Key_D:
       if (tank_.GetTimeToFinishMovement() != 0) return;
-      tank_.SwitchToNextDirection();
+      tank_.Rotate(RotateDirection::Right);
       break;
     case Qt::Key_P:
       auto rocket = new Rocket(&map_, &tank_, 250);

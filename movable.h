@@ -7,6 +7,7 @@
 #include "map.h"
 
 enum class Direction { Up = 0, Right = 1, Down = 2, Left = 3 };
+enum class RotateDirection { Right = 1, Left = -1 };
 
 class Movable {
  public:
@@ -17,6 +18,7 @@ class Movable {
   virtual void TurnReverseOn();
   virtual void TurnReverseOff();
   virtual void StartMovement(int number_of_cells);
+  virtual void Rotate(RotateDirection direction);
   virtual void SwitchToNextDirection();
   virtual void SwitchToPrevDirection();
   virtual void UpdateCoordinates();

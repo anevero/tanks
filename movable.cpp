@@ -22,6 +22,15 @@ void Movable::StartMovement(int number_of_cells) {
   cells_to_finish_movement_ = number_of_cells - 1;
 }
 
+void Movable::Rotate(RotateDirection direction) {
+  // todo
+  if (direction == RotateDirection::Right) {
+    SwitchToNextDirection();
+  } else {
+    SwitchToPrevDirection();
+  }
+}
+
 void Movable::SwitchToNextDirection() {
   int current_direction = GetIntDirection();
   directions_[current_direction] = 0;
