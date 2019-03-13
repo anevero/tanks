@@ -28,8 +28,6 @@ class Map {
   int GetUpperLeftY() const;
   int GetWidth() const;
   int GetHeight() const;
-  int GetTankInitCellX() const;
-  int GetTankInitCellY() const;
 
  private:
   QVector<QVector<CellType>> map_;
@@ -40,9 +38,13 @@ class Map {
   int cur_width_;
   int cur_height_;
 
+ public:
   // координаты исходной для этой карты ячейки пользовательского танка
-  int tank_init_cell_x_;
-  int tank_init_cell_y_;
+  int tank1_init_cell_x_;
+  int tank1_init_cell_y_;
+
+  int tank2_init_cell_x_;
+  int tank2_init_cell_y_;
 };
 
 #endif  // MAP_H

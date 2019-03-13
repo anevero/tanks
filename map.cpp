@@ -26,9 +26,13 @@ Map::Map(int map_number) {
     }
   }
 
-  in >> tank_init_cell_x_ >> tank_init_cell_y_;
-  tank_init_cell_x_--;
-  tank_init_cell_y_--;
+  in >> tank1_init_cell_x_ >> tank1_init_cell_y_;
+  tank1_init_cell_x_--;
+  tank1_init_cell_y_--;
+
+  in >> tank2_init_cell_x_ >> tank2_init_cell_y_;
+  tank2_init_cell_x_--;
+  tank2_init_cell_y_--;
   input_file.close();
 }
 
@@ -62,8 +66,6 @@ int Map::GetUpperLeftX() const { return cur_upper_left_x_; }
 int Map::GetUpperLeftY() const { return cur_upper_left_y_; }
 int Map::GetWidth() const { return cur_width_; }
 int Map::GetHeight() const { return cur_height_; }
-int Map::GetTankInitCellX() const { return tank_init_cell_x_; }
-int Map::GetTankInitCellY() const { return tank_init_cell_y_; }
 
 void Map::UpdateCoordinates(int upper_left_x, int upper_left_y, int width,
                             int height) {

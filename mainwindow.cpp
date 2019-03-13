@@ -4,8 +4,11 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent),
       map_(1),
-      tank_(&map_, 750, 500, Direction::Up),
-      moving_objects_({&tank_}) {
+      tank1_(&map_, (&map_)->tank1_init_cell_x_, (&map_)->tank1_init_cell_y_,
+             750, 500, Direction::Up),
+      tank2_(&map_, (&map_)->tank2_init_cell_x_, (&map_)->tank2_init_cell_y_,
+             750, 500, Direction::Down),
+      moving_objects_({&tank1_, &tank2_}) {
   new_game_button_ = new QPushButton("New game", this);
   swith_map_menu_ = new QComboBox(this);
 
@@ -26,83 +29,81 @@ MainWindow::MainWindow(QWidget *parent)
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *event) {
-    if (event->key() == Qt::Key_Q) {
-        if (tank_.GetTimeSinceLastShot() > tank_.GetRateOfFire() &&
-            !tank_.IsMovingOrRotating()) {
-          tank_.time_since_last_shot_ = 0;
-          auto rocket = new Rocket(&map_, &tank_, 250);
-          moving_objects_.append(rocket);
-          if (rocket->GetIntDirection() == 1 || rocket->GetIntDirection() == 3) {
-            rocket->StartMovement(map_.GetNumberOfCellsHorizontally());
-          } else {
-            rocket->StartMovement(map_.GetNumberOfCellsVertically());
-          }
+  if (event->key() == Qt::Key_Q) {
+    if (tank1_.GetTimeSinceLastShot() > tank1_.GetRateOfFire() &&
+      !tank1_.IsMovingOrRotating()) {
+        tank1_.time_since_last_shot_ = 0;
+        auto rocket = new Rocket(&map_, &tank1_, 250);
+        moving_objects_.append(rocket);
+        if (rocket->GetIntDirection() == 1 || rocket->GetIntDirection() == 3) {
+          rocket->StartMovement(map_.GetNumberOfCellsHorizontally());
+        } else {
+          rocket->StartMovement(map_.GetNumberOfCellsVertically());
         }
     }
-    if (event->key() == Qt::Key_W) {
-      if (tank_.IsMovingOrRotating()) return;
-      tank_.TurnReverseOff();
-      tank_.StartMovement(1);
-    } else if (event->key() == Qt::Key_S) {
-      if (tank_.IsMovingOrRotating()) return;
-      tank_.TurnReverseOn();
-      tank_.StartMovement(1);
-    } else if (event->key() == Qt::Key_A) {
-      if (tank_.IsMovingOrRotating()) return;
-      tank_.TurnRotationReverseOn();
-      tank_.StartRotation();
-    } else if (event->key() == Qt::Key_D) {
-      if (tank_.IsMovingOrRotating()) return;
-      tank_.TurnRotationReverseOff();
-      tank_.StartRotation();
+  }
+  if (event->key() == Qt::Key_W) {
+    if (tank1_.IsMovingOrRotating()) return;
+    tank1_.TurnReverseOff();
+    tank1_.StartMovement(1);
+  } else if (event->key() == Qt::Key_S) {
+    if (tank1_.IsMovingOrRotating()) return;
+    tank1_.TurnReverseOn();
+    tank1_.StartMovement(1);
+  } else if (event->key() == Qt::Key_A) {
+    if (tank1_.IsMovingOrRotating()) return;
+    tank1_.TurnRotationReverseOn();
+    tank1_.StartRotation();
+  } else if (event->key() == Qt::Key_D) {
+    if (tank1_.IsMovingOrRotating()) return;
+    tank1_.TurnRotationReverseOff();
+    tank1_.StartRotation();
+  }
+
+  if (event->key() == Qt::Key_U) {
+    if (tank2_.GetTimeSinceLastShot() > tank2_.GetRateOfFire() &&
+      !tank2_.IsMovingOrRotating()) {
+        tank2_.time_since_last_shot_ = 0;
+        auto rocket = new Rocket(&map_, &tank2_, 250);
+        moving_objects_.append(rocket);
+        if (rocket->GetIntDirection() == 1 || rocket->GetIntDirection() == 3) {
+          rocket->StartMovement(map_.GetNumberOfCellsHorizontally());
+        } else {
+          rocket->StartMovement(map_.GetNumberOfCellsVertically());
+        }
     }
-//    switch (event->key()) {
-//      case Qt::Key_Q:
-//        if (tank_.GetTimeSinceLastShot() > tank_.GetRateOfFire() &&
-//            !tank_.IsMovingOrRotating()) {
-//          tank_.time_since_last_shot_ = 0;
-//          auto rocket = new Rocket(&map_, &tank_, 250);
-//          moving_objects_.append(rocket);
-//          if (rocket->GetIntDirection() == 1 || rocket->GetIntDirection() == 3) {
-//            rocket->StartMovement(map_.GetNumberOfCellsHorizontally());
-//          } else {
-//            rocket->StartMovement(map_.GetNumberOfCellsVertically());
-//          }
-//        }
-//        break;
-//      case Qt::Key_W:
-//        if (tank_.IsMovingOrRotating()) return;
-//        tank_.TurnReverseOff();
-//        tank_.StartMovement(1);
-//        break;
-//      case Qt::Key_S:
-//        if (tank_.IsMovingOrRotating()) return;
-//        tank_.TurnReverseOn();
-//        tank_.StartMovement(1);
-//        break;
-//      case Qt::Key_A:
-//        if (tank_.IsMovingOrRotating()) return;
-//        tank_.TurnRotationReverseOn();
-//        tank_.StartRotation();
-//        break;
-//      case Qt::Key_D:
-//        if (tank_.IsMovingOrRotating()) return;
-//        tank_.TurnRotationReverseOff();
-//        tank_.StartRotation();
-//        break;
-//    }
+  }
+  if (event->key() == Qt::Key_I) {
+    if (tank2_.IsMovingOrRotating()) return;
+    tank2_.TurnReverseOff();
+    tank2_.StartMovement(1);
+  } else if (event->key() == Qt::Key_K) {
+    if (tank2_.IsMovingOrRotating()) return;
+    tank2_.TurnReverseOn();
+    tank2_.StartMovement(1);
+  } else if (event->key() == Qt::Key_J) {
+    if (tank2_.IsMovingOrRotating()) return;
+    tank2_.TurnRotationReverseOn();
+    tank2_.StartRotation();
+  } else if (event->key() == Qt::Key_L) {
+    if (tank2_.IsMovingOrRotating()) return;
+    tank2_.TurnRotationReverseOff();
+    tank2_.StartRotation();
+  }
 
-    // в случае обработки других объектов необходимо делать их append
-    // в moving_objects_, чтобы они двигались
-    // танк игрока изначально в списке движущихся, поэтому для него это
-    // делать не нужно
+  // в случае обработки других объектов необходимо делать их append
+  // в moving_objects_, чтобы они двигались
+  // танк игрока изначально в списке движущихся, поэтому для него это
+  // делать не нужно
 
-    rotation_info_label_->setText(
-        rotation_info_[static_cast<int>(tank_.GetDirection())]);
-    // вообще, вместо SwitchDirection нужно написать отдельный метод Rotate
-    // (наподобие связки StartMovement+Move+UpdateCoordinates) и нормально
-    // реализовать отрисовку и другие вещи, связанные с этим
-    // этим займемся позже
+  rotation_info_label_->setText(
+      rotation_info_[static_cast<int>(tank1_.GetDirection())]);
+  rotation_info_label_->setText(
+      rotation_info_[static_cast<int>(tank2_.GetDirection())]);
+  // вообще, вместо SwitchDirection нужно написать отдельный метод Rotate
+  // (наподобие связки StartMovement+Move+UpdateCoordinates) и нормально
+  // реализовать отрисовку и другие вещи, связанные с этим
+  // этим займемся позже
 }
 
 void MainWindow::keyReleaseEvent(QKeyEvent *event) {
@@ -197,9 +198,13 @@ void MainWindow::RedrawButtons() {
 // функция вызывается при смене карты
 void MainWindow::RedrawContent() {
   map_ = Map(swith_map_menu_->currentIndex() + 1);
-  tank_ = Tank(&map_, 750, 500, Direction::Up);
+  tank1_ = Tank(&map_, map_.tank1_init_cell_x_, map_.tank1_init_cell_y_,
+                750, 500, Direction::Up);
+  tank2_ = Tank(&map_, map_.tank2_init_cell_x_, map_.tank2_init_cell_y_,
+                750, 500, Direction::Up);
   moving_objects_.clear();
-  moving_objects_.append(&tank_);
+  moving_objects_.append(&tank1_);
+  moving_objects_.append(&tank2_);
   rotation_info_label_->setText("Up");
   repaint();
 }

@@ -1,7 +1,8 @@
 #include "tank.h"
 
-Tank::Tank(Map* map, int speed, int rate_of_fire, Direction direction)
-    : Movable(map, map->GetTankInitCellX(), map->GetTankInitCellY(), direction,
+Tank::Tank(Map* map, int InitCellX, int InitCellY,
+           int speed, int rate_of_fire, Direction direction)
+    : Movable(map, InitCellX, InitCellY, direction,
               speed),
       rate_of_fire_(rate_of_fire) {}
 

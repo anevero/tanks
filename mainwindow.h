@@ -43,9 +43,9 @@ class MainWindow : public QMainWindow {
   QPushButton *new_game_button_;
   QComboBox *swith_map_menu_;
   Map map_;
-  Tank tank_;
+  Tank tank1_;
+  Tank tank2_;
   QList<Movable *> moving_objects_;
-  QVector<bool> keys = {0, 0, 0, 0, 0, 0, 0, 0};
 
   int timer_duration_ = 10;
 

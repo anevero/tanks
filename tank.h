@@ -9,7 +9,8 @@ class Tank : public Movable {
   friend class MainWindow;
 
  public:
-  Tank(Map* map, int speed, int rate_of_fire, Direction direction);
+  Tank(Map* map, int InitCellX, int InitCellY,
+       int speed, int rate_of_fire, Direction direction);
   void Draw(QPainter& painter) override;
 
   int GetRateOfFire() const;
