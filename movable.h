@@ -75,9 +75,8 @@ class Movable {
   int time_to_finish_movement_ = 0;
   int cells_to_finish_movement_ = 0;
 
-  // текущий (временный) угол поворота (обновляется во время поворота)
-  // реальный считается по формуле GetIntDirection * 90
-  int current_rotate_degree_ = 0;
+  // текущий угол поворота (обновляется во время поворота)
+  int current_rotate_degree_;
 
   // для таймера
   int time_to_finish_rotation_ = 0;

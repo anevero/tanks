@@ -4,13 +4,12 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent),
       map_(1),
-      tank_(&map_, 750, 500),
+      tank_(&map_, 750, 500, Direction::Up),
       moving_objects_({&tank_}) {
   new_game_button_ = new QPushButton("New game", this);
   swith_map_menu_ = new QComboBox(this);
 
   rotation_info_label_ = new QLabel(this);
-  rotation_info_label_->setText("Up");
 
   int map_number = 1;
   QFileInfo map_file(":/maps/map" + QString::number(map_number) + ".txt");
@@ -164,7 +163,7 @@ void MainWindow::RedrawButtons() {
 // функция вызывается при смене карты
 void MainWindow::RedrawContent() {
   map_ = Map(swith_map_menu_->currentIndex() + 1);
-  tank_ = Tank(&map_, 750, 500);
+  tank_ = Tank(&map_, 750, 500, Direction::Up);
   moving_objects_.clear();
   moving_objects_.append(&tank_);
   rotation_info_label_->setText("Up");

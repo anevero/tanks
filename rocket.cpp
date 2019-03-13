@@ -6,8 +6,13 @@ Rocket::Rocket(Map* map, Movable* movable, int speed)
 
 void Rocket::Draw(QPainter& painter) {
   painter.setBrush(Qt::blue);
-  painter.drawEllipse(cur_upper_left_x_, cur_upper_left_y_, cur_width_,
-                      cur_height_);
+  painter.save();
+  painter.translate(cur_upper_left_x_ + cur_width_ / 2,
+                    cur_upper_left_y_ + cur_height_ / 2);
+  painter.rotate(current_rotate_degree_);
+  painter.drawEllipse(-cur_width_ / 8, -cur_height_ / 2, cur_width_ / 4,
+                      cur_height_ / 3);
+  painter.restore();
 }
 
 void Rocket::Explosion() {

@@ -9,7 +9,7 @@ class Tank : public Movable {
   friend class MainWindow;
 
  public:
-  Tank(Map* map, int speed, int rate_of_fire);
+  Tank(Map* map, int speed, int rate_of_fire, Direction direction);
   void Draw(QPainter& painter) override;
 
   int GetRateOfFire() const;
@@ -17,8 +17,7 @@ class Tank : public Movable {
   void SetTimeSinceLastShot(int delta);
 
  protected:
-  // это скорострельность, потому что такой перевод
-  // зато новое слово выучим :)
+  // скорострельность
   int rate_of_fire_;
   int time_since_last_shot_ = 10000;
 };

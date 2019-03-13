@@ -4,7 +4,11 @@
 
 Movable::Movable(Map* map, int cell_x, int cell_y, Direction direction,
                  int speed)
-    : cell_x_(cell_x), cell_y_(cell_y), map_(map), speed_(speed) {
+    : cell_x_(cell_x),
+      cell_y_(cell_y),
+      map_(map),
+      speed_(speed),
+      current_rotate_degree_(90 * static_cast<int>(direction)) {
   directions_[static_cast<int>(direction)] = 1;
 }
 
