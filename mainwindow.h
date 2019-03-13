@@ -13,6 +13,7 @@
 #include <QPushButton>
 #include <QString>
 #include <QTimer>
+#include <QVector>
 #include "map.h"
 #include "tank.h"
 #include "rocket.h"
@@ -28,6 +29,7 @@ class MainWindow : public QMainWindow {
 
  private:
   void keyReleaseEvent(QKeyEvent *) override;
+  void keyPressEvent(QKeyEvent *) override;
   void paintEvent(QPaintEvent *) override;
   void resizeEvent(QResizeEvent *) override;
   void timerEvent(QTimerEvent *) override;
@@ -43,6 +45,7 @@ class MainWindow : public QMainWindow {
   Map map_;
   Tank tank_;
   QList<Movable *> moving_objects_;
+  QVector<bool> keys = {0, 0, 0, 0, 0, 0, 0, 0};
 
   int timer_duration_ = 10;
 
