@@ -3,9 +3,9 @@
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent),
-      map_(1),
-      tank_(&map_, 750, 500, Direction::Up),
-      moving_objects_({&tank_}) {
+      map_(new Map(1)),
+      static_objects_(
+          {std::shared_ptr<Movable>(new Tank(map_, 750, 500, Direction::Up))}) {
   new_game_button_ = new QPushButton("New game", this);
   swith_map_menu_ = new QComboBox(this);
 
@@ -26,68 +26,73 @@ MainWindow::MainWindow(QWidget *parent)
 }
 
 void MainWindow::keyReleaseEvent(QKeyEvent *event) {
+  auto player_tank_ = std::dynamic_pointer_cast<Tank>(static_objects_[0]);
+  if (player_tank_->IsMovingOrRotating()) return;
+  // предудущая строчка допустима, ибо мы пока обрабатываем только
+  // один пользовательский танк
+  // если какие-то клавиши должны будут работать не для него,
+  // строчку надо будет продублировать в каждой из секций W, A, S, D, Q
+
   switch (event->key()) {
     case Qt::Key_W:
-      if (tank_.IsMovingOrRotating()) return;
-      tank_.TurnReverseOff();
-      tank_.StartMovement(1);
+      player_tank_->TurnReverseOff();
+      moving_objects_.append(player_tank_);
+      player_tank_->StartMovement(1);
       break;
     case Qt::Key_S:
-      if (tank_.IsMovingOrRotating()) return;
-      tank_.TurnReverseOn();
-      tank_.StartMovement(1);
+      player_tank_->TurnReverseOn();
+      moving_objects_.append(player_tank_);
+      player_tank_->StartMovement(1);
       break;
     case Qt::Key_A:
-      if (tank_.IsMovingOrRotating()) return;
-      tank_.TurnRotationReverseOn();
-      tank_.StartRotation();
+      player_tank_->TurnRotationReverseOn();
+      moving_objects_.append(player_tank_);
+      player_tank_->StartRotation();
       break;
     case Qt::Key_D:
-      if (tank_.IsMovingOrRotating()) return;
-      tank_.TurnRotationReverseOff();
-      tank_.StartRotation();
+      player_tank_->TurnRotationReverseOff();
+      moving_objects_.append(player_tank_);
+      player_tank_->StartRotation();
       break;
     case Qt::Key_Q:
-      if (tank_.GetTimeSinceLastShot() > tank_.GetRateOfFire() &&
-          !tank_.IsMovingOrRotating()) {
-        tank_.time_since_last_shot_ = 0;
-        auto rocket = new Rocket(&map_, &tank_, 250);
+      if (player_tank_->GetTimeSinceLastShot() >
+          player_tank_->GetRateOfFire()) {
+        player_tank_->time_since_last_shot_ = 0;
+        std::shared_ptr<Rocket> rocket(
+            new Rocket(map_, static_objects_[0], 250));
         moving_objects_.append(rocket);
         if (rocket->GetIntDirection() == 1 || rocket->GetIntDirection() == 3) {
-          rocket->StartMovement(map_.GetNumberOfCellsHorizontally());
+          rocket->StartMovement(map_->GetNumberOfCellsHorizontally());
         } else {
-          rocket->StartMovement(map_.GetNumberOfCellsVertically());
+          rocket->StartMovement(map_->GetNumberOfCellsVertically());
         }
       }
       break;
   }
 
-  // в случае обработки других объектов необходимо делать их append
-  // в moving_objects_, чтобы они двигались
-  // танк игрока изначально в списке движущихся, поэтому для него это
-  // делать не нужно
-
   rotation_info_label_->setText(
-      rotation_info_[static_cast<int>(tank_.GetDirection())]);
-  // вообще, вместо SwitchDirection нужно написать отдельный метод Rotate
-  // (наподобие связки StartMovement+Move+UpdateCoordinates) и нормально
-  // реализовать отрисовку и другие вещи, связанные с этим
-  // этим займемся позже
+      rotation_info_[static_cast<int>(player_tank_->GetDirection())]);
 }
 
 void MainWindow::paintEvent(QPaintEvent *) {
   // координаты правой верхней точки карты, ее длина и высота
-  map_.UpdateCoordinates(w_indent_ + static_cast<int>(0.28 * sq_width_),
-                         h_indent_ + static_cast<int>(0.05 * sq_height_),
-                         static_cast<int>(0.68 * sq_width_),
-                         static_cast<int>(0.9 * sq_height_));
+  map_->UpdateCoordinates(w_indent_ + static_cast<int>(0.28 * sq_width_),
+                          h_indent_ + static_cast<int>(0.05 * sq_height_),
+                          static_cast<int>(0.68 * sq_width_),
+                          static_cast<int>(0.9 * sq_height_));
+  for (const auto &object : static_objects_) {
+    object->UpdateCoordinates();
+  }
   for (const auto &object : moving_objects_) {
     object->UpdateCoordinates();
   }
 
   QPainter p;
   p.begin(this);
-  map_.DrawMap(p);
+  map_->DrawMap(p);
+  for (const auto &object : static_objects_) {
+    object->Draw(p);
+  }
   for (const auto &object : moving_objects_) {
     object->Draw(p);
   }
@@ -100,37 +105,25 @@ void MainWindow::resizeEvent(QResizeEvent *) {
 }
 
 void MainWindow::timerEvent(QTimerEvent *) {
-  // цикл проходится по списку moving_objects_
-  // - объекты, которые уже прошли в нужную клетку, удаляются
-  // - для объектов, которые пришли в нужную клетку, но должны идти дальше,
-  // вызывается startmovement
-  // - для всех объектов в moving_objects_ вызывается Move
-
   for (auto it = moving_objects_.begin(); it != moving_objects_.end(); ++it) {
     if ((*it)->GetTimeToFinishMovement() == 0 &&
         (*it)->GetCellsToFinishMovement() != 0) {
       (*it)->StartMovement((*it)->GetCellsToFinishMovement());
     }
-    if ((*it)->GetTimeToFinishMovement() == 0 &&
-        dynamic_cast<Tank *>(*it) == nullptr) {
-      delete *it;
-      moving_objects_.erase(it);
-      it--;
-      continue;
-    } else if ((*it)->GetTimeToFinishMovement() != 0) {
+    if ((*it)->GetTimeToFinishMovement() != 0) {
       (*it)->Move(timer_duration_);
-    }
-
-    if (dynamic_cast<Tank *>(*it) != nullptr) {
-      (dynamic_cast<Tank *>(*it))->SetTimeSinceLastShot(GetTimerDuration());
-    }
-  }
-
-  for (auto it = moving_objects_.begin(); it != moving_objects_.end(); ++it) {
-    if ((*it)->GetTimeToFinishRotation() != 0) {
+    } else if ((*it)->GetTimeToFinishRotation() != 0) {
       (*it)->Rotate(timer_duration_);
     }
+
+    if (!(*it)->IsMovingOrRotating()) {
+      it++;
+      moving_objects_.erase(std::prev(it));
+      it--;
+    }
   }
+  std::dynamic_pointer_cast<Tank>(static_objects_[0])
+      ->IncreaseTimeSinceLastShot(GetTimerDuration());
 
   repaint();
 }
@@ -156,17 +149,15 @@ void MainWindow::RedrawButtons() {
       w_indent_ + static_cast<int>(0.04 * sq_width_),
       h_indent_ + static_cast<int>(0.25 * sq_height_),
       static_cast<int>(0.2 * sq_width_), static_cast<int>(0.05 * sq_height_));
-  // карта перерисуется автоматически, так как resizeEvent автоматически
-  // вызывает paintEvent
 }
 
-// функция вызывается при смене карты
 void MainWindow::RedrawContent() {
-  map_ = Map(swith_map_menu_->currentIndex() + 1);
-  tank_ = Tank(&map_, 750, 500, Direction::Up);
+  map_.reset(new Map(swith_map_menu_->currentIndex() + 1));
+  static_objects_.clear();
   moving_objects_.clear();
-  moving_objects_.append(&tank_);
-  rotation_info_label_->setText("Up");
+  static_objects_.append(
+      std::shared_ptr<Tank>(new Tank(map_, 750, 500, Direction::Up)));
+  rotation_info_label_->setText("No data");
   repaint();
 }
 

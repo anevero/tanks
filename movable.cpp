@@ -2,8 +2,8 @@
 #include "rocket.h"
 #include "tank.h"
 
-Movable::Movable(Map* map, int cell_x, int cell_y, Direction direction,
-                 int speed)
+Movable::Movable(std::shared_ptr<Map> map, int cell_x, int cell_y,
+                 Direction direction, int speed)
     : cell_x_(cell_x),
       cell_y_(cell_y),
       map_(map),
@@ -110,7 +110,8 @@ int Movable::GetTimeToFinishRotation() const {
 }
 
 bool Movable::IsMovingOrRotating() const {
-  return (GetTimeToFinishMovement() != 0 || GetTimeToFinishRotation() != 0);
+  return (GetTimeToFinishMovement() != 0 || GetTimeToFinishRotation() != 0 ||
+          GetCellsToFinishMovement() != 0);
 }
 
 int Movable::GetReverseState() const { return reverse_; }
