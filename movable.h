@@ -20,8 +20,6 @@ class Movable {
 
   virtual void StartRotation();
   virtual void Rotate(int milliseconds_passed);
-  virtual void SwitchToNextDirection();
-  virtual void SwitchToPrevDirection();
   virtual void TurnRotationReverseOn();
   virtual void TurnRotationReverseOff();
 
@@ -46,43 +44,26 @@ class Movable {
   virtual int GetCellY() const;
 
  protected:
-  // координаты ячейки объекта
+  virtual void SwitchToNextDirection();
+  virtual void SwitchToPrevDirection();
+
   int cell_x_;
   int cell_y_;
 
-  // координаты объекта в окне
   int cur_upper_left_x_;
   int cur_upper_left_y_;
   int cur_width_;
   int cur_height_;
 
-  // указатель на карту, к которой привязан объект
   Map* map_;
-
- protected:
-  // направления движения
   QVector<int> directions_ = {0, 0, 0, 0};
 
-  // миллисекунд на клетку
-  // в том числе на поворот внутри клетки
   int speed_;
-
-  // 1: если задний ход включен
-  // -1: если задний ход выключен
   int reverse_ = 1;
-
-  // для таймера
   int time_to_finish_movement_ = 0;
   int cells_to_finish_movement_ = 0;
-
-  // текущий угол поворота (обновляется во время поворота)
   int current_rotate_degree_;
-
-  // для таймера
   int time_to_finish_rotation_ = 0;
-
-  // 1: если поворот вправо
-  // -1: если поворот влево
   int rotate_reverse_ = 1;
 };
 

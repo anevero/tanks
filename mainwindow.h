@@ -14,8 +14,8 @@
 #include <QString>
 #include <QTimer>
 #include "map.h"
-#include "tank.h"
 #include "rocket.h"
+#include "tank.h"
 
 class MainWindow : public QMainWindow {
   Q_OBJECT
@@ -46,8 +46,6 @@ class MainWindow : public QMainWindow {
 
   int timer_duration_ = 10;
 
-  // размеры и отступы прямоугольника 4*3 внутри окна, в котором
-  // отрисовываются все элементы (для того, чтобы клетки были квадратными)
   int sq_width_;
   int sq_height_;
   int w_indent_;
