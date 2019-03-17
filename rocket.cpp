@@ -18,5 +18,6 @@ void Rocket::Draw(QPainter& painter) {
 
 void Rocket::Explosion() {
   time_to_finish_movement_ = 0;
+  time_to_finish_rotation_ = 0;
   cells_to_finish_movement_ = 0;
 }
