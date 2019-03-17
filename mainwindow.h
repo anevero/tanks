@@ -13,6 +13,7 @@
 #include <QPushButton>
 #include <QString>
 #include <QTimer>
+#include <memory>
 #include "map.h"
 #include "rocket.h"
 #include "tank.h"
@@ -40,9 +41,9 @@ class MainWindow : public QMainWindow {
  private:
   QPushButton *new_game_button_;
   QComboBox *swith_map_menu_;
-  Map map_;
-  Tank tank_;
-  QList<Movable *> moving_objects_;
+  std::shared_ptr<Map> map_;
+  QList<std::shared_ptr<Movable>> static_objects_;
+  QList<std::shared_ptr<Movable>> moving_objects_;
 
   int timer_duration_ = 10;
 

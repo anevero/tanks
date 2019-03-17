@@ -1,6 +1,7 @@
 #include "tank.h"
 
-Tank::Tank(Map* map, int speed, int rate_of_fire, Direction direction)
+Tank::Tank(std::shared_ptr<Map> map, int speed, int rate_of_fire,
+           Direction direction)
     : Movable(map, map->GetTankInitCellX(), map->GetTankInitCellY(), direction,
               speed),
       rate_of_fire_(rate_of_fire) {}
@@ -19,4 +20,7 @@ void Tank::Draw(QPainter& painter) {
 int Tank::GetRateOfFire() const { return rate_of_fire_; }
 int Tank::GetTimeSinceLastShot() const { return time_since_last_shot_; }
 
-void Tank::SetTimeSinceLastShot(int delta) { time_since_last_shot_ += delta; }
+void Tank::IncreaseTimeSinceLastShot(int delta) {
+  time_since_last_shot_ += delta;
+  time_since_last_shot_ %= (2 * rate_of_fire_);
+}
