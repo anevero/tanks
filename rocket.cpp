@@ -1,9 +1,9 @@
 #include "rocket.h"
 
-Rocket::Rocket(std::shared_ptr<Map>& map, std::shared_ptr<Movable>& movable,
+Rocket::Rocket(std::shared_ptr<Map>& map, std::shared_ptr<Tank>& tank,
                int speed)
-    : Movable(map, movable->GetCellX(), movable->GetCellY(),
-              movable->GetDirection(), speed) {}
+    : Movable(map, tank->GetCellX(), tank->GetCellY(), tank->GetDirection(),
+              speed) {}
 
 void Rocket::Draw(QPainter& painter) {
   painter.setBrush(Qt::blue);

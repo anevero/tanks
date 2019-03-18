@@ -153,7 +153,7 @@ void MainWindow::RedrawContent() {
   repaint();
 }
 
-void MainWindow::ShootRocket(std::shared_ptr<Movable> &tank) {
+void MainWindow::ShootRocket(std::shared_ptr<Tank> &tank) {
   std::shared_ptr<Rocket> rocket(new Rocket(map_, tank, 250));
   moving_objects_.append(rocket);
   if (rocket->GetIntDirection() == 1 || rocket->GetIntDirection() == 3) {

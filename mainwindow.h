@@ -38,7 +38,7 @@ class MainWindow : public QMainWindow {
   void RedrawContent();
 
  private:
-  void ShootRocket(std::shared_ptr<Movable> &object);
+  void ShootRocket(std::shared_ptr<Tank> &object);
   int GetTimerDuration() const;
 
  private:
