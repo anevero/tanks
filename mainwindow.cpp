@@ -55,8 +55,7 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event) {
       player_tank_->StartRotation();
       break;
     case Qt::Key_Q:
-      if (player_tank_->GetTimeSinceLastShot() >
-          player_tank_->GetRateOfFire()) {
+      if (player_tank_->IsAbleToShoot()) {
         player_tank_->time_since_last_shot_ = 0;
         std::shared_ptr<Rocket> rocket(
             new Rocket(map_, static_objects_[0], 250));
@@ -105,23 +104,27 @@ void MainWindow::resizeEvent(QResizeEvent *) {
 }
 
 void MainWindow::timerEvent(QTimerEvent *) {
-  for (auto it = moving_objects_.begin(); it != moving_objects_.end(); ++it) {
-    if ((*it)->GetTimeToFinishMovement() == 0 &&
-        (*it)->GetCellsToFinishMovement() != 0) {
-      (*it)->StartMovement((*it)->GetCellsToFinishMovement());
-    }
-    if ((*it)->GetTimeToFinishMovement() != 0) {
-      (*it)->Move(timer_duration_);
-    } else if ((*it)->GetTimeToFinishRotation() != 0) {
-      (*it)->Rotate(timer_duration_);
-    }
-
-    if (!(*it)->IsMovingOrRotating()) {
-      it++;
-      moving_objects_.erase(std::prev(it));
-      it--;
+  for (const auto &object : moving_objects_) {
+    if (object->GetTimeToFinishMovement() != 0) {
+      object->Move(timer_duration_);
+    } else if (object->GetTimeToFinishRotation() != 0) {
+      object->Rotate(timer_duration_);
     }
   }
+
+  auto it = moving_objects_.begin();
+  while (it != moving_objects_.end()) {
+    if ((*it)->GetTimeToFinishMovement() == 0 &&
+        (*it)->GetCellsToFinishMovement() != 0) {
+      (*it)->StartMovement(((*it)->GetCellsToFinishMovement()) - 1);
+    }
+    if (!(*it)->IsMovingOrRotating()) {
+      it = moving_objects_.erase(it);
+      continue;
+    }
+    it++;
+  }
+
   std::dynamic_pointer_cast<Tank>(static_objects_[0])
       ->IncreaseTimeSinceLastShot(GetTimerDuration());
 

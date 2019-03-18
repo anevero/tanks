@@ -15,11 +15,12 @@ class Tank : public Movable {
 
   int GetRateOfFire() const;
   int GetTimeSinceLastShot() const;
+  bool IsAbleToShoot() const;
   void IncreaseTimeSinceLastShot(int delta);
 
  protected:
   int rate_of_fire_;
-  int time_since_last_shot_;
+  int time_since_last_shot_ = 0;
 };
 
 #endif  // TANK_H
