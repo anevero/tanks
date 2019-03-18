@@ -2,7 +2,7 @@
 #include "rocket.h"
 #include "tank.h"
 
-Movable::Movable(std::shared_ptr<Map> map, int cell_x, int cell_y,
+Movable::Movable(std::shared_ptr<Map>& map, int cell_x, int cell_y,
                  Direction direction, int speed)
     : cell_x_(cell_x),
       cell_y_(cell_y),

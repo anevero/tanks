@@ -1,6 +1,6 @@
 #include "tank.h"
 
-Tank::Tank(std::shared_ptr<Map> map, int speed, int rate_of_fire,
+Tank::Tank(std::shared_ptr<Map>& map, int speed, int rate_of_fire,
            Direction direction)
     : Movable(map, map->GetTankInitCellX(), map->GetTankInitCellY(), direction,
               speed),

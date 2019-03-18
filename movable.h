@@ -11,8 +11,8 @@ enum class Direction { Up = 0, Right = 1, Down = 2, Left = 3 };
 
 class Movable {
  public:
-  Movable(std::shared_ptr<Map> map, int cell_x, int cell_y, Direction direction,
-          int speed);
+  Movable(std::shared_ptr<Map>& map, int cell_x, int cell_y,
+          Direction direction, int speed);
   virtual ~Movable() = default;
 
   virtual void StartMovement(int number_of_cells);
@@ -52,10 +52,10 @@ class Movable {
   int cell_x_;
   int cell_y_;
 
-  int cur_upper_left_x_;
-  int cur_upper_left_y_;
-  int cur_width_;
-  int cur_height_;
+  int cur_upper_left_x_{};
+  int cur_upper_left_y_{};
+  int cur_width_{};
+  int cur_height_{};
 
   std::shared_ptr<Map> map_;
   QVector<int> directions_ = {0, 0, 0, 0};

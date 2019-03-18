@@ -1,6 +1,6 @@
 #include "rocket.h"
 
-Rocket::Rocket(std::shared_ptr<Map> map, std::shared_ptr<Movable> movable,
+Rocket::Rocket(std::shared_ptr<Map>& map, std::shared_ptr<Movable>& movable,
                int speed)
     : Movable(map, movable->GetCellX(), movable->GetCellY(),
               movable->GetDirection(), speed) {}

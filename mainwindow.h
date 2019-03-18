@@ -13,6 +13,7 @@
 #include <QPushButton>
 #include <QString>
 #include <QTimer>
+#include <algorithm>
 #include <memory>
 #include "map.h"
 #include "rocket.h"
