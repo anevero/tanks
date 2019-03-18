@@ -7,17 +7,14 @@
 #include "movable.h"
 
 class Tank : public Movable {
-  friend class MainWindow;
-
  public:
   Tank(std::shared_ptr<Map>& map, int speed, int rate_of_fire,
        Direction direction);
   void Draw(QPainter& painter) override;
 
-  int GetRateOfFire() const;
-  int GetTimeSinceLastShot() const;
   bool IsAbleToShoot() const;
   void IncreaseTimeSinceLastShot(int delta);
+  void SetZeroTimeFromLastShot();
 
  protected:
   int rate_of_fire_;

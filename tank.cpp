@@ -17,11 +17,8 @@ void Tank::Draw(QPainter& painter) {
   painter.restore();
 }
 
-int Tank::GetRateOfFire() const { return rate_of_fire_; }
-int Tank::GetTimeSinceLastShot() const { return time_since_last_shot_; }
-
 bool Tank::IsAbleToShoot() const {
-  return GetTimeSinceLastShot() >= GetRateOfFire();
+  return time_since_last_shot_ >= rate_of_fire_;
 }
 
 void Tank::IncreaseTimeSinceLastShot(int delta) {
@@ -29,3 +26,5 @@ void Tank::IncreaseTimeSinceLastShot(int delta) {
     time_since_last_shot_ += delta;
   }
 }
+
+void Tank::SetZeroTimeFromLastShot() { time_since_last_shot_ = 0; }

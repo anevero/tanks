@@ -53,7 +53,7 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event) {
       break;
     case Qt::Key_Q:
       if (tank->IsAbleToShoot()) {
-        tank->time_since_last_shot_ = 0;
+        tank->SetZeroTimeFromLastShot();
         ShootRocket(tank);
       }
       break;
