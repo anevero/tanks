@@ -9,9 +9,13 @@ before_install:
   - sudo apt-get update
 
 install:
-  - sudo apt-get install qt58base qt58svg qt58charts-no-lgpl qt58xmlpatterns
+  - sudo apt-get install qt58base qt58svg qt58charts-no-lgpl qt58xmlpatterns cppcheck
   - source /opt/qt58/bin/qt58-env.sh
   - /opt/qt58/bin/qmake PREFIX=/usr
 
 script:
   - make
+  - cppcheck --enable=unusedFunction ./ 2> cppcheck_unused_f.txt
+  - cppcheck --enable=warning,performance,style --error-exitcode=1 ./ 2> cppcheck.txt 
+  - cat cppcheck_unused_f.txt
+  - cat cppcheck.txt
