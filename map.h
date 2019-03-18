@@ -34,13 +34,11 @@ class Map {
  private:
   QVector<QVector<CellType>> map_;
 
-  // координаты карты в окне
   int cur_upper_left_x_{};
   int cur_upper_left_y_{};
   int cur_width_{};
   int cur_height_{};
 
-  // координаты исходной для этой карты ячейки пользовательского танка
   int tank_init_cell_x_;
   int tank_init_cell_y_;
 };

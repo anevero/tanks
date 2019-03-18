@@ -26,8 +26,6 @@ class MainWindow : public QMainWindow {
   explicit MainWindow(QWidget *parent = nullptr);
   ~MainWindow() override = default;
 
-  int GetTimerDuration() const;
-
  private:
   void keyReleaseEvent(QKeyEvent *) override;
   void paintEvent(QPaintEvent *) override;
@@ -38,6 +36,10 @@ class MainWindow : public QMainWindow {
   void UpdateIndents();
   void RedrawButtons();
   void RedrawContent();
+
+ private:
+  void ShootRocket(std::shared_ptr<Movable> &object);
+  int GetTimerDuration() const;
 
  private:
   QPushButton *new_game_button_;
@@ -53,7 +55,6 @@ class MainWindow : public QMainWindow {
   int w_indent_;
   int h_indent_;
 
-  // временная штука для вывода направления движения
   QLabel *rotation_info_label_;
   QVector<QString> rotation_info_ = {"Up", "Right", "Down", "Left"};
 };

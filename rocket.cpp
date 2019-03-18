@@ -15,9 +15,3 @@ void Rocket::Draw(QPainter& painter) {
                       cur_height_ / 3);
   painter.restore();
 }
-
-void Rocket::Explosion() {
-  time_to_finish_movement_ = 0;
-  time_to_finish_rotation_ = 0;
-  cells_to_finish_movement_ = 0;
-}
