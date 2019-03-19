@@ -11,7 +11,7 @@ enum class CellType {
   Wall,
   Grass,
   Water,
-  Earth
+  Ground
   // to be continued
 };
 

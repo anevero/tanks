@@ -23,7 +23,7 @@ Map::Map(int map_number) {
           map_[j].push_back(CellType::Wall);
           break;
         case ('E'):
-          map_[j].push_back(CellType::Earth);
+          map_[j].push_back(CellType::Ground);
           break;
         case ('Q'):
           map_[j].push_back(CellType::Water);
@@ -51,7 +51,7 @@ void Map::DrawMap(QPainter &painter) {
         case CellType::Grass:
           painter.setBrush(Qt::green);
           break;
-        case CellType::Earth:
+        case CellType::Ground:
           painter.setBrush(Qt::gray);
           break;
         case CellType::Water:
