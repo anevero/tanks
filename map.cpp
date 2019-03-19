@@ -1,4 +1,4 @@
-#include "map.h"
+﻿#include "map.h"
 
 Map::Map(int map_number) {
   QFile input_file(":/maps/map" + QString::number(map_number) + ".txt");
@@ -22,6 +22,12 @@ Map::Map(int map_number) {
         case ('W'):
           map_[j].push_back(CellType::Wall);
           break;
+        case ('E'):
+          map_[j].push_back(CellType::Earth);
+          break;
+        case ('Q'):
+          map_[j].push_back(CellType::Water);
+          break;
       }
     }
   }
@@ -44,6 +50,12 @@ void Map::DrawMap(QPainter &painter) {
           break;
         case CellType::Grass:
           painter.setBrush(Qt::green);
+          break;
+        case CellType::Earth:
+          painter.setBrush(Qt::gray);
+          break;
+        case CellType::Water:
+          painter.setBrush(Qt::blue);
           break;
       }
       painter.drawRect(cur_upper_left_x_ + i * cell_width,

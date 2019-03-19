@@ -1,4 +1,4 @@
-#ifndef MAP_H
+﻿#ifndef MAP_H
 #define MAP_H
 
 #include <QFile>
@@ -9,7 +9,9 @@
 
 enum class CellType {
   Wall,
-  Grass
+  Grass,
+  Water,
+  Earth
   // to be continued
 };
 
