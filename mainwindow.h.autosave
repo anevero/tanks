@@ -25,7 +25,7 @@ class MainWindow : public QMainWindow {
  public:
   explicit MainWindow(QWidget *parent = nullptr);
   ~MainWindow() override = default;
-
+ 
  private:
   void keyReleaseEvent(QKeyEvent *) override;
   void paintEvent(QPaintEvent *) override;
@@ -36,11 +36,11 @@ class MainWindow : public QMainWindow {
   void UpdateIndents();
   void RedrawButtons();
   void RedrawContent();
-  //  void GameOver();
 
  private:
   void ShootRocket(std::shared_ptr<Tank> &object);
   int GetTimerDuration() const;
+  void GameOver();
 
  private:
   QPushButton *new_game_button_;

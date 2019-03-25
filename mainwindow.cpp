@@ -1,4 +1,4 @@
-#include "mainwindow.h"
+﻿#include "mainwindow.h"
 #include <memory>
 
 MainWindow::MainWindow(QWidget *parent)
@@ -164,3 +164,7 @@ void MainWindow::ShootRocket(std::shared_ptr<Tank> &tank) {
 }
 
 int MainWindow::GetTimerDuration() const { return timer_duration_; }
+
+// void MainWindow::GameOver() {
+
+//}

@@ -1,6 +1,8 @@
 ﻿#ifndef TANK_H
 #define TANK_H
 
+#include <QApplication>
+#include <QMessageBox>
 #include <QPainter>
 #include <memory>
 #include "map.h"
@@ -22,7 +24,7 @@ class Tank : public Movable {
  protected:
   int rate_of_fire_;
   int time_since_last_shot_{};
-  int health_ = 100;
+  int health_ = 20;
 };
 
 #endif  // TANK_H
