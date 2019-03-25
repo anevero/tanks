@@ -33,6 +33,7 @@ void Tank::DrawHealth(QPainter& painter) {
   painter.drawRect(-cur_width_ / 2 + health_ * cur_width_ / 100,
                    5 * cur_height_ / 8, (100 - health_) * cur_width_ / 100,
                    cur_height_ / 8);
+  painter.restore();
 }
 
 bool Tank::IsAbleToShoot() const {
