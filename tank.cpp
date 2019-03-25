@@ -14,25 +14,25 @@ void Tank::Draw(QPainter& painter) {
   painter.rotate(current_rotate_degree_);
   painter.drawRect(-cur_width_ / 4, -cur_height_ / 2, cur_width_ / 2,
                    cur_height_);
-  DrawHealth(painter);
   painter.restore();
+  DrawHealth(painter);
 }
 
 void Tank::DrawHealth(QPainter& painter) {
+  painter.save();
+  painter.translate(cur_upper_left_x_ + cur_width_ / 2,
+                    cur_upper_left_y_ + cur_height_ / 2);
   if (health_ > 30) {
     painter.setBrush(Qt::blue);
   } else {
     painter.setBrush(Qt::red);
   }
-  painter.save();
   painter.drawRect(-cur_width_ / 2, 5 * cur_height_ / 8,
                    health_ * cur_width_ / 100, cur_height_ / 8);
   painter.setBrush(Qt::white);
-  painter.save();
   painter.drawRect(-cur_width_ / 2 + health_ * cur_width_ / 100,
                    5 * cur_height_ / 8, (100 - health_) * cur_width_ / 100,
                    cur_height_ / 8);
-  painter.restore();
 }
 
 bool Tank::IsAbleToShoot() const {
