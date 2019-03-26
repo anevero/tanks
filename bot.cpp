@@ -18,7 +18,7 @@ void Bot::Draw(QPainter& painter) {
   painter.restore();
 }
 
-bool Bot::IsNeedToTurn() const {
+bool Bot::DoesNeedToTurn() const {
   if (time_to_finish_rotation_ > 0) {
     return true;
   } else {
@@ -26,7 +26,7 @@ bool Bot::IsNeedToTurn() const {
   }
 }
 
-bool Bot::IsNeedToStartRotation() const {
+bool Bot::DoesNeedToStartRotation() const {
   if (time_to_finish_rotation_ <= 0) {
     return true;
   } else {
@@ -34,7 +34,7 @@ bool Bot::IsNeedToStartRotation() const {
   }
 }
 
-bool Bot::IsNeedToShoot(std::shared_ptr<Map> map, std::shared_ptr<Tank> tank) const {
+bool Bot::DoesNeedToShoot(std::shared_ptr<Map> map, std::shared_ptr<Tank> tank) const {
   if (time_to_finish_rotation_ <= 0) {
     if (GetIntDirection() == 0) {
       if (tank->GetCellX() == GetCellX()) {
@@ -45,14 +45,14 @@ bool Bot::IsNeedToShoot(std::shared_ptr<Map> map, std::shared_ptr<Tank> tank) co
       }
     } else if (GetIntDirection() == 1) {
       if (tank->GetCellY() == GetCellY()) {
-        for (int cell = GetCellX() + 1; cell < map->GetWidthInNumber(); cell++) {
+        for (int cell = GetCellX() + 1; cell < map->GetNumberOfCellsHorizontally(); cell++) {
           if (map->WallCheck(cell, GetCellY())) { break; }
           if (tank->GetCellX() == cell) { return true; }
         }
       }
     } else if (GetIntDirection() == 2) {
       if (tank->GetCellX() == GetCellX()) {
-        for (int cell = GetCellY() + 1; cell < map->GetHeightInNumber(); cell++) {
+        for (int cell = GetCellY() + 1; cell < map->GetNumberOfCellsVertically(); cell++) {
           if (map->WallCheck(GetCellX(), cell)) { break; }
           if (tank->GetCellY() == cell) { return true; }
         }

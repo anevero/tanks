@@ -42,7 +42,7 @@ Map::Map(int map_number) {
   int bot_cell_x, bot_cell_y;
   for (int i = 0; i < amount_of_robots; i++) {
     in >> bot_cell_x >> bot_cell_y;
-    koordinates_.push_back({bot_cell_x, bot_cell_y});
+    coordinates_.push_back({bot_cell_x, bot_cell_y});
   }
 
   input_file.close();
@@ -91,8 +91,6 @@ int Map::GetUpperLeftX() const { return cur_upper_left_x_; }
 int Map::GetUpperLeftY() const { return cur_upper_left_y_; }
 int Map::GetWidth() const { return cur_width_; }
 int Map::GetHeight() const { return cur_height_; }
-int Map::GetWidthInNumber() const { return map_[0].size(); }
-int Map::GetHeightInNumber() const { return map_.size(); }
 int Map::GetTankInitCellX() const { return tank_init_cell_x_; }
 int Map::GetTankInitCellY() const { return tank_init_cell_y_; }
 

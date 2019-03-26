@@ -13,9 +13,9 @@ class Bot : public Tank {
 
   void Draw(QPainter& painter) override;
 
-  bool IsNeedToTurn() const;
-  bool IsNeedToStartRotation() const;
-  bool IsNeedToShoot(std::shared_ptr<Map>, std::shared_ptr<Tank>) const;
+  bool DoesNeedToTurn() const;
+  bool DoesNeedToStartRotation() const;
+  bool DoesNeedToShoot(std::shared_ptr<Map>, std::shared_ptr<Tank>) const;
 };
 
 #endif // BOT_H

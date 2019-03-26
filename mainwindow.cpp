@@ -26,7 +26,7 @@ MainWindow::MainWindow(QWidget *parent)
   timer_id_ = startTimer(timer_duration_);
   connect(new_game_button_, SIGNAL(clicked()), this, SLOT(RedrawContent()));
 
-  for (const auto &cell : map_->koordinates_) {
+  for (const auto &cell : map_->coordinates_) {
     static_objects_.append(std::shared_ptr<Movable>
                            (new Bot(map_, cell.first, cell.second,
                                     1000, 100, Direction::Up)));
@@ -104,22 +104,22 @@ void MainWindow::resizeEvent(QResizeEvent *) {
 void MainWindow::timerEvent(QTimerEvent *) {
   for (auto &object : static_objects_) {
     if (std::dynamic_pointer_cast<Bot>(object) != nullptr) {
-      if (std::dynamic_pointer_cast<Bot>(object)->
-              IsNeedToShoot(map_, std::dynamic_pointer_cast<Tank>(static_objects_[0]))) {
+      std::shared_ptr<Bot> bot = std::dynamic_pointer_cast<Bot>(object);
+      std::shared_ptr<Tank> tank = std::dynamic_pointer_cast<Tank>(object);
+      if (bot->DoesNeedToShoot(map_, std::dynamic_pointer_cast<Tank>(static_objects_[0]))) {
         std::shared_ptr<Tank> tank = std::dynamic_pointer_cast<Tank>(object);
         ShootRocket(tank);
       }
 
-      if (std::dynamic_pointer_cast<Bot>(object)->IsNeedToStartRotation()) {
-        std::dynamic_pointer_cast<Bot>(object)->StartRotation();
+      if (bot->DoesNeedToStartRotation()) {
+        bot->StartRotation();
       }
 
-      if (std::dynamic_pointer_cast<Bot>(object)->IsNeedToTurn()) {
-          std::dynamic_pointer_cast<Bot>(object)->Rotate(timer_duration_);
+      if (bot->DoesNeedToTurn()) {
+          bot->Rotate(timer_duration_);
       }
 
-      std::dynamic_pointer_cast<Tank>(object)
-          ->IncreaseTimeSinceLastShot(GetTimerDuration());
+      tank->IncreaseTimeSinceLastShot(GetTimerDuration());
     }
   }
 
@@ -184,7 +184,7 @@ void MainWindow::RedrawContent() {
   static_objects_.append(std::shared_ptr<Tank>(
       new Tank(map_, map_->GetTankInitCellX(), map_->GetTankInitCellY(), 750,
                500, Direction::Up)));
-  for (const auto &cell : map_->koordinates_) {
+  for (const auto &cell : map_->coordinates_) {
     static_objects_.append(std::shared_ptr<Movable>
                            (new Bot(map_, cell.first, cell.second,
                                     1000, 100, Direction::Up)));

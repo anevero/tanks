@@ -32,12 +32,10 @@ class Map {
   int GetUpperLeftY() const;
   int GetWidth() const;
   int GetHeight() const;
-  int GetWidthInNumber() const;
-  int GetHeightInNumber() const;
   int GetTankInitCellX() const;
   int GetTankInitCellY() const;
 
-  QVector<QPair<int, int>> koordinates_;
+  QVector<QPair<int, int>> coordinates_;
 
  private:
   QVector<QVector<CellType>> map_;
