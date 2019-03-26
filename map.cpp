@@ -35,6 +35,16 @@ Map::Map(int map_number) {
   in >> tank_init_cell_x_ >> tank_init_cell_y_;
   tank_init_cell_x_--;
   tank_init_cell_y_--;
+
+  // Пока считывание роботов будет так, потом можно придумать что-то другое
+  int amount_of_robots;
+  in >> amount_of_robots;
+  int bot_cell_x, bot_cell_y;
+  for (int i = 0; i < amount_of_robots; i++) {
+    in >> bot_cell_x >> bot_cell_y;
+    koordinates_.push_back({bot_cell_x, bot_cell_y});
+  }
+
   input_file.close();
 }
 
@@ -68,12 +78,21 @@ void Map::DrawMap(QPainter &painter) {
 CellType Map::GetField(int cell_x, int cell_y) const {
   return map_[cell_x][cell_y];
 }
+bool Map::WallCheck(int cell_x, int cell_y) const {
+  if (map_[cell_x][cell_y] == CellType::Wall) {
+    return true;
+  } else {
+    return false;
+  }
+}
 int Map::GetNumberOfCellsHorizontally() const { return map_.size(); }
 int Map::GetNumberOfCellsVertically() const { return map_[0].size(); }
 int Map::GetUpperLeftX() const { return cur_upper_left_x_; }
 int Map::GetUpperLeftY() const { return cur_upper_left_y_; }
 int Map::GetWidth() const { return cur_width_; }
 int Map::GetHeight() const { return cur_height_; }
+int Map::GetWidthInNumber() const { return map_[0].size(); }
+int Map::GetHeightInNumber() const { return map_.size(); }
 int Map::GetTankInitCellX() const { return tank_init_cell_x_; }
 int Map::GetTankInitCellY() const { return tank_init_cell_y_; }
 

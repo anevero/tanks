@@ -15,6 +15,7 @@
 #include <QTimer>
 #include <algorithm>
 #include <memory>
+#include "bot.h"
 #include "map.h"
 #include "rocket.h"
 #include "tank.h"

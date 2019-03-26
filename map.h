@@ -3,6 +3,7 @@
 
 #include <QFile>
 #include <QPainter>
+#include <QPair>
 #include <QString>
 #include <QTextStream>
 #include <QVector>
@@ -24,14 +25,19 @@ class Map {
 
  public:
   CellType GetField(int cell_x, int cell_y) const;
+  bool WallCheck(int cell_x, int cell_y) const;
   int GetNumberOfCellsHorizontally() const;
   int GetNumberOfCellsVertically() const;
   int GetUpperLeftX() const;
   int GetUpperLeftY() const;
   int GetWidth() const;
   int GetHeight() const;
+  int GetWidthInNumber() const;
+  int GetHeightInNumber() const;
   int GetTankInitCellX() const;
   int GetTankInitCellY() const;
+
+  QVector<QPair<int, int>> koordinates_;
 
  private:
   QVector<QVector<CellType>> map_;

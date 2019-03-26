@@ -25,6 +25,13 @@ MainWindow::MainWindow(QWidget *parent)
   resize(600, 450);
   timer_id_ = startTimer(timer_duration_);
   connect(new_game_button_, SIGNAL(clicked()), this, SLOT(RedrawContent()));
+
+  for (const auto &cell : map_->koordinates_) {
+    static_objects_.append(std::shared_ptr<Movable>
+                           (new Bot(map_, cell.first, cell.second,
+                                    1000, 100, Direction::Up)));
+    static_objects_[static_objects_.size() - 1]->StartRotation();
+  }
 }
 
 void MainWindow::keyReleaseEvent(QKeyEvent *event) {
@@ -95,6 +102,27 @@ void MainWindow::resizeEvent(QResizeEvent *) {
 }
 
 void MainWindow::timerEvent(QTimerEvent *) {
+  for (auto &object : static_objects_) {
+    if (std::dynamic_pointer_cast<Bot>(object) != nullptr) {
+      if (std::dynamic_pointer_cast<Bot>(object)->
+              IsNeedToShoot(map_, std::dynamic_pointer_cast<Tank>(static_objects_[0]))) {
+        std::shared_ptr<Tank> tank = std::dynamic_pointer_cast<Tank>(object);
+        ShootRocket(tank);
+      }
+
+      if (std::dynamic_pointer_cast<Bot>(object)->IsNeedToStartRotation()) {
+        std::dynamic_pointer_cast<Bot>(object)->StartRotation();
+      }
+
+      if (std::dynamic_pointer_cast<Bot>(object)->IsNeedToTurn()) {
+          std::dynamic_pointer_cast<Bot>(object)->Rotate(timer_duration_);
+      }
+
+      std::dynamic_pointer_cast<Tank>(object)
+          ->IncreaseTimeSinceLastShot(GetTimerDuration());
+    }
+  }
+
   for (const auto &object : moving_objects_) {
     if (object->GetTimeToFinishMovement() != 0) {
       object->Move(timer_duration_);
@@ -156,6 +184,12 @@ void MainWindow::RedrawContent() {
   static_objects_.append(std::shared_ptr<Tank>(
       new Tank(map_, map_->GetTankInitCellX(), map_->GetTankInitCellY(), 750,
                500, Direction::Up)));
+  for (const auto &cell : map_->koordinates_) {
+    static_objects_.append(std::shared_ptr<Movable>
+                           (new Bot(map_, cell.first, cell.second,
+                                    1000, 100, Direction::Up)));
+    static_objects_[static_objects_.size() - 1]->StartRotation();
+  }
   rotation_info_label_->setText("No data");
   if (timer_id_ == 0) {
     timer_id_ = startTimer(timer_duration_);
