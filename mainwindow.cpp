@@ -10,6 +10,7 @@ MainWindow::MainWindow(QWidget *parent)
   swith_map_menu_ = new QComboBox(this);
 
   rotation_info_label_ = new QLabel(this);
+  game_over_label_ = new QLabel(this);
 
   int map_number = 1;
   QFileInfo map_file(":/maps/map" + QString::number(map_number) + ".txt");
@@ -21,7 +22,7 @@ MainWindow::MainWindow(QWidget *parent)
 
   setMinimumSize(600, 450);
   resize(600, 450);
-  startTimer(timer_duration_);
+  timer_indifier_ = startTimer(timer_duration_);
   connect(new_game_button_, SIGNAL(clicked()), this, SLOT(RedrawContent()));
 }
 
@@ -141,6 +142,10 @@ void MainWindow::RedrawButtons() {
       w_indent_ + static_cast<int>(0.04 * sq_width_),
       h_indent_ + static_cast<int>(0.25 * sq_height_),
       static_cast<int>(0.2 * sq_width_), static_cast<int>(0.05 * sq_height_));
+  game_over_label_->setGeometry(w_indent_ + static_cast<int>(0.08 * sq_width_),
+                                h_indent_ + static_cast<int>(0.7 * sq_height_),
+                                static_cast<int>(sq_width_),
+                                static_cast<int>(0.4 * sq_height_));
 }
 
 void MainWindow::RedrawContent() {
@@ -150,6 +155,8 @@ void MainWindow::RedrawContent() {
   static_objects_.append(
       std::shared_ptr<Tank>(new Tank(map_, 750, 500, Direction::Up)));
   rotation_info_label_->setText("No data");
+  timer_indifier_ = startTimer(10);
+  game_over_label_->setText("");
   repaint();
 }
 
@@ -165,6 +172,7 @@ void MainWindow::ShootRocket(std::shared_ptr<Tank> &tank) {
 
 int MainWindow::GetTimerDuration() const { return timer_duration_; }
 
-// void MainWindow::GameOver() {
-
-//}
+void MainWindow::GameOver() {
+  killTimer(timer_indifier_);
+  game_over_label_->setText("Game Over.");
+}

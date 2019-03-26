@@ -24,7 +24,7 @@ class Tank : public Movable {
  protected:
   int rate_of_fire_;
   int time_since_last_shot_{};
-  int health_ = 20;
+  int health_ = 100;
 };
 
 #endif  // TANK_H

@@ -36,11 +36,11 @@ class MainWindow : public QMainWindow {
   void UpdateIndents();
   void RedrawButtons();
   void RedrawContent();
-  //  void GameOver();
 
  private:
   void ShootRocket(std::shared_ptr<Tank> &object);
   int GetTimerDuration() const;
+  void GameOver();
 
  private:
   QPushButton *new_game_button_;
@@ -50,12 +50,13 @@ class MainWindow : public QMainWindow {
   QList<std::shared_ptr<Movable>> moving_objects_;
 
   int timer_duration_ = 10;
-
+  int timer_indifier_;
   int sq_width_;
   int sq_height_;
   int w_indent_;
   int h_indent_;
 
+  QLabel *game_over_label_;
   QLabel *rotation_info_label_;
   QVector<QString> rotation_info_ = {"Up", "Right", "Down", "Left"};
 };
