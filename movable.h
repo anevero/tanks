@@ -42,6 +42,8 @@ class Movable {
 
   virtual int GetUpperLeftX() const;
   virtual int GetUpperLeftY() const;
+  virtual int GetWidth() const;
+  virtual int GetHeight() const;
   virtual int GetCellX() const;
   virtual int GetCellY() const;
 

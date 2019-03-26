@@ -137,5 +137,7 @@ Direction Movable::GetDirection() const {
 
 int Movable::GetUpperLeftX() const { return cur_upper_left_x_; }
 int Movable::GetUpperLeftY() const { return cur_upper_left_y_; }
+int Movable::GetWidth() const { return cur_width_; }
+int Movable::GetHeight() const { return cur_height_; }
 int Movable::GetCellX() const { return cell_x_; }
 int Movable::GetCellY() const { return cell_y_; }

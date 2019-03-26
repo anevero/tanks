@@ -13,6 +13,7 @@
 #include <QPushButton>
 #include <QString>
 #include <QTimer>
+#include <QtGlobal>
 #include <algorithm>
 #include <memory>
 #include "map.h"
@@ -38,7 +39,14 @@ class MainWindow : public QMainWindow {
   void RedrawContent();
 
  private:
+  void FindInteractingObjects();
+  //  void InteractObjects(QList<std::shared_ptr<Movable>>::iterator &obj1,
+  //                       QList<std::shared_ptr<Movable>>::iterator &obj2);
+  bool HaveObjectsCollided(std::shared_ptr<Movable> &obj1,
+                           std::shared_ptr<Movable> &obj2) const;
   void ShootRocket(std::shared_ptr<Tank> &object);
+  bool IsRocketByThisTank(std::shared_ptr<Movable> &rocket,
+                          std::shared_ptr<Movable> &tank) const;
   int GetTimerDuration() const;
   void GameOver();
 

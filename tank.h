@@ -20,6 +20,7 @@ class Tank : public Movable {
   void SetZeroTimeFromLastShot();
   void MinusHealth(int health = 10);
   void PlusHealth(int health = 10);
+  bool IsDead() const;
 
  protected:
   int rate_of_fire_;

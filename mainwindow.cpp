@@ -1,5 +1,4 @@
 ﻿#include "mainwindow.h"
-#include <memory>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent),
@@ -119,6 +118,33 @@ void MainWindow::timerEvent(QTimerEvent *) {
   std::dynamic_pointer_cast<Tank>(static_objects_[0])
       ->IncreaseTimeSinceLastShot(GetTimerDuration());
 
+  FindInteractingObjects();
+
+  for (int i = 0; i < number_of_player_tanks_; ++i) {
+    if (std::dynamic_pointer_cast<Tank>(static_objects_[i])->IsDead()) {
+      GameOver();
+      return;
+    }
+  }
+
+  // TEST
+  // -----------
+
+  if (static_objects_.length() != 2) {
+    repaint();
+    return;
+  }
+
+  auto test_tank = std::dynamic_pointer_cast<Tank>(static_objects_[1]);
+  test_tank->IncreaseTimeSinceLastShot(GetTimerDuration());
+  if (test_tank->IsAbleToShoot()) {
+    test_tank->SetZeroTimeFromLastShot();
+    ShootRocket(test_tank);
+  }
+
+  // -----------
+  // TEST
+
   repaint();
 }
 
@@ -161,17 +187,75 @@ void MainWindow::RedrawContent() {
     timer_id_ = startTimer(timer_duration_);
   }
   game_over_label_->setText("");
+
+  // TEST
+  // -----------
+
+  static_objects_.append(std::shared_ptr<Movable>(
+      new Tank(map_, 1, 1, 750, 2000, Direction::Right)));
+
+  // -----------
+  // TEST
+
   repaint();
 }
 
+void MainWindow::FindInteractingObjects() {
+  auto obj1 = moving_objects_.begin();
+  while (obj1 != moving_objects_.end()) {
+    auto obj2 = std::next(obj1);
+    while (obj2 != moving_objects_.end()) {
+      if (HaveObjectsCollided(*obj1, *obj2)) {
+        qDebug() << "collision" << qrand();
+        ;
+      }
+      obj2++;
+    }
+
+    obj2 = static_objects_.begin();
+    while (obj2 != static_objects_.end()) {
+      if (HaveObjectsCollided(*obj1, *obj2)) {
+        qDebug() << "collision" << qrand();
+        ;
+      }
+      obj2++;
+    }
+    obj1++;
+  }
+}
+
+bool MainWindow::HaveObjectsCollided(std::shared_ptr<Movable> &obj1,
+                                     std::shared_ptr<Movable> &obj2) const {
+  if (obj1 == obj2 || IsRocketByThisTank(obj1, obj2) ||
+      IsRocketByThisTank(obj2, obj1)) {
+    return false;
+  }
+
+  return !(
+      (obj1->GetUpperLeftX() >= obj2->GetUpperLeftX() + obj2->GetWidth()) ||
+      (obj1->GetUpperLeftX() + obj1->GetWidth() <= obj2->GetUpperLeftX()) ||
+      (obj1->GetUpperLeftY() >= obj2->GetUpperLeftY() + obj2->GetHeight()) ||
+      (obj1->GetUpperLeftY() + obj1->GetHeight() <= obj2->GetUpperLeftY()));
+}
+
 void MainWindow::ShootRocket(std::shared_ptr<Tank> &tank) {
-  std::shared_ptr<Rocket> rocket(new Rocket(map_, tank, 250));
+  std::shared_ptr<Rocket> rocket(new Rocket(map_, tank, 250, 1));
   moving_objects_.append(rocket);
   if (rocket->GetIntDirection() == 1 || rocket->GetIntDirection() == 3) {
     rocket->StartMovement(map_->GetNumberOfCellsHorizontally());
   } else {
     rocket->StartMovement(map_->GetNumberOfCellsVertically());
   }
+}
+
+bool MainWindow::IsRocketByThisTank(std::shared_ptr<Movable> &rocket,
+                                    std::shared_ptr<Movable> &tank) const {
+  auto casted_rocket = std::dynamic_pointer_cast<Rocket>(rocket);
+  auto casted_tank = std::dynamic_pointer_cast<Tank>(tank);
+  if (casted_rocket != nullptr && casted_tank != nullptr) {
+    return casted_tank == casted_rocket->GetAttachedTank();
+  }
+  return false;
 }
 
 int MainWindow::GetTimerDuration() const { return timer_duration_; }
