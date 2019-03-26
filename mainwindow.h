@@ -50,7 +50,7 @@ class MainWindow : public QMainWindow {
   QList<std::shared_ptr<Movable>> moving_objects_;
 
   int timer_duration_ = 10;
-  int timer_indifier_;
+  int timer_id_;
   int sq_width_;
   int sq_height_;
   int w_indent_;

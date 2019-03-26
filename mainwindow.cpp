@@ -22,7 +22,7 @@ MainWindow::MainWindow(QWidget *parent)
 
   setMinimumSize(600, 450);
   resize(600, 450);
-  timer_indifier_ = startTimer(timer_duration_);
+  timer_id_ = startTimer(timer_duration_);
   connect(new_game_button_, SIGNAL(clicked()), this, SLOT(RedrawContent()));
 }
 
@@ -155,7 +155,7 @@ void MainWindow::RedrawContent() {
   static_objects_.append(
       std::shared_ptr<Tank>(new Tank(map_, 750, 500, Direction::Up)));
   rotation_info_label_->setText("No data");
-  timer_indifier_ = startTimer(10);
+  timer_id_ = startTimer(timer_duration_);
   game_over_label_->setText("");
   repaint();
 }
@@ -173,6 +173,6 @@ void MainWindow::ShootRocket(std::shared_ptr<Tank> &tank) {
 int MainWindow::GetTimerDuration() const { return timer_duration_; }
 
 void MainWindow::GameOver() {
-  killTimer(timer_indifier_);
+  killTimer(timer_id_);
   game_over_label_->setText("Game Over.");
 }
