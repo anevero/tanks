@@ -78,13 +78,6 @@ void Map::DrawMap(QPainter &painter) {
 CellType Map::GetField(int cell_x, int cell_y) const {
   return map_[cell_x][cell_y];
 }
-bool Map::WallCheck(int cell_x, int cell_y) const {
-  if (map_[cell_x][cell_y] == CellType::Wall) {
-    return true;
-  } else {
-    return false;
-  }
-}
 int Map::GetNumberOfCellsHorizontally() const { return map_.size(); }
 int Map::GetNumberOfCellsVertically() const { return map_[0].size(); }
 int Map::GetUpperLeftX() const { return cur_upper_left_x_; }

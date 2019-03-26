@@ -25,7 +25,6 @@ class Map {
 
  public:
   CellType GetField(int cell_x, int cell_y) const;
-  bool WallCheck(int cell_x, int cell_y) const;
   int GetNumberOfCellsHorizontally() const;
   int GetNumberOfCellsVertically() const;
   int GetUpperLeftX() const;
