@@ -39,28 +39,28 @@ bool Bot::DoesNeedToShoot(std::shared_ptr<Map> map, std::shared_ptr<Tank> tank) 
     if (GetIntDirection() == 0) {
       if (tank->GetCellX() == GetCellX()) {
         for (int cell = GetCellY() - 1; cell >= 0; cell--) {
-          if (map->WallCheck(GetCellX(), cell)) { break; }
+          if (map_->GetField(GetCellX(), cell) == CellType::Wall) { break; }
           if (tank->GetCellY() == cell) { return true; }
         }
       }
     } else if (GetIntDirection() == 1) {
       if (tank->GetCellY() == GetCellY()) {
         for (int cell = GetCellX() + 1; cell < map->GetNumberOfCellsHorizontally(); cell++) {
-          if (map->WallCheck(cell, GetCellY())) { break; }
+          if (map_->GetField(cell, GetCellY()) == CellType::Wall) { break; }
           if (tank->GetCellX() == cell) { return true; }
         }
       }
     } else if (GetIntDirection() == 2) {
       if (tank->GetCellX() == GetCellX()) {
         for (int cell = GetCellY() + 1; cell < map->GetNumberOfCellsVertically(); cell++) {
-          if (map->WallCheck(GetCellX(), cell)) { break; }
+          if (map_->GetField(GetCellX(), cell) == CellType::Wall) { break; }
           if (tank->GetCellY() == cell) { return true; }
         }
       }
     } else if (GetIntDirection() == 3) {
       if (tank->GetCellY() == GetCellY()) {
         for (int cell = GetCellX() - 1; cell >= 0; cell--) {
-          if (map->WallCheck(cell, GetCellY())) { break; }
+          if (map_->GetField(cell, GetCellY()) == CellType::Wall) { break; }
           if (tank->GetCellX() == cell) { return true; }
         }
       }

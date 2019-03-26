@@ -4,6 +4,7 @@
 #include <QDebug>
 #include <QPainter>
 #include <memory>
+#include "map.h"
 #include "tank.h"
 
 class Bot : public Tank {
