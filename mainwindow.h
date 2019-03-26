@@ -48,6 +48,7 @@ class MainWindow : public QMainWindow {
   std::shared_ptr<Map> map_;
   QList<std::shared_ptr<Movable>> static_objects_;
   QList<std::shared_ptr<Movable>> moving_objects_;
+  int number_of_player_tanks_ = 1;
 
   int timer_duration_ = 10;
   int timer_id_;

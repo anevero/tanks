@@ -1,9 +1,8 @@
 ﻿#include "tank.h"
 
-Tank::Tank(std::shared_ptr<Map>& map, int speed, int rate_of_fire,
-           Direction direction)
-    : Movable(map, map->GetTankInitCellX(), map->GetTankInitCellY(), direction,
-              speed),
+Tank::Tank(std::shared_ptr<Map>& map, int init_cell_x, int init_cell_y,
+           int speed, int rate_of_fire, Direction direction)
+    : Movable(map, init_cell_x, init_cell_y, direction, speed),
       rate_of_fire_(rate_of_fire) {}
 
 void Tank::Draw(QPainter& painter) {

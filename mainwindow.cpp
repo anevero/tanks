@@ -4,8 +4,9 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent),
       map_(new Map(1)),
-      static_objects_(
-          {std::shared_ptr<Movable>(new Tank(map_, 750, 500, Direction::Up))}) {
+      static_objects_({std::shared_ptr<Movable>(
+          new Tank(map_, map_->GetTankInitCellX(), map_->GetTankInitCellY(),
+                   750, 500, Direction::Up))}) {
   new_game_button_ = new QPushButton("New game", this);
   swith_map_menu_ = new QComboBox(this);
 
@@ -152,10 +153,13 @@ void MainWindow::RedrawContent() {
   map_.reset(new Map(swith_map_menu_->currentIndex() + 1));
   static_objects_.clear();
   moving_objects_.clear();
-  static_objects_.append(
-      std::shared_ptr<Tank>(new Tank(map_, 750, 500, Direction::Up)));
+  static_objects_.append(std::shared_ptr<Tank>(
+      new Tank(map_, map_->GetTankInitCellX(), map_->GetTankInitCellY(), 750,
+               500, Direction::Up)));
   rotation_info_label_->setText("No data");
-  timer_id_ = startTimer(timer_duration_);
+  if (timer_id_ == 0) {
+    timer_id_ = startTimer(timer_duration_);
+  }
   game_over_label_->setText("");
   repaint();
 }
@@ -174,5 +178,6 @@ int MainWindow::GetTimerDuration() const { return timer_duration_; }
 
 void MainWindow::GameOver() {
   killTimer(timer_id_);
+  timer_id_ = 0;
   game_over_label_->setText("Game Over.");
 }
