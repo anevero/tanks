@@ -35,6 +35,16 @@ Map::Map(int map_number) {
   in >> tank_init_cell_x_ >> tank_init_cell_y_;
   tank_init_cell_x_--;
   tank_init_cell_y_--;
+
+  // Пока считывание роботов будет так, потом можно придумать что-то другое
+  int amount_of_robots;
+  in >> amount_of_robots;
+  int bot_cell_x, bot_cell_y;
+  for (int i = 0; i < amount_of_robots; i++) {
+    in >> bot_cell_x >> bot_cell_y;
+    coordinates_.push_back({bot_cell_x, bot_cell_y});
+  }
+
   input_file.close();
 }
 

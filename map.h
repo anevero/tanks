@@ -3,6 +3,7 @@
 
 #include <QFile>
 #include <QPainter>
+#include <QPair>
 #include <QString>
 #include <QTextStream>
 #include <QVector>
@@ -32,6 +33,8 @@ class Map {
   int GetHeight() const;
   int GetTankInitCellX() const;
   int GetTankInitCellY() const;
+
+  QVector<QPair<int, int>> coordinates_;
 
  private:
   QVector<QVector<CellType>> map_;
