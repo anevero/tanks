@@ -27,7 +27,7 @@ MainWindow::MainWindow(QWidget *parent)
 
   for (const auto &cell : map_->coordinates_) {
     tanks_.append(std::shared_ptr<Movable>(
-        new Bot(map_, cell.first, cell.second, 1000, 100, Direction::Up)));
+        new Bot(map_, cell.first, cell.second, 1500, 100, Direction::Up)));
     tanks_[tanks_.size() - 1]->StartRotation();
   }
 }
@@ -103,7 +103,7 @@ void MainWindow::timerEvent(QTimerEvent *) {
     if (std::dynamic_pointer_cast<Bot>(object) != nullptr) {
       std::shared_ptr<Bot> bot = std::dynamic_pointer_cast<Bot>(object);
       std::shared_ptr<Tank> tank = std::dynamic_pointer_cast<Tank>(object);
-      if (bot->DoesNeedToShoot(map_,
+      if (bot->IsShotNeeded(map_,
                                std::dynamic_pointer_cast<Tank>(tanks_[0]))) {
         std::shared_ptr<Tank> tank = std::dynamic_pointer_cast<Tank>(object);
         ShootRocket(tank);
@@ -111,11 +111,11 @@ void MainWindow::timerEvent(QTimerEvent *) {
         // нескольких первых объектов tanks_
       }
 
-      if (bot->DoesNeedToStartRotation()) {
+      if (bot->IsRotationStartNeeded()) {
         bot->StartRotation();
       }
 
-      if (bot->DoesNeedToTurn()) {
+      if (bot->IsTurnNeeded()) {
         bot->Rotate(timer_duration_);
       }
     }
@@ -198,7 +198,7 @@ void MainWindow::RedrawContent() {
                                                500, Direction::Up)));
   for (const auto &cell : map_->coordinates_) {
     tanks_.append(std::shared_ptr<Movable>(
-        new Bot(map_, cell.first, cell.second, 1000, 100, Direction::Up)));
+        new Bot(map_, cell.first, cell.second, 1500, 100, Direction::Up)));
     tanks_[tanks_.size() - 1]->StartRotation();
   }
   rotation_info_label_->setText("No data");
