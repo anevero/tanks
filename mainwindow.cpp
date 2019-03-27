@@ -156,13 +156,7 @@ void MainWindow::timerEvent(QTimerEvent *) {
   }
 
   FindInteractingObjects();
-
-  for (int i = 0; i < number_of_player_tanks_; ++i) {
-    if (std::dynamic_pointer_cast<Tank>(tanks_[i])->IsDead()) {
-      GameOver();
-      return;
-    }
-  }
+  CheckDeadTanks();
 
   repaint();
 }
@@ -225,7 +219,6 @@ void MainWindow::FindInteractingObjects() {
         std::dynamic_pointer_cast<Tank>(*tank)->MinusHealth(
             std::dynamic_pointer_cast<Rocket>(*rocket)->GetPower());
         rocket = rockets_.erase(rocket);
-        qDebug() << "babah";
         continue;
       }
       rocket++;
@@ -246,6 +239,24 @@ bool MainWindow::HaveObjectsCollided(std::shared_ptr<Movable> &obj1,
       (obj1->GetUpperLeftX() + obj1->GetWidth() <= obj2->GetUpperLeftX()) ||
       (obj1->GetUpperLeftY() >= obj2->GetUpperLeftY() + obj2->GetHeight()) ||
       (obj1->GetUpperLeftY() + obj1->GetHeight() <= obj2->GetUpperLeftY()));
+}
+
+void MainWindow::CheckDeadTanks() {
+  auto bot = tanks_.begin();
+  for (int i = 0; i < number_of_player_tanks_; ++i) {
+    if (std::dynamic_pointer_cast<Tank>(tanks_[i])->IsDead()) {
+      GameOver();
+      return;
+    }
+    bot = std::next(bot);
+  }
+  while (bot != tanks_.end()) {
+    if (std::dynamic_pointer_cast<Tank>(*bot)->IsDead()) {
+      bot = tanks_.erase(bot);
+      continue;
+    }
+    bot++;
+  }
 }
 
 void MainWindow::ShootRocket(std::shared_ptr<Tank> &tank) {

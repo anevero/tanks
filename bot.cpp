@@ -16,6 +16,7 @@ void Bot::Draw(QPainter& painter) {
   painter.drawEllipse(-cur_width_ / 2, -cur_height_ / 2, cur_width_,
                       cur_height_ / 4);
   painter.restore();
+  DrawHealth(painter);
 }
 
 bool Bot::DoesNeedToTurn() const {

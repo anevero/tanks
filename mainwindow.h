@@ -41,10 +41,9 @@ class MainWindow : public QMainWindow {
 
  private:
   void FindInteractingObjects();
-  //  void InteractObjects(QList<std::shared_ptr<Movable>>::iterator &obj1,
-  //                       QList<std::shared_ptr<Movable>>::iterator &obj2);
   bool HaveObjectsCollided(std::shared_ptr<Movable> &obj1,
                            std::shared_ptr<Movable> &obj2) const;
+  void CheckDeadTanks();
   void ShootRocket(std::shared_ptr<Tank> &object);
   bool IsRocketByThisTank(std::shared_ptr<Movable> &rocket,
                           std::shared_ptr<Movable> &tank) const;
