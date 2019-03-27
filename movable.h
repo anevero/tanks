@@ -15,7 +15,8 @@ class Movable {
           Direction direction, int speed);
   virtual ~Movable() = default;
 
-  virtual void StartMovement(int number_of_cells);
+  virtual void StartMovement(int number_of_cells,
+                             QList<std::shared_ptr<Movable>>& tanks);
   virtual void Move(int milliseconds_passed);
   virtual void TurnReverseOn();
   virtual void TurnReverseOff();

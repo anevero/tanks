@@ -55,8 +55,8 @@ class MainWindow : public QMainWindow {
   QPushButton *new_game_button_;
   QComboBox *swith_map_menu_;
   std::shared_ptr<Map> map_;
-  QList<std::shared_ptr<Movable>> static_objects_;
-  QList<std::shared_ptr<Movable>> moving_objects_;
+  QList<std::shared_ptr<Movable>> tanks_;
+  QList<std::shared_ptr<Movable>> rockets_;
   int number_of_player_tanks_ = 1;
 
   int timer_duration_ = 10;

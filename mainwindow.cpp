@@ -3,9 +3,9 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent),
       map_(new Map(1)),
-      static_objects_({std::shared_ptr<Movable>(
-          new Tank(map_, map_->GetTankInitCellX(), map_->GetTankInitCellY(),
-                   750, 500, Direction::Up))}) {
+      tanks_({std::shared_ptr<Movable>(new Tank(map_, map_->GetTankInitCellX(),
+                                                map_->GetTankInitCellY(), 750,
+                                                500, Direction::Up))}) {
   new_game_button_ = new QPushButton("New game", this);
   swith_map_menu_ = new QComboBox(this);
 
@@ -26,17 +26,15 @@ MainWindow::MainWindow(QWidget *parent)
   connect(new_game_button_, SIGNAL(clicked()), this, SLOT(RedrawContent()));
 
   for (const auto &cell : map_->coordinates_) {
-    static_objects_.append(std::shared_ptr<Movable>
-                           (new Bot(map_, cell.first, cell.second,
-                                    1000, 100, Direction::Up)));
-    static_objects_[static_objects_.size() - 1]->StartRotation();
+    tanks_.append(std::shared_ptr<Movable>(
+        new Bot(map_, cell.first, cell.second, 1000, 100, Direction::Up)));
+    tanks_[tanks_.size() - 1]->StartRotation();
   }
 }
 
 void MainWindow::keyReleaseEvent(QKeyEvent *event) {
-  auto tank = std::dynamic_pointer_cast<Tank>(static_objects_[0]);
+  auto tank = std::dynamic_pointer_cast<Tank>(tanks_[0]);
   if (tank->IsMovingOrRotating()) return;
-  moving_objects_.append(tank);
   // предыдущие строчки допустимы, ибо мы пока обрабатываем только
   // один пользовательский танк
   // если какие-то клавиши должны будут работать не для него,
@@ -45,11 +43,11 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event) {
   switch (event->key()) {
     case Qt::Key_W:
       tank->TurnReverseOff();
-      tank->StartMovement(1);
+      tank->StartMovement(1, tanks_);
       break;
     case Qt::Key_S:
       tank->TurnReverseOn();
-      tank->StartMovement(1);
+      tank->StartMovement(1, tanks_);
       break;
     case Qt::Key_A:
       tank->TurnRotationReverseOn();
@@ -76,20 +74,20 @@ void MainWindow::paintEvent(QPaintEvent *) {
                           h_indent_ + static_cast<int>(0.05 * sq_height_),
                           static_cast<int>(0.68 * sq_width_),
                           static_cast<int>(0.9 * sq_height_));
-  for (const auto &object : static_objects_) {
+  for (const auto &object : tanks_) {
     object->UpdateCoordinates();
   }
-  for (const auto &object : moving_objects_) {
+  for (const auto &object : rockets_) {
     object->UpdateCoordinates();
   }
 
   QPainter p;
   p.begin(this);
   map_->DrawMap(p);
-  for (const auto &object : static_objects_) {
+  for (const auto &object : tanks_) {
     object->Draw(p);
   }
-  for (const auto &object : moving_objects_) {
+  for (const auto &object : rockets_) {
     object->Draw(p);
   }
   p.end();
@@ -101,13 +99,16 @@ void MainWindow::resizeEvent(QResizeEvent *) {
 }
 
 void MainWindow::timerEvent(QTimerEvent *) {
-  for (auto &object : static_objects_) {
+  for (auto &object : tanks_) {
     if (std::dynamic_pointer_cast<Bot>(object) != nullptr) {
       std::shared_ptr<Bot> bot = std::dynamic_pointer_cast<Bot>(object);
       std::shared_ptr<Tank> tank = std::dynamic_pointer_cast<Tank>(object);
-      if (bot->DoesNeedToShoot(map_, std::dynamic_pointer_cast<Tank>(static_objects_[0]))) {
+      if (bot->DoesNeedToShoot(map_,
+                               std::dynamic_pointer_cast<Tank>(tanks_[0]))) {
         std::shared_ptr<Tank> tank = std::dynamic_pointer_cast<Tank>(object);
         ShootRocket(tank);
+        // в случае нескольких танков нужно проверять DoesNeedToShoot от
+        // нескольких первых объектов tanks_
       }
 
       if (bot->DoesNeedToStartRotation()) {
@@ -115,14 +116,12 @@ void MainWindow::timerEvent(QTimerEvent *) {
       }
 
       if (bot->DoesNeedToTurn()) {
-          bot->Rotate(timer_duration_);
+        bot->Rotate(timer_duration_);
       }
-
-      tank->IncreaseTimeSinceLastShot(GetTimerDuration());
     }
   }
 
-  for (const auto &object : moving_objects_) {
+  for (const auto &object : tanks_) {
     if (object->GetTimeToFinishMovement() != 0) {
       object->Move(timer_duration_);
     } else if (object->GetTimeToFinishRotation() != 0) {
@@ -130,48 +129,40 @@ void MainWindow::timerEvent(QTimerEvent *) {
     }
   }
 
-  auto it = moving_objects_.begin();
-  while (it != moving_objects_.end()) {
+  for (const auto &object : rockets_) {
+    if (object->GetTimeToFinishMovement() != 0) {
+      object->Move(timer_duration_);
+    } else if (object->GetTimeToFinishRotation() != 0) {
+      object->Rotate(timer_duration_);
+    }
+  }
+
+  auto it = rockets_.begin();
+  while (it != rockets_.end()) {
     if ((*it)->GetTimeToFinishMovement() == 0 &&
         (*it)->GetCellsToFinishMovement() != 0) {
-      (*it)->StartMovement(((*it)->GetCellsToFinishMovement()) - 1);
+      (*it)->StartMovement(((*it)->GetCellsToFinishMovement()) - 1, tanks_);
     }
     if (!(*it)->IsMovingOrRotating()) {
-      it = moving_objects_.erase(it);
+      it = rockets_.erase(it);
       continue;
     }
     it++;
   }
 
-  std::dynamic_pointer_cast<Tank>(static_objects_[0])
-      ->IncreaseTimeSinceLastShot(GetTimerDuration());
+  for (const auto &object : tanks_) {
+    std::dynamic_pointer_cast<Tank>(object)->IncreaseTimeSinceLastShot(
+        GetTimerDuration());
+  }
 
   FindInteractingObjects();
 
   for (int i = 0; i < number_of_player_tanks_; ++i) {
-    if (std::dynamic_pointer_cast<Tank>(static_objects_[i])->IsDead()) {
+    if (std::dynamic_pointer_cast<Tank>(tanks_[i])->IsDead()) {
       GameOver();
       return;
     }
   }
-
-  // TEST
-  // -----------
-
-  if (static_objects_.length() != 2) {
-    repaint();
-    return;
-  }
-
-  auto test_tank = std::dynamic_pointer_cast<Tank>(static_objects_[1]);
-  test_tank->IncreaseTimeSinceLastShot(GetTimerDuration());
-  if (test_tank->IsAbleToShoot()) {
-    test_tank->SetZeroTimeFromLastShot();
-    ShootRocket(test_tank);
-  }
-
-  // -----------
-  // TEST
 
   repaint();
 }
@@ -204,17 +195,17 @@ void MainWindow::RedrawButtons() {
 }
 
 void MainWindow::RedrawContent() {
+  // все только для одного игрока пока
   map_.reset(new Map(swith_map_menu_->currentIndex() + 1));
-  static_objects_.clear();
-  moving_objects_.clear();
-  static_objects_.append(std::shared_ptr<Tank>(
-      new Tank(map_, map_->GetTankInitCellX(), map_->GetTankInitCellY(), 750,
-               500, Direction::Up)));
+  tanks_.clear();
+  rockets_.clear();
+  tanks_.append(std::shared_ptr<Tank>(new Tank(map_, map_->GetTankInitCellX(),
+                                               map_->GetTankInitCellY(), 750,
+                                               500, Direction::Up)));
   for (const auto &cell : map_->coordinates_) {
-    static_objects_.append(std::shared_ptr<Movable>
-                           (new Bot(map_, cell.first, cell.second,
-                                    1000, 100, Direction::Up)));
-    static_objects_[static_objects_.size() - 1]->StartRotation();
+    tanks_.append(std::shared_ptr<Movable>(
+        new Bot(map_, cell.first, cell.second, 1000, 100, Direction::Up)));
+    tanks_[tanks_.size() - 1]->StartRotation();
   }
   rotation_info_label_->setText("No data");
   if (timer_id_ == 0) {
@@ -222,39 +213,24 @@ void MainWindow::RedrawContent() {
   }
   game_over_label_->setText("");
 
-  // TEST
-  // -----------
-
-  static_objects_.append(std::shared_ptr<Movable>(
-      new Tank(map_, 1, 1, 750, 2000, Direction::Right)));
-
-  // -----------
-  // TEST
-
   repaint();
 }
 
 void MainWindow::FindInteractingObjects() {
-  auto obj1 = moving_objects_.begin();
-  while (obj1 != moving_objects_.end()) {
-    auto obj2 = std::next(obj1);
-    while (obj2 != moving_objects_.end()) {
-      if (HaveObjectsCollided(*obj1, *obj2)) {
-        qDebug() << "collision" << qrand();
-        ;
+  auto tank = tanks_.begin();
+  while (tank != tanks_.end()) {
+    auto rocket = rockets_.begin();
+    while (rocket != rockets_.end()) {
+      if (HaveObjectsCollided(*rocket, *tank)) {
+        std::dynamic_pointer_cast<Tank>(*tank)->MinusHealth(
+            std::dynamic_pointer_cast<Rocket>(*rocket)->GetPower());
+        rocket = rockets_.erase(rocket);
+        qDebug() << "babah";
+        continue;
       }
-      obj2++;
+      rocket++;
     }
-
-    obj2 = static_objects_.begin();
-    while (obj2 != static_objects_.end()) {
-      if (HaveObjectsCollided(*obj1, *obj2)) {
-        qDebug() << "collision" << qrand();
-        ;
-      }
-      obj2++;
-    }
-    obj1++;
+    tank++;
   }
 }
 
@@ -273,12 +249,12 @@ bool MainWindow::HaveObjectsCollided(std::shared_ptr<Movable> &obj1,
 }
 
 void MainWindow::ShootRocket(std::shared_ptr<Tank> &tank) {
-  std::shared_ptr<Rocket> rocket(new Rocket(map_, tank, 250, 1));
-  moving_objects_.append(rocket);
+  std::shared_ptr<Rocket> rocket(new Rocket(map_, tank, 250, 10));
+  rockets_.append(rocket);
   if (rocket->GetIntDirection() == 1 || rocket->GetIntDirection() == 3) {
-    rocket->StartMovement(map_->GetNumberOfCellsHorizontally());
+    rocket->StartMovement(map_->GetNumberOfCellsHorizontally(), tanks_);
   } else {
-    rocket->StartMovement(map_->GetNumberOfCellsVertically());
+    rocket->StartMovement(map_->GetNumberOfCellsVertically(), tanks_);
   }
 }
 
