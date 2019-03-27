@@ -41,12 +41,12 @@ class MainWindow : public QMainWindow {
 
  private:
   void FindInteractingObjects();
-  bool HaveObjectsCollided(std::shared_ptr<Movable> &obj1,
-                           std::shared_ptr<Movable> &obj2) const;
+  bool HaveObjectsCollided(const std::shared_ptr<Movable> &obj1,
+                           const std::shared_ptr<Movable> &obj2) const;
   void CheckDeadTanks();
   void ShootRocket(std::shared_ptr<Tank> &object);
-  bool IsRocketByThisTank(std::shared_ptr<Movable> &rocket,
-                          std::shared_ptr<Movable> &tank) const;
+  bool IsRocketByThisTank(const std::shared_ptr<Movable> &rocket,
+                          const std::shared_ptr<Movable> &tank) const;
   int GetTimerDuration() const;
   void GameOver();
 

@@ -227,8 +227,9 @@ void MainWindow::FindInteractingObjects() {
   }
 }
 
-bool MainWindow::HaveObjectsCollided(std::shared_ptr<Movable> &obj1,
-                                     std::shared_ptr<Movable> &obj2) const {
+bool MainWindow::HaveObjectsCollided(
+    const std::shared_ptr<Movable> &obj1,
+    const std::shared_ptr<Movable> &obj2) const {
   if (obj1 == obj2 || IsRocketByThisTank(obj1, obj2) ||
       IsRocketByThisTank(obj2, obj1)) {
     return false;
@@ -269,8 +270,9 @@ void MainWindow::ShootRocket(std::shared_ptr<Tank> &tank) {
   }
 }
 
-bool MainWindow::IsRocketByThisTank(std::shared_ptr<Movable> &rocket,
-                                    std::shared_ptr<Movable> &tank) const {
+bool MainWindow::IsRocketByThisTank(
+    const std::shared_ptr<Movable> &rocket,
+    const std::shared_ptr<Movable> &tank) const {
   auto casted_rocket = std::dynamic_pointer_cast<Rocket>(rocket);
   auto casted_tank = std::dynamic_pointer_cast<Tank>(tank);
   if (casted_rocket != nullptr && casted_tank != nullptr) {

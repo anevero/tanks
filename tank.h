@@ -12,7 +12,7 @@ class Tank : public Movable {
  public:
   Tank(std::shared_ptr<Map>& map, int init_cell_x, int init_cell_y, int speed,
        int rate_of_fire, Direction direction);
-  virtual void Draw(QPainter& painter) override;
+  void Draw(QPainter& painter) override;
   virtual void DrawHealth(QPainter& painter);
 
   virtual bool IsAbleToShoot() const;
