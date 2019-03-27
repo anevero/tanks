@@ -1,8 +1,8 @@
 #include "bot.h"
 
 Bot::Bot(std::shared_ptr<Map>& map, int init_cell_x, int init_cell_y, int speed,
-         int rate_of_fire, Direction direction) :
-         Tank(map, init_cell_x, init_cell_y, speed, rate_of_fire, direction) {};
+         int rate_of_fire, Direction direction)
+    : Tank(map, init_cell_x, init_cell_y, speed, rate_of_fire, direction){};
 
 void Bot::Draw(QPainter& painter) {
   painter.setBrush(Qt::yellow);
@@ -21,52 +21,67 @@ void Bot::Draw(QPainter& painter) {
 bool Bot::DoesNeedToTurn() const {
   if (time_to_finish_rotation_ > 0) {
     return true;
-  } else {
-    return false;
   }
+  return false;
 }
 
 bool Bot::DoesNeedToStartRotation() const {
   if (time_to_finish_rotation_ <= 0) {
     return true;
-  } else {
-    return false;
   }
+  return false;
 }
 
-bool Bot::DoesNeedToShoot(std::shared_ptr<Map> map, std::shared_ptr<Tank> tank) const {
+bool Bot::DoesNeedToShoot(std::shared_ptr<Map> map,
+                          std::shared_ptr<Tank> tank) const {
   if (time_to_finish_rotation_ <= 0) {
     if (GetIntDirection() == 0) {
       if (tank->GetCellX() == GetCellX()) {
         for (int cell = GetCellY() - 1; cell >= 0; cell--) {
-          if (map_->GetField(GetCellX(), cell) == CellType::Wall) { break; }
-          if (tank->GetCellY() == cell) { return true; }
+          if (map_->GetField(GetCellX(), cell) == CellType::Wall) {
+            break;
+          }
+          if (tank->GetCellY() == cell) {
+            return true;
+          }
         }
       }
     } else if (GetIntDirection() == 1) {
       if (tank->GetCellY() == GetCellY()) {
-        for (int cell = GetCellX() + 1; cell < map->GetNumberOfCellsHorizontally(); cell++) {
-          if (map_->GetField(cell, GetCellY()) == CellType::Wall) { break; }
-          if (tank->GetCellX() == cell) { return true; }
+        for (int cell = GetCellX() + 1;
+             cell < map->GetNumberOfCellsHorizontally(); cell++) {
+          if (map_->GetField(cell, GetCellY()) == CellType::Wall) {
+            break;
+          }
+          if (tank->GetCellX() == cell) {
+            return true;
+          }
         }
       }
     } else if (GetIntDirection() == 2) {
       if (tank->GetCellX() == GetCellX()) {
-        for (int cell = GetCellY() + 1; cell < map->GetNumberOfCellsVertically(); cell++) {
-          if (map_->GetField(GetCellX(), cell) == CellType::Wall) { break; }
-          if (tank->GetCellY() == cell) { return true; }
+        for (int cell = GetCellY() + 1;
+             cell < map->GetNumberOfCellsVertically(); cell++) {
+          if (map_->GetField(GetCellX(), cell) == CellType::Wall) {
+            break;
+          }
+          if (tank->GetCellY() == cell) {
+            return true;
+          }
         }
       }
     } else if (GetIntDirection() == 3) {
       if (tank->GetCellY() == GetCellY()) {
         for (int cell = GetCellX() - 1; cell >= 0; cell--) {
-          if (map_->GetField(cell, GetCellY()) == CellType::Wall) { break; }
-          if (tank->GetCellX() == cell) { return true; }
+          if (map_->GetField(cell, GetCellY()) == CellType::Wall) {
+            break;
+          }
+          if (tank->GetCellX() == cell) {
+            return true;
+          }
         }
       }
     }
-    return false;
-  } else {
-    return false;
   }
+  return false;
 }
