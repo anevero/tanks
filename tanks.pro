@@ -15,14 +15,16 @@ SOURCES += \
     map.cpp \
     tank.cpp \
     movable.cpp \
-    rocket.cpp
+    rocket.cpp \
+    bot.cpp
 
 HEADERS += \
     mainwindow.h \
     map.h \
     tank.h \
     movable.h \
-    rocket.h
+    rocket.h \
+    bot.h
 
 DISTFILES += \
     maps/map1.txt \
