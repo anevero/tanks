@@ -50,3 +50,5 @@ void Tank::SetZeroTimeFromLastShot() { time_since_last_shot_ = 0; }
 void Tank::MinusHealth(int health) { health_ -= health; }
 
 void Tank::PlusHealth(int health) { health_ += health; }
+
+bool Tank::IsDead() const { return health_ <= 0; }

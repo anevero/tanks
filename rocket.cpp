@@ -1,9 +1,11 @@
 #include "rocket.h"
 
 Rocket::Rocket(std::shared_ptr<Map>& map, std::shared_ptr<Tank>& tank,
-               int speed)
+               int speed, int power)
     : Movable(map, tank->GetCellX(), tank->GetCellY(), tank->GetDirection(),
-              speed) {}
+              speed),
+      tank_(tank),
+      power_(power) {}
 
 void Rocket::Draw(QPainter& painter) {
   painter.setBrush(Qt::blue);
@@ -15,3 +17,7 @@ void Rocket::Draw(QPainter& painter) {
                       cur_height_ / 3);
   painter.restore();
 }
+
+std::shared_ptr<Tank> Rocket::GetAttachedTank() const { return tank_; }
+
+int Rocket::GetPower() const { return power_; }

@@ -13,6 +13,7 @@
 #include <QPushButton>
 #include <QString>
 #include <QTimer>
+#include <QtGlobal>
 #include <algorithm>
 #include <memory>
 #include "bot.h"
@@ -39,7 +40,13 @@ class MainWindow : public QMainWindow {
   void RedrawContent();
 
  private:
+  void FindInteractingObjects();
+  bool HaveObjectsCollided(const std::shared_ptr<Movable> &obj1,
+                           const std::shared_ptr<Movable> &obj2) const;
+  void CheckDeadObjects();
   void ShootRocket(std::shared_ptr<Tank> &object);
+  bool IsRocketByThisTank(const std::shared_ptr<Movable> &rocket,
+                          const std::shared_ptr<Movable> &tank) const;
   int GetTimerDuration() const;
   void GameOver();
 
@@ -47,8 +54,8 @@ class MainWindow : public QMainWindow {
   QPushButton *new_game_button_;
   QComboBox *swith_map_menu_;
   std::shared_ptr<Map> map_;
-  QList<std::shared_ptr<Movable>> static_objects_;
-  QList<std::shared_ptr<Movable>> moving_objects_;
+  QList<std::shared_ptr<Movable>> tanks_;
+  QList<std::shared_ptr<Movable>> rockets_;
   int number_of_player_tanks_ = 1;
 
   int timer_duration_ = 10;

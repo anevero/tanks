@@ -15,7 +15,8 @@ class Movable {
           Direction direction, int speed);
   virtual ~Movable() = default;
 
-  virtual void StartMovement(int number_of_cells);
+  virtual void StartMovement(int number_of_cells,
+                             QList<std::shared_ptr<Movable>>& tanks);
   virtual void Move(int milliseconds_passed);
   virtual void TurnReverseOn();
   virtual void TurnReverseOff();
@@ -42,6 +43,8 @@ class Movable {
 
   virtual int GetUpperLeftX() const;
   virtual int GetUpperLeftY() const;
+  virtual int GetWidth() const;
+  virtual int GetHeight() const;
   virtual int GetCellX() const;
   virtual int GetCellY() const;
 

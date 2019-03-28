@@ -12,12 +12,22 @@ Movable::Movable(std::shared_ptr<Map>& map, int cell_x, int cell_y,
   directions_[static_cast<int>(direction)] = 1;
 }
 
-void Movable::StartMovement(int number_of_cells) {
+void Movable::StartMovement(int number_of_cells,
+                            QList<std::shared_ptr<Movable>>& tanks) {
   int new_cell_x = cell_x_ + reverse_ * (directions_[1] - directions_[3]);
   int new_cell_y = cell_y_ + reverse_ * (directions_[2] - directions_[0]);
   if (map_->GetField(new_cell_x, new_cell_y) == CellType::Wall) {
     cells_to_finish_movement_ = 0;
     return;
+  }
+  if (dynamic_cast<Tank*>(this) != nullptr) {
+    for (const auto& object : tanks) {
+      if (object->GetCellX() == new_cell_x &&
+          object->GetCellY() == new_cell_y) {
+        cells_to_finish_movement_ = 0;
+        return;
+      }
+    }
   }
 
   cell_x_ = new_cell_x;
@@ -137,5 +147,7 @@ Direction Movable::GetDirection() const {
 
 int Movable::GetUpperLeftX() const { return cur_upper_left_x_; }
 int Movable::GetUpperLeftY() const { return cur_upper_left_y_; }
+int Movable::GetWidth() const { return cur_width_; }
+int Movable::GetHeight() const { return cur_height_; }
 int Movable::GetCellX() const { return cell_x_; }
 int Movable::GetCellY() const { return cell_y_; }

@@ -13,13 +13,14 @@ class Tank : public Movable {
   Tank(std::shared_ptr<Map>& map, int init_cell_x, int init_cell_y, int speed,
        int rate_of_fire, Direction direction);
   void Draw(QPainter& painter) override;
-  void DrawHealth(QPainter& painter);
+  virtual void DrawHealth(QPainter& painter);
 
-  bool IsAbleToShoot() const;
-  void IncreaseTimeSinceLastShot(int delta);
-  void SetZeroTimeFromLastShot();
-  void MinusHealth(int health = 10);
-  void PlusHealth(int health = 10);
+  virtual bool IsAbleToShoot() const;
+  virtual void IncreaseTimeSinceLastShot(int delta);
+  virtual void SetZeroTimeFromLastShot();
+  virtual void MinusHealth(int health = 10);
+  virtual void PlusHealth(int health = 10);
+  virtual bool IsDead() const;
 
  protected:
   int rate_of_fire_;
