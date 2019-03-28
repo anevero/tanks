@@ -102,9 +102,7 @@ void MainWindow::timerEvent(QTimerEvent *) {
   for (auto &object : tanks_) {
     if (std::dynamic_pointer_cast<Bot>(object) != nullptr) {
       std::shared_ptr<Bot> bot = std::dynamic_pointer_cast<Bot>(object);
-      std::shared_ptr<Tank> tank = std::dynamic_pointer_cast<Tank>(object);
-      if (bot->IsShotNeeded(map_,
-                               std::dynamic_pointer_cast<Tank>(tanks_[0]))) {
+      if (bot->IsShotNeeded(map_, std::dynamic_pointer_cast<Tank>(tanks_[0]))) {
         std::shared_ptr<Tank> tank = std::dynamic_pointer_cast<Tank>(object);
         ShootRocket(tank);
         // в случае нескольких танков нужно проверять DoesNeedToShoot от
