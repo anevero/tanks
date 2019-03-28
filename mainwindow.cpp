@@ -154,7 +154,7 @@ void MainWindow::timerEvent(QTimerEvent *) {
   }
 
   FindInteractingObjects();
-  CheckDeadTanks();
+  CheckDeadObjects();
 
   repaint();
 }
@@ -228,8 +228,7 @@ void MainWindow::FindInteractingObjects() {
 bool MainWindow::HaveObjectsCollided(
     const std::shared_ptr<Movable> &obj1,
     const std::shared_ptr<Movable> &obj2) const {
-  if (obj1 == obj2 || IsRocketByThisTank(obj1, obj2) ||
-      IsRocketByThisTank(obj2, obj1)) {
+  if (obj1 == obj2 || IsRocketByThisTank(obj1, obj2)) {
     return false;
   }
 
@@ -240,7 +239,7 @@ bool MainWindow::HaveObjectsCollided(
       (obj1->GetUpperLeftY() + obj1->GetHeight() <= obj2->GetUpperLeftY()));
 }
 
-void MainWindow::CheckDeadTanks() {
+void MainWindow::CheckDeadObjects() {
   auto bot = tanks_.begin();
   for (int i = 0; i < number_of_player_tanks_; ++i) {
     if (std::dynamic_pointer_cast<Tank>(tanks_[i])->IsDead()) {
