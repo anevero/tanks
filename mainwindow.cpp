@@ -25,10 +25,10 @@ MainWindow::MainWindow(QWidget *parent)
   timer_id_ = startTimer(timer_duration_);
   connect(new_game_button_, SIGNAL(clicked()), this, SLOT(RedrawContent()));
 
-  for (const auto &cell : map_->coordinates_) {
+  for (const auto &bot : map_->robot_qualities_) {
     tanks_.append(std::shared_ptr<Movable>(
-        new Bot(map_, cell.first, cell.second, 1500, 100, Direction::Up)));
-    tanks_[tanks_.size() - 1]->StartRotation();
+        new Bot(map_, bot.cell_x, bot.cell_y, 1000, 100, Direction::Right,
+                bot.moving_length, bot.amout_of_turns)));
   }
 }
 
@@ -102,14 +102,19 @@ void MainWindow::timerEvent(QTimerEvent *) {
   for (auto &object : tanks_) {
     if (std::dynamic_pointer_cast<Bot>(object) != nullptr) {
       std::shared_ptr<Bot> bot = std::dynamic_pointer_cast<Bot>(object);
-      if (bot->IsShotNeeded(map_, std::dynamic_pointer_cast<Tank>(tanks_[0]))) {
+
+      if (bot->IsShotNeeded(map_, std::dynamic_pointer_cast<Tank>(tanks_[0]))
+          && bot->IsAbleToShoot()) {
         std::shared_ptr<Tank> tank = std::dynamic_pointer_cast<Tank>(object);
+        bot->SetZeroTimeFromLastShot();
         ShootRocket(tank);
         // в случае нескольких танков нужно проверять DoesNeedToShoot от
         // нескольких первых объектов tanks_
       }
 
-      if (bot->IsRotationStartNeeded()) {
+      if (bot->IsMovingStartNeeded()) {
+        bot->StartMovement(1, tanks_);
+      } else if (bot->IsRotationStartNeeded()) {
         bot->StartRotation();
       }
 
@@ -194,10 +199,10 @@ void MainWindow::RedrawContent() {
   tanks_.append(std::shared_ptr<Tank>(new Tank(map_, map_->GetTankInitCellX(),
                                                map_->GetTankInitCellY(), 750,
                                                500, Direction::Up)));
-  for (const auto &cell : map_->coordinates_) {
+  for (const auto &bot : map_->robot_qualities_) {
     tanks_.append(std::shared_ptr<Movable>(
-        new Bot(map_, cell.first, cell.second, 1500, 100, Direction::Up)));
-    tanks_[tanks_.size() - 1]->StartRotation();
+        new Bot(map_, bot.cell_x, bot.cell_y, 1000, 100, Direction::Right,
+                bot.moving_length, bot.amout_of_turns)));
   }
   rotation_info_label_->setText("No data");
   if (timer_id_ == 0) {

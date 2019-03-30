@@ -10,13 +10,21 @@
 class Bot : public Tank {
  public:
   explicit Bot(std::shared_ptr<Map>& map, int init_cell_x, int init_cell_y, int speed,
-               int rate_of_fire, Direction direction);
+               int rate_of_fire, Direction direction, int moving_length, int amount_of_turns);
 
   void Draw(QPainter& painter) override;
 
   bool IsTurnNeeded() const;
-  bool IsRotationStartNeeded() const;
+  bool IsMoveNeeded() const;
+  bool IsRotationStartNeeded();
+  bool IsMovingStartNeeded();
   bool IsShotNeeded(std::shared_ptr<Map>, std::shared_ptr<Tank>) const;
+
+ private:
+  int number_of_cells_to_move = 0;
+  int number_of_turns = 0;
+  const int moving_length_;
+  const int amount_of_turns_;
 };
 
 #endif // BOT_H

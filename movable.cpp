@@ -25,6 +25,8 @@ void Movable::StartMovement(int number_of_cells,
       if (object->GetCellX() == new_cell_x &&
           object->GetCellY() == new_cell_y) {
         cells_to_finish_movement_ = 0;
+        object->cells_to_finish_movement_ = 0;
+        // зануление параметров движения танка
         return;
       }
     }

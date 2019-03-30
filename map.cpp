@@ -40,9 +40,10 @@ Map::Map(int map_number) {
   int amount_of_robots;
   in >> amount_of_robots;
   int bot_cell_x, bot_cell_y;
+  int amount_of_turns, moving_length;
   for (int i = 0; i < amount_of_robots; i++) {
-    in >> bot_cell_x >> bot_cell_y;
-    coordinates_.push_back({bot_cell_x, bot_cell_y});
+    in >> bot_cell_x >> bot_cell_y >> moving_length >> amount_of_turns;
+    robot_qualities_.push_back({bot_cell_x, bot_cell_y, moving_length, amount_of_turns});
   }
 
   input_file.close();

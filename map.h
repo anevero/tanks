@@ -16,6 +16,12 @@ enum class CellType {
   // to be continued
 };
 
+struct TankQualities {
+  int cell_x, cell_y;
+  int moving_length;
+  int amout_of_turns;
+};
+
 class Map {
  public:
   explicit Map(int map_number);
@@ -34,7 +40,7 @@ class Map {
   int GetTankInitCellX() const;
   int GetTankInitCellY() const;
 
-  QVector<QPair<int, int>> coordinates_;
+  QVector<TankQualities> robot_qualities_;
 
  private:
   QVector<QVector<CellType>> map_;

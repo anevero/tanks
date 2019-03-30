@@ -21,4 +21,4 @@ W G G W G G G G W E G G G G G G G G G W
 W W W W W W W W W W W W W W W W W W W W
 18 18
 1
-2 2
+2 2 5 1

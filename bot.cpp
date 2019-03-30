@@ -1,8 +1,10 @@
 #include "bot.h"
 
 Bot::Bot(std::shared_ptr<Map>& map, int init_cell_x, int init_cell_y, int speed,
-         int rate_of_fire, Direction direction)
-    : Tank(map, init_cell_x, init_cell_y, speed, rate_of_fire, direction){};
+         int rate_of_fire, Direction direction, int moving_length, int amount_of_turns)
+    : Tank(map, init_cell_x, init_cell_y, speed, rate_of_fire, direction),
+      moving_length_(moving_length),
+      amount_of_turns_(amount_of_turns) {};
 
 void Bot::Draw(QPainter& painter) {
   painter.setBrush(Qt::yellow);
@@ -23,13 +25,48 @@ bool Bot::IsTurnNeeded() const {
   return time_to_finish_rotation_ > 0;
 }
 
-bool Bot::IsRotationStartNeeded() const {
-  return time_to_finish_rotation_ <= 0;
+bool Bot::IsRotationStartNeeded() { 
+  if (time_to_finish_rotation_ <= 0) {
+    if (number_of_turns > 0) {
+      number_of_turns--;
+      return number_of_turns > 0 ? true : false;
+    }
+    if (number_of_cells_to_move == 0) {
+      if (qrand() % 2 == 0) {
+        TurnRotationReverseOn();
+      } else {
+        TurnRotationReverseOff();
+      }
+      number_of_turns = amount_of_turns_;
+      return true;
+    }
+  }
+  return false;
+}
+
+bool Bot::IsMoveNeeded() const {
+  return time_to_finish_movement_ > 0;
+}
+
+bool Bot::IsMovingStartNeeded() {
+  if (time_to_finish_movement_ <= 0) {
+      if (number_of_cells_to_move == 0) {
+        if (number_of_turns == 0) {
+          number_of_cells_to_move = moving_length_;
+        } else {
+          return false;
+        }
+      } else {
+        number_of_cells_to_move--;
+      }
+      return number_of_cells_to_move > 0 ? true : false;
+  }
+  return false;
 }
 
 bool Bot::IsShotNeeded(std::shared_ptr<Map> map,
                           std::shared_ptr<Tank> tank) const {
-  if (time_to_finish_rotation_ <= 0) {
+  if (time_to_finish_rotation_ == 0 && time_to_finish_movement_ == 0) {
     int direction = GetIntDirection();
     if (direction == 0 || direction == 2) {
       if (tank->GetCellX() == GetCellX()) {
