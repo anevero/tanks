@@ -57,18 +57,6 @@ void Movable::Rotate(int milliseconds_passed) {
   time_to_finish_rotation_ -= milliseconds_passed;
 }
 
-void Movable::SwitchToNextDirection() {
-  int current_direction = GetIntDirection();
-  directions_[current_direction] = 0;
-  directions_[(current_direction + 1) % 4] = 1;
-}
-
-void Movable::SwitchToPrevDirection() {
-  int current_direction = GetIntDirection();
-  directions_[current_direction] = 0;
-  directions_[(current_direction + 3) % 4] = 1;
-}
-
 void Movable::TurnRotationReverseOn() { rotate_reverse_ = -1; }
 
 void Movable::TurnRotationReverseOff() { rotate_reverse_ = 1; }
@@ -103,6 +91,8 @@ void Movable::UpdateCoordinates() {
       GetIntDirection() * 90 -
       rotate_reverse_ * static_cast<int>(90 * rotation_proportion);
   current_rotate_degree_ %= 360;
+
+  RescaleImage();
 }
 
 int Movable::GetSpeed() const { return speed_; }
@@ -151,3 +141,23 @@ int Movable::GetWidth() const { return cur_width_; }
 int Movable::GetHeight() const { return cur_height_; }
 int Movable::GetCellX() const { return cell_x_; }
 int Movable::GetCellY() const { return cell_y_; }
+
+void Movable::SwitchToNextDirection() {
+  int current_direction = GetIntDirection();
+  directions_[current_direction] = 0;
+  directions_[(current_direction + 1) % 4] = 1;
+}
+
+void Movable::SwitchToPrevDirection() {
+  int current_direction = GetIntDirection();
+  directions_[current_direction] = 0;
+  directions_[(current_direction + 3) % 4] = 1;
+}
+
+void Movable::RescaleImage() {
+  if (scaled_image_.width() == cur_width_ &&
+      scaled_image_.height() == cur_height_) {
+    return;
+  }
+  scaled_image_ = image_.scaled(cur_width_, cur_height_, Qt::KeepAspectRatio);
+}

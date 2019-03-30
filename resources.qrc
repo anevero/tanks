@@ -4,6 +4,12 @@
     <file>maps/map2.txt</file>
     <file>maps/map3.txt</file>
     <file>maps/map4.txt</file>
-    <file>maps/map5.txt</file>
+    <file>textures/0.png</file>
+    <file>textures/1.png</file>
+    <file>textures/2.png</file>
+    <file>textures/3.png</file>
+    <file>textures/tank.png</file>
+    <file>textures/bot.png</file>
+    <file>textures/rocket.png</file>
 </qresource>
 </RCC>

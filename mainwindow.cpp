@@ -8,8 +8,6 @@ MainWindow::MainWindow(QWidget *parent)
                                                 500, Direction::Up))}) {
   new_game_button_ = new QPushButton("New game", this);
   swith_map_menu_ = new QComboBox(this);
-
-  rotation_info_label_ = new QLabel(this);
   game_over_label_ = new QLabel(this);
 
   int map_number = 1;
@@ -64,9 +62,6 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event) {
       }
       break;
   }
-
-  rotation_info_label_->setText(
-      rotation_info_[static_cast<int>(tank->GetDirection())]);
 }
 
 void MainWindow::paintEvent(QPaintEvent *) {
@@ -176,10 +171,6 @@ void MainWindow::RedrawButtons() {
                                h_indent_ + static_cast<int>(0.15 * sq_height_),
                                static_cast<int>(0.2 * sq_width_),
                                static_cast<int>(0.05 * sq_height_));
-  rotation_info_label_->setGeometry(
-      w_indent_ + static_cast<int>(0.04 * sq_width_),
-      h_indent_ + static_cast<int>(0.25 * sq_height_),
-      static_cast<int>(0.2 * sq_width_), static_cast<int>(0.05 * sq_height_));
   game_over_label_->setGeometry(w_indent_ + static_cast<int>(0.08 * sq_width_),
                                 h_indent_ + static_cast<int>(0.7 * sq_height_),
                                 static_cast<int>(sq_width_),
@@ -199,7 +190,6 @@ void MainWindow::RedrawContent() {
         new Bot(map_, cell.first, cell.second, 1500, 100, Direction::Up)));
     tanks_[tanks_.size() - 1]->StartRotation();
   }
-  rotation_info_label_->setText("No data");
   if (timer_id_ == 0) {
     timer_id_ = startTimer(timer_duration_);
   }
