@@ -5,16 +5,17 @@ Rocket::Rocket(std::shared_ptr<Map>& map, std::shared_ptr<Tank>& tank,
     : Movable(map, tank->GetCellX(), tank->GetCellY(), tank->GetDirection(),
               speed),
       tank_(tank),
-      power_(power) {}
+      power_(power) {
+  image_.load(":/textures/rocket.png");
+  scaled_image_ = image_;
+}
 
 void Rocket::Draw(QPainter& painter) {
-  painter.setBrush(Qt::blue);
   painter.save();
   painter.translate(cur_upper_left_x_ + cur_width_ / 2,
                     cur_upper_left_y_ + cur_height_ / 2);
   painter.rotate(current_rotate_degree_);
-  painter.drawEllipse(-cur_width_ / 8, -cur_height_ / 2, cur_width_ / 4,
-                      cur_height_ / 3);
+  painter.drawImage(-cur_width_ / 2, -cur_height_ / 2, scaled_image_);
   painter.restore();
 }
 

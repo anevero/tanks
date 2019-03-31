@@ -2,6 +2,7 @@
 #define MOVABLE_H
 
 #include <QDebug>
+#include <QImage>
 #include <QList>
 #include <QVector>
 #include <memory>
@@ -51,6 +52,7 @@ class Movable {
  protected:
   virtual void SwitchToNextDirection();
   virtual void SwitchToPrevDirection();
+  virtual void RescaleImage();
 
   int cell_x_;
   int cell_y_;
@@ -70,6 +72,9 @@ class Movable {
   int current_rotate_degree_;
   int time_to_finish_rotation_ = 0;
   int rotate_reverse_ = 1;
+
+  QImage image_;
+  QImage scaled_image_;
 };
 
 #endif  // MOVABLE_H

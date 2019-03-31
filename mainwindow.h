@@ -65,9 +65,6 @@ class MainWindow : public QMainWindow {
   int sq_height_;
   int w_indent_;
   int h_indent_;
-
-  QLabel *rotation_info_label_;
-  QVector<QString> rotation_info_ = {"Up", "Right", "Down", "Left"};
 };
 
 #endif  // MAINWINDOW_H
