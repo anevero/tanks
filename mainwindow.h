@@ -9,6 +9,7 @@
 #include <QLabel>
 #include <QList>
 #include <QMainWindow>
+#include <QMessageBox>
 #include <QPainter>
 #include <QPushButton>
 #include <QString>
@@ -64,8 +65,6 @@ class MainWindow : public QMainWindow {
   int sq_height_;
   int w_indent_;
   int h_indent_;
-
-  QLabel *game_over_label_;
 };
 
 #endif  // MAINWINDOW_H
