@@ -23,7 +23,7 @@ Map::Map(int map_number) {
           map_[j].push_back(CellType::Wall);
           break;
         case ('E'):
-          map_[j].push_back(CellType::Ground);
+          map_[j].push_back(CellType::Sand);
           break;
         case ('Q'):
           map_[j].push_back(CellType::Water);
