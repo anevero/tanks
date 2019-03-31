@@ -3,13 +3,14 @@
 
 #include <QDebug>
 #include <QPainter>
+#include <cmath>
 #include <memory>
 #include "map.h"
 #include "tank.h"
 
 class Bot : public Tank {
  public:
-  explicit Bot(std::shared_ptr<Map>& map, int init_cell_x, int init_cell_y, int speed,
+  Bot(std::shared_ptr<Map>& map, int init_cell_x, int init_cell_y, int speed,
                int rate_of_fire, Direction direction, int moving_length, int amount_of_turns);
 
   void Draw(QPainter& painter) override;
@@ -18,13 +19,15 @@ class Bot : public Tank {
   bool IsMoveNeeded() const;
   bool IsRotationStartNeeded();
   bool IsMovingStartNeeded();
-  bool IsShotNeeded(std::shared_ptr<Map>, std::shared_ptr<Tank>) const;
+  virtual bool IsShotNeeded(std::shared_ptr<Map>, std::shared_ptr<Tank>);
 
- private:
+ protected:
   int number_of_cells_to_move = 0;
   int number_of_turns = 0;
   const int moving_length_;
   const int amount_of_turns_;
+
+  bool CheckDirection(int& first, int& second, int direction);
 };
 
 #endif // BOT_H

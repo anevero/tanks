@@ -9,6 +9,7 @@ Map::Map(int map_number) {
   in >> map_width_in_cells >> map_height_in_cells;
 
   map_.resize(map_width_in_cells);
+  walls_precalc.resize(map_width_in_cells);
 
   for (int i = 0; i < map_height_in_cells; ++i) {
     for (int j = 0; j < map_width_in_cells; ++j) {
@@ -16,21 +17,18 @@ Map::Map(int map_number) {
       char temp_value;
       in >> temp_value;
       switch (temp_value) {
-        case ('G'):
-          map_[j].push_back(CellType::Grass);
+        case ('G'):map_[j].push_back(CellType::Grass);
           break;
-        case ('W'):
-          map_[j].push_back(CellType::Wall);
+        case ('W'):map_[j].push_back(CellType::Wall);
           break;
-        case ('E'):
-          map_[j].push_back(CellType::Ground);
+        case ('E'):map_[j].push_back(CellType::Ground);
           break;
-        case ('Q'):
-          map_[j].push_back(CellType::Water);
+        case ('Q'):map_[j].push_back(CellType::Water);
           break;
       }
     }
   }
+  WallsPrecalc();
 
   in >> tank_init_cell_x_ >> tank_init_cell_y_;
   tank_init_cell_x_--;
@@ -43,30 +41,27 @@ Map::Map(int map_number) {
   int amount_of_turns, moving_length;
   for (int i = 0; i < amount_of_robots; i++) {
     in >> bot_cell_x >> bot_cell_y >> moving_length >> amount_of_turns;
-    robot_qualities_.push_back({bot_cell_x, bot_cell_y, moving_length, amount_of_turns});
+    robot_qualities_.push_back({bot_cell_x, bot_cell_y, moving_length,
+                                amount_of_turns});
   }
 
   input_file.close();
 }
 
-void Map::DrawMap(QPainter &painter) {
+void Map::DrawMap(QPainter& painter) {
   int cell_width = cur_width_ / map_.size();
   int cell_height = cur_height_ / map_[0].size();
 
   for (int i = 0; i < map_.size(); ++i) {
     for (int j = 0; j < map_[i].size(); ++j) {
       switch (map_[i][j]) {
-        case CellType::Wall:
-          painter.setBrush(Qt::red);
+        case CellType::Wall:painter.setBrush(Qt::red);
           break;
-        case CellType::Grass:
-          painter.setBrush(Qt::green);
+        case CellType::Grass:painter.setBrush(Qt::green);
           break;
-        case CellType::Ground:
-          painter.setBrush(Qt::gray);
+        case CellType::Ground:painter.setBrush(Qt::gray);
           break;
-        case CellType::Water:
-          painter.setBrush(Qt::blue);
+        case CellType::Water:painter.setBrush(Qt::blue);
           break;
       }
       painter.drawRect(cur_upper_left_x_ + i * cell_width,
@@ -78,6 +73,9 @@ void Map::DrawMap(QPainter &painter) {
 
 CellType Map::GetField(int cell_x, int cell_y) const {
   return map_[cell_x][cell_y];
+}
+int Map::GetWallsPrecalc(int cell_x, int cell_y) const {
+  return walls_precalc[cell_x][cell_y];
 }
 int Map::GetNumberOfCellsHorizontally() const { return map_.size(); }
 int Map::GetNumberOfCellsVertically() const { return map_[0].size(); }
@@ -94,4 +92,21 @@ void Map::UpdateCoordinates(int upper_left_x, int upper_left_y, int width,
   cur_upper_left_y_ = upper_left_y;
   cur_width_ = width;
   cur_height_ = height;
+}
+
+void Map::WallsPrecalc() {
+  int height = GetNumberOfCellsVertically();
+  int width = GetNumberOfCellsHorizontally();
+  for (int i = 0; i < height - 1; ++i) {
+    for (int j = 0; j < width - 1; ++j) {
+      walls_precalc[j].push_back(0);
+      if (i > 0 && j > 0) {
+        walls_precalc[j][i] = walls_precalc[j - 1][i] + walls_precalc[j][i - 1]
+            - walls_precalc[j - 1][i - 1];
+        if (map_[j][i] == CellType::Wall) {
+          walls_precalc[j][i]++;
+        }
+      }
+    }
+  }
 }

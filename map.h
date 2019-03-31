@@ -31,6 +31,7 @@ class Map {
 
  public:
   CellType GetField(int cell_x, int cell_y) const;
+  int GetWallsPrecalc(int x, int y) const;
   int GetNumberOfCellsHorizontally() const;
   int GetNumberOfCellsVertically() const;
   int GetUpperLeftX() const;
@@ -44,6 +45,9 @@ class Map {
 
  private:
   QVector<QVector<CellType>> map_;
+  QVector<QVector<int>> walls_precalc;
+
+  void WallsPrecalc();
 
   int cur_upper_left_x_{};
   int cur_upper_left_y_{};

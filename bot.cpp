@@ -25,7 +25,7 @@ bool Bot::IsTurnNeeded() const {
   return time_to_finish_rotation_ > 0;
 }
 
-bool Bot::IsRotationStartNeeded() { 
+bool Bot::IsRotationStartNeeded() {
   if (time_to_finish_rotation_ <= 0) {
     if (number_of_turns > 0) {
       number_of_turns--;
@@ -50,54 +50,64 @@ bool Bot::IsMoveNeeded() const {
 
 bool Bot::IsMovingStartNeeded() {
   if (time_to_finish_movement_ <= 0) {
-      if (number_of_cells_to_move == 0) {
-        if (number_of_turns == 0) {
-          number_of_cells_to_move = moving_length_;
-        } else {
-          return false;
-        }
+    if (number_of_cells_to_move == 0) {
+      if (number_of_turns == 0) {
+        number_of_cells_to_move = moving_length_;
       } else {
-        number_of_cells_to_move--;
+        return false;
       }
-      return number_of_cells_to_move > 0 ? true : false;
+    } else {
+      number_of_cells_to_move--;
+    }
+    return number_of_cells_to_move > 0 ? true : false;
   }
   return false;
 }
 
 bool Bot::IsShotNeeded(std::shared_ptr<Map> map,
-                          std::shared_ptr<Tank> tank) const {
+                       std::shared_ptr<Tank> tank) {
   if (time_to_finish_rotation_ == 0 && time_to_finish_movement_ == 0) {
     int direction = GetIntDirection();
+    int tank_x = tank->GetCellX();
+    int tank_y = tank->GetCellY();
+    int bot_x = GetCellX();
+    int bot_y = GetCellY();
     if (direction == 0 || direction == 2) {
-      if (tank->GetCellX() == GetCellX()) {
-        int delta = (direction == 0) ? -1 : 1;
-        int finish_cell =
-            (direction == 0) ? 0 : map->GetNumberOfCellsVertically();
-        int curr_cell = GetCellY() + delta;
-        while (curr_cell != finish_cell
-               && map_->GetField(GetCellX(), curr_cell) != CellType::Wall) {
-          if (tank->GetCellY() == curr_cell) {
-            return true;
-          }
-          curr_cell += delta;
+      if (tank_x == bot_x) {
+        if (!CheckDirection(tank_y, bot_y, direction)) {
+          return false;
         }
+        int walls_count = map->GetWallsPrecalc(bot_x, bot_y);
+        walls_count += map->GetWallsPrecalc(tank_x - 1, tank_y - 1);
+        walls_count -= map->GetWallsPrecalc(tank_x, tank_y - 1);
+        walls_count -= map->GetWallsPrecalc(bot_x - 1, bot_y);
+        if (walls_count == 0) return true;
       }
     }
     if (direction == 1 || direction == 3) {
-      if (tank->GetCellY() == GetCellY()) {
-        int delta = (direction == 3) ? -1 : 1;
-        int finish_cell =
-            (direction == 3) ? 0 : map->GetNumberOfCellsHorizontally();
-        int curr_cell = GetCellX() + delta;
-        while (curr_cell != finish_cell
-               && map_->GetField(curr_cell, GetCellY()) != CellType::Wall) {
-          if (tank->GetCellX() == curr_cell) {
-            return true;
-          }
-          curr_cell += delta;
+      if (tank_y == bot_y) {
+        if (!CheckDirection(tank_x, bot_x, 3 - direction)) {
+          return false;
         }
+        int walls_count = map->GetWallsPrecalc(bot_x, bot_y);
+        walls_count += map->GetWallsPrecalc(tank_x - 1, tank_y - 1);
+        walls_count -= map->GetWallsPrecalc(tank_x - 1, tank_y);
+        walls_count -= map->GetWallsPrecalc(bot_x, bot_y - 1);
+        if (walls_count == 0) return true;
       }
     }
   }
   return false;
+}
+
+bool Bot::CheckDirection(int& first, int& second, int direction) {
+  if (first > second) {
+    std::swap(first, second);
+    if (direction == 0) {
+      return false;
+    }
+  } else if (direction == 2) {
+    return false;
+  }
+  return true;
 }
