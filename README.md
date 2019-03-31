@@ -22,11 +22,18 @@
 
 ## Активация clang-format в Qt Creator
 
-Установите clang-format с помощью менеджера пакетов вашего дистрибутива Linux. В Ubuntu:
+Установите утилиту **clang-format**. В Linux используйте менеджер пакетов вашего дистрибутива, в частности, в Ubuntu:
 
 `sudo apt-get install clang-format`
 
-В Qt Creator пройдите в меню **Help - About Plugins**, где поставьте галочку напротив пункта **Beautifier (experimental)**. Перезагрузите IDE. После этого пройдите в меню **Tools - Options - Beautifier**, где включите форматирование с помощью **clang-format**. Полезной является галочка **Enable auto format on file save** - при ее активации ваш код будет автоматически форматироваться при каждом сохранении файла. Далее пройдите в **Tools - Options - Beautifier**, где в графе **Use predefined style** выберите **Google**.
+В Windows установка **Clang** и необходимых компонентов осуществляется с помощью установочного файла, который можно загрузить с [сайта LLVM](http://releases.llvm.org/download.html) (раздел *Pre-built Binaries*, выберите ссылку, соответствующую разрядности вашей системы). 
+
+В Qt Creator пройдите в меню **Help - About Plugins**, где поставьте галочку напротив пункта **Beautifier (experimental)**. 
+Перезагрузите IDE. После этого пройдите в меню **Tools - Options - Beautifier**. Во вкладке **General** поставьте галочку **Enable auto
+format on file save** и выберите в графе **Tool** пункт **ClangFormat**. Затем во вкладке **Clang Format** в выпадающем списке **Use
+predefined style** выберите **Google**. Если вы используете Windows, в этой же вкладке дополнительно требуется указать путь к утилите
+**clang-format**. Если вы не изменяли стандартный путь установки, вам нужно выбрать файл **C:\Program Files\LLVM\bin\clang-format.exe**.
+После всех этих операций нажмите **Apply** и **OK**. 
 
 ## О проекте
 
@@ -36,4 +43,3 @@
   - Гармаза Александра
   - Неверо Андрей
   - Тарайкович Алеся
-
