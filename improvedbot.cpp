@@ -29,6 +29,7 @@ bool ImprovedBot::IsRotationStartNeeded(std::shared_ptr<Tank> tank) {
 
 bool ImprovedBot::CheckDirection(int& tank, int& bot, int direction) {
   if (tank > bot) {
+    std::swap(tank, bot);
     if (direction == 0 || direction == 3) {
       number_of_cells_to_move_ = 0;
       number_of_turns_ = 3;
