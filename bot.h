@@ -13,8 +13,6 @@ class Bot : public Tank {
   Bot(std::shared_ptr<Map>& map, int init_cell_x, int init_cell_y, int speed,
                int rate_of_fire, Direction direction, int moving_length, int amount_of_turns);
 
-  void Draw(QPainter& painter) override;
-
   virtual bool IsTurnNeeded() const;
   virtual bool IsMoveNeeded() const;
   virtual bool IsRotationStartNeeded(std::shared_ptr<Tank>);
@@ -30,4 +28,4 @@ class Bot : public Tank {
   virtual bool CheckDirection(int& tank, int& bot, int direction);
 };
 
-#endif // BOT_H
+#endif  // BOT_H

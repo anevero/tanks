@@ -17,13 +17,17 @@ Map::Map(int map_number) {
       char temp_value;
       in >> temp_value;
       switch (temp_value) {
-        case ('G'):map_[j].push_back(CellType::Grass);
+        case ('G'):
+          map_[j].push_back(CellType::Grass);
           break;
-        case ('W'):map_[j].push_back(CellType::Wall);
+        case ('W'):
+          map_[j].push_back(CellType::Wall);
           break;
-        case ('E'):map_[j].push_back(CellType::Ground);
+        case ('S'):
+          map_[j].push_back(CellType::Sand);
           break;
-        case ('Q'):map_[j].push_back(CellType::Water);
+        case ('Q'):
+          map_[j].push_back(CellType::Water);
           break;
       }
     }
@@ -46,27 +50,33 @@ Map::Map(int map_number) {
   }
 
   input_file.close();
+
+  QImage image;
+  for (int i = 0; i < number_of_cell_types_; ++i) {
+    image.load(":/textures/" + QString::number(i) + ".png");
+    images_.push_back(image);
+  }
+  scaled_images_ = images_;
+}
+
+void Map::UpdateCoordinates(int upper_left_x, int upper_left_y, int width,
+                            int height) {
+  cur_upper_left_x_ = upper_left_x;
+  cur_upper_left_y_ = upper_left_y;
+  cur_width_ = width;
+  cur_height_ = height;
+  cur_cell_width_ = cur_width_ / map_.size();
+  cur_cell_height_ = cur_height_ / map_[0].size();
+  RescaleImages();
 }
 
 void Map::DrawMap(QPainter& painter) {
-  int cell_width = cur_width_ / map_.size();
-  int cell_height = cur_height_ / map_[0].size();
-
+  QImage image;
   for (int i = 0; i < map_.size(); ++i) {
     for (int j = 0; j < map_[i].size(); ++j) {
-      switch (map_[i][j]) {
-        case CellType::Wall:painter.setBrush(Qt::red);
-          break;
-        case CellType::Grass:painter.setBrush(Qt::green);
-          break;
-        case CellType::Ground:painter.setBrush(Qt::gray);
-          break;
-        case CellType::Water:painter.setBrush(Qt::blue);
-          break;
-      }
-      painter.drawRect(cur_upper_left_x_ + i * cell_width,
-                       cur_upper_left_y_ + j * cell_height, cell_width,
-                       cell_height);
+      image = scaled_images_[static_cast<int>(map_[i][j])];
+      painter.drawImage(cur_upper_left_x_ + i * cur_cell_width_ - 1,
+                        cur_upper_left_y_ + j * cur_cell_height_ - 1, image);
     }
   }
 }
@@ -86,12 +96,15 @@ int Map::GetHeight() const { return cur_height_; }
 int Map::GetTankInitCellX() const { return tank_init_cell_x_; }
 int Map::GetTankInitCellY() const { return tank_init_cell_y_; }
 
-void Map::UpdateCoordinates(int upper_left_x, int upper_left_y, int width,
-                            int height) {
-  cur_upper_left_x_ = upper_left_x;
-  cur_upper_left_y_ = upper_left_y;
-  cur_width_ = width;
-  cur_height_ = height;
+void Map::RescaleImages() {
+  if (scaled_images_[0].width() == cur_cell_width_ + 2 &&
+      scaled_images_[0].height() == cur_cell_height_ + 2) {
+    return;
+  }
+  for (int i = 0; i < number_of_cell_types_; ++i) {
+    scaled_images_[i] = images_[i].scaled(
+        cur_cell_width_ + 2, cur_cell_height_ + 2, Qt::KeepAspectRatio);
+  }
 }
 
 void Map::WallsPrecalc() {

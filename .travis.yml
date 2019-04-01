@@ -15,7 +15,7 @@ install:
 
 script:
   - make
-  - cppcheck --enable=unusedFunction ./ 2> cppcheck_unused_f.txt
-  - cppcheck --enable=warning,performance,style --error-exitcode=1 ./ 2> cppcheck.txt 
+  - cppcheck -i qrc_resources.cpp --enable=unusedFunction ./ 2> cppcheck_unused_f.txt
+  - cppcheck -i qrc_resources.cpp --enable=warning,performance,style --error-exitcode=1 ./ 2> cppcheck.txt 
   - cat cppcheck_unused_f.txt
   - cat cppcheck.txt

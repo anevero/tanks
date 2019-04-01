@@ -9,9 +9,6 @@ MainWindow::MainWindow(QWidget *parent)
   new_game_button_ = new QPushButton("New game", this);
   swith_map_menu_ = new QComboBox(this);
 
-  rotation_info_label_ = new QLabel(this);
-  game_over_label_ = new QLabel(this);
-
   int map_number = 1;
   QFileInfo map_file(":/maps/map" + QString::number(map_number) + ".txt");
   while (map_file.exists() && map_file.isFile()) {
@@ -67,9 +64,6 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event) {
       }
       break;
   }
-
-  rotation_info_label_->setText(
-      rotation_info_[static_cast<int>(tank->GetDirection())]);
 }
 
 void MainWindow::paintEvent(QPaintEvent *) {
@@ -183,14 +177,6 @@ void MainWindow::RedrawButtons() {
                                h_indent_ + static_cast<int>(0.15 * sq_height_),
                                static_cast<int>(0.2 * sq_width_),
                                static_cast<int>(0.05 * sq_height_));
-  rotation_info_label_->setGeometry(
-      w_indent_ + static_cast<int>(0.04 * sq_width_),
-      h_indent_ + static_cast<int>(0.25 * sq_height_),
-      static_cast<int>(0.2 * sq_width_), static_cast<int>(0.05 * sq_height_));
-  game_over_label_->setGeometry(w_indent_ + static_cast<int>(0.08 * sq_width_),
-                                h_indent_ + static_cast<int>(0.7 * sq_height_),
-                                static_cast<int>(sq_width_),
-                                static_cast<int>(0.4 * sq_height_));
 }
 
 void MainWindow::RedrawContent() {
@@ -209,11 +195,9 @@ void MainWindow::RedrawContent() {
         new Bot(map_, bot.cell_x, bot.cell_y, 1000, 100, Direction::Right,
                 bot.moving_length, bot.amout_of_turns)));
   }
-  rotation_info_label_->setText("No data");
   if (timer_id_ == 0) {
     timer_id_ = startTimer(timer_duration_);
   }
-  game_over_label_->setText("");
 
   repaint();
 }
@@ -265,6 +249,9 @@ void MainWindow::CheckDeadObjects() {
     }
     bot++;
   }
+  if (tanks_.size() == number_of_player_tanks_) {
+    GameOver();
+  }
 }
 
 void MainWindow::ShootRocket(std::shared_ptr<Tank> &tank) {
@@ -293,5 +280,13 @@ int MainWindow::GetTimerDuration() const { return timer_duration_; }
 void MainWindow::GameOver() {
   killTimer(timer_id_);
   timer_id_ = 0;
-  game_over_label_->setText("Game Over.");
+
+  QMessageBox message;
+  message.setWindowTitle("Tanks Alpha");
+  if (tanks_.size() == number_of_player_tanks_) {
+    message.setText("You win!");
+  } else {
+    message.setText("You died!");
+  }
+  message.exec();
 }
