@@ -45,7 +45,7 @@ class Map {
 
  private:
   QVector<QVector<CellType>> map_;
-  QVector<QVector<int>> walls_precalc;
+  QVector<QVector<int>> walls_precalc_;
 
   void WallsPrecalc();
 
