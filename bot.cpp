@@ -27,17 +27,17 @@ bool Bot::IsTurnNeeded() const {
 
 bool Bot::IsRotationStartNeeded() {
   if (time_to_finish_rotation_ <= 0) {
-    if (number_of_turns > 0) {
-      number_of_turns--;
-      return number_of_turns > 0 ? true : false;
+    if (number_of_turns_ > 0) {
+      number_of_turns_--;
+      return number_of_turns_ > 0 ? true : false;
     }
-    if (number_of_cells_to_move == 0) {
+    if (number_of_cells_to_move_ == 0) {
       if (qrand() % 2 == 0) {
         TurnRotationReverseOn();
       } else {
         TurnRotationReverseOff();
       }
-      number_of_turns = amount_of_turns_;
+      number_of_turns_ = amount_of_turns_;
       return true;
     }
   }
@@ -50,16 +50,16 @@ bool Bot::IsMoveNeeded() const {
 
 bool Bot::IsMovingStartNeeded() {
   if (time_to_finish_movement_ <= 0) {
-    if (number_of_cells_to_move == 0) {
-      if (number_of_turns == 0) {
-        number_of_cells_to_move = moving_length_;
+    if (number_of_cells_to_move_ == 0) {
+      if (number_of_turns_ == 0) {
+        number_of_cells_to_move_ = moving_length_;
       } else {
         return false;
       }
     } else {
-      number_of_cells_to_move--;
+      number_of_cells_to_move_--;
     }
-    return number_of_cells_to_move > 0 ? true : false;
+    return number_of_cells_to_move_ > 0 ? true : false;
   }
   return false;
 }
