@@ -5,7 +5,7 @@ MainWindow::MainWindow(QWidget *parent)
       map_(new Map(1)),
       tanks_({std::shared_ptr<Movable>(new Tank(map_, map_->GetTankInitCellX(),
                                                 map_->GetTankInitCellY(), 750,
-                                                200, Direction::Up))}) {
+                                                300, Direction::Up))}) {
   new_game_button_ = new QPushButton("New game", this);
   swith_map_menu_ = new QComboBox(this);
 
@@ -29,7 +29,7 @@ MainWindow::MainWindow(QWidget *parent)
   }
 
   tanks_.append(std::shared_ptr<Movable>(
-      new ImprovedBot(map_, 1, 2, 1000, 1000, Direction::Right, 5, 2)));
+      new ImprovedBot(map_, 1, 2, 1000, 1000, Direction::Up, 4, 2)));
 }
 
 void MainWindow::keyReleaseEvent(QKeyEvent *event) {
@@ -186,9 +186,9 @@ void MainWindow::RedrawContent() {
   rockets_.clear();
   tanks_.append(std::shared_ptr<Tank>(new Tank(map_, map_->GetTankInitCellX(),
                                                map_->GetTankInitCellY(), 750,
-                                               200, Direction::Up)));
+                                               300, Direction::Up)));
   tanks_.append(std::shared_ptr<Movable>(
-      new ImprovedBot(map_, 1, 2, 1000, 1000, Direction::Right, 5, 2)));
+      new ImprovedBot(map_, 1, 2, 1000, 1000, Direction::Up, 4, 2)));
 
   for (const auto &bot : map_->robot_qualities_) {
     tanks_.append(std::shared_ptr<Movable>(
