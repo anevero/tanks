@@ -5,7 +5,7 @@ MainWindow::MainWindow(QWidget *parent)
       map_(new Map(1)),
       tanks_({std::shared_ptr<Movable>(new Tank(map_, map_->GetTankInitCellX(),
                                                 map_->GetTankInitCellY(), 750,
-                                                500, Direction::Up))}) {
+                                                300, Direction::Up))}) {
   new_game_button_ = new QPushButton("New game", this);
   swith_map_menu_ = new QComboBox(this);
 
@@ -22,11 +22,14 @@ MainWindow::MainWindow(QWidget *parent)
   timer_id_ = startTimer(timer_duration_);
   connect(new_game_button_, SIGNAL(clicked()), this, SLOT(RedrawContent()));
 
-  for (const auto &cell : map_->coordinates_) {
+  for (const auto &bot : map_->robot_qualities_) {
     tanks_.append(std::shared_ptr<Movable>(
-        new Bot(map_, cell.first, cell.second, 1500, 100, Direction::Up)));
-    tanks_[tanks_.size() - 1]->StartRotation();
+        new Bot(map_, bot.cell_x, bot.cell_y, 1000, 100, Direction::Right,
+                bot.moving_length, bot.amout_of_turns)));
   }
+
+  tanks_.append(std::shared_ptr<Movable>(
+      new ImprovedBot(map_, 1, 2, 1000, 1000, Direction::Up, 4, 2)));
 }
 
 void MainWindow::keyReleaseEvent(QKeyEvent *event) {
@@ -96,14 +99,18 @@ void MainWindow::timerEvent(QTimerEvent *) {
   for (auto &object : tanks_) {
     if (std::dynamic_pointer_cast<Bot>(object) != nullptr) {
       std::shared_ptr<Bot> bot = std::dynamic_pointer_cast<Bot>(object);
-      if (bot->IsShotNeeded(map_, std::dynamic_pointer_cast<Tank>(tanks_[0]))) {
+
+      if (bot->IsShotNeeded(map_, std::dynamic_pointer_cast<Tank>(tanks_[0]))
+          && bot->IsAbleToShoot()) {
         std::shared_ptr<Tank> tank = std::dynamic_pointer_cast<Tank>(object);
+        bot->SetZeroTimeFromLastShot();
         ShootRocket(tank);
-        // в случае нескольких танков нужно проверять DoesNeedToShoot от
-        // нескольких первых объектов tanks_
+        // continue;
       }
 
-      if (bot->IsRotationStartNeeded()) {
+      if (bot->IsMovingStartNeeded()) {
+        bot->StartMovement(1, tanks_);
+      } else if (bot->IsRotationStartNeeded(std::dynamic_pointer_cast<Tank>(tanks_[0]))) {
         bot->StartRotation();
       }
 
@@ -179,11 +186,14 @@ void MainWindow::RedrawContent() {
   rockets_.clear();
   tanks_.append(std::shared_ptr<Tank>(new Tank(map_, map_->GetTankInitCellX(),
                                                map_->GetTankInitCellY(), 750,
-                                               500, Direction::Up)));
-  for (const auto &cell : map_->coordinates_) {
+                                               300, Direction::Up)));
+  tanks_.append(std::shared_ptr<Movable>(
+      new ImprovedBot(map_, 1, 2, 1000, 1000, Direction::Up, 4, 2)));
+
+  for (const auto &bot : map_->robot_qualities_) {
     tanks_.append(std::shared_ptr<Movable>(
-        new Bot(map_, cell.first, cell.second, 1500, 100, Direction::Up)));
-    tanks_[tanks_.size() - 1]->StartRotation();
+        new Bot(map_, bot.cell_x, bot.cell_y, 1000, 100, Direction::Right,
+                bot.moving_length, bot.amout_of_turns)));
   }
   if (timer_id_ == 0) {
     timer_id_ = startTimer(timer_duration_);

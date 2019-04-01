@@ -9,6 +9,7 @@ Map::Map(int map_number) {
   in >> map_width_in_cells >> map_height_in_cells;
 
   map_.resize(map_width_in_cells);
+  walls_precalc_.resize(map_width_in_cells);
 
   for (int i = 0; i < map_height_in_cells; ++i) {
     for (int j = 0; j < map_width_in_cells; ++j) {
@@ -31,6 +32,7 @@ Map::Map(int map_number) {
       }
     }
   }
+  WallsPrecalc();
 
   in >> tank_init_cell_x_ >> tank_init_cell_y_;
   tank_init_cell_x_--;
@@ -40,9 +42,11 @@ Map::Map(int map_number) {
   int amount_of_robots;
   in >> amount_of_robots;
   int bot_cell_x, bot_cell_y;
+  int amount_of_turns, moving_length;
   for (int i = 0; i < amount_of_robots; i++) {
-    in >> bot_cell_x >> bot_cell_y;
-    coordinates_.push_back({bot_cell_x, bot_cell_y});
+    in >> bot_cell_x >> bot_cell_y >> moving_length >> amount_of_turns;
+    robot_qualities_.push_back({bot_cell_x, bot_cell_y, moving_length,
+                                amount_of_turns});
   }
 
   input_file.close();
@@ -80,6 +84,9 @@ void Map::DrawMap(QPainter& painter) {
 CellType Map::GetField(int cell_x, int cell_y) const {
   return map_[cell_x][cell_y];
 }
+int Map::GetWallsPrecalc(int cell_x, int cell_y) const {
+  return walls_precalc_[cell_x][cell_y];
+}
 int Map::GetNumberOfCellsHorizontally() const { return map_.size(); }
 int Map::GetNumberOfCellsVertically() const { return map_[0].size(); }
 int Map::GetUpperLeftX() const { return cur_upper_left_x_; }
@@ -97,5 +104,22 @@ void Map::RescaleImages() {
   for (int i = 0; i < number_of_cell_types_; ++i) {
     scaled_images_[i] = images_[i].scaled(
         cur_cell_width_ + 2, cur_cell_height_ + 2, Qt::KeepAspectRatio);
+  }
+}
+
+void Map::WallsPrecalc() {
+  int height = GetNumberOfCellsVertically();
+  int width = GetNumberOfCellsHorizontally();
+  for (int i = 0; i < height - 1; ++i) {
+    for (int j = 0; j < width - 1; ++j) {
+      walls_precalc_[j].push_back(0);
+      if (i > 0 && j > 0) {
+        walls_precalc_[j][i] = walls_precalc_[j - 1][i] + walls_precalc_[j][i - 1]
+            - walls_precalc_[j - 1][i - 1];
+        if (map_[j][i] == CellType::Wall) {
+          walls_precalc_[j][i]++;
+        }
+      }
+    }
   }
 }

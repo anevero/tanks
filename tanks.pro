@@ -16,7 +16,8 @@ SOURCES += \
     tank.cpp \
     movable.cpp \
     rocket.cpp \
-    bot.cpp
+    bot.cpp \
+    improvedbot.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -24,7 +25,8 @@ HEADERS += \
     tank.h \
     movable.h \
     rocket.h \
-    bot.h
+    bot.h \
+    improvedbot.h
 
 DISTFILES += \
     maps/map1.txt \
