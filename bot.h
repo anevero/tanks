@@ -22,8 +22,8 @@ class Bot : public Tank {
   virtual bool IsShotNeeded(std::shared_ptr<Map>, std::shared_ptr<Tank>);
 
  protected:
-  int number_of_cells_to_move = 0;
-  int number_of_turns = 0;
+  int number_of_cells_to_move_ = 0;
+  int number_of_turns_ = 0;
   const int moving_length_;
   const int amount_of_turns_;
 
