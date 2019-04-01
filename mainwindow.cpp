@@ -5,7 +5,7 @@ MainWindow::MainWindow(QWidget *parent)
       map_(new Map(1)),
       tanks_({std::shared_ptr<Movable>(new Tank(map_, map_->GetTankInitCellX(),
                                                 map_->GetTankInitCellY(), 750,
-                                                100, Direction::Up))}) {
+                                                200, Direction::Up))}) {
   new_game_button_ = new QPushButton("New game", this);
   swith_map_menu_ = new QComboBox(this);
 
@@ -200,7 +200,7 @@ void MainWindow::RedrawContent() {
   rockets_.clear();
   tanks_.append(std::shared_ptr<Tank>(new Tank(map_, map_->GetTankInitCellX(),
                                                map_->GetTankInitCellY(), 750,
-                                               100, Direction::Up)));
+                                               200, Direction::Up)));
   tanks_.append(std::shared_ptr<Movable>(
       new ImprovedBot(map_, 1, 2, 1000, 1000, Direction::Right, 5, 2)));
 
