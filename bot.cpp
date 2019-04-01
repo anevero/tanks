@@ -25,19 +25,19 @@ bool Bot::IsTurnNeeded() const {
   return time_to_finish_rotation_ > 0;
 }
 
-bool Bot::IsRotationStartNeeded() {
-  if (time_to_finish_rotation_ <= 0) {
-    if (number_of_turns > 0) {
-      number_of_turns--;
-      return number_of_turns > 0 ? true : false;
+bool Bot::IsRotationStartNeeded(std::shared_ptr<Tank>) {
+  if (time_to_finish_rotation_ <= 0 && time_to_finish_movement_ <= 0) {
+    if (number_of_turns_ > 0) {
+      number_of_turns_--;
+      return number_of_turns_ > 0 ? true : false;
     }
-    if (number_of_cells_to_move == 0) {
+    if (number_of_cells_to_move_ == 0) {
       if (qrand() % 2 == 0) {
         TurnRotationReverseOn();
       } else {
         TurnRotationReverseOff();
       }
-      number_of_turns = amount_of_turns_;
+      number_of_turns_ = amount_of_turns_;
       return true;
     }
   }
@@ -49,17 +49,17 @@ bool Bot::IsMoveNeeded() const {
 }
 
 bool Bot::IsMovingStartNeeded() {
-  if (time_to_finish_movement_ <= 0) {
-    if (number_of_cells_to_move == 0) {
-      if (number_of_turns == 0) {
-        number_of_cells_to_move = moving_length_;
+  if (time_to_finish_movement_ <= 0 && time_to_finish_rotation_ <= 0) {
+    if (number_of_cells_to_move_ == 0) {
+      if (number_of_turns_ == 0) {
+        number_of_cells_to_move_ = moving_length_;
       } else {
         return false;
       }
     } else {
-      number_of_cells_to_move--;
+      number_of_cells_to_move_--;
     }
-    return number_of_cells_to_move > 0 ? true : false;
+    return number_of_cells_to_move_ > 0 ? true : false;
   }
   return false;
 }
@@ -72,6 +72,7 @@ bool Bot::IsShotNeeded(std::shared_ptr<Map> map,
     int tank_y = tank->GetCellY();
     int bot_x = GetCellX();
     int bot_y = GetCellY();
+
     if (direction == 0 || direction == 2) {
       if (tank_x == bot_x) {
         if (!CheckDirection(tank_y, bot_y, direction)) {
@@ -86,7 +87,7 @@ bool Bot::IsShotNeeded(std::shared_ptr<Map> map,
     }
     if (direction == 1 || direction == 3) {
       if (tank_y == bot_y) {
-        if (!CheckDirection(tank_x, bot_x, 3 - direction)) {
+        if (!CheckDirection(tank_x, bot_x, direction)) {
           return false;
         }
         int walls_count = map->GetWallsPrecalc(bot_x, bot_y);
@@ -100,13 +101,13 @@ bool Bot::IsShotNeeded(std::shared_ptr<Map> map,
   return false;
 }
 
-bool Bot::CheckDirection(int& first, int& second, int direction) {
-  if (first > second) {
-    std::swap(first, second);
-    if (direction == 0) {
+bool Bot::CheckDirection(int& tank, int& bot, int direction) {
+  if (tank > bot) {
+    std::swap(tank, bot);
+    if (direction == 0 || direction == 3) {
       return false;
     }
-  } else if (direction == 2) {
+  } else if (direction == 2 || direction == 1) {
     return false;
   }
   return true;

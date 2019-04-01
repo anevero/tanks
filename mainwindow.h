@@ -17,6 +17,7 @@
 #include <algorithm>
 #include <memory>
 #include "bot.h"
+#include "improvedbot.h"
 #include "map.h"
 #include "rocket.h"
 #include "tank.h"

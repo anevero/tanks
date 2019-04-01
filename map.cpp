@@ -9,7 +9,7 @@ Map::Map(int map_number) {
   in >> map_width_in_cells >> map_height_in_cells;
 
   map_.resize(map_width_in_cells);
-  walls_precalc.resize(map_width_in_cells);
+  walls_precalc_.resize(map_width_in_cells);
 
   for (int i = 0; i < map_height_in_cells; ++i) {
     for (int j = 0; j < map_width_in_cells; ++j) {
@@ -75,7 +75,7 @@ CellType Map::GetField(int cell_x, int cell_y) const {
   return map_[cell_x][cell_y];
 }
 int Map::GetWallsPrecalc(int cell_x, int cell_y) const {
-  return walls_precalc[cell_x][cell_y];
+  return walls_precalc_[cell_x][cell_y];
 }
 int Map::GetNumberOfCellsHorizontally() const { return map_.size(); }
 int Map::GetNumberOfCellsVertically() const { return map_[0].size(); }
@@ -99,12 +99,12 @@ void Map::WallsPrecalc() {
   int width = GetNumberOfCellsHorizontally();
   for (int i = 0; i < height - 1; ++i) {
     for (int j = 0; j < width - 1; ++j) {
-      walls_precalc[j].push_back(0);
+      walls_precalc_[j].push_back(0);
       if (i > 0 && j > 0) {
-        walls_precalc[j][i] = walls_precalc[j - 1][i] + walls_precalc[j][i - 1]
-            - walls_precalc[j - 1][i - 1];
+        walls_precalc_[j][i] = walls_precalc_[j - 1][i] + walls_precalc_[j][i - 1]
+            - walls_precalc_[j - 1][i - 1];
         if (map_[j][i] == CellType::Wall) {
-          walls_precalc[j][i]++;
+          walls_precalc_[j][i]++;
         }
       }
     }

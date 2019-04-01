@@ -30,6 +30,9 @@ MainWindow::MainWindow(QWidget *parent)
         new Bot(map_, bot.cell_x, bot.cell_y, 1000, 100, Direction::Right,
                 bot.moving_length, bot.amout_of_turns)));
   }
+
+  tanks_.append(std::shared_ptr<Movable>(
+      new ImprovedBot(map_, 1, 2, 1000, 1000, Direction::Right, 5, 2)));
 }
 
 void MainWindow::keyReleaseEvent(QKeyEvent *event) {
@@ -108,13 +111,12 @@ void MainWindow::timerEvent(QTimerEvent *) {
         std::shared_ptr<Tank> tank = std::dynamic_pointer_cast<Tank>(object);
         bot->SetZeroTimeFromLastShot();
         ShootRocket(tank);
-        // в случае нескольких танков нужно проверять DoesNeedToShoot от
-        // нескольких первых объектов tanks_
+        // continue;
       }
 
       if (bot->IsMovingStartNeeded()) {
         bot->StartMovement(1, tanks_);
-      } else if (bot->IsRotationStartNeeded()) {
+      } else if (bot->IsRotationStartNeeded(std::dynamic_pointer_cast<Tank>(tanks_[0]))) {
         bot->StartRotation();
       }
 
@@ -199,6 +201,9 @@ void MainWindow::RedrawContent() {
   tanks_.append(std::shared_ptr<Tank>(new Tank(map_, map_->GetTankInitCellX(),
                                                map_->GetTankInitCellY(), 750,
                                                500, Direction::Up)));
+  tanks_.append(std::shared_ptr<Movable>(
+      new ImprovedBot(map_, 1, 2, 1000, 1000, Direction::Right, 5, 2)));
+
   for (const auto &bot : map_->robot_qualities_) {
     tanks_.append(std::shared_ptr<Movable>(
         new Bot(map_, bot.cell_x, bot.cell_y, 1000, 100, Direction::Right,
