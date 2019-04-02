@@ -33,6 +33,7 @@ class Tank : public Movable {
   int rate_of_fire_;
   int time_since_last_shot_{};
   int health_{};
+  const int max_health_{};
 };
 
 #endif  // TANK_H

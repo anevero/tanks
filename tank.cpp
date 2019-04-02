@@ -4,7 +4,8 @@ Tank::Tank(std::shared_ptr<Map>& map, int init_cell_x, int init_cell_y,
            TankQualities qualities, Direction direction)
     : Movable(map, init_cell_x, init_cell_y, direction, qualities.speed),
       rate_of_fire_(qualities.rate_of_fire),
-      health_(qualities.health) {
+      health_(qualities.health),
+      max_health_(qualities.health) {
   LoadImage();
 }
 
@@ -33,11 +34,11 @@ void Tank::DrawHealth(QPainter& painter) {
     painter.setBrush(Qt::red);
   }
   painter.drawRect(-cur_width_ / 2, 5 * cur_height_ / 8,
-                   health_ * cur_width_ / 100, cur_height_ / 12);
+                   health_ * cur_width_ / max_health_, cur_height_ / 8);
   painter.setBrush(Qt::white);
-  painter.drawRect(-cur_width_ / 2 + health_ * cur_width_ / 100,
-                   5 * cur_height_ / 8, (100 - health_) * cur_width_ / 100,
-                   cur_height_ / 12);
+  painter.drawRect(
+      -cur_width_ / 2 + health_ * cur_width_ / max_health_, 5 * cur_height_ / 8,
+      (max_health_ - health_) * cur_width_ / max_health_, cur_height_ / 8);
   painter.restore();
 }
 
