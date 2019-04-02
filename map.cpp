@@ -38,17 +38,6 @@ Map::Map(int map_number) {
   tank_init_cell_x_--;
   tank_init_cell_y_--;
 
-  // Пока считывание роботов будет так, потом можно придумать что-то другое
-  int amount_of_robots;
-  in >> amount_of_robots;
-  int bot_cell_x, bot_cell_y;
-  int amount_of_turns, moving_length;
-  for (int i = 0; i < amount_of_robots; i++) {
-    in >> bot_cell_x >> bot_cell_y >> moving_length >> amount_of_turns;
-    robot_qualities_.push_back({bot_cell_x, bot_cell_y, moving_length,
-                                amount_of_turns});
-  }
-
   input_file.close();
 
   QImage image;
@@ -114,8 +103,9 @@ void Map::WallsPrecalc() {
     for (int j = 0; j < width - 1; ++j) {
       walls_precalc_[j].push_back(0);
       if (i > 0 && j > 0) {
-        walls_precalc_[j][i] = walls_precalc_[j - 1][i]
-            + walls_precalc_[j][i - 1] - walls_precalc_[j - 1][i - 1];
+        walls_precalc_[j][i] = walls_precalc_[j - 1][i] +
+                               walls_precalc_[j][i - 1] -
+                               walls_precalc_[j - 1][i - 1];
         if (map_[j][i] == CellType::Wall) {
           walls_precalc_[j][i]++;
         }

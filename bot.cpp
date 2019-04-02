@@ -1,17 +1,19 @@
 #include "bot.h"
 
-Bot::Bot(std::shared_ptr<Map>& map, int init_cell_x, int init_cell_y, int speed,
-         int rate_of_fire, Direction direction, int moving_length, int amount_of_turns)
-    : Tank(map, init_cell_x, init_cell_y, speed, rate_of_fire, direction),
-      moving_length_(moving_length),
-      amount_of_turns_(amount_of_turns) {
-  image_.load(":/textures/bot.png");
-  scaled_image_ = image_;
+Bot::Bot(std::shared_ptr<Map>& map, BotQualities qualities, Direction direction)
+    : Tank(map, qualities.init_cell_x, qualities.init_cell_y, qualities.tank,
+           direction),
+      moving_length_(qualities.moving_length),
+      amount_of_turns_(qualities.amount_of_turns) {
+  LoadImage();
 };
 
-bool Bot::IsTurnNeeded() const {
-  return time_to_finish_rotation_ > 0;
+void Bot::LoadImage() {
+  image_.load(":/textures/bot.png");
+  scaled_image_ = image_;
 }
+
+bool Bot::IsTurnNeeded() const { return time_to_finish_rotation_ > 0; }
 
 bool Bot::IsRotationStartNeeded(std::shared_ptr<Tank>) {
   if (time_to_finish_rotation_ <= 0 && time_to_finish_movement_ <= 0) {
@@ -32,9 +34,7 @@ bool Bot::IsRotationStartNeeded(std::shared_ptr<Tank>) {
   return false;
 }
 
-bool Bot::IsMoveNeeded() const {
-  return time_to_finish_movement_ > 0;
-}
+bool Bot::IsMoveNeeded() const { return time_to_finish_movement_ > 0; }
 
 bool Bot::IsMovingStartNeeded() {
   if (time_to_finish_movement_ <= 0 && time_to_finish_rotation_ <= 0) {
@@ -52,8 +52,7 @@ bool Bot::IsMovingStartNeeded() {
   return false;
 }
 
-bool Bot::IsShotNeeded(std::shared_ptr<Map> map,
-                       std::shared_ptr<Tank> tank) {
+bool Bot::IsShotNeeded(std::shared_ptr<Map> map, std::shared_ptr<Tank> tank) {
   if (time_to_finish_rotation_ == 0 && time_to_finish_movement_ == 0) {
     int direction = GetIntDirection();
     int tank_x = tank->GetCellX();

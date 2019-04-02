@@ -18,12 +18,6 @@ enum class CellType {
   // to be continued
 };
 
-struct TankQualities {
-  int cell_x, cell_y;
-  int moving_length;
-  int amout_of_turns;
-};
-
 class Map {
  public:
   explicit Map(int map_number);
@@ -41,8 +35,6 @@ class Map {
   int GetHeight() const;
   int GetTankInitCellX() const;
   int GetTankInitCellY() const;
-
-  QVector<TankQualities> robot_qualities_;
 
  private:
   void RescaleImages();

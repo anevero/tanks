@@ -8,10 +8,17 @@
 #include "map.h"
 #include "movable.h"
 
+struct TankQualities {
+  int speed;
+  int rate_of_fire;
+  int health;
+};
+
 class Tank : public Movable {
  public:
-  Tank(std::shared_ptr<Map>& map, int init_cell_x, int init_cell_y, int speed,
-       int rate_of_fire, Direction direction);
+  Tank(std::shared_ptr<Map>& map, int init_cell_x, int init_cell_y,
+       TankQualities qualities, Direction direction);
+  virtual void LoadImage() override;
   void Draw(QPainter& painter) override;
   virtual void DrawHealth(QPainter& painter);
 
@@ -25,7 +32,7 @@ class Tank : public Movable {
  protected:
   int rate_of_fire_;
   int time_since_last_shot_{};
-  int health_ = 100;
+  int health_{};
 };
 
 #endif  // TANK_H

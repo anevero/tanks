@@ -15,6 +15,7 @@ class Movable {
   Movable(std::shared_ptr<Map>& map, int cell_x, int cell_y,
           Direction direction, int speed);
   virtual ~Movable() = default;
+  virtual void LoadImage() = 0;
 
   virtual void StartMovement(int number_of_cells,
                              QList<std::shared_ptr<Movable>>& tanks);

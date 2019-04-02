@@ -54,14 +54,24 @@ class MainWindow : public QMainWindow {
 
  private:
   QPushButton *new_game_button_;
-  QComboBox *swith_map_menu_;
+  QComboBox *switch_map_menu_;
+  QComboBox *switch_tank_menu_;
+  QComboBox *switch_difficulty_menu_;
+  QLabel *switch_map_label_;
+  QLabel *switch_tank_label_;
+  QLabel *switch_difficulty_label_;
+
   std::shared_ptr<Map> map_;
   QList<std::shared_ptr<Movable>> tanks_;
   QList<std::shared_ptr<Movable>> rockets_;
+
   int number_of_player_tanks_ = 1;
+  int number_of_difficulty_levels = 2;
+  QVector<QString> difficulty_levels_names;
+  QVector<TankQualities> available_tank_types_;
 
   int timer_duration_ = 10;
-  int timer_id_;
+  int timer_id_ = 0;
   int sq_width_;
   int sq_height_;
   int w_indent_;

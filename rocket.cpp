@@ -6,6 +6,10 @@ Rocket::Rocket(std::shared_ptr<Map>& map, std::shared_ptr<Tank>& tank,
               speed),
       tank_(tank),
       power_(power) {
+  LoadImage();
+}
+
+void Rocket::LoadImage() {
   image_.load(":/textures/rocket.png");
   scaled_image_ = image_;
 }
