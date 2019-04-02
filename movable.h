@@ -66,8 +66,7 @@ class Movable {
   std::shared_ptr<Map> map_;
   QVector<int> directions_ = {0, 0, 0, 0};
 
-  int current_speed_{};
-  const int basic_speed_{};
+  int speed_{};
   int reverse_ = 1;
   int time_to_finish_movement_ = 0;
   int cells_to_finish_movement_ = 0;
