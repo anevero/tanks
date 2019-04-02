@@ -220,6 +220,7 @@ void MainWindow::RedrawContent() {
   map_.reset(new Map(switch_map_menu_->currentIndex() + 1));
   tanks_.clear();
   rockets_.clear();
+
   tanks_.append(std::shared_ptr<Movable>(
       new Tank(map_, map_->GetTankInitCellX(), map_->GetTankInitCellY(),
                available_tank_types_[switch_tank_menu_->currentIndex()],
@@ -236,6 +237,7 @@ void MainWindow::RedrawContent() {
     message.exec();
     return;
   }
+
   bots_input_file.open(QIODevice::ReadOnly);
   QTextStream in(&bots_input_file);
   int number_of_standart_bots, number_of_improved_bots;
