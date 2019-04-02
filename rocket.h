@@ -10,6 +10,7 @@ class Rocket : public Movable {
  public:
   Rocket(std::shared_ptr<Map>& map, std::shared_ptr<Tank>& tank, int speed,
          int power);
+  void LoadImage() override;
   void Draw(QPainter& painter) override;
 
   std::shared_ptr<Tank> GetAttachedTank() const;

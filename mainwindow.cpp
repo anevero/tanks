@@ -1,35 +1,49 @@
 ﻿#include "mainwindow.h"
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent),
-      map_(new Map(1)),
-      tanks_({std::shared_ptr<Movable>(new Tank(map_, map_->GetTankInitCellX(),
-                                                map_->GetTankInitCellY(), 750,
-                                                300, Direction::Up))}) {
+    : QMainWindow(parent), map_(new Map(1)) {
   new_game_button_ = new QPushButton("New game", this);
-  swith_map_menu_ = new QComboBox(this);
+  switch_map_menu_ = new QComboBox(this);
+  switch_tank_menu_ = new QComboBox(this);
+  switch_difficulty_menu_ = new QComboBox(this);
+  switch_map_label_ = new QLabel(this);
+  switch_tank_label_ = new QLabel(this);
+  switch_difficulty_label_ = new QLabel(this);
 
   int map_number = 1;
   QFileInfo map_file(":/maps/map" + QString::number(map_number) + ".txt");
   while (map_file.exists() && map_file.isFile()) {
-    swith_map_menu_->addItem("Map " + QString::number(map_number));
+    switch_map_menu_->addItem("Map " + QString::number(map_number));
     map_number++;
     map_file = QFileInfo(":/maps/map" + QString::number(map_number) + ".txt");
   }
 
+  QFile tanks_input_file(":/tanks_info/tanks.txt");
+  tanks_input_file.open(QIODevice::ReadOnly);
+  QTextStream in(&tanks_input_file);
+  int number_of_tank_types;
+  in >> number_of_tank_types;
+  for (int i = 0; i < number_of_tank_types; ++i) {
+    TankQualities qualities;
+    in >> qualities.speed >> qualities.rate_of_fire >> qualities.max_health;
+    available_tank_types_.push_back(qualities);
+    switch_tank_menu_->addItem("Tank " + QString::number(i + 1));
+  }
+  tanks_input_file.close();
+
+  switch_difficulty_menu_->addItem("Easy");
+  switch_difficulty_menu_->addItem("Normal");
+  switch_difficulty_menu_->addItem("Hard");
+
+  switch_map_label_->setText("Map:");
+  switch_tank_label_->setText("Tank:");
+  switch_difficulty_label_->setText("Difficulty:");
+
   setMinimumSize(600, 450);
   resize(600, 450);
-  timer_id_ = startTimer(timer_duration_);
   connect(new_game_button_, SIGNAL(clicked()), this, SLOT(RedrawContent()));
 
-  for (const auto &bot : map_->robot_qualities_) {
-    tanks_.append(std::shared_ptr<Movable>(
-        new Bot(map_, bot.cell_x, bot.cell_y, 1000, 100, Direction::Right,
-                bot.moving_length, bot.amout_of_turns)));
-  }
-
-  tanks_.append(std::shared_ptr<Movable>(
-      new ImprovedBot(map_, 1, 2, 1000, 1000, Direction::Up, 4, 2)));
+  RedrawContent();
 }
 
 void MainWindow::keyReleaseEvent(QKeyEvent *event) {
@@ -100,8 +114,8 @@ void MainWindow::timerEvent(QTimerEvent *) {
     if (std::dynamic_pointer_cast<Bot>(object) != nullptr) {
       std::shared_ptr<Bot> bot = std::dynamic_pointer_cast<Bot>(object);
 
-      if (bot->IsShotNeeded(map_, std::dynamic_pointer_cast<Tank>(tanks_[0]))
-          && bot->IsAbleToShoot()) {
+      if (bot->IsShotNeeded(map_, std::dynamic_pointer_cast<Tank>(tanks_[0])) &&
+          bot->IsAbleToShoot()) {
         std::shared_ptr<Tank> tank = std::dynamic_pointer_cast<Tank>(object);
         bot->SetZeroTimeFromLastShot();
         ShootRocket(tank);
@@ -110,7 +124,8 @@ void MainWindow::timerEvent(QTimerEvent *) {
 
       if (bot->IsMovingStartNeeded()) {
         bot->StartMovement(1, tanks_);
-      } else if (bot->IsRotationStartNeeded(std::dynamic_pointer_cast<Tank>(tanks_[0]))) {
+      } else if (bot->IsRotationStartNeeded(
+                     std::dynamic_pointer_cast<Tank>(tanks_[0]))) {
         bot->StartRotation();
       }
 
@@ -173,32 +188,82 @@ void MainWindow::RedrawButtons() {
                                 h_indent_ + static_cast<int>(0.05 * sq_height_),
                                 static_cast<int>(0.2 * sq_width_),
                                 static_cast<int>(0.05 * sq_height_));
-  swith_map_menu_->setGeometry(w_indent_ + static_cast<int>(0.04 * sq_width_),
-                               h_indent_ + static_cast<int>(0.15 * sq_height_),
-                               static_cast<int>(0.2 * sq_width_),
-                               static_cast<int>(0.05 * sq_height_));
+  switch_map_label_->setGeometry(
+      w_indent_ + static_cast<int>(0.04 * sq_width_),
+      h_indent_ + static_cast<int>(0.12 * sq_height_),
+      static_cast<int>(0.2 * sq_width_), static_cast<int>(0.05 * sq_height_));
+  switch_map_menu_->setGeometry(w_indent_ + static_cast<int>(0.04 * sq_width_),
+                                h_indent_ + static_cast<int>(0.17 * sq_height_),
+                                static_cast<int>(0.2 * sq_width_),
+                                static_cast<int>(0.05 * sq_height_));
+  switch_tank_label_->setGeometry(
+      w_indent_ + static_cast<int>(0.04 * sq_width_),
+      h_indent_ + static_cast<int>(0.24 * sq_height_),
+      static_cast<int>(0.2 * sq_width_), static_cast<int>(0.05 * sq_height_));
+  switch_tank_menu_->setGeometry(
+      w_indent_ + static_cast<int>(0.04 * sq_width_),
+      h_indent_ + static_cast<int>(0.29 * sq_height_),
+      static_cast<int>(0.2 * sq_width_), static_cast<int>(0.05 * sq_height_));
+  switch_difficulty_label_->setGeometry(
+      w_indent_ + static_cast<int>(0.04 * sq_width_),
+      h_indent_ + static_cast<int>(0.36 * sq_height_),
+      static_cast<int>(0.2 * sq_width_), static_cast<int>(0.05 * sq_height_));
+  switch_difficulty_menu_->setGeometry(
+      w_indent_ + static_cast<int>(0.04 * sq_width_),
+      h_indent_ + static_cast<int>(0.41 * sq_height_),
+      static_cast<int>(0.2 * sq_width_), static_cast<int>(0.05 * sq_height_));
 }
 
 void MainWindow::RedrawContent() {
-  // все только для одного игрока пока
-  map_.reset(new Map(swith_map_menu_->currentIndex() + 1));
+  killTimer(timer_id_);
+  timer_id_ = 0;
+  map_.reset(new Map(switch_map_menu_->currentIndex() + 1));
   tanks_.clear();
   rockets_.clear();
-  tanks_.append(std::shared_ptr<Tank>(new Tank(map_, map_->GetTankInitCellX(),
-                                               map_->GetTankInitCellY(), 750,
-                                               300, Direction::Up)));
+
   tanks_.append(std::shared_ptr<Movable>(
-      new ImprovedBot(map_, 1, 2, 1000, 1000, Direction::Up, 4, 2)));
+      new Tank(map_, map_->GetTankInitCellX(), map_->GetTankInitCellY(),
+               available_tank_types_[switch_tank_menu_->currentIndex()],
+               Direction::Up)));
 
-  for (const auto &bot : map_->robot_qualities_) {
-    tanks_.append(std::shared_ptr<Movable>(
-        new Bot(map_, bot.cell_x, bot.cell_y, 1000, 100, Direction::Right,
-                bot.moving_length, bot.amout_of_turns)));
-  }
-  if (timer_id_ == 0) {
-    timer_id_ = startTimer(timer_duration_);
+  QFile bots_input_file(
+      ":/tanks_info/bots" +
+      QString::number(switch_map_menu_->currentIndex() + 1) +
+      QString::number(switch_difficulty_menu_->currentIndex() + 1) + ".txt");
+  if (!bots_input_file.exists()) {
+    QMessageBox message;
+    message.setWindowTitle("Error");
+    message.setText("This level of difficulty isn't available on this map");
+    message.exec();
+    return;
   }
 
+  bots_input_file.open(QIODevice::ReadOnly);
+  QTextStream in(&bots_input_file);
+  int number_of_standart_bots, number_of_improved_bots;
+  in >> number_of_standart_bots >> number_of_improved_bots;
+  for (int i = 0; i < number_of_standart_bots + number_of_improved_bots; ++i) {
+    BotQualities qualities;
+    qualities.tank.max_health =
+        70 + 15 * switch_difficulty_menu_->currentIndex();
+    qualities.tank.rate_of_fire =
+        1000 - 300 * switch_difficulty_menu_->currentIndex();
+    qualities.tank.speed = 1000 - 300 * switch_difficulty_menu_->currentIndex();
+    in >> qualities.init_cell_x >> qualities.init_cell_y >>
+        qualities.moving_length >> qualities.amount_of_turns >>
+        qualities.side_rotation_frequency;
+
+    if (i < number_of_standart_bots) {
+      tanks_.append(
+          std::shared_ptr<Movable>(new Bot(map_, qualities, Direction::Up)));
+    } else {
+      tanks_.append(std::shared_ptr<Movable>(
+          new ImprovedBot(map_, qualities, Direction::Up)));
+    }
+  }
+  bots_input_file.close();
+
+  timer_id_ = startTimer(timer_duration_);
   repaint();
 }
 

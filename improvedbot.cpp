@@ -1,11 +1,15 @@
 #include "improvedbot.h"
 
-ImprovedBot::ImprovedBot(std::shared_ptr<Map>& map,
-                         int init_cell_x, int init_cell_y,
-                         int speed, int rate_of_fire, Direction direction,
-                         int moving_length, int amount_of_turns)
-    : Bot(map, init_cell_x, init_cell_y, speed, rate_of_fire, direction,
-          moving_length, amount_of_turns) {};
+ImprovedBot::ImprovedBot(std::shared_ptr<Map>& map, BotQualities qualities,
+                         Direction direction)
+    : Bot(map, qualities, direction) {
+  LoadImage();
+};
+
+void ImprovedBot::LoadImage() {
+  image_.load(":/textures/improved_bot.png");
+  scaled_image_ = image_;
+}
 
 bool ImprovedBot::IsRotationStartNeeded(std::shared_ptr<Tank> tank) {
   if (time_to_finish_rotation_ <= 0 && time_to_finish_movement_ <= 0) {
@@ -17,7 +21,7 @@ bool ImprovedBot::IsRotationStartNeeded(std::shared_ptr<Tank> tank) {
       if (IsShotNeeded(map_, tank)) {
         return false;
       }
-      if (qrand() % 2 == 0) {
+      if (qrand() % side_rotation_frequency_ == 0) {
         TurnRotationReverseOn();
       } else {
         TurnRotationReverseOff();

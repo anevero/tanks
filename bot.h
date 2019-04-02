@@ -2,18 +2,26 @@
 #define BOT_H
 
 #include <QDebug>
+#include <QImage>
 #include <QPainter>
 #include <cmath>
 #include <memory>
 #include "map.h"
 #include "tank.h"
 
+struct BotQualities {
+  TankQualities tank;
+  int init_cell_x;
+  int init_cell_y;
+  int moving_length;
+  int amount_of_turns;
+  int side_rotation_frequency;
+};
+
 class Bot : public Tank {
  public:
-  Bot(std::shared_ptr<Map>& map, int init_cell_x,
-      int init_cell_y, int speed,
-      int rate_of_fire, Direction direction,
-      int moving_length, int amount_of_turns);
+  Bot(std::shared_ptr<Map>& map, BotQualities qualities, Direction direction);
+  virtual void LoadImage() override;
 
   virtual bool IsTurnNeeded() const;
   virtual bool IsMoveNeeded() const;
@@ -26,6 +34,7 @@ class Bot : public Tank {
   int number_of_turns_ = 0;
   const int moving_length_;
   const int amount_of_turns_;
+  const int side_rotation_frequency_;
 
   virtual bool CheckDirection(int& tank, int& bot, int direction);
 };
