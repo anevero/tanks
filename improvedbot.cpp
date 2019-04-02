@@ -21,7 +21,7 @@ bool ImprovedBot::IsRotationStartNeeded(std::shared_ptr<Tank> tank) {
       if (IsShotNeeded(map_, tank)) {
         return false;
       }
-      if (qrand() % 2 == 0) {
+      if (qrand() % side_rotation_frequency_ == 0) {
         TurnRotationReverseOn();
       } else {
         TurnRotationReverseOff();

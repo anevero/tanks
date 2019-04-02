@@ -4,7 +4,8 @@ Bot::Bot(std::shared_ptr<Map>& map, BotQualities qualities, Direction direction)
     : Tank(map, qualities.init_cell_x, qualities.init_cell_y, qualities.tank,
            direction),
       moving_length_(qualities.moving_length),
-      amount_of_turns_(qualities.amount_of_turns) {
+      amount_of_turns_(qualities.amount_of_turns),
+      side_rotation_frequency_(qualities.side_rotation_frequency) {
   LoadImage();
 };
 
@@ -22,7 +23,7 @@ bool Bot::IsRotationStartNeeded(std::shared_ptr<Tank>) {
       return number_of_turns_ > 0 ? true : false;
     }
     if (number_of_cells_to_move_ == 0) {
-      if (qrand() % 2 == 0) {
+      if (qrand() % side_rotation_frequency_ == 0) {
         TurnRotationReverseOn();
       } else {
         TurnRotationReverseOff();

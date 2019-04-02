@@ -249,7 +249,8 @@ void MainWindow::RedrawContent() {
         1000 - 300 * switch_difficulty_menu_->currentIndex();
     qualities.tank.speed = 1000 - 300 * switch_difficulty_menu_->currentIndex();
     in >> qualities.init_cell_x >> qualities.init_cell_y >>
-        qualities.moving_length >> qualities.amount_of_turns;
+        qualities.moving_length >> qualities.amount_of_turns >>
+        qualities.side_rotation_frequency;
 
     if (i < number_of_standart_bots) {
       tanks_.append(
