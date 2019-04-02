@@ -114,8 +114,8 @@ void Map::WallsPrecalc() {
     for (int j = 0; j < width - 1; ++j) {
       walls_precalc_[j].push_back(0);
       if (i > 0 && j > 0) {
-        walls_precalc_[j][i] = walls_precalc_[j - 1][i] + walls_precalc_[j][i - 1]
-            - walls_precalc_[j - 1][i - 1];
+        walls_precalc_[j][i] = walls_precalc_[j - 1][i]
+            + walls_precalc_[j][i - 1] - walls_precalc_[j - 1][i - 1];
         if (map_[j][i] == CellType::Wall) {
           walls_precalc_[j][i]++;
         }
