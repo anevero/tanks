@@ -10,5 +10,6 @@ W G G G W G G G G W
 W G G G G G G G G W
 W W W W W W W W W W
 7 5
-1
-2 2
+2
+1 8 0 1
+8 8 5 1

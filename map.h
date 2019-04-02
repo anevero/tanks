@@ -18,6 +18,12 @@ enum class CellType {
   // to be continued
 };
 
+struct TankQualities {
+  int cell_x, cell_y;
+  int moving_length;
+  int amout_of_turns;
+};
+
 class Map {
  public:
   explicit Map(int map_number);
@@ -26,6 +32,7 @@ class Map {
   void DrawMap(QPainter &painter);
 
   CellType GetField(int cell_x, int cell_y) const;
+  int GetWallsPrecalc(int x, int y) const;
   int GetNumberOfCellsHorizontally() const;
   int GetNumberOfCellsVertically() const;
   int GetUpperLeftX() const;
@@ -35,14 +42,14 @@ class Map {
   int GetTankInitCellX() const;
   int GetTankInitCellY() const;
 
+  QVector<TankQualities> robot_qualities_;
+
  private:
   void RescaleImages();
+  void WallsPrecalc();
 
- public:
-  QVector<QPair<int, int>> coordinates_;
-
- private:
   QVector<QVector<CellType>> map_;
+  QVector<QVector<int>> walls_precalc_;
   QVector<QImage> images_;
   QVector<QImage> scaled_images_;
 
@@ -52,7 +59,6 @@ class Map {
   int cur_height_{};
   int cur_cell_width_{};
   int cur_cell_height_{};
-
   int tank_init_cell_x_;
   int tank_init_cell_y_;
 
