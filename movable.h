@@ -1,4 +1,4 @@
-#ifndef MOVABLE_H
+﻿#ifndef MOVABLE_H
 #define MOVABLE_H
 
 #include <QDebug>
@@ -66,7 +66,8 @@ class Movable {
   std::shared_ptr<Map> map_;
   QVector<int> directions_ = {0, 0, 0, 0};
 
-  int speed_;
+  int current_speed_{};
+  const int basic_speed_{};
   int reverse_ = 1;
   int time_to_finish_movement_ = 0;
   int cells_to_finish_movement_ = 0;
