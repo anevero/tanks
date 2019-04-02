@@ -17,17 +17,13 @@ Map::Map(int map_number) {
       char temp_value;
       in >> temp_value;
       switch (temp_value) {
-        case ('G'):
-          map_[j].push_back(CellType::Grass);
+        case ('G'):map_[j].push_back(CellType::Grass);
           break;
-        case ('W'):
-          map_[j].push_back(CellType::Wall);
+        case ('W'):map_[j].push_back(CellType::Wall);
           break;
-        case ('S'):
-          map_[j].push_back(CellType::Sand);
+        case ('S'):map_[j].push_back(CellType::Sand);
           break;
-        case ('Q'):
-          map_[j].push_back(CellType::Water);
+        case ('Q'):map_[j].push_back(CellType::Water);
           break;
       }
     }
@@ -114,8 +110,8 @@ void Map::WallsPrecalc() {
     for (int j = 0; j < width - 1; ++j) {
       walls_precalc_[j].push_back(0);
       if (i > 0 && j > 0) {
-        walls_precalc_[j][i] = walls_precalc_[j - 1][i] + walls_precalc_[j][i - 1]
-            - walls_precalc_[j - 1][i - 1];
+        walls_precalc_[j][i] = walls_precalc_[j - 1][i]
+            + walls_precalc_[j][i - 1] - walls_precalc_[j - 1][i - 1];
         if (map_[j][i] == CellType::Wall) {
           walls_precalc_[j][i]++;
         }
