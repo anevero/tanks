@@ -25,7 +25,7 @@ MainWindow::MainWindow(QWidget *parent)
   in >> number_of_tank_types;
   for (int i = 0; i < number_of_tank_types; ++i) {
     TankQualities qualities;
-    in >> qualities.speed >> qualities.rate_of_fire >> qualities.health;
+    in >> qualities.speed >> qualities.rate_of_fire >> qualities.max_health;
     available_tank_types_.push_back(qualities);
     switch_tank_menu_->addItem("Tank " + QString::number(i + 1));
   }
@@ -244,7 +244,8 @@ void MainWindow::RedrawContent() {
   in >> number_of_standart_bots >> number_of_improved_bots;
   for (int i = 0; i < number_of_standart_bots + number_of_improved_bots; ++i) {
     BotQualities qualities;
-    qualities.tank.health = 100;
+    qualities.tank.max_health =
+        70 + 15 * switch_difficulty_menu_->currentIndex();
     qualities.tank.rate_of_fire =
         1000 - 300 * switch_difficulty_menu_->currentIndex();
     qualities.tank.speed = 1000 - 300 * switch_difficulty_menu_->currentIndex();

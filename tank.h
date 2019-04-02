@@ -11,7 +11,7 @@
 struct TankQualities {
   int speed;
   int rate_of_fire;
-  int health;
+  int max_health;
 };
 
 class Tank : public Movable {
@@ -32,7 +32,7 @@ class Tank : public Movable {
  protected:
   int rate_of_fire_;
   int time_since_last_shot_{};
-  int health_{};
+  int current_health_{};
   const int max_health_{};
 };
 

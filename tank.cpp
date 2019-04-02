@@ -4,8 +4,8 @@ Tank::Tank(std::shared_ptr<Map>& map, int init_cell_x, int init_cell_y,
            TankQualities qualities, Direction direction)
     : Movable(map, init_cell_x, init_cell_y, direction, qualities.speed),
       rate_of_fire_(qualities.rate_of_fire),
-      health_(qualities.health),
-      max_health_(qualities.health) {
+      current_health_(qualities.max_health),
+      max_health_(qualities.max_health) {
   LoadImage();
 }
 
@@ -28,17 +28,18 @@ void Tank::DrawHealth(QPainter& painter) {
   painter.save();
   painter.translate(cur_upper_left_x_ + cur_width_ / 2,
                     cur_upper_left_y_ + cur_height_ / 4);
-  if (health_ > 30) {
+  if (current_health_ > static_cast<int>(max_health_ * 0.3)) {
     painter.setBrush(Qt::blue);
   } else {
     painter.setBrush(Qt::red);
   }
   painter.drawRect(-cur_width_ / 2, 5 * cur_height_ / 8,
-                   health_ * cur_width_ / max_health_, cur_height_ / 8);
+                   current_health_ * cur_width_ / max_health_, cur_height_ / 8);
   painter.setBrush(Qt::white);
-  painter.drawRect(
-      -cur_width_ / 2 + health_ * cur_width_ / max_health_, 5 * cur_height_ / 8,
-      (max_health_ - health_) * cur_width_ / max_health_, cur_height_ / 8);
+  painter.drawRect(-cur_width_ / 2 + current_health_ * cur_width_ / max_health_,
+                   5 * cur_height_ / 8,
+                   (max_health_ - current_health_) * cur_width_ / max_health_,
+                   cur_height_ / 8);
   painter.restore();
 }
 
@@ -54,8 +55,8 @@ void Tank::IncreaseTimeSinceLastShot(int delta) {
 
 void Tank::SetZeroTimeFromLastShot() { time_since_last_shot_ = 0; }
 
-void Tank::MinusHealth(int health) { health_ -= health; }
+void Tank::MinusHealth(int health) { current_health_ -= health; }
 
-void Tank::PlusHealth(int health) { health_ += health; }
+void Tank::PlusHealth(int health) { current_health_ += health; }
 
-bool Tank::IsDead() const { return health_ <= 0; }
+bool Tank::IsDead() const { return current_health_ <= 0; }
