@@ -17,13 +17,17 @@ Map::Map(int map_number) {
       char temp_value;
       in >> temp_value;
       switch (temp_value) {
-        case ('G'):map_[j].push_back(CellType::Grass);
+        case ('G'):
+          map_[j].push_back(CellType::Grass);
           break;
-        case ('W'):map_[j].push_back(CellType::Wall);
+        case ('W'):
+          map_[j].push_back(CellType::Wall);
           break;
-        case ('S'):map_[j].push_back(CellType::Sand);
+        case ('S'):
+          map_[j].push_back(CellType::Sand);
           break;
-        case ('Q'):map_[j].push_back(CellType::Water);
+        case ('Q'):
+          map_[j].push_back(CellType::Water);
           break;
       }
     }
