@@ -33,7 +33,8 @@ bool ImprovedBot::IsRotationStartNeeded(std::shared_ptr<Tank> tank) {
   return false;
 }
 
-bool ImprovedBot::IsShotNeeded(std::shared_ptr<Map> map, std::shared_ptr<Tank> tank) {
+bool ImprovedBot::IsShotNeeded(std::shared_ptr<Map> map,
+                               std::shared_ptr<Tank> tank) {
   if (time_to_finish_rotation_ <= 0 && time_to_finish_movement_ <= 0) {
     int direction = GetIntDirection();
     int tank_x = tank->GetCellX();
@@ -41,51 +42,51 @@ bool ImprovedBot::IsShotNeeded(std::shared_ptr<Map> map, std::shared_ptr<Tank> t
     int bot_x = GetCellX();
     int bot_y = GetCellY();
 
-      if (tank_x == bot_x) {
-        int walls_count = map->GetWallsPrecalc(bot_x, bot_y);
-        walls_count += map->GetWallsPrecalc(tank_x - 1, tank_y - 1);
-        walls_count -= map->GetWallsPrecalc(tank_x, tank_y - 1);
-        walls_count -= map->GetWallsPrecalc(bot_x - 1, bot_y);
-        if (walls_count != 0) {
-          return false;
-        }
+    if (tank_x == bot_x) {
+      int walls_count = map->GetWallsPrecalc(bot_x, bot_y);
+      walls_count += map->GetWallsPrecalc(tank_x - 1, tank_y - 1);
+      walls_count -= map->GetWallsPrecalc(tank_x, tank_y - 1);
+      walls_count -= map->GetWallsPrecalc(bot_x - 1, bot_y);
+      if (walls_count != 0) {
+        return false;
+      }
 
-        if (tank_y > bot_y) {
-          if (direction == 2) {
-            return true;
-          } else if (direction == 0) {
-            return ChangeDirection();
-          }
+      if (tank_y > bot_y) {
+        if (direction == 2) {
+          return true;
         } else if (direction == 0) {
-          return true;
-        } else if (direction == 2) {
           return ChangeDirection();
         }
-        return CheckDirection(tank_y, bot_y, direction);
+      } else if (direction == 0) {
+        return true;
+      } else if (direction == 2) {
+        return ChangeDirection();
+      }
+      return CheckDirection(tank_y, bot_y, direction);
+    }
+
+    if (tank_y == bot_y) {
+      int walls_count = map->GetWallsPrecalc(bot_x, bot_y);
+      walls_count += map->GetWallsPrecalc(tank_x - 1, tank_y - 1);
+      walls_count -= map->GetWallsPrecalc(tank_x - 1, tank_y);
+      walls_count -= map->GetWallsPrecalc(bot_x, bot_y - 1);
+      if (walls_count != 0) {
+        return false;
       }
 
-      if (tank_y == bot_y) {
-        int walls_count = map->GetWallsPrecalc(bot_x, bot_y);
-        walls_count += map->GetWallsPrecalc(tank_x - 1, tank_y - 1);
-        walls_count -= map->GetWallsPrecalc(tank_x - 1, tank_y);
-        walls_count -= map->GetWallsPrecalc(bot_x, bot_y - 1);
-        if (walls_count != 0) {
-          return false;
-        }
-
-        if (tank_x > bot_x) {
-          if (direction == 1) {
-            return true;
-          } else if (direction == 3) {
-            return ChangeDirection();
-          }
+      if (tank_x > bot_x) {
+        if (direction == 1) {
+          return true;
         } else if (direction == 3) {
-          return true;
-        } else if (direction == 1) {
           return ChangeDirection();
         }
-        return CheckDirection(tank_x, bot_x, direction);
+      } else if (direction == 3) {
+        return true;
+      } else if (direction == 1) {
+        return ChangeDirection();
       }
+      return CheckDirection(tank_x, bot_x, direction);
+    }
   }
   return false;
 }
