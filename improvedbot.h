@@ -12,6 +12,10 @@ class ImprovedBot : public Bot {
  protected:
   bool CheckDirection(int& tank, int& bot, int direction) override;
   bool IsRotationStartNeeded(std::shared_ptr<Tank> tank) override;
+  bool IsShotNeeded(std::shared_ptr<Map>, std::shared_ptr<Tank>) override;
+
+ private:
+  bool ChangeDirection();
 };
 
 #endif  // IMPROVEDBOT_H

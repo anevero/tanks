@@ -119,7 +119,7 @@ void MainWindow::timerEvent(QTimerEvent *) {
         std::shared_ptr<Tank> tank = std::dynamic_pointer_cast<Tank>(object);
         bot->SetZeroTimeFromLastShot();
         ShootRocket(tank);
-        // continue;
+        continue;
       }
 
       if (bot->IsMovingStartNeeded()) {

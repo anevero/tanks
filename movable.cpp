@@ -16,7 +16,7 @@ void Movable::StartMovement(int number_of_cells,
                             QList<std::shared_ptr<Movable>>& tanks) {
   int new_cell_x = cell_x_ + reverse_ * (directions_[1] - directions_[3]);
   int new_cell_y = cell_y_ + reverse_ * (directions_[2] - directions_[0]);
-  if (map_->GetField(new_cell_x, new_cell_y) == CellType::Wall) {
+  if (map_->GetField(new_cell_x, new_cell_y) == CellType::Wall) {  
     cells_to_finish_movement_ = 0;
     return;
   }

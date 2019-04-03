@@ -97,7 +97,6 @@ bool Bot::IsShotNeeded(std::shared_ptr<Map> map, std::shared_ptr<Tank> tank) {
 
 bool Bot::CheckDirection(int& tank, int& bot, int direction) {
   if (tank > bot) {
-    std::swap(tank, bot);
     if (direction == 0 || direction == 3) {
       return false;
     }
