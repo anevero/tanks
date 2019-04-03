@@ -54,6 +54,7 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event) {
   for (const auto &object : tanks_) {
     if (object->GetCellX() == current_cell_x &&
         object->GetCellY() == current_cell_y) {
+      time_since_tooltip_appearing_ = 0;
       QToolTip::showText(
           event->globalPos(),
           "Health: " +
