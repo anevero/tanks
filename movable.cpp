@@ -21,14 +21,8 @@ void Movable::StartMovement(int number_of_cells,
     cells_to_finish_movement_ = 0;
     return;
   }
+
   if (dynamic_cast<Tank*>(this) != nullptr) {
-    if (map_->GetField(new_cell_x, new_cell_y) == CellType::Sand) {
-      current_speed_ += 100;
-    } else if (map_->GetField(new_cell_x, new_cell_y) == CellType::Water) {
-      current_speed_ += 50;
-    } else if (map_->GetField(new_cell_x, new_cell_y) == CellType::Grass) {
-      current_speed_ = basic_speed_;
-    }
     for (const auto& object : tanks) {
       if (object->GetCellX() == new_cell_x &&
           object->GetCellY() == new_cell_y) {
@@ -37,6 +31,13 @@ void Movable::StartMovement(int number_of_cells,
         // зануление параметров движения танка
         return;
       }
+    }
+    current_speed_ =
+        static_cast<int>(map_->GetField(cell_x_, cell_y_)) * basic_speed_;
+    if (map_->GetField(new_cell_x, new_cell_y) != CellType::Grass) {
+      current_speed_ =
+          static_cast<int>(map_->GetField(new_cell_x, new_cell_y)) *
+          basic_speed_;
     }
   }
 
@@ -55,6 +56,10 @@ void Movable::TurnReverseOn() { reverse_ = -1; }
 void Movable::TurnReverseOff() { reverse_ = 1; }
 
 void Movable::StartRotation() {
+  if (dynamic_cast<Tank*>(this) != nullptr) {
+    current_speed_ =
+        static_cast<int>(map_->GetField(cell_x_, cell_y_)) * basic_speed_;
+  }
   if (rotate_reverse_ == 1) {
     SwitchToNextDirection();
   } else {
