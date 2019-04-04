@@ -63,11 +63,7 @@ bool Bot::IsShotNeeded(std::shared_ptr<Map> map, std::shared_ptr<Tank> tank) {
 
     if (direction == 0 || direction == 2) {
       if (tank_x == bot_x) {
-        int walls_count = map->GetWallsPrecalc(bot_x, bot_y);
-        walls_count += map->GetWallsPrecalc(tank_x - 1, tank_y - 1);
-        walls_count -= map->GetWallsPrecalc(tank_x, tank_y - 1);
-        walls_count -= map->GetWallsPrecalc(bot_x - 1, bot_y);
-        if (walls_count != 0) {
+        if (IsWallBetweenObjectsX(map, tank_x, tank_y, bot_x, bot_y)) {
           return false;
         }
 
@@ -78,11 +74,7 @@ bool Bot::IsShotNeeded(std::shared_ptr<Map> map, std::shared_ptr<Tank> tank) {
     }
     if (direction == 1 || direction == 3) {
       if (tank_y == bot_y) {
-        int walls_count = map->GetWallsPrecalc(bot_x, bot_y);
-        walls_count += map->GetWallsPrecalc(tank_x - 1, tank_y - 1);
-        walls_count -= map->GetWallsPrecalc(tank_x - 1, tank_y);
-        walls_count -= map->GetWallsPrecalc(bot_x, bot_y - 1);
-        if (walls_count != 0) {
+        if (IsWallBetweenObjectsY(map, tank_x, tank_y, bot_x, bot_y)) {
           return false;
         }
 
@@ -104,4 +96,30 @@ bool Bot::CheckDirection(int& tank, int& bot, int direction) {
     return false;
   }
   return true;
+}
+
+bool Bot::IsWallBetweenObjectsX(std::shared_ptr<Map> map,
+                                int tank_x, int tank_y,
+                                int bot_x, int bot_y) {
+  int walls_count = map->GetWallsPrecalc(bot_x, bot_y);
+  walls_count += map->GetWallsPrecalc(tank_x - 1, tank_y - 1);
+  walls_count -= map->GetWallsPrecalc(tank_x, tank_y - 1);
+  walls_count -= map->GetWallsPrecalc(bot_x - 1, bot_y);
+  if (walls_count != 0) {
+    return true;
+  }
+  return false;
+}
+
+bool Bot::IsWallBetweenObjectsY(std::shared_ptr<Map> map,
+                                int tank_x, int tank_y,
+                                int bot_x, int bot_y) {
+  int walls_count = map->GetWallsPrecalc(bot_x, bot_y);
+  walls_count += map->GetWallsPrecalc(tank_x - 1, tank_y - 1);
+  walls_count -= map->GetWallsPrecalc(tank_x - 1, tank_y);
+  walls_count -= map->GetWallsPrecalc(bot_x, bot_y - 1);
+  if (walls_count != 0) {
+    return true;
+  }
+  return false;
 }

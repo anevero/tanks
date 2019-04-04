@@ -43,11 +43,7 @@ bool ImprovedBot::IsShotNeeded(std::shared_ptr<Map> map,
     int bot_y = GetCellY();
 
     if (tank_x == bot_x) {
-      int walls_count = map->GetWallsPrecalc(bot_x, bot_y);
-      walls_count += map->GetWallsPrecalc(tank_x - 1, tank_y - 1);
-      walls_count -= map->GetWallsPrecalc(tank_x, tank_y - 1);
-      walls_count -= map->GetWallsPrecalc(bot_x - 1, bot_y);
-      if (walls_count != 0) {
+      if (IsWallBetweenObjectsX(map, tank_x, tank_y, bot_x, bot_y)) {
         return false;
       }
 
@@ -66,11 +62,7 @@ bool ImprovedBot::IsShotNeeded(std::shared_ptr<Map> map,
     }
 
     if (tank_y == bot_y) {
-      int walls_count = map->GetWallsPrecalc(bot_x, bot_y);
-      walls_count += map->GetWallsPrecalc(tank_x - 1, tank_y - 1);
-      walls_count -= map->GetWallsPrecalc(tank_x - 1, tank_y);
-      walls_count -= map->GetWallsPrecalc(bot_x, bot_y - 1);
-      if (walls_count != 0) {
+      if (IsWallBetweenObjectsY(map, tank_x, tank_y, bot_x, bot_y)) {
         return false;
       }
 

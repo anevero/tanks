@@ -37,6 +37,10 @@ class Bot : public Tank {
   const int side_rotation_frequency_;
 
   virtual bool CheckDirection(int& tank, int& bot, int direction);
+  bool IsWallBetweenObjectsX(std::shared_ptr<Map> map,
+                             int tank_x, int tank_y, int bot_x, int bot_y);
+  bool IsWallBetweenObjectsY(std::shared_ptr<Map> map,
+                             int tank_x, int tank_y, int bot_x, int bot_y);
 };
 
 #endif  // BOT_H
