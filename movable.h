@@ -5,6 +5,7 @@
 #include <QImage>
 #include <QList>
 #include <QVector>
+#include <algorithm>
 #include <memory>
 #include "map.h"
 

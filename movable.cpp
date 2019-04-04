@@ -32,13 +32,10 @@ void Movable::StartMovement(int number_of_cells,
         return;
       }
     }
-    current_speed_ =
-        static_cast<int>(map_->GetField(cell_x_, cell_y_)) * basic_speed_;
-    if (map_->GetField(new_cell_x, new_cell_y) != CellType::Grass) {
-      current_speed_ =
-          static_cast<int>(map_->GetField(new_cell_x, new_cell_y)) *
-          basic_speed_;
-    }
+    current_speed_ = std ::max(
+        static_cast<int>(map_->GetField(cell_x_, cell_y_)) * basic_speed_,
+        static_cast<int>(map_->GetField(new_cell_x, new_cell_y)) *
+            basic_speed_);
   }
 
   cell_x_ = new_cell_x;
@@ -56,10 +53,8 @@ void Movable::TurnReverseOn() { reverse_ = -1; }
 void Movable::TurnReverseOff() { reverse_ = 1; }
 
 void Movable::StartRotation() {
-  if (dynamic_cast<Tank*>(this) != nullptr) {
-    current_speed_ =
-        static_cast<int>(map_->GetField(cell_x_, cell_y_)) * basic_speed_;
-  }
+  current_speed_ =
+      static_cast<int>(map_->GetField(cell_x_, cell_y_)) * basic_speed_;
   if (rotate_reverse_ == 1) {
     SwitchToNextDirection();
   } else {

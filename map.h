@@ -13,8 +13,8 @@
 enum class CellType {
   Wall = 0,
   Grass = 1,
-  Water = 2,
-  Sand = 3
+  Sand = 2,
+  Water = 3
   // to be continued
 };
 
