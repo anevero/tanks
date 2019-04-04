@@ -14,6 +14,7 @@
 #include <QPushButton>
 #include <QString>
 #include <QTimer>
+#include <QToolTip>
 #include <QtGlobal>
 #include <algorithm>
 #include <memory>
@@ -31,7 +32,8 @@ class MainWindow : public QMainWindow {
   ~MainWindow() override = default;
 
  private:
-  void keyReleaseEvent(QKeyEvent *) override;
+  void mouseReleaseEvent(QMouseEvent *event) override;
+  void keyReleaseEvent(QKeyEvent *event) override;
   void paintEvent(QPaintEvent *) override;
   void resizeEvent(QResizeEvent *) override;
   void timerEvent(QTimerEvent *) override;
@@ -72,6 +74,8 @@ class MainWindow : public QMainWindow {
 
   int timer_duration_ = 10;
   int timer_id_ = 0;
+  int time_since_tooltip_appearing_ = 0;
+  int time_for_showing_tooltip_ = 1200;
   int sq_width_;
   int sq_height_;
   int w_indent_;

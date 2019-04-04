@@ -46,6 +46,25 @@ MainWindow::MainWindow(QWidget *parent)
   RedrawContent();
 }
 
+void MainWindow::mouseReleaseEvent(QMouseEvent *event) {
+  int current_cell_x = (event->x() - map_->GetUpperLeftX()) *
+                       map_->GetNumberOfCellsHorizontally() / map_->GetWidth();
+  int current_cell_y = (event->y() - map_->GetUpperLeftY()) *
+                       map_->GetNumberOfCellsVertically() / map_->GetHeight();
+  for (const auto &object : tanks_) {
+    if (object->GetCellX() == current_cell_x &&
+        object->GetCellY() == current_cell_y) {
+      time_since_tooltip_appearing_ = 0;
+      QToolTip::showText(
+          event->globalPos(),
+          "Health: " +
+              QString::number(
+                  std::dynamic_pointer_cast<Tank>(object)->GetCurrentHealth()));
+      break;
+    }
+  }
+}
+
 void MainWindow::keyReleaseEvent(QKeyEvent *event) {
   auto tank = std::dynamic_pointer_cast<Tank>(tanks_[0]);
   if (tank->IsMovingOrRotating()) return;
@@ -110,6 +129,12 @@ void MainWindow::resizeEvent(QResizeEvent *) {
 }
 
 void MainWindow::timerEvent(QTimerEvent *) {
+  time_since_tooltip_appearing_ += timer_duration_;
+  if (time_since_tooltip_appearing_ >= time_for_showing_tooltip_) {
+    QToolTip::hideText();
+    time_since_tooltip_appearing_ = 0;
+  }
+
   for (auto &object : tanks_) {
     if (std::dynamic_pointer_cast<Bot>(object) != nullptr) {
       std::shared_ptr<Bot> bot = std::dynamic_pointer_cast<Bot>(object);
