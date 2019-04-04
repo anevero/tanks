@@ -286,7 +286,7 @@ void MainWindow::PauseOrContinue() {
     pause_continue_button->setText("Pause");
     paused_ = false;
     timer_id_ = startTimer(timer_duration_);
-  } else {
+  } else if (timer_id_ != 0) {
     pause_continue_button->setText("Continue");
     paused_ = true;
     killTimer(timer_id_);
