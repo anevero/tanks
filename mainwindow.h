@@ -42,6 +42,7 @@ class MainWindow : public QMainWindow {
   void UpdateIndents();
   void RedrawButtons();
   void RedrawContent();
+  void PauseOrContinue();
 
  private:
   void FindInteractingObjects();
@@ -55,7 +56,10 @@ class MainWindow : public QMainWindow {
   void GameOver();
 
  private:
+  bool paused_ = false;
+
   QPushButton *new_game_button_;
+  QPushButton *pause_continue_button;
   QComboBox *switch_map_menu_;
   QComboBox *switch_tank_menu_;
   QComboBox *switch_difficulty_menu_;

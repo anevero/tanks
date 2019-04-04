@@ -3,6 +3,7 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), map_(new Map(1)) {
   new_game_button_ = new QPushButton("New game", this);
+  pause_continue_button = new QPushButton("Pause", this);
   switch_map_menu_ = new QComboBox(this);
   switch_tank_menu_ = new QComboBox(this);
   switch_difficulty_menu_ = new QComboBox(this);
@@ -42,6 +43,8 @@ MainWindow::MainWindow(QWidget *parent)
   setMinimumSize(600, 450);
   resize(600, 450);
   connect(new_game_button_, SIGNAL(clicked()), this, SLOT(RedrawContent()));
+  connect(pause_continue_button, SIGNAL(clicked()), this,
+          SLOT(PauseOrContinue()));
 
   RedrawContent();
 }
@@ -67,13 +70,17 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event) {
 
 void MainWindow::keyReleaseEvent(QKeyEvent *event) {
   auto tank = std::dynamic_pointer_cast<Tank>(tanks_[0]);
-  if (tank->IsMovingOrRotating()) return;
+  if (tank->IsMovingOrRotating() || (paused_ && event->key() != Qt::Key_Escape))
+    return;
   // предыдущие строчки допустимы, ибо мы пока обрабатываем только
   // один пользовательский танк
   // если какие-то клавиши должны будут работать не для него,
   // строчки надо будет продублировать в каждой из секций W, A, S, D, Q
 
   switch (event->key()) {
+    case Qt::Key_Escape:
+      PauseOrContinue();
+      break;
     case Qt::Key_W:
       tank->TurnReverseOff();
       tank->StartMovement(1, tanks_);
@@ -213,29 +220,33 @@ void MainWindow::RedrawButtons() {
                                 h_indent_ + static_cast<int>(0.05 * sq_height_),
                                 static_cast<int>(0.2 * sq_width_),
                                 static_cast<int>(0.05 * sq_height_));
+  pause_continue_button->setGeometry(
+      w_indent_ + static_cast<int>(0.04 * sq_width_),
+      h_indent_ + static_cast<int>(0.11 * sq_height_),
+      static_cast<int>(0.2 * sq_width_), static_cast<int>(0.05 * sq_height_));
   switch_map_label_->setGeometry(
       w_indent_ + static_cast<int>(0.04 * sq_width_),
-      h_indent_ + static_cast<int>(0.12 * sq_height_),
+      h_indent_ + static_cast<int>(0.18 * sq_height_),
       static_cast<int>(0.2 * sq_width_), static_cast<int>(0.05 * sq_height_));
   switch_map_menu_->setGeometry(w_indent_ + static_cast<int>(0.04 * sq_width_),
-                                h_indent_ + static_cast<int>(0.17 * sq_height_),
+                                h_indent_ + static_cast<int>(0.23 * sq_height_),
                                 static_cast<int>(0.2 * sq_width_),
                                 static_cast<int>(0.05 * sq_height_));
   switch_tank_label_->setGeometry(
       w_indent_ + static_cast<int>(0.04 * sq_width_),
-      h_indent_ + static_cast<int>(0.24 * sq_height_),
+      h_indent_ + static_cast<int>(0.3 * sq_height_),
       static_cast<int>(0.2 * sq_width_), static_cast<int>(0.05 * sq_height_));
   switch_tank_menu_->setGeometry(
       w_indent_ + static_cast<int>(0.04 * sq_width_),
-      h_indent_ + static_cast<int>(0.29 * sq_height_),
+      h_indent_ + static_cast<int>(0.35 * sq_height_),
       static_cast<int>(0.2 * sq_width_), static_cast<int>(0.05 * sq_height_));
   switch_difficulty_label_->setGeometry(
       w_indent_ + static_cast<int>(0.04 * sq_width_),
-      h_indent_ + static_cast<int>(0.36 * sq_height_),
+      h_indent_ + static_cast<int>(0.42 * sq_height_),
       static_cast<int>(0.2 * sq_width_), static_cast<int>(0.05 * sq_height_));
   switch_difficulty_menu_->setGeometry(
       w_indent_ + static_cast<int>(0.04 * sq_width_),
-      h_indent_ + static_cast<int>(0.41 * sq_height_),
+      h_indent_ + static_cast<int>(0.47 * sq_height_),
       static_cast<int>(0.2 * sq_width_), static_cast<int>(0.05 * sq_height_));
 }
 
@@ -245,6 +256,9 @@ void MainWindow::RedrawContent() {
   map_.reset(new Map(switch_map_menu_->currentIndex() + 1));
   tanks_.clear();
   rockets_.clear();
+
+  pause_continue_button->setText("Pause");
+  paused_ = false;
 
   tanks_.append(std::shared_ptr<Movable>(
       new Tank(map_, map_->GetTankInitCellX(), map_->GetTankInitCellY(),
@@ -290,6 +304,19 @@ void MainWindow::RedrawContent() {
 
   timer_id_ = startTimer(timer_duration_);
   repaint();
+}
+
+void MainWindow::PauseOrContinue() {
+  if (paused_) {
+    pause_continue_button->setText("Pause");
+    paused_ = false;
+    timer_id_ = startTimer(timer_duration_);
+  } else if (timer_id_ != 0) {
+    pause_continue_button->setText("Continue");
+    paused_ = true;
+    killTimer(timer_id_);
+    timer_id_ = 0;
+  }
 }
 
 void MainWindow::FindInteractingObjects() {
