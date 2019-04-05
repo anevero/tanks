@@ -11,6 +11,13 @@ MainWindow::MainWindow(QWidget *parent)
   switch_tank_label_ = new QLabel(this);
   switch_difficulty_label_ = new QLabel(this);
 
+  q_virtual_button_ = new QPushButton("Q", this);
+  w_virtual_button_ = new QPushButton("W", this);
+  a_virtual_button_ = new QPushButton("A", this);
+  s_virtual_button_ = new QPushButton("S", this);
+  d_virtual_button_ = new QPushButton("D", this);
+  virtual_buttons_mapper_ = new QSignalMapper(this);
+
   int map_number = 1;
   QFileInfo map_file(":/maps/map" + QString::number(map_number) + ".txt");
   while (map_file.exists() && map_file.isFile()) {
@@ -42,9 +49,30 @@ MainWindow::MainWindow(QWidget *parent)
 
   setMinimumSize(600, 450);
   resize(600, 450);
+
   connect(new_game_button_, SIGNAL(clicked()), this, SLOT(RedrawContent()));
   connect(pause_continue_button, SIGNAL(clicked()), this,
           SLOT(PauseOrContinue()));
+
+  connect(q_virtual_button_, SIGNAL(clicked()), virtual_buttons_mapper_,
+          SLOT(map()));
+  connect(w_virtual_button_, SIGNAL(clicked()), virtual_buttons_mapper_,
+          SLOT(map()));
+  connect(a_virtual_button_, SIGNAL(clicked()), virtual_buttons_mapper_,
+          SLOT(map()));
+  connect(s_virtual_button_, SIGNAL(clicked()), virtual_buttons_mapper_,
+          SLOT(map()));
+  connect(d_virtual_button_, SIGNAL(clicked()), virtual_buttons_mapper_,
+          SLOT(map()));
+
+  virtual_buttons_mapper_->setMapping(q_virtual_button_, Qt::Key_Q);
+  virtual_buttons_mapper_->setMapping(w_virtual_button_, Qt::Key_W);
+  virtual_buttons_mapper_->setMapping(a_virtual_button_, Qt::Key_A);
+  virtual_buttons_mapper_->setMapping(s_virtual_button_, Qt::Key_S);
+  virtual_buttons_mapper_->setMapping(d_virtual_button_, Qt::Key_D);
+
+  connect(virtual_buttons_mapper_, SIGNAL(mapped(int)), this,
+          SLOT(PressVirtualKey(int)));
 
   RedrawContent();
 }
@@ -248,6 +276,33 @@ void MainWindow::RedrawButtons() {
       w_indent_ + static_cast<int>(0.04 * sq_width_),
       h_indent_ + static_cast<int>(0.47 * sq_height_),
       static_cast<int>(0.2 * sq_width_), static_cast<int>(0.05 * sq_height_));
+
+  q_virtual_button_->setGeometry(w_indent_ + static_cast<int>(0.04 * sq_width_),
+                                 height() - static_cast<int>(0.19 * sq_height_),
+                                 static_cast<int>(0.2 * sq_width_ / 3),
+                                 static_cast<int>(0.07 * sq_height_));
+  w_virtual_button_->setGeometry(w_indent_ +
+                                     static_cast<int>(0.04 * sq_width_) +
+                                     static_cast<int>(0.2 * sq_width_ / 3),
+                                 height() - static_cast<int>(0.19 * sq_height_),
+                                 static_cast<int>(0.2 * sq_width_ / 3),
+                                 static_cast<int>(0.07 * sq_height_));
+  a_virtual_button_->setGeometry(w_indent_ + static_cast<int>(0.04 * sq_width_),
+                                 height() - static_cast<int>(0.12 * sq_height_),
+                                 static_cast<int>(0.2 * sq_width_ / 3),
+                                 static_cast<int>(0.07 * sq_height_));
+  s_virtual_button_->setGeometry(w_indent_ +
+                                     static_cast<int>(0.04 * sq_width_) +
+                                     static_cast<int>(0.2 * sq_width_ / 3),
+                                 height() - static_cast<int>(0.12 * sq_height_),
+                                 static_cast<int>(0.2 * sq_width_ / 3),
+                                 static_cast<int>(0.07 * sq_height_));
+  d_virtual_button_->setGeometry(w_indent_ +
+                                     static_cast<int>(0.04 * sq_width_) +
+                                     static_cast<int>(2 * 0.2 * sq_width_ / 3),
+                                 height() - static_cast<int>(0.12 * sq_height_),
+                                 static_cast<int>(0.2 * sq_width_ / 3),
+                                 static_cast<int>(0.07 * sq_height_));
 }
 
 void MainWindow::RedrawContent() {
@@ -317,6 +372,11 @@ void MainWindow::PauseOrContinue() {
     killTimer(timer_id_);
     timer_id_ = 0;
   }
+}
+
+void MainWindow::PressVirtualKey(int key) {
+  QKeyEvent *event = new QKeyEvent(QEvent::KeyRelease, key, Qt::NoModifier);
+  QApplication::instance()->sendEvent(this, event);
 }
 
 void MainWindow::FindInteractingObjects() {

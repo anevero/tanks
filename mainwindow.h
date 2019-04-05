@@ -9,9 +9,11 @@
 #include <QLabel>
 #include <QList>
 #include <QMainWindow>
+#include <QMap>
 #include <QMessageBox>
 #include <QPainter>
 #include <QPushButton>
+#include <QSignalMapper>
 #include <QString>
 #include <QTimer>
 #include <QToolTip>
@@ -43,6 +45,7 @@ class MainWindow : public QMainWindow {
   void RedrawButtons();
   void RedrawContent();
   void PauseOrContinue();
+  void PressVirtualKey(int key);
 
  private:
   void FindInteractingObjects();
@@ -66,6 +69,13 @@ class MainWindow : public QMainWindow {
   QLabel *switch_map_label_;
   QLabel *switch_tank_label_;
   QLabel *switch_difficulty_label_;
+
+  QPushButton *q_virtual_button_;
+  QPushButton *w_virtual_button_;
+  QPushButton *a_virtual_button_;
+  QPushButton *s_virtual_button_;
+  QPushButton *d_virtual_button_;
+  QSignalMapper *virtual_buttons_mapper_;
 
   std::shared_ptr<Map> map_;
   QList<std::shared_ptr<Movable>> tanks_;
