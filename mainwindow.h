@@ -18,6 +18,7 @@
 #include <algorithm>
 #include <memory>
 #include "bot.h"
+#include <cleverbot.h>
 #include "improvedbot.h"
 #include "map.h"
 #include "rocket.h"
