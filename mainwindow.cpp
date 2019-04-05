@@ -77,22 +77,27 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event) {
     case Qt::Key_Escape:
       pause_continue_button_->animateClick();
       break;
+    case 1062:
     case Qt::Key_W:
       tank->TurnReverseOff();
       tank->StartMovement(1, tanks_);
       break;
+    case 1067:
     case Qt::Key_S:
       tank->TurnReverseOn();
       tank->StartMovement(1, tanks_);
       break;
+    case 1060:
     case Qt::Key_A:
       tank->TurnRotationReverseOn();
       tank->StartRotation();
       break;
+    case 1042:
     case Qt::Key_D:
       tank->TurnRotationReverseOff();
       tank->StartRotation();
       break;
+    case 1049:
     case Qt::Key_Q:
       if (tank->IsAbleToShoot()) {
         tank->SetZeroTimeFromLastShot();

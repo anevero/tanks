@@ -5,8 +5,6 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = tanks
 TEMPLATE = app
 CONFIG += c++11
-#CONFIG+=address_sanitizer
-#QMAKE_CXXFLAGS += -std=c++17
 DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
@@ -36,3 +34,5 @@ DISTFILES += \
 
 RESOURCES += \
     resources.qrc
+
+RC_ICONS = app_icon.ico
