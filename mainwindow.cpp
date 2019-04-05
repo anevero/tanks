@@ -272,7 +272,6 @@ void MainWindow::RedrawContent() {
       QString::number(switch_difficulty_menu_->currentIndex() + 1) + ".txt");
   if (!bots_input_file.exists()) {
     QMessageBox message;
-    message.setWindowTitle("Tanks");
     message.setIcon(QMessageBox::Information);
     message.setText(
         "This level of difficulty isn't available on this map. \n"
