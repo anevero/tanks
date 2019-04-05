@@ -2,7 +2,7 @@ QT += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = tanks
+TARGET = Tanks
 TEMPLATE = app
 CONFIG += c++11
 DEFINES += QT_DEPRECATED_WARNINGS
@@ -26,13 +26,9 @@ HEADERS += \
     bot.h \
     improvedbot.h
 
-DISTFILES += \
-    maps/map1.txt \
-    maps/map2.txt \
-    maps/map3.txt \
-    maps/map4.txt
-
 RESOURCES += \
     resources.qrc
 
 RC_ICONS = app_icon.ico
+
+VERSION = 0.3.0.0
