@@ -403,7 +403,6 @@ void MainWindow::GameOver() {
   timer_id_ = 0;
 
   QMessageBox message;
-  message.setWindowTitle("Tanks");
   message.setIcon(QMessageBox::Information);
   if (tanks_.size() == number_of_player_tanks_) {
     message.setText(
