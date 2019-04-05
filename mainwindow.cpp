@@ -1,23 +1,23 @@
 ﻿#include "mainwindow.h"
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent), map_(new Map(1)) {
-  new_game_button_ = new QPushButton("New game", this);
-  pause_continue_button = new QPushButton("Pause", this);
-  switch_map_menu_ = new QComboBox(this);
-  switch_tank_menu_ = new QComboBox(this);
-  switch_difficulty_menu_ = new QComboBox(this);
-  switch_map_label_ = new QLabel(this);
-  switch_tank_label_ = new QLabel(this);
-  switch_difficulty_label_ = new QLabel(this);
-
-  q_virtual_button_ = new QPushButton("Q", this);
-  w_virtual_button_ = new QPushButton("W", this);
-  a_virtual_button_ = new QPushButton("A", this);
-  s_virtual_button_ = new QPushButton("S", this);
-  d_virtual_button_ = new QPushButton("D", this);
-  virtual_buttons_mapper_ = new QSignalMapper(this);
-
+    : QMainWindow(parent),
+      new_game_button_(new QPushButton("New game", this)),
+      pause_continue_button(new QPushButton("Pause", this)),
+      switch_map_menu_(new QComboBox(this)),
+      switch_tank_menu_(new QComboBox(this)),
+      switch_difficulty_menu_(new QComboBox(this)),
+      switch_map_label_(new QLabel(this)),
+      switch_tank_label_(new QLabel(this)),
+      switch_difficulty_label_(new QLabel(this)),
+      virtual_keys_buttons_(
+          {new QPushButton("Q", this), new QPushButton("W", this),
+           new QPushButton("A", this), new QPushButton("S", this),
+           new QPushButton("D", this)}),
+      virtual_keys_encodings_(
+          {Qt::Key_Q, Qt::Key_W, Qt::Key_A, Qt::Key_S, Qt::Key_D}),
+      virtual_buttons_mapper_(new QSignalMapper(this)),
+      map_(new Map(1)) {
   int map_number = 1;
   QFileInfo map_file(":/maps/map" + QString::number(map_number) + ".txt");
   while (map_file.exists() && map_file.isFile()) {
@@ -54,23 +54,12 @@ MainWindow::MainWindow(QWidget *parent)
   connect(pause_continue_button, SIGNAL(clicked()), this,
           SLOT(PauseOrContinue()));
 
-  connect(q_virtual_button_, SIGNAL(clicked()), virtual_buttons_mapper_,
-          SLOT(map()));
-  connect(w_virtual_button_, SIGNAL(clicked()), virtual_buttons_mapper_,
-          SLOT(map()));
-  connect(a_virtual_button_, SIGNAL(clicked()), virtual_buttons_mapper_,
-          SLOT(map()));
-  connect(s_virtual_button_, SIGNAL(clicked()), virtual_buttons_mapper_,
-          SLOT(map()));
-  connect(d_virtual_button_, SIGNAL(clicked()), virtual_buttons_mapper_,
-          SLOT(map()));
-
-  virtual_buttons_mapper_->setMapping(q_virtual_button_, Qt::Key_Q);
-  virtual_buttons_mapper_->setMapping(w_virtual_button_, Qt::Key_W);
-  virtual_buttons_mapper_->setMapping(a_virtual_button_, Qt::Key_A);
-  virtual_buttons_mapper_->setMapping(s_virtual_button_, Qt::Key_S);
-  virtual_buttons_mapper_->setMapping(d_virtual_button_, Qt::Key_D);
-
+  for (int i = 0; i < virtual_keys_buttons_.size(); ++i) {
+    connect(virtual_keys_buttons_[i], SIGNAL(clicked()),
+            virtual_buttons_mapper_, SLOT(map()));
+    virtual_buttons_mapper_->setMapping(virtual_keys_buttons_[i],
+                                        virtual_keys_encodings_[i]);
+  }
   connect(virtual_buttons_mapper_, SIGNAL(mapped(int)), this,
           SLOT(PressVirtualKey(int)));
 
@@ -277,32 +266,24 @@ void MainWindow::RedrawButtons() {
       h_indent_ + static_cast<int>(0.47 * sq_height_),
       static_cast<int>(0.2 * sq_width_), static_cast<int>(0.05 * sq_height_));
 
-  q_virtual_button_->setGeometry(w_indent_ + static_cast<int>(0.04 * sq_width_),
-                                 height() - static_cast<int>(0.19 * sq_height_),
-                                 static_cast<int>(0.2 * sq_width_ / 3),
-                                 static_cast<int>(0.07 * sq_height_));
-  w_virtual_button_->setGeometry(w_indent_ +
-                                     static_cast<int>(0.04 * sq_width_) +
-                                     static_cast<int>(0.2 * sq_width_ / 3),
-                                 height() - static_cast<int>(0.19 * sq_height_),
-                                 static_cast<int>(0.2 * sq_width_ / 3),
-                                 static_cast<int>(0.07 * sq_height_));
-  a_virtual_button_->setGeometry(w_indent_ + static_cast<int>(0.04 * sq_width_),
-                                 height() - static_cast<int>(0.12 * sq_height_),
-                                 static_cast<int>(0.2 * sq_width_ / 3),
-                                 static_cast<int>(0.07 * sq_height_));
-  s_virtual_button_->setGeometry(w_indent_ +
-                                     static_cast<int>(0.04 * sq_width_) +
-                                     static_cast<int>(0.2 * sq_width_ / 3),
-                                 height() - static_cast<int>(0.12 * sq_height_),
-                                 static_cast<int>(0.2 * sq_width_ / 3),
-                                 static_cast<int>(0.07 * sq_height_));
-  d_virtual_button_->setGeometry(w_indent_ +
-                                     static_cast<int>(0.04 * sq_width_) +
-                                     static_cast<int>(2 * 0.2 * sq_width_ / 3),
-                                 height() - static_cast<int>(0.12 * sq_height_),
-                                 static_cast<int>(0.2 * sq_width_ / 3),
-                                 static_cast<int>(0.07 * sq_height_));
+  for (int i = 0; i < number_of_virtual_keys_in_first_row_; ++i) {
+    virtual_keys_buttons_[i]->setGeometry(
+        w_indent_ + static_cast<int>(0.04 * sq_width_) +
+            i * static_cast<int>(0.2 * sq_width_ / 3),
+        height() - static_cast<int>(0.19 * sq_height_),
+        static_cast<int>(0.2 * sq_width_ / 3),
+        static_cast<int>(0.07 * sq_height_));
+  }
+  for (int i = number_of_virtual_keys_in_first_row_;
+       i < virtual_keys_buttons_.size(); ++i) {
+    virtual_keys_buttons_[i]->setGeometry(
+        w_indent_ + static_cast<int>(0.04 * sq_width_) +
+            static_cast<int>((i - number_of_virtual_keys_in_first_row_) * 0.2 *
+                             sq_width_ / 3),
+        height() - static_cast<int>(0.12 * sq_height_),
+        static_cast<int>(0.2 * sq_width_ / 3),
+        static_cast<int>(0.07 * sq_height_));
+  }
 }
 
 void MainWindow::RedrawContent() {

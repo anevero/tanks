@@ -9,7 +9,6 @@
 #include <QLabel>
 #include <QList>
 #include <QMainWindow>
-#include <QMap>
 #include <QMessageBox>
 #include <QPainter>
 #include <QPushButton>
@@ -70,12 +69,11 @@ class MainWindow : public QMainWindow {
   QLabel *switch_tank_label_;
   QLabel *switch_difficulty_label_;
 
-  QPushButton *q_virtual_button_;
-  QPushButton *w_virtual_button_;
-  QPushButton *a_virtual_button_;
-  QPushButton *s_virtual_button_;
-  QPushButton *d_virtual_button_;
+  QVector<QPushButton *> virtual_keys_buttons_;
+  QVector<int> virtual_keys_encodings_;
   QSignalMapper *virtual_buttons_mapper_;
+  int number_of_virtual_keys_in_first_row_ = 2;
+  int number_of_virtual_keys_in_second_row_ = 3;
 
   std::shared_ptr<Map> map_;
   QList<std::shared_ptr<Movable>> tanks_;
