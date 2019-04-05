@@ -3,7 +3,7 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), map_(new Map(1)) {
   new_game_button_ = new QPushButton("New game", this);
-  pause_continue_button = new QPushButton("Pause", this);
+  pause_continue_button_ = new QPushButton("Pause", this);
   switch_map_menu_ = new QComboBox(this);
   switch_tank_menu_ = new QComboBox(this);
   switch_difficulty_menu_ = new QComboBox(this);
@@ -32,9 +32,9 @@ MainWindow::MainWindow(QWidget *parent)
   }
   tanks_input_file.close();
 
-  switch_difficulty_menu_->addItem("Easy");
-  switch_difficulty_menu_->addItem("Normal");
-  switch_difficulty_menu_->addItem("Hard");
+  for (int i = 0; i < difficulty_levels_names_.size(); ++i) {
+    switch_difficulty_menu_->addItem(difficulty_levels_names_[i]);
+  }
 
   switch_map_label_->setText("Map:");
   switch_tank_label_->setText("Tank:");
@@ -43,7 +43,7 @@ MainWindow::MainWindow(QWidget *parent)
   setMinimumSize(600, 450);
   resize(600, 450);
   connect(new_game_button_, SIGNAL(clicked()), this, SLOT(RedrawContent()));
-  connect(pause_continue_button, SIGNAL(clicked()), this,
+  connect(pause_continue_button_, SIGNAL(clicked()), this,
           SLOT(PauseOrContinue()));
 
   RedrawContent();
@@ -72,14 +72,10 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event) {
   auto tank = std::dynamic_pointer_cast<Tank>(tanks_[0]);
   if (tank->IsMovingOrRotating() || (paused_ && event->key() != Qt::Key_Escape))
     return;
-  // предыдущие строчки допустимы, ибо мы пока обрабатываем только
-  // один пользовательский танк
-  // если какие-то клавиши должны будут работать не для него,
-  // строчки надо будет продублировать в каждой из секций W, A, S, D, Q
 
   switch (event->key()) {
     case Qt::Key_Escape:
-      PauseOrContinue();
+      pause_continue_button_->animateClick();
       break;
     case Qt::Key_W:
       tank->TurnReverseOff();
@@ -220,7 +216,7 @@ void MainWindow::RedrawButtons() {
                                 h_indent_ + static_cast<int>(0.05 * sq_height_),
                                 static_cast<int>(0.2 * sq_width_),
                                 static_cast<int>(0.05 * sq_height_));
-  pause_continue_button->setGeometry(
+  pause_continue_button_->setGeometry(
       w_indent_ + static_cast<int>(0.04 * sq_width_),
       h_indent_ + static_cast<int>(0.11 * sq_height_),
       static_cast<int>(0.2 * sq_width_), static_cast<int>(0.05 * sq_height_));
@@ -257,7 +253,7 @@ void MainWindow::RedrawContent() {
   tanks_.clear();
   rockets_.clear();
 
-  pause_continue_button->setText("Pause");
+  pause_continue_button_->setText("Pause");
   paused_ = false;
 
   tanks_.append(std::shared_ptr<Movable>(
@@ -271,8 +267,11 @@ void MainWindow::RedrawContent() {
       QString::number(switch_difficulty_menu_->currentIndex() + 1) + ".txt");
   if (!bots_input_file.exists()) {
     QMessageBox message;
-    message.setWindowTitle("Error");
-    message.setText("This level of difficulty isn't available on this map");
+    message.setWindowTitle("Tanks");
+    message.setIcon(QMessageBox::Information);
+    message.setText(
+        "This level of difficulty isn't available on this map. \n"
+        "Try to switch to another map.");
     message.exec();
     return;
   }
@@ -308,11 +307,11 @@ void MainWindow::RedrawContent() {
 
 void MainWindow::PauseOrContinue() {
   if (paused_) {
-    pause_continue_button->setText("Pause");
+    pause_continue_button_->setText("Pause");
     paused_ = false;
     timer_id_ = startTimer(timer_duration_);
   } else if (timer_id_ != 0) {
-    pause_continue_button->setText("Continue");
+    pause_continue_button_->setText("Continue");
     paused_ = true;
     killTimer(timer_id_);
     timer_id_ = 0;
@@ -399,11 +398,18 @@ void MainWindow::GameOver() {
   timer_id_ = 0;
 
   QMessageBox message;
-  message.setWindowTitle("Tanks Alpha");
+  message.setWindowTitle("Tanks");
+  message.setIcon(QMessageBox::Information);
   if (tanks_.size() == number_of_player_tanks_) {
-    message.setText("You win!");
+    message.setText(
+        "You win! \n"
+        "You can start a new game with help of appropriate button "
+        "on the left.");
   } else {
-    message.setText("You died!");
+    message.setText(
+        "You died! \n"
+        "You can start a new game with help of appropriate button "
+        "on the left.");
   }
   message.exec();
 }

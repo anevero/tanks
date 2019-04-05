@@ -59,7 +59,7 @@ class MainWindow : public QMainWindow {
   bool paused_ = false;
 
   QPushButton *new_game_button_;
-  QPushButton *pause_continue_button;
+  QPushButton *pause_continue_button_;
   QComboBox *switch_map_menu_;
   QComboBox *switch_tank_menu_;
   QComboBox *switch_difficulty_menu_;
@@ -72,8 +72,8 @@ class MainWindow : public QMainWindow {
   QList<std::shared_ptr<Movable>> rockets_;
 
   int number_of_player_tanks_ = 1;
-  int number_of_difficulty_levels = 2;
-  QVector<QString> difficulty_levels_names;
+  int number_of_difficulty_levels_ = 2;
+  QVector<QString> difficulty_levels_names_ = {"Easy", "Normal", "Hard"};
   QVector<TankQualities> available_tank_types_;
 
   int timer_duration_ = 10;
