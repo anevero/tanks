@@ -151,10 +151,9 @@ void MainWindow::timerEvent(QTimerEvent *) {
         std::shared_ptr<Tank> tank = std::dynamic_pointer_cast<Tank>(object);
         bot->SetZeroTimeFromLastShot();
         ShootRocket(tank);
-        // continue;
       }
 
-      if (bot->IsMovingStartNeeded()) {
+      if (bot->IsMovingStartNeeded(tanks_)) {
         bot->StartMovement(1, tanks_);
       } else if (bot->IsRotationStartNeeded(
                      std::dynamic_pointer_cast<Tank>(tanks_[0]))) {
@@ -279,15 +278,19 @@ void MainWindow::RedrawContent() {
 
   bots_input_file.open(QIODevice::ReadOnly);
   QTextStream in(&bots_input_file);
-  int number_of_standart_bots, number_of_improved_bots;
-  in >> number_of_standart_bots >> number_of_improved_bots;
-  for (int i = 0; i < number_of_standart_bots + number_of_improved_bots; ++i) {
+  int number_of_standart_bots, number_of_improved_bots, number_of_clever_bots,
+      number_of_bots;
+  in >> number_of_standart_bots >> number_of_improved_bots >>
+        number_of_clever_bots;
+  number_of_bots = number_of_standart_bots + number_of_improved_bots +
+        number_of_clever_bots;
+  for (int i = 0; i < number_of_bots ; ++i) {
     BotQualities qualities;
     qualities.tank.max_health =
         70 + 15 * switch_difficulty_menu_->currentIndex();
     qualities.tank.rate_of_fire =
-        1000 - 300 * switch_difficulty_menu_->currentIndex();
-    qualities.tank.speed = 1000 - 300 * switch_difficulty_menu_->currentIndex();
+        1000 - 150 * switch_difficulty_menu_->currentIndex();
+    qualities.tank.speed = 1000 - 150 * switch_difficulty_menu_->currentIndex();
     in >> qualities.init_cell_x >> qualities.init_cell_y >>
         qualities.moving_length >> qualities.amount_of_turns >>
         qualities.side_rotation_frequency;
@@ -295,9 +298,12 @@ void MainWindow::RedrawContent() {
     if (i < number_of_standart_bots) {
       tanks_.append(
           std::shared_ptr<Movable>(new Bot(map_, qualities, Direction::Up)));
-    } else {
+    } else if (i < number_of_standart_bots + number_of_improved_bots) {
       tanks_.append(std::shared_ptr<Movable>(
           new ImprovedBot(map_, qualities, Direction::Up)));
+    } else {
+      tanks_.append(std::shared_ptr<Movable>(
+          new CleverBot(map_, qualities, Direction::Up)));
     }
   }
   bots_input_file.close();

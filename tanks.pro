@@ -17,7 +17,8 @@ SOURCES += \
     movable.cpp \
     rocket.cpp \
     bot.cpp \
-    improvedbot.cpp
+    improvedbot.cpp \
+    cleverbot.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -26,7 +27,8 @@ HEADERS += \
     movable.h \
     rocket.h \
     bot.h \
-    improvedbot.h
+    improvedbot.h \
+    cleverbot.h
 
 DISTFILES += \
     maps/map1.txt \
