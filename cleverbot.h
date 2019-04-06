@@ -13,7 +13,7 @@ class CleverBot : public ImprovedBot {
 
  protected:
   bool IsRotationStartNeeded(std::shared_ptr<Tank>) override;
-  bool IsMovingStartNeeded(const QList<std::shared_ptr<Movable>> objects) override;
+  bool IsMovingStartNeeded(const QList<std::shared_ptr<Movable>>& objects) override;
 
  private:
   struct CellInfo {

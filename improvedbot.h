@@ -2,6 +2,8 @@
 #define IMPROVEDBOT_H
 
 #include "bot.h"
+#include <memory>
+#include <utility>
 
 class ImprovedBot : public Bot {
  public:

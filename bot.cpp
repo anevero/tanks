@@ -7,7 +7,7 @@ Bot::Bot(std::shared_ptr<Map>& map, BotQualities qualities, Direction direction)
       amount_of_turns_(qualities.amount_of_turns),
       side_rotation_frequency_(qualities.side_rotation_frequency) {
   LoadImage();
-};
+}
 
 void Bot::LoadImage() {
   image_.load(":/textures/bot.png");
@@ -20,7 +20,7 @@ bool Bot::IsRotationStartNeeded(std::shared_ptr<Tank>) {
   if (time_to_finish_rotation_ <= 0 && time_to_finish_movement_ <= 0) {
     if (number_of_turns_ > 0) {
       number_of_turns_--;
-      return number_of_turns_ > 0 ? true : false;
+      return number_of_turns_ > 0;
     }
     if (number_of_cells_to_move_ == 0) {
       if (qrand() % side_rotation_frequency_ == 0) {
@@ -37,7 +37,7 @@ bool Bot::IsRotationStartNeeded(std::shared_ptr<Tank>) {
 
 bool Bot::IsMoveNeeded() const { return time_to_finish_movement_ > 0; }
 
-bool Bot::IsMovingStartNeeded(const QList<std::shared_ptr<Movable>>) {
+bool Bot::IsMovingStartNeeded(const QList<std::shared_ptr<Movable>>&) {
   if (time_to_finish_movement_ <= 0 && time_to_finish_rotation_ <= 0) {
     if (number_of_cells_to_move_ == 0) {
       if (number_of_turns_ == 0) {

@@ -250,8 +250,8 @@ void MainWindow::RedrawContent() {
     qualities.tank.max_health =
         70 + 15 * switch_difficulty_menu_->currentIndex();
     qualities.tank.rate_of_fire =
-        1000 - 300 * switch_difficulty_menu_->currentIndex();
-    qualities.tank.speed = 1000 - 300 * switch_difficulty_menu_->currentIndex();
+        1000 - 150 * switch_difficulty_menu_->currentIndex();
+    qualities.tank.speed = 1000 - 150 * switch_difficulty_menu_->currentIndex();
     in >> qualities.init_cell_x >> qualities.init_cell_y >>
         qualities.moving_length >> qualities.amount_of_turns >>
         qualities.side_rotation_frequency;

@@ -12,7 +12,7 @@ CleverBot::CleverBot(std::shared_ptr<Map>& map, BotQualities qualities,
       distance_[j].push_back(height * width);
     }
   }
-};
+}
 
 void CleverBot::LoadImage() {
   image_.load(":/textures/clever_bot.png");
@@ -23,13 +23,13 @@ bool CleverBot::IsRotationStartNeeded(std::shared_ptr<Tank>) {
   if (time_to_finish_rotation_ <= 0 && time_to_finish_movement_ <= 0) {
     if (number_of_turns_ > 0) {
       number_of_turns_--;
-      return number_of_turns_ > 0 ? true : false;
+      return number_of_turns_ > 0;
     }
   }
   return false;
 }
 
-bool CleverBot::IsMovingStartNeeded(const QList<std::shared_ptr<Movable>> objects) {
+bool CleverBot::IsMovingStartNeeded(const QList<std::shared_ptr<Movable>>& objects) {
   auto tank = objects[0];
   if (time_to_finish_movement_ <= 0 && time_to_finish_rotation_ <= 0) {
     Bfs(objects, tank->GetCellX(), tank->GetCellY());

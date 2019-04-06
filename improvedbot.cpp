@@ -4,7 +4,7 @@ ImprovedBot::ImprovedBot(std::shared_ptr<Map>& map, BotQualities qualities,
                          Direction direction)
     : Bot(map, qualities, direction) {
   LoadImage();
-};
+}
 
 void ImprovedBot::LoadImage() {
   image_.load(":/textures/improved_bot.png");
