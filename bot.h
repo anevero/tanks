@@ -6,6 +6,7 @@
 #include <QPainter>
 #include <cmath>
 #include <memory>
+#include <utility>
 #include "map.h"
 #include "tank.h"
 
@@ -26,7 +27,7 @@ class Bot : public Tank {
   virtual bool IsTurnNeeded() const;
   virtual bool IsMoveNeeded() const;
   virtual bool IsRotationStartNeeded(std::shared_ptr<Tank>);
-  virtual bool IsMovingStartNeeded();
+  virtual bool IsMovingStartNeeded(const QList<std::shared_ptr<Movable>>&);
   virtual bool IsShotNeeded(std::shared_ptr<Map>, std::shared_ptr<Tank>);
 
  protected:
@@ -37,6 +38,10 @@ class Bot : public Tank {
   const int side_rotation_frequency_;
 
   virtual bool CheckDirection(int& tank, int& bot, int direction);
+  bool IsWallBetweenObjectsX(std::shared_ptr<Map> map,
+                             int tank_x, int tank_y, int bot_x, int bot_y);
+  bool IsWallBetweenObjectsY(std::shared_ptr<Map> map,
+                             int tank_x, int tank_y, int bot_x, int bot_y);
 };
 
 #endif  // BOT_H

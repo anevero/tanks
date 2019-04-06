@@ -3,7 +3,7 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent),
       new_game_button_(new QPushButton("New game", this)),
-      pause_continue_button(new QPushButton("Pause", this)),
+      pause_continue_button_(new QPushButton("Pause", this)),
       switch_map_menu_(new QComboBox(this)),
       switch_tank_menu_(new QComboBox(this)),
       switch_difficulty_menu_(new QComboBox(this)),
@@ -39,9 +39,9 @@ MainWindow::MainWindow(QWidget *parent)
   }
   tanks_input_file.close();
 
-  switch_difficulty_menu_->addItem("Easy");
-  switch_difficulty_menu_->addItem("Normal");
-  switch_difficulty_menu_->addItem("Hard");
+  for (int i = 0; i < difficulty_levels_names_.size(); ++i) {
+    switch_difficulty_menu_->addItem(difficulty_levels_names_[i]);
+  }
 
   switch_map_label_->setText("Map:");
   switch_tank_label_->setText("Tank:");
@@ -51,7 +51,7 @@ MainWindow::MainWindow(QWidget *parent)
   resize(600, 450);
 
   connect(new_game_button_, SIGNAL(clicked()), this, SLOT(RedrawContent()));
-  connect(pause_continue_button, SIGNAL(clicked()), this,
+  connect(pause_continue_button_, SIGNAL(clicked()), this,
           SLOT(PauseOrContinue()));
 
   for (int i = 0; i < virtual_keys_buttons_.size(); ++i) {
@@ -89,31 +89,32 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event) {
   auto tank = std::dynamic_pointer_cast<Tank>(tanks_[0]);
   if (tank->IsMovingOrRotating() || (paused_ && event->key() != Qt::Key_Escape))
     return;
-  // предыдущие строчки допустимы, ибо мы пока обрабатываем только
-  // один пользовательский танк
-  // если какие-то клавиши должны будут работать не для него,
-  // строчки надо будет продублировать в каждой из секций W, A, S, D, Q
 
   switch (event->key()) {
     case Qt::Key_Escape:
-      PauseOrContinue();
+      pause_continue_button_->animateClick();
       break;
+    case 1062:
     case Qt::Key_W:
       tank->TurnReverseOff();
       tank->StartMovement(1, tanks_);
       break;
+    case 1067:
     case Qt::Key_S:
       tank->TurnReverseOn();
       tank->StartMovement(1, tanks_);
       break;
+    case 1060:
     case Qt::Key_A:
       tank->TurnRotationReverseOn();
       tank->StartRotation();
       break;
+    case 1042:
     case Qt::Key_D:
       tank->TurnRotationReverseOff();
       tank->StartRotation();
       break;
+    case 1049:
     case Qt::Key_Q:
       if (tank->IsAbleToShoot()) {
         tank->SetZeroTimeFromLastShot();
@@ -168,10 +169,9 @@ void MainWindow::timerEvent(QTimerEvent *) {
         std::shared_ptr<Tank> tank = std::dynamic_pointer_cast<Tank>(object);
         bot->SetZeroTimeFromLastShot();
         ShootRocket(tank);
-        // continue;
       }
 
-      if (bot->IsMovingStartNeeded()) {
+      if (bot->IsMovingStartNeeded(tanks_)) {
         bot->StartMovement(1, tanks_);
       } else if (bot->IsRotationStartNeeded(
                      std::dynamic_pointer_cast<Tank>(tanks_[0]))) {
@@ -237,7 +237,7 @@ void MainWindow::RedrawButtons() {
                                 h_indent_ + static_cast<int>(0.05 * sq_height_),
                                 static_cast<int>(0.2 * sq_width_),
                                 static_cast<int>(0.05 * sq_height_));
-  pause_continue_button->setGeometry(
+  pause_continue_button_->setGeometry(
       w_indent_ + static_cast<int>(0.04 * sq_width_),
       h_indent_ + static_cast<int>(0.11 * sq_height_),
       static_cast<int>(0.2 * sq_width_), static_cast<int>(0.05 * sq_height_));
@@ -293,7 +293,7 @@ void MainWindow::RedrawContent() {
   tanks_.clear();
   rockets_.clear();
 
-  pause_continue_button->setText("Pause");
+  pause_continue_button_->setText("Pause");
   paused_ = false;
 
   tanks_.append(std::shared_ptr<Movable>(
@@ -307,23 +307,29 @@ void MainWindow::RedrawContent() {
       QString::number(switch_difficulty_menu_->currentIndex() + 1) + ".txt");
   if (!bots_input_file.exists()) {
     QMessageBox message;
-    message.setWindowTitle("Error");
-    message.setText("This level of difficulty isn't available on this map");
+    message.setIcon(QMessageBox::Information);
+    message.setText(
+        "This level of difficulty isn't available on this map. \n"
+        "Try to switch to another map.");
     message.exec();
     return;
   }
 
   bots_input_file.open(QIODevice::ReadOnly);
   QTextStream in(&bots_input_file);
-  int number_of_standart_bots, number_of_improved_bots;
-  in >> number_of_standart_bots >> number_of_improved_bots;
-  for (int i = 0; i < number_of_standart_bots + number_of_improved_bots; ++i) {
+  int number_of_standart_bots, number_of_improved_bots, number_of_clever_bots,
+      number_of_bots;
+  in >> number_of_standart_bots >> number_of_improved_bots >>
+      number_of_clever_bots;
+  number_of_bots =
+      number_of_standart_bots + number_of_improved_bots + number_of_clever_bots;
+  for (int i = 0; i < number_of_bots; ++i) {
     BotQualities qualities;
     qualities.tank.max_health =
         70 + 15 * switch_difficulty_menu_->currentIndex();
     qualities.tank.rate_of_fire =
-        1000 - 300 * switch_difficulty_menu_->currentIndex();
-    qualities.tank.speed = 1000 - 300 * switch_difficulty_menu_->currentIndex();
+        1000 - 150 * switch_difficulty_menu_->currentIndex();
+    qualities.tank.speed = 1000 - 150 * switch_difficulty_menu_->currentIndex();
     in >> qualities.init_cell_x >> qualities.init_cell_y >>
         qualities.moving_length >> qualities.amount_of_turns >>
         qualities.side_rotation_frequency;
@@ -331,9 +337,12 @@ void MainWindow::RedrawContent() {
     if (i < number_of_standart_bots) {
       tanks_.append(
           std::shared_ptr<Movable>(new Bot(map_, qualities, Direction::Up)));
-    } else {
+    } else if (i < number_of_standart_bots + number_of_improved_bots) {
       tanks_.append(std::shared_ptr<Movable>(
           new ImprovedBot(map_, qualities, Direction::Up)));
+    } else {
+      tanks_.append(std::shared_ptr<Movable>(
+          new CleverBot(map_, qualities, Direction::Up)));
     }
   }
   bots_input_file.close();
@@ -344,11 +353,11 @@ void MainWindow::RedrawContent() {
 
 void MainWindow::PauseOrContinue() {
   if (paused_) {
-    pause_continue_button->setText("Pause");
+    pause_continue_button_->setText("Pause");
     paused_ = false;
     timer_id_ = startTimer(timer_duration_);
   } else if (timer_id_ != 0) {
-    pause_continue_button->setText("Continue");
+    pause_continue_button_->setText("Continue");
     paused_ = true;
     killTimer(timer_id_);
     timer_id_ = 0;
@@ -440,11 +449,17 @@ void MainWindow::GameOver() {
   timer_id_ = 0;
 
   QMessageBox message;
-  message.setWindowTitle("Tanks Alpha");
+  message.setIcon(QMessageBox::Information);
   if (tanks_.size() == number_of_player_tanks_) {
-    message.setText("You win!");
+    message.setText(
+        "You win! \n"
+        "You can start a new game with help of appropriate button "
+        "on the left.");
   } else {
-    message.setText("You died!");
+    message.setText(
+        "You died! \n"
+        "You can start a new game with help of appropriate button "
+        "on the left.");
   }
   message.exec();
 }

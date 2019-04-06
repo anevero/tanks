@@ -2,11 +2,9 @@ QT += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = tanks
+TARGET = Tanks
 TEMPLATE = app
 CONFIG += c++11
-#CONFIG+=address_sanitizer
-#QMAKE_CXXFLAGS += -std=c++17
 DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
@@ -17,7 +15,8 @@ SOURCES += \
     movable.cpp \
     rocket.cpp \
     bot.cpp \
-    improvedbot.cpp
+    improvedbot.cpp \
+    cleverbot.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -26,13 +25,12 @@ HEADERS += \
     movable.h \
     rocket.h \
     bot.h \
-    improvedbot.h
-
-DISTFILES += \
-    maps/map1.txt \
-    maps/map2.txt \
-    maps/map3.txt \
-    maps/map4.txt
+    improvedbot.h \
+    cleverbot.h
 
 RESOURCES += \
     resources.qrc
+
+RC_ICONS = app_icon.ico
+
+VERSION = 0.3.0.0
