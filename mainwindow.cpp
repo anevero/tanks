@@ -16,7 +16,6 @@ MainWindow::MainWindow(QWidget *parent)
            new QPushButton("D", this)}),
       virtual_keys_encodings_(
           {Qt::Key_Q, Qt::Key_W, Qt::Key_A, Qt::Key_S, Qt::Key_D}),
-      virtual_buttons_mapper_(new QSignalMapper(this)),
       map_(new Map(1)) {
   new_game_button_->setFocusPolicy(Qt::NoFocus);
   pause_continue_button_->setFocusPolicy(Qt::NoFocus);
@@ -61,14 +60,10 @@ MainWindow::MainWindow(QWidget *parent)
           SLOT(PauseOrContinue()));
 
   for (int i = 0; i < virtual_keys_buttons_.size(); ++i) {
-    connect(virtual_keys_buttons_[i], SIGNAL(clicked()),
-            virtual_buttons_mapper_, SLOT(map()));
-    virtual_buttons_mapper_->setMapping(virtual_keys_buttons_[i],
-                                        virtual_keys_encodings_[i]);
+    connect(virtual_keys_buttons_[i], &QPushButton::clicked,
+            [this, i]() { PressVirtualKey(virtual_keys_encodings_[i]); });
     virtual_keys_buttons_[i]->setFocusPolicy(Qt::NoFocus);
   }
-  connect(virtual_buttons_mapper_, SIGNAL(mapped(int)), this,
-          SLOT(PressVirtualKey(int)));
 
   if (QTouchDevice::devices().empty()) {
     ToggleVirtualKeys();
@@ -385,7 +380,7 @@ void MainWindow::PauseOrContinue() {
   }
 }
 
-void MainWindow::PressVirtualKey(int key) {
+void MainWindow::PressVirtualKey(Qt::Key key) {
   QKeyEvent *event = new QKeyEvent(QEvent::KeyRelease, key, Qt::NoModifier);
   QApplication::instance()->sendEvent(this, event);
 }

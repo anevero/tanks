@@ -13,7 +13,6 @@
 #include <QMessageBox>
 #include <QPainter>
 #include <QPushButton>
-#include <QSignalMapper>
 #include <QString>
 #include <QTimer>
 #include <QToolTip>
@@ -46,7 +45,7 @@ class MainWindow : public QMainWindow {
   void RedrawButtons();
   void RedrawContent();
   void PauseOrContinue();
-  void PressVirtualKey(int key);
+  void PressVirtualKey(Qt::Key key);
 
  private:
   void FindInteractingObjects();
@@ -74,8 +73,7 @@ class MainWindow : public QMainWindow {
   QLabel *switch_difficulty_label_;
 
   QVector<QPushButton *> virtual_keys_buttons_;
-  QVector<int> virtual_keys_encodings_;
-  QSignalMapper *virtual_buttons_mapper_;
+  QVector<Qt::Key> virtual_keys_encodings_;
   int number_of_virtual_keys_in_first_row_ = 2;
   int number_of_virtual_keys_in_second_row_ = 3;
 
