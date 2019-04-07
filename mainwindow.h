@@ -4,8 +4,11 @@
 #include <cleverbot.h>
 #include <QComboBox>
 #include <QDebug>
+#include <QDialog>
+#include <QDialogButtonBox>
 #include <QEvent>
 #include <QFileInfo>
+#include <QFormLayout>
 #include <QKeyEvent>
 #include <QLabel>
 #include <QList>
@@ -26,6 +29,12 @@
 #include "rocket.h"
 #include "tank.h"
 
+struct GameOptions {
+  int map_number;
+  int tank_number;
+  int difficulty_level_number;
+};
+
 class MainWindow : public QMainWindow {
   Q_OBJECT
 
@@ -41,6 +50,7 @@ class MainWindow : public QMainWindow {
   void timerEvent(QTimerEvent *) override;
 
  private slots:
+  void NewGame();
   void UpdateIndents();
   void RedrawButtons();
   void RedrawContent();
@@ -58,19 +68,26 @@ class MainWindow : public QMainWindow {
   int GetTimerDuration() const;
   void ToggleVirtualKeys();
   void GameOver();
+  void InitializeNewGameDialog();
 
  private:
   bool paused_ = false;
   bool virtual_keys_shown_ = true;
 
-  QPushButton *new_game_button_;
-  QPushButton *pause_continue_button_;
+  GameOptions current_game_options_{0, 0, 0};
+
+  QDialog *new_game_dialog_;
+  QDialogButtonBox *dialog_box_buttons_;
   QComboBox *switch_map_menu_;
   QComboBox *switch_tank_menu_;
   QComboBox *switch_difficulty_menu_;
+  QLabel *info_label_;
   QLabel *switch_map_label_;
   QLabel *switch_tank_label_;
   QLabel *switch_difficulty_label_;
+
+  QPushButton *new_game_button_;
+  QPushButton *pause_continue_button_;
 
   QVector<QPushButton *> virtual_keys_buttons_;
   QVector<Qt::Key> virtual_keys_encodings_;
@@ -82,7 +99,6 @@ class MainWindow : public QMainWindow {
   QList<std::shared_ptr<Movable>> rockets_;
 
   int number_of_player_tanks_ = 1;
-  int number_of_difficulty_levels_ = 2;
   QVector<QString> difficulty_levels_names_ = {"Easy", "Normal", "Hard"};
   QVector<TankQualities> available_tank_types_;
 

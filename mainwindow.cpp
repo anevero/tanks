@@ -4,12 +4,6 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent),
       new_game_button_(new QPushButton("New game", this)),
       pause_continue_button_(new QPushButton("Pause", this)),
-      switch_map_menu_(new QComboBox(this)),
-      switch_tank_menu_(new QComboBox(this)),
-      switch_difficulty_menu_(new QComboBox(this)),
-      switch_map_label_(new QLabel(this)),
-      switch_tank_label_(new QLabel(this)),
-      switch_difficulty_label_(new QLabel(this)),
       virtual_keys_buttons_(
           {new QPushButton("Q", this), new QPushButton("W", this),
            new QPushButton("A", this), new QPushButton("S", this),
@@ -17,45 +11,14 @@ MainWindow::MainWindow(QWidget *parent)
       virtual_keys_encodings_(
           {Qt::Key_Q, Qt::Key_W, Qt::Key_A, Qt::Key_S, Qt::Key_D}),
       map_(new Map(1)) {
+  InitializeNewGameDialog();
   new_game_button_->setFocusPolicy(Qt::NoFocus);
   pause_continue_button_->setFocusPolicy(Qt::NoFocus);
-  switch_map_menu_->setFocusPolicy(Qt::NoFocus);
-  switch_tank_menu_->setFocusPolicy(Qt::NoFocus);
-  switch_difficulty_menu_->setFocusPolicy(Qt::NoFocus);
-
-  int map_number = 1;
-  QFileInfo map_file(":/maps/map" + QString::number(map_number) + ".txt");
-  while (map_file.exists() && map_file.isFile()) {
-    switch_map_menu_->addItem("Map " + QString::number(map_number));
-    map_number++;
-    map_file = QFileInfo(":/maps/map" + QString::number(map_number) + ".txt");
-  }
-
-  QFile tanks_input_file(":/tanks_info/tanks.txt");
-  tanks_input_file.open(QIODevice::ReadOnly);
-  QTextStream in(&tanks_input_file);
-  int number_of_tank_types;
-  in >> number_of_tank_types;
-  for (int i = 0; i < number_of_tank_types; ++i) {
-    TankQualities qualities;
-    in >> qualities.speed >> qualities.rate_of_fire >> qualities.max_health;
-    available_tank_types_.push_back(qualities);
-    switch_tank_menu_->addItem("Tank " + QString::number(i + 1));
-  }
-  tanks_input_file.close();
-
-  for (int i = 0; i < difficulty_levels_names_.size(); ++i) {
-    switch_difficulty_menu_->addItem(difficulty_levels_names_[i]);
-  }
-
-  switch_map_label_->setText("Map:");
-  switch_tank_label_->setText("Tank:");
-  switch_difficulty_label_->setText("Difficulty:");
 
   setMinimumSize(600, 450);
   resize(600, 450);
 
-  connect(new_game_button_, SIGNAL(clicked()), this, SLOT(RedrawContent()));
+  connect(new_game_button_, SIGNAL(clicked()), this, SLOT(NewGame()));
   connect(pause_continue_button_, SIGNAL(clicked()), this,
           SLOT(PauseOrContinue()));
 
@@ -68,8 +31,6 @@ MainWindow::MainWindow(QWidget *parent)
   if (QTouchDevice::devices().empty()) {
     ToggleVirtualKeys();
   }
-
-  RedrawContent();
 }
 
 void MainWindow::mouseReleaseEvent(QMouseEvent *event) {
@@ -238,6 +199,13 @@ void MainWindow::timerEvent(QTimerEvent *) {
   repaint();
 }
 
+void MainWindow::NewGame() {
+  if (!paused_) PauseOrContinue();
+  if (new_game_dialog_->exec() == QDialog::Accepted) {
+    RedrawContent();
+  }
+}
+
 void MainWindow::UpdateIndents() {
   sq_width_ = 4 * std::min(width() / 4, height() / 3);
   sq_height_ = 3 * std::min(width() / 4, height() / 3);
@@ -254,30 +222,6 @@ void MainWindow::RedrawButtons() {
   pause_continue_button_->setGeometry(
       w_indent_ + static_cast<int>(0.04 * sq_width_),
       h_indent_ + static_cast<int>(0.11 * sq_height_),
-      static_cast<int>(0.2 * sq_width_), static_cast<int>(0.05 * sq_height_));
-  switch_map_label_->setGeometry(
-      w_indent_ + static_cast<int>(0.04 * sq_width_),
-      h_indent_ + static_cast<int>(0.18 * sq_height_),
-      static_cast<int>(0.2 * sq_width_), static_cast<int>(0.05 * sq_height_));
-  switch_map_menu_->setGeometry(w_indent_ + static_cast<int>(0.04 * sq_width_),
-                                h_indent_ + static_cast<int>(0.23 * sq_height_),
-                                static_cast<int>(0.2 * sq_width_),
-                                static_cast<int>(0.05 * sq_height_));
-  switch_tank_label_->setGeometry(
-      w_indent_ + static_cast<int>(0.04 * sq_width_),
-      h_indent_ + static_cast<int>(0.3 * sq_height_),
-      static_cast<int>(0.2 * sq_width_), static_cast<int>(0.05 * sq_height_));
-  switch_tank_menu_->setGeometry(
-      w_indent_ + static_cast<int>(0.04 * sq_width_),
-      h_indent_ + static_cast<int>(0.35 * sq_height_),
-      static_cast<int>(0.2 * sq_width_), static_cast<int>(0.05 * sq_height_));
-  switch_difficulty_label_->setGeometry(
-      w_indent_ + static_cast<int>(0.04 * sq_width_),
-      h_indent_ + static_cast<int>(0.42 * sq_height_),
-      static_cast<int>(0.2 * sq_width_), static_cast<int>(0.05 * sq_height_));
-  switch_difficulty_menu_->setGeometry(
-      w_indent_ + static_cast<int>(0.04 * sq_width_),
-      h_indent_ + static_cast<int>(0.47 * sq_height_),
       static_cast<int>(0.2 * sq_width_), static_cast<int>(0.05 * sq_height_));
 
   if (virtual_keys_shown_) {
@@ -305,7 +249,7 @@ void MainWindow::RedrawButtons() {
 void MainWindow::RedrawContent() {
   killTimer(timer_id_);
   timer_id_ = 0;
-  map_.reset(new Map(switch_map_menu_->currentIndex() + 1));
+  map_.reset(new Map(current_game_options_.map_number + 1));
   tanks_.clear();
   rockets_.clear();
 
@@ -314,13 +258,14 @@ void MainWindow::RedrawContent() {
 
   tanks_.append(std::shared_ptr<Movable>(
       new Tank(map_, map_->GetTankInitCellX(), map_->GetTankInitCellY(),
-               available_tank_types_[switch_tank_menu_->currentIndex()],
+               available_tank_types_[current_game_options_.tank_number],
                Direction::Up)));
 
   QFile bots_input_file(
       ":/tanks_info/bots" +
-      QString::number(switch_map_menu_->currentIndex() + 1) +
-      QString::number(switch_difficulty_menu_->currentIndex() + 1) + ".txt");
+      QString::number(current_game_options_.map_number + 1) +
+      QString::number(current_game_options_.difficulty_level_number + 1) +
+      ".txt");
   if (!bots_input_file.exists()) {
     QMessageBox message;
     message.setIcon(QMessageBox::Information);
@@ -342,10 +287,11 @@ void MainWindow::RedrawContent() {
   for (int i = 0; i < number_of_bots; ++i) {
     BotQualities qualities;
     qualities.tank.max_health =
-        70 + 15 * switch_difficulty_menu_->currentIndex();
+        70 + 15 * current_game_options_.difficulty_level_number;
     qualities.tank.rate_of_fire =
-        1000 - 150 * switch_difficulty_menu_->currentIndex();
-    qualities.tank.speed = 1000 - 150 * switch_difficulty_menu_->currentIndex();
+        1000 - 150 * current_game_options_.difficulty_level_number;
+    qualities.tank.speed =
+        1000 - 150 * current_game_options_.difficulty_level_number;
     in >> qualities.init_cell_x >> qualities.init_cell_y >>
         qualities.moving_length >> qualities.amount_of_turns >>
         qualities.side_rotation_frequency;
@@ -486,4 +432,72 @@ void MainWindow::GameOver() {
         "on the left.");
   }
   message.exec();
+}
+
+void MainWindow::InitializeNewGameDialog() {
+  new_game_dialog_ = new QDialog(this);
+
+  info_label_ = new QLabel(new_game_dialog_);
+  info_label_->setText("Choose map, tank and difficulty.");
+
+  switch_map_label_ = new QLabel(new_game_dialog_);
+  switch_map_label_->setText(QString("Map") + QString(":"));
+  switch_map_menu_ = new QComboBox(new_game_dialog_);
+
+  int map_number = 1;
+  QFileInfo map_file(":/maps/map" + QString::number(map_number) + ".txt");
+  while (map_file.exists() && map_file.isFile()) {
+    switch_map_menu_->addItem("Map " + QString::number(map_number));
+    map_number++;
+    map_file = QFileInfo(":/maps/map" + QString::number(map_number) + ".txt");
+  }
+
+  switch_tank_label_ = new QLabel(new_game_dialog_);
+  switch_tank_label_->setText(QString("Tank") + QString(":"));
+  switch_tank_menu_ = new QComboBox(new_game_dialog_);
+
+  QFile tanks_input_file(":/tanks_info/tanks.txt");
+  tanks_input_file.open(QIODevice::ReadOnly);
+  QTextStream in(&tanks_input_file);
+  int number_of_tank_types;
+  in >> number_of_tank_types;
+  for (int i = 0; i < number_of_tank_types; ++i) {
+    TankQualities qualities;
+    in >> qualities.speed >> qualities.rate_of_fire >> qualities.max_health;
+    available_tank_types_.push_back(qualities);
+    switch_tank_menu_->addItem("Tank " + QString::number(i + 1));
+  }
+  tanks_input_file.close();
+
+  switch_difficulty_label_ = new QLabel(new_game_dialog_);
+  switch_difficulty_label_->setText(QString("Difficulty") + QString(":"));
+  switch_difficulty_menu_ = new QComboBox(new_game_dialog_);
+
+  for (int i = 0; i < difficulty_levels_names_.size(); ++i) {
+    switch_difficulty_menu_->addItem(difficulty_levels_names_[i]);
+  }
+
+  QFormLayout *layout = new QFormLayout(new_game_dialog_);
+  layout->addRow(info_label_);
+  layout->addRow(switch_map_label_);
+  layout->addRow(switch_map_menu_);
+  layout->addRow(switch_tank_label_);
+  layout->addRow(switch_tank_menu_);
+  layout->addRow(switch_difficulty_label_);
+  layout->addRow(switch_difficulty_menu_);
+
+  dialog_box_buttons_ = new QDialogButtonBox(QDialogButtonBox::Ok,
+                                             Qt::Horizontal, new_game_dialog_);
+  layout->addRow(dialog_box_buttons_);
+
+  connect(dialog_box_buttons_->button(QDialogButtonBox::Ok),
+          &QPushButton::clicked, [&]() {
+            current_game_options_.map_number = switch_map_menu_->currentIndex();
+            current_game_options_.tank_number =
+                switch_tank_menu_->currentIndex();
+            current_game_options_.difficulty_level_number =
+                switch_difficulty_menu_->currentIndex();
+          });
+  connect(dialog_box_buttons_, SIGNAL(accepted()), new_game_dialog_,
+          SLOT(accept()));
 }
