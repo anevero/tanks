@@ -70,6 +70,10 @@ MainWindow::MainWindow(QWidget *parent)
   connect(virtual_buttons_mapper_, SIGNAL(mapped(int)), this,
           SLOT(PressVirtualKey(int)));
 
+  if (QTouchDevice::devices().empty()) {
+    ToggleVirtualKeys();
+  }
+
   RedrawContent();
 }
 
@@ -131,6 +135,10 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event) {
         tank->SetZeroTimeFromLastShot();
         ShootRocket(tank);
       }
+      break;
+    case 1052:
+    case Qt::Key_V:
+      ToggleVirtualKeys();
       break;
   }
 }
@@ -277,23 +285,25 @@ void MainWindow::RedrawButtons() {
       h_indent_ + static_cast<int>(0.47 * sq_height_),
       static_cast<int>(0.2 * sq_width_), static_cast<int>(0.05 * sq_height_));
 
-  for (int i = 0; i < number_of_virtual_keys_in_first_row_; ++i) {
-    virtual_keys_buttons_[i]->setGeometry(
-        w_indent_ + static_cast<int>(0.04 * sq_width_) +
-            i * static_cast<int>(0.2 * sq_width_ / 3),
-        height() - static_cast<int>(0.19 * sq_height_),
-        static_cast<int>(0.2 * sq_width_ / 3),
-        static_cast<int>(0.07 * sq_height_));
-  }
-  for (int i = number_of_virtual_keys_in_first_row_;
-       i < virtual_keys_buttons_.size(); ++i) {
-    virtual_keys_buttons_[i]->setGeometry(
-        w_indent_ + static_cast<int>(0.04 * sq_width_) +
-            static_cast<int>((i - number_of_virtual_keys_in_first_row_) * 0.2 *
-                             sq_width_ / 3),
-        height() - static_cast<int>(0.12 * sq_height_),
-        static_cast<int>(0.2 * sq_width_ / 3),
-        static_cast<int>(0.07 * sq_height_));
+  if (virtual_keys_shown_) {
+    for (int i = 0; i < number_of_virtual_keys_in_first_row_; ++i) {
+      virtual_keys_buttons_[i]->setGeometry(
+          w_indent_ + static_cast<int>(0.04 * sq_width_) +
+              i * static_cast<int>(0.2 * sq_width_ / 3),
+          height() - static_cast<int>(0.19 * sq_height_),
+          static_cast<int>(0.2 * sq_width_ / 3),
+          static_cast<int>(0.07 * sq_height_));
+    }
+    for (int i = number_of_virtual_keys_in_first_row_;
+         i < virtual_keys_buttons_.size(); ++i) {
+      virtual_keys_buttons_[i]->setGeometry(
+          w_indent_ + static_cast<int>(0.04 * sq_width_) +
+              static_cast<int>((i - number_of_virtual_keys_in_first_row_) *
+                               0.2 * sq_width_ / 3),
+          height() - static_cast<int>(0.12 * sq_height_),
+          static_cast<int>(0.2 * sq_width_ / 3),
+          static_cast<int>(0.07 * sq_height_));
+    }
   }
 }
 
@@ -454,6 +464,14 @@ bool MainWindow::IsRocketByThisTank(
 }
 
 int MainWindow::GetTimerDuration() const { return timer_duration_; }
+
+void MainWindow::ToggleVirtualKeys() {
+  virtual_keys_shown_ = !virtual_keys_shown_;
+  for (int i = 0; i < virtual_keys_buttons_.size(); ++i) {
+    virtual_keys_buttons_[i]->setVisible(virtual_keys_shown_);
+  }
+  RedrawButtons();
+}
 
 void MainWindow::GameOver() {
   killTimer(timer_id_);

@@ -1,6 +1,7 @@
 ﻿#ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <cleverbot.h>
 #include <QComboBox>
 #include <QDebug>
 #include <QEvent>
@@ -16,11 +17,11 @@
 #include <QString>
 #include <QTimer>
 #include <QToolTip>
+#include <QTouchDevice>
 #include <QtGlobal>
 #include <algorithm>
 #include <memory>
 #include "bot.h"
-#include <cleverbot.h>
 #include "improvedbot.h"
 #include "map.h"
 #include "rocket.h"
@@ -56,10 +57,12 @@ class MainWindow : public QMainWindow {
   bool IsRocketByThisTank(const std::shared_ptr<Movable> &rocket,
                           const std::shared_ptr<Movable> &tank) const;
   int GetTimerDuration() const;
+  void ToggleVirtualKeys();
   void GameOver();
 
  private:
   bool paused_ = false;
+  bool virtual_keys_shown_ = true;
 
   QPushButton *new_game_button_;
   QPushButton *pause_continue_button_;
