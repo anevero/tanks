@@ -1,7 +1,6 @@
 ﻿#ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <cleverbot.h>
 #include <QCheckBox>
 #include <QComboBox>
 #include <QDebug>
@@ -25,6 +24,7 @@
 #include <algorithm>
 #include <memory>
 #include "bot.h"
+#include "cleverbot.h"
 #include "improvedbot.h"
 #include "map.h"
 #include "rocket.h"
@@ -113,7 +113,8 @@ class MainWindow : public QMainWindow {
   QList<std::shared_ptr<Movable>> rockets_;
 
   int number_of_player_tanks_ = 1;
-  QVector<QString> difficulty_levels_names_ = {"Easy", "Normal", "Hard"};
+  QVector<QString> difficulty_levels_names_ = {tr("Easy"), tr("Normal"),
+                                               tr("Hard")};
   QVector<TankQualities> available_tank_types_;
 
   int timer_duration_ = 10;

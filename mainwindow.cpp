@@ -2,9 +2,9 @@
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent),
-      new_game_button_(new QPushButton("New game", this)),
-      pause_continue_button_(new QPushButton("Pause", this)),
-      settings_button_(new QPushButton("Settings", this)),
+      new_game_button_(new QPushButton(tr("New game"), this)),
+      pause_continue_button_(new QPushButton(tr("Pause"), this)),
+      settings_button_(new QPushButton(tr("Settings"), this)),
       virtual_keys_buttons_(
           {new QPushButton("Q", this), new QPushButton("W", this),
            new QPushButton("A", this), new QPushButton("S", this),
@@ -265,7 +265,7 @@ void MainWindow::RedrawContent() {
   tanks_.clear();
   rockets_.clear();
 
-  pause_continue_button_->setText("Pause");
+  pause_continue_button_->setText(tr("Pause"));
   paused_ = false;
 
   tanks_.append(std::shared_ptr<Movable>(
@@ -282,8 +282,8 @@ void MainWindow::RedrawContent() {
     QMessageBox message;
     message.setIcon(QMessageBox::Information);
     message.setText(
-        "This level of difficulty isn't available on this map. \n"
-        "Try to switch to another map.");
+        tr("This level of difficulty isn't available on this map. \n"
+           "Try to switch to another map."));
     message.exec();
     return;
   }
@@ -327,11 +327,11 @@ void MainWindow::RedrawContent() {
 
 void MainWindow::PauseOrContinue() {
   if (paused_) {
-    pause_continue_button_->setText("Pause");
+    pause_continue_button_->setText(tr("Pause"));
     paused_ = false;
     timer_id_ = startTimer(timer_duration_);
   } else if (timer_id_ != 0) {
-    pause_continue_button_->setText("Continue");
+    pause_continue_button_->setText(tr("Continue"));
     paused_ = true;
     killTimer(timer_id_);
     timer_id_ = 0;
@@ -434,14 +434,14 @@ void MainWindow::GameOver() {
   message.setIcon(QMessageBox::Information);
   if (tanks_.size() == number_of_player_tanks_) {
     message.setText(
-        "You win! \n"
-        "You can start a new game with help of appropriate button "
-        "on the left.");
+        tr("You win! \n"
+           "You can start a new game with help of appropriate button "
+           "on the left."));
   } else {
     message.setText(
-        "You died! \n"
-        "You can start a new game with help of appropriate button "
-        "on the left.");
+        tr("You died! \n"
+           "You can start a new game with help of appropriate button "
+           "on the left."));
   }
   message.exec();
 }
@@ -450,22 +450,22 @@ void MainWindow::InitializeNewGameDialog() {
   new_game_dialog_ = new QDialog(this);
 
   info_label_ =
-      new QLabel("Choose map, tank and difficulty.", new_game_dialog_);
+      new QLabel(tr("Choose map, tank and difficulty"), new_game_dialog_);
 
   switch_map_label_ =
-      new QLabel(QString("Map") + QString(":"), new_game_dialog_);
+      new QLabel(QString(tr("Map")) + QString(":"), new_game_dialog_);
   switch_map_menu_ = new QComboBox(new_game_dialog_);
 
   int map_number = 1;
   QFileInfo map_file(":/maps/map" + QString::number(map_number) + ".txt");
   while (map_file.exists() && map_file.isFile()) {
-    switch_map_menu_->addItem("Map " + QString::number(map_number));
+    switch_map_menu_->addItem(tr("Map") + " " + QString::number(map_number));
     map_number++;
     map_file = QFileInfo(":/maps/map" + QString::number(map_number) + ".txt");
   }
 
   switch_tank_label_ =
-      new QLabel(QString("Tank") + QString(":"), new_game_dialog_);
+      new QLabel(QString(tr("Tank")) + QString(":"), new_game_dialog_);
   switch_tank_menu_ = new QComboBox(new_game_dialog_);
 
   QFile tanks_input_file(":/tanks_info/tanks.txt");
@@ -477,12 +477,12 @@ void MainWindow::InitializeNewGameDialog() {
     TankQualities qualities;
     in >> qualities.speed >> qualities.rate_of_fire >> qualities.max_health;
     available_tank_types_.push_back(qualities);
-    switch_tank_menu_->addItem("Tank " + QString::number(i + 1));
+    switch_tank_menu_->addItem(tr("Tank") + " " + QString::number(i + 1));
   }
   tanks_input_file.close();
 
   switch_difficulty_label_ =
-      new QLabel(QString("Difficulty") + QString(":"), new_game_dialog_);
+      new QLabel(QString(tr("Difficulty")) + QString(":"), new_game_dialog_);
   switch_difficulty_menu_ = new QComboBox(new_game_dialog_);
 
   for (int i = 0; i < difficulty_levels_names_.size(); ++i) {
@@ -520,21 +520,21 @@ void MainWindow::InitializeSettingsDialog() {
   settings_dialog_ = new QDialog(this);
 
   virtual_keys_checkbox_ =
-      new QCheckBox("Activate virtual keys", settings_dialog_);
+      new QCheckBox(tr("Activate virtual keys"), settings_dialog_);
   virtual_keys_checkbox_->setChecked(virtual_keys_shown_);
 
   language_menu_label_ =
-      new QLabel(QString("Language") + QString(":"), settings_dialog_);
+      new QLabel(QString(tr("Language")) + QString(":"), settings_dialog_);
 
   language_menu_ = new QComboBox(settings_dialog_);
-  language_menu_->addItem("Default");
-  language_menu_->addItem("Belarusian");
-  language_menu_->addItem("English");
-  language_menu_->addItem("Russian");
+  language_menu_->addItem(tr("Default"));
+  language_menu_->addItem(tr("Belarusian"));
+  language_menu_->addItem(tr("English"));
+  language_menu_->addItem(tr("Russian"));
 
   settings_separator_label_ = new QLabel(this);
-  version_label_ =
-      new QLabel(QString("App version") + QString(": ") + QString("0.4.0.0"));
+  version_label_ = new QLabel(QString(tr("App version")) + QString(": ") +
+                              QString("0.4.0.0"));
 
   settings_dialog_layout_ = new QFormLayout(settings_dialog_);
   settings_dialog_layout_->addRow(virtual_keys_checkbox_);
