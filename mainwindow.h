@@ -1,6 +1,7 @@
 ﻿#ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <cleverbot.h>
 #include <QComboBox>
 #include <QDebug>
 #include <QEvent>
@@ -15,11 +16,11 @@
 #include <QString>
 #include <QTimer>
 #include <QToolTip>
+#include <QTouchDevice>
 #include <QtGlobal>
 #include <algorithm>
 #include <memory>
 #include "bot.h"
-#include <cleverbot.h>
 #include "improvedbot.h"
 #include "map.h"
 #include "rocket.h"
@@ -44,6 +45,7 @@ class MainWindow : public QMainWindow {
   void RedrawButtons();
   void RedrawContent();
   void PauseOrContinue();
+  void PressVirtualKey(Qt::Key key);
 
  private:
   void FindInteractingObjects();
@@ -54,10 +56,12 @@ class MainWindow : public QMainWindow {
   bool IsRocketByThisTank(const std::shared_ptr<Movable> &rocket,
                           const std::shared_ptr<Movable> &tank) const;
   int GetTimerDuration() const;
+  void ToggleVirtualKeys();
   void GameOver();
 
  private:
   bool paused_ = false;
+  bool virtual_keys_shown_ = true;
 
   QPushButton *new_game_button_;
   QPushButton *pause_continue_button_;
@@ -67,6 +71,11 @@ class MainWindow : public QMainWindow {
   QLabel *switch_map_label_;
   QLabel *switch_tank_label_;
   QLabel *switch_difficulty_label_;
+
+  QVector<QPushButton *> virtual_keys_buttons_;
+  QVector<Qt::Key> virtual_keys_encodings_;
+  int number_of_virtual_keys_in_first_row_ = 2;
+  int number_of_virtual_keys_in_second_row_ = 3;
 
   std::shared_ptr<Map> map_;
   QList<std::shared_ptr<Movable>> tanks_;

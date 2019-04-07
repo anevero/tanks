@@ -1,15 +1,27 @@
 ﻿#include "mainwindow.h"
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent), map_(new Map(1)) {
-  new_game_button_ = new QPushButton("New game", this);
-  pause_continue_button_ = new QPushButton("Pause", this);
-  switch_map_menu_ = new QComboBox(this);
-  switch_tank_menu_ = new QComboBox(this);
-  switch_difficulty_menu_ = new QComboBox(this);
-  switch_map_label_ = new QLabel(this);
-  switch_tank_label_ = new QLabel(this);
-  switch_difficulty_label_ = new QLabel(this);
+    : QMainWindow(parent),
+      new_game_button_(new QPushButton("New game", this)),
+      pause_continue_button_(new QPushButton("Pause", this)),
+      switch_map_menu_(new QComboBox(this)),
+      switch_tank_menu_(new QComboBox(this)),
+      switch_difficulty_menu_(new QComboBox(this)),
+      switch_map_label_(new QLabel(this)),
+      switch_tank_label_(new QLabel(this)),
+      switch_difficulty_label_(new QLabel(this)),
+      virtual_keys_buttons_(
+          {new QPushButton("Q", this), new QPushButton("W", this),
+           new QPushButton("A", this), new QPushButton("S", this),
+           new QPushButton("D", this)}),
+      virtual_keys_encodings_(
+          {Qt::Key_Q, Qt::Key_W, Qt::Key_A, Qt::Key_S, Qt::Key_D}),
+      map_(new Map(1)) {
+  new_game_button_->setFocusPolicy(Qt::NoFocus);
+  pause_continue_button_->setFocusPolicy(Qt::NoFocus);
+  switch_map_menu_->setFocusPolicy(Qt::NoFocus);
+  switch_tank_menu_->setFocusPolicy(Qt::NoFocus);
+  switch_difficulty_menu_->setFocusPolicy(Qt::NoFocus);
 
   int map_number = 1;
   QFileInfo map_file(":/maps/map" + QString::number(map_number) + ".txt");
@@ -42,9 +54,20 @@ MainWindow::MainWindow(QWidget *parent)
 
   setMinimumSize(600, 450);
   resize(600, 450);
+
   connect(new_game_button_, SIGNAL(clicked()), this, SLOT(RedrawContent()));
   connect(pause_continue_button_, SIGNAL(clicked()), this,
           SLOT(PauseOrContinue()));
+
+  for (int i = 0; i < virtual_keys_buttons_.size(); ++i) {
+    connect(virtual_keys_buttons_[i], &QPushButton::clicked,
+            [&]() { PressVirtualKey(virtual_keys_encodings_[i]); });
+    virtual_keys_buttons_[i]->setFocusPolicy(Qt::NoFocus);
+  }
+
+  if (QTouchDevice::devices().empty()) {
+    ToggleVirtualKeys();
+  }
 
   RedrawContent();
 }
@@ -78,21 +101,25 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event) {
       pause_continue_button_->animateClick();
       break;
     case 1062:
+    case Qt::Key_Up:
     case Qt::Key_W:
       tank->TurnReverseOff();
       tank->StartMovement(1, tanks_);
       break;
     case 1067:
+    case Qt::Key_Down:
     case Qt::Key_S:
       tank->TurnReverseOn();
       tank->StartMovement(1, tanks_);
       break;
     case 1060:
+    case Qt::Key_Left:
     case Qt::Key_A:
       tank->TurnRotationReverseOn();
       tank->StartRotation();
       break;
     case 1042:
+    case Qt::Key_Right:
     case Qt::Key_D:
       tank->TurnRotationReverseOff();
       tank->StartRotation();
@@ -103,6 +130,10 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event) {
         tank->SetZeroTimeFromLastShot();
         ShootRocket(tank);
       }
+      break;
+    case 1052:
+    case Qt::Key_V:
+      ToggleVirtualKeys();
       break;
   }
 }
@@ -248,6 +279,27 @@ void MainWindow::RedrawButtons() {
       w_indent_ + static_cast<int>(0.04 * sq_width_),
       h_indent_ + static_cast<int>(0.47 * sq_height_),
       static_cast<int>(0.2 * sq_width_), static_cast<int>(0.05 * sq_height_));
+
+  if (virtual_keys_shown_) {
+    for (int i = 0; i < number_of_virtual_keys_in_first_row_; ++i) {
+      virtual_keys_buttons_[i]->setGeometry(
+          w_indent_ + static_cast<int>(0.04 * sq_width_) +
+              i * static_cast<int>(0.2 * sq_width_ / 3),
+          height() - static_cast<int>(0.19 * sq_height_),
+          static_cast<int>(0.2 * sq_width_ / 3),
+          static_cast<int>(0.07 * sq_height_));
+    }
+    for (int i = number_of_virtual_keys_in_first_row_;
+         i < virtual_keys_buttons_.size(); ++i) {
+      virtual_keys_buttons_[i]->setGeometry(
+          w_indent_ + static_cast<int>(0.04 * sq_width_) +
+              static_cast<int>((i - number_of_virtual_keys_in_first_row_) *
+                               0.2 * sq_width_ / 3),
+          height() - static_cast<int>(0.12 * sq_height_),
+          static_cast<int>(0.2 * sq_width_ / 3),
+          static_cast<int>(0.07 * sq_height_));
+    }
+  }
 }
 
 void MainWindow::RedrawContent() {
@@ -284,10 +336,10 @@ void MainWindow::RedrawContent() {
   int number_of_standart_bots, number_of_improved_bots, number_of_clever_bots,
       number_of_bots;
   in >> number_of_standart_bots >> number_of_improved_bots >>
-        number_of_clever_bots;
-  number_of_bots = number_of_standart_bots + number_of_improved_bots +
-        number_of_clever_bots;
-  for (int i = 0; i < number_of_bots ; ++i) {
+      number_of_clever_bots;
+  number_of_bots =
+      number_of_standart_bots + number_of_improved_bots + number_of_clever_bots;
+  for (int i = 0; i < number_of_bots; ++i) {
     BotQualities qualities;
     qualities.tank.max_health =
         70 + 15 * switch_difficulty_menu_->currentIndex();
@@ -326,6 +378,11 @@ void MainWindow::PauseOrContinue() {
     killTimer(timer_id_);
     timer_id_ = 0;
   }
+}
+
+void MainWindow::PressVirtualKey(Qt::Key key) {
+  QKeyEvent *event = new QKeyEvent(QEvent::KeyRelease, key, Qt::NoModifier);
+  QApplication::instance()->sendEvent(this, event);
 }
 
 void MainWindow::FindInteractingObjects() {
@@ -402,6 +459,14 @@ bool MainWindow::IsRocketByThisTank(
 }
 
 int MainWindow::GetTimerDuration() const { return timer_duration_; }
+
+void MainWindow::ToggleVirtualKeys() {
+  virtual_keys_shown_ = !virtual_keys_shown_;
+  for (int i = 0; i < virtual_keys_buttons_.size(); ++i) {
+    virtual_keys_buttons_[i]->setVisible(virtual_keys_shown_);
+  }
+  RedrawButtons();
+}
 
 void MainWindow::GameOver() {
   killTimer(timer_id_);
