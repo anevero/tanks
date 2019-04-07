@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <cleverbot.h>
+#include <QCheckBox>
 #include <QComboBox>
 #include <QDebug>
 #include <QDialog>
@@ -51,6 +52,7 @@ class MainWindow : public QMainWindow {
 
  private slots:
   void NewGame();
+  void Settings();
   void UpdateIndents();
   void RedrawButtons();
   void RedrawContent();
@@ -69,6 +71,7 @@ class MainWindow : public QMainWindow {
   void ToggleVirtualKeys();
   void GameOver();
   void InitializeNewGameDialog();
+  void InitializeSettingsDialog();
 
  private:
   bool paused_ = false;
@@ -77,7 +80,8 @@ class MainWindow : public QMainWindow {
   GameOptions current_game_options_{0, 0, 0};
 
   QDialog *new_game_dialog_;
-  QDialogButtonBox *dialog_box_buttons_;
+  QDialogButtonBox *new_game_dialog_buttons_;
+  QFormLayout *new_game_dialog_layout_;
   QComboBox *switch_map_menu_;
   QComboBox *switch_tank_menu_;
   QComboBox *switch_difficulty_menu_;
@@ -86,8 +90,18 @@ class MainWindow : public QMainWindow {
   QLabel *switch_tank_label_;
   QLabel *switch_difficulty_label_;
 
+  QDialog *settings_dialog_;
+  QDialogButtonBox *settings_dialog_buttons_;
+  QFormLayout *settings_dialog_layout_;
+  QCheckBox *virtual_keys_checkbox_;
+  QComboBox *language_menu_;
+  QLabel *language_menu_label_;
+  QLabel *settings_separator_label_;
+  QLabel *version_label_;
+
   QPushButton *new_game_button_;
   QPushButton *pause_continue_button_;
+  QPushButton *settings_button_;
 
   QVector<QPushButton *> virtual_keys_buttons_;
   QVector<Qt::Key> virtual_keys_encodings_;

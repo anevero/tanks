@@ -4,6 +4,7 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent),
       new_game_button_(new QPushButton("New game", this)),
       pause_continue_button_(new QPushButton("Pause", this)),
+      settings_button_(new QPushButton("Settings", this)),
       virtual_keys_buttons_(
           {new QPushButton("Q", this), new QPushButton("W", this),
            new QPushButton("A", this), new QPushButton("S", this),
@@ -11,9 +12,9 @@ MainWindow::MainWindow(QWidget *parent)
       virtual_keys_encodings_(
           {Qt::Key_Q, Qt::Key_W, Qt::Key_A, Qt::Key_S, Qt::Key_D}),
       map_(new Map(1)) {
-  InitializeNewGameDialog();
   new_game_button_->setFocusPolicy(Qt::NoFocus);
   pause_continue_button_->setFocusPolicy(Qt::NoFocus);
+  settings_button_->setFocusPolicy(Qt::NoFocus);
 
   setMinimumSize(600, 450);
   resize(600, 450);
@@ -21,6 +22,7 @@ MainWindow::MainWindow(QWidget *parent)
   connect(new_game_button_, SIGNAL(clicked()), this, SLOT(NewGame()));
   connect(pause_continue_button_, SIGNAL(clicked()), this,
           SLOT(PauseOrContinue()));
+  connect(settings_button_, SIGNAL(clicked()), this, SLOT(Settings()));
 
   for (int i = 0; i < virtual_keys_buttons_.size(); ++i) {
     connect(virtual_keys_buttons_[i], &QPushButton::clicked,
@@ -31,6 +33,9 @@ MainWindow::MainWindow(QWidget *parent)
   if (QTouchDevice::devices().empty()) {
     ToggleVirtualKeys();
   }
+
+  InitializeNewGameDialog();
+  InitializeSettingsDialog();
 }
 
 void MainWindow::mouseReleaseEvent(QMouseEvent *event) {
@@ -53,6 +58,7 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event) {
 }
 
 void MainWindow::keyReleaseEvent(QKeyEvent *event) {
+  if (timer_id_ == 0) return;
   auto tank = std::dynamic_pointer_cast<Tank>(tanks_[0]);
   if (tank->IsMovingOrRotating() || (paused_ && event->key() != Qt::Key_Escape))
     return;
@@ -91,10 +97,6 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event) {
         tank->SetZeroTimeFromLastShot();
         ShootRocket(tank);
       }
-      break;
-    case 1052:
-    case Qt::Key_V:
-      ToggleVirtualKeys();
       break;
   }
 }
@@ -201,9 +203,15 @@ void MainWindow::timerEvent(QTimerEvent *) {
 
 void MainWindow::NewGame() {
   if (!paused_) PauseOrContinue();
-  if (new_game_dialog_->exec() == QDialog::Accepted) {
-    RedrawContent();
+  new_game_dialog_->exec();
+}
+
+void MainWindow::Settings() {
+  if (!paused_) PauseOrContinue();
+  if (settings_dialog_->exec() == QDialog::Rejected) {
+    virtual_keys_checkbox_->setChecked(virtual_keys_shown_);
   }
+  // change language
 }
 
 void MainWindow::UpdateIndents() {
@@ -223,6 +231,10 @@ void MainWindow::RedrawButtons() {
       w_indent_ + static_cast<int>(0.04 * sq_width_),
       h_indent_ + static_cast<int>(0.11 * sq_height_),
       static_cast<int>(0.2 * sq_width_), static_cast<int>(0.05 * sq_height_));
+  settings_button_->setGeometry(w_indent_ + static_cast<int>(0.04 * sq_width_),
+                                h_indent_ + static_cast<int>(0.17 * sq_height_),
+                                static_cast<int>(0.2 * sq_width_),
+                                static_cast<int>(0.05 * sq_height_));
 
   if (virtual_keys_shown_) {
     for (int i = 0; i < number_of_virtual_keys_in_first_row_; ++i) {
@@ -437,11 +449,11 @@ void MainWindow::GameOver() {
 void MainWindow::InitializeNewGameDialog() {
   new_game_dialog_ = new QDialog(this);
 
-  info_label_ = new QLabel(new_game_dialog_);
-  info_label_->setText("Choose map, tank and difficulty.");
+  info_label_ =
+      new QLabel("Choose map, tank and difficulty.", new_game_dialog_);
 
-  switch_map_label_ = new QLabel(new_game_dialog_);
-  switch_map_label_->setText(QString("Map") + QString(":"));
+  switch_map_label_ =
+      new QLabel(QString("Map") + QString(":"), new_game_dialog_);
   switch_map_menu_ = new QComboBox(new_game_dialog_);
 
   int map_number = 1;
@@ -452,8 +464,8 @@ void MainWindow::InitializeNewGameDialog() {
     map_file = QFileInfo(":/maps/map" + QString::number(map_number) + ".txt");
   }
 
-  switch_tank_label_ = new QLabel(new_game_dialog_);
-  switch_tank_label_->setText(QString("Tank") + QString(":"));
+  switch_tank_label_ =
+      new QLabel(QString("Tank") + QString(":"), new_game_dialog_);
   switch_tank_menu_ = new QComboBox(new_game_dialog_);
 
   QFile tanks_input_file(":/tanks_info/tanks.txt");
@@ -469,35 +481,81 @@ void MainWindow::InitializeNewGameDialog() {
   }
   tanks_input_file.close();
 
-  switch_difficulty_label_ = new QLabel(new_game_dialog_);
-  switch_difficulty_label_->setText(QString("Difficulty") + QString(":"));
+  switch_difficulty_label_ =
+      new QLabel(QString("Difficulty") + QString(":"), new_game_dialog_);
   switch_difficulty_menu_ = new QComboBox(new_game_dialog_);
 
   for (int i = 0; i < difficulty_levels_names_.size(); ++i) {
     switch_difficulty_menu_->addItem(difficulty_levels_names_[i]);
   }
 
-  QFormLayout *layout = new QFormLayout(new_game_dialog_);
-  layout->addRow(info_label_);
-  layout->addRow(switch_map_label_);
-  layout->addRow(switch_map_menu_);
-  layout->addRow(switch_tank_label_);
-  layout->addRow(switch_tank_menu_);
-  layout->addRow(switch_difficulty_label_);
-  layout->addRow(switch_difficulty_menu_);
+  new_game_dialog_layout_ = new QFormLayout(new_game_dialog_);
+  new_game_dialog_layout_->addRow(info_label_);
+  new_game_dialog_layout_->addRow(switch_map_label_);
+  new_game_dialog_layout_->addRow(switch_map_menu_);
+  new_game_dialog_layout_->addRow(switch_tank_label_);
+  new_game_dialog_layout_->addRow(switch_tank_menu_);
+  new_game_dialog_layout_->addRow(switch_difficulty_label_);
+  new_game_dialog_layout_->addRow(switch_difficulty_menu_);
 
-  dialog_box_buttons_ = new QDialogButtonBox(QDialogButtonBox::Ok,
-                                             Qt::Horizontal, new_game_dialog_);
-  layout->addRow(dialog_box_buttons_);
+  new_game_dialog_buttons_ = new QDialogButtonBox(
+      QDialogButtonBox::Ok, Qt::Horizontal, new_game_dialog_);
 
-  connect(dialog_box_buttons_->button(QDialogButtonBox::Ok),
+  new_game_dialog_layout_->addRow(new_game_dialog_buttons_);
+
+  connect(new_game_dialog_buttons_->button(QDialogButtonBox::Ok),
           &QPushButton::clicked, [&]() {
             current_game_options_.map_number = switch_map_menu_->currentIndex();
             current_game_options_.tank_number =
                 switch_tank_menu_->currentIndex();
             current_game_options_.difficulty_level_number =
                 switch_difficulty_menu_->currentIndex();
+            RedrawContent();
           });
-  connect(dialog_box_buttons_, SIGNAL(accepted()), new_game_dialog_,
+  connect(new_game_dialog_buttons_, SIGNAL(accepted()), new_game_dialog_,
+          SLOT(accept()));
+}
+
+void MainWindow::InitializeSettingsDialog() {
+  settings_dialog_ = new QDialog(this);
+
+  virtual_keys_checkbox_ =
+      new QCheckBox("Activate virtual keys", settings_dialog_);
+  virtual_keys_checkbox_->setChecked(virtual_keys_shown_);
+
+  language_menu_label_ =
+      new QLabel(QString("Language") + QString(":"), settings_dialog_);
+
+  language_menu_ = new QComboBox(settings_dialog_);
+  language_menu_->addItem("Default");
+  language_menu_->addItem("Belarusian");
+  language_menu_->addItem("English");
+  language_menu_->addItem("Russian");
+
+  settings_separator_label_ = new QLabel(this);
+  version_label_ =
+      new QLabel(QString("App version") + QString(": ") + QString("0.4.0.0"));
+
+  settings_dialog_layout_ = new QFormLayout(settings_dialog_);
+  settings_dialog_layout_->addRow(virtual_keys_checkbox_);
+  settings_dialog_layout_->addRow(language_menu_label_);
+  settings_dialog_layout_->addRow(language_menu_);
+  settings_dialog_layout_->addRow(settings_separator_label_);
+  settings_dialog_layout_->addRow(version_label_);
+
+  settings_dialog_buttons_ = new QDialogButtonBox(
+      QDialogButtonBox::Ok, Qt::Horizontal, settings_dialog_);
+
+  settings_dialog_layout_->addRow(settings_dialog_buttons_);
+
+  connect(settings_dialog_buttons_->button(QDialogButtonBox::Ok),
+          &QPushButton::clicked, [&]() {
+            if (virtual_keys_shown_ != virtual_keys_checkbox_->isChecked()) {
+              ToggleVirtualKeys();
+            }
+          });
+  // change language
+
+  connect(settings_dialog_buttons_, SIGNAL(accepted()), settings_dialog_,
           SLOT(accept()));
 }
