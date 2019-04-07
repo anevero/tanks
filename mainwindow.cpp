@@ -18,6 +18,12 @@ MainWindow::MainWindow(QWidget *parent)
           {Qt::Key_Q, Qt::Key_W, Qt::Key_A, Qt::Key_S, Qt::Key_D}),
       virtual_buttons_mapper_(new QSignalMapper(this)),
       map_(new Map(1)) {
+  new_game_button_->setFocusPolicy(Qt::NoFocus);
+  pause_continue_button_->setFocusPolicy(Qt::NoFocus);
+  switch_map_menu_->setFocusPolicy(Qt::NoFocus);
+  switch_tank_menu_->setFocusPolicy(Qt::NoFocus);
+  switch_difficulty_menu_->setFocusPolicy(Qt::NoFocus);
+
   int map_number = 1;
   QFileInfo map_file(":/maps/map" + QString::number(map_number) + ".txt");
   while (map_file.exists() && map_file.isFile()) {
@@ -59,6 +65,7 @@ MainWindow::MainWindow(QWidget *parent)
             virtual_buttons_mapper_, SLOT(map()));
     virtual_buttons_mapper_->setMapping(virtual_keys_buttons_[i],
                                         virtual_keys_encodings_[i]);
+    virtual_keys_buttons_[i]->setFocusPolicy(Qt::NoFocus);
   }
   connect(virtual_buttons_mapper_, SIGNAL(mapped(int)), this,
           SLOT(PressVirtualKey(int)));
@@ -95,21 +102,25 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event) {
       pause_continue_button_->animateClick();
       break;
     case 1062:
+    case Qt::Key_Up:
     case Qt::Key_W:
       tank->TurnReverseOff();
       tank->StartMovement(1, tanks_);
       break;
     case 1067:
+    case Qt::Key_Down:
     case Qt::Key_S:
       tank->TurnReverseOn();
       tank->StartMovement(1, tanks_);
       break;
     case 1060:
+    case Qt::Key_Left:
     case Qt::Key_A:
       tank->TurnRotationReverseOn();
       tank->StartRotation();
       break;
     case 1042:
+    case Qt::Key_Right:
     case Qt::Key_D:
       tank->TurnRotationReverseOff();
       tank->StartRotation();
