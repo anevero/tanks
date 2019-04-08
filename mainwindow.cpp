@@ -26,7 +26,7 @@ MainWindow::MainWindow(QWidget *parent)
 
   for (int i = 0; i < virtual_keys_buttons_.size(); ++i) {
     connect(virtual_keys_buttons_[i], &QPushButton::clicked,
-            [&]() { PressVirtualKey(virtual_keys_encodings_[i]); });
+            [this, i]() { PressVirtualKey(virtual_keys_encodings_[i]); });
     virtual_keys_buttons_[i]->setFocusPolicy(Qt::NoFocus);
   }
 
