@@ -5,9 +5,9 @@ W G G G G G Q Q Q Q W G G G W
 W W W W W G G Q Q Q W G G G W
 W G G G W G G G Q Q W G G G W
 W G G G W G G G G Q W G G G W
-W G G G G G G G G G G G G G W
-W G G G G G G G G G G G G G W
-W G G G G G G G G G G G G G W
+W G G G G G G G G G G G G W W
+W G G G G G G G G G G G G W W
+W G G G G G G G G G G G G W W
 W G G G W G G G G S W G G G W
 W G G G W G G G S S W G G G W
 W W W W W G G S S S W G G G W
