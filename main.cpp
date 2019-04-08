@@ -8,7 +8,7 @@ int main(int argc, char *argv[]) {
   a.setStyle(QStyleFactory::create("Fusion"));
 
   QTranslator translator;
-  if (!translator.load(":/translations/tanks_" + QLocale::system().name())) {
+  if (!translator.load(":/translations/tanks_" + QLocale().name())) {
     translator.load(":/translations/tanks_en_US");
   }
   a.installTranslator(&translator);

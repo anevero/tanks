@@ -204,14 +204,16 @@ void MainWindow::timerEvent(QTimerEvent *) {
 void MainWindow::NewGame() {
   if (!paused_) PauseOrContinue();
   new_game_dialog_->exec();
+  switch_map_menu_->setCurrentIndex(current_game_options_.map_number);
+  switch_tank_menu_->setCurrentIndex(current_game_options_.tank_number);
+  switch_difficulty_menu_->setCurrentIndex(
+      current_game_options_.difficulty_level_number);
 }
 
 void MainWindow::Settings() {
   if (!paused_) PauseOrContinue();
-  if (settings_dialog_->exec() == QDialog::Rejected) {
-    virtual_keys_checkbox_->setChecked(virtual_keys_shown_);
-  }
-  // change language
+  settings_dialog_->exec();
+  virtual_keys_checkbox_->setChecked(virtual_keys_shown_);
 }
 
 void MainWindow::UpdateIndents() {
@@ -531,6 +533,7 @@ void MainWindow::InitializeSettingsDialog() {
   language_menu_->addItem(tr("Belarusian"));
   language_menu_->addItem(tr("English"));
   language_menu_->addItem(tr("Russian"));
+  language_menu_->setEnabled(false);
 
   settings_separator_label_ = new QLabel(this);
   version_label_ = new QLabel(QString(tr("App version")) + QString(": ") +
@@ -554,7 +557,6 @@ void MainWindow::InitializeSettingsDialog() {
               ToggleVirtualKeys();
             }
           });
-  // change language
 
   connect(settings_dialog_buttons_, SIGNAL(accepted()), settings_dialog_,
           SLOT(accept()));

@@ -20,6 +20,7 @@
 #include <QTimer>
 #include <QToolTip>
 #include <QTouchDevice>
+#include <QTranslator>
 #include <QtGlobal>
 #include <algorithm>
 #include <memory>
