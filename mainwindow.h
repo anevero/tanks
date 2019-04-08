@@ -86,7 +86,7 @@ class MainWindow : public QMainWindow {
   QComboBox *switch_map_menu_;
   QComboBox *switch_tank_menu_;
   QComboBox *switch_difficulty_menu_;
-  QLabel *info_label_;
+  QLabel *new_game_info_label_;
   QLabel *switch_map_label_;
   QLabel *switch_tank_label_;
   QLabel *switch_difficulty_label_;

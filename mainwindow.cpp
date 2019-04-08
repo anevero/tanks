@@ -451,7 +451,7 @@ void MainWindow::GameOver() {
 void MainWindow::InitializeNewGameDialog() {
   new_game_dialog_ = new QDialog(this);
 
-  info_label_ =
+  new_game_info_label_ =
       new QLabel(tr("Choose map, tank and difficulty"), new_game_dialog_);
 
   switch_map_label_ =
@@ -492,7 +492,7 @@ void MainWindow::InitializeNewGameDialog() {
   }
 
   new_game_dialog_layout_ = new QFormLayout(new_game_dialog_);
-  new_game_dialog_layout_->addRow(info_label_);
+  new_game_dialog_layout_->addRow(new_game_info_label_);
   new_game_dialog_layout_->addRow(switch_map_label_);
   new_game_dialog_layout_->addRow(switch_map_menu_);
   new_game_dialog_layout_->addRow(switch_tank_label_);
