@@ -49,7 +49,7 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event) {
       time_since_tooltip_appearing_ = 0;
       QToolTip::showText(
           event->globalPos(),
-          "Health: " +
+          tr("Health") + ": " +
               QString::number(
                   std::dynamic_pointer_cast<Tank>(object)->GetCurrentHealth()));
       break;
