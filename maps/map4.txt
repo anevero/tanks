@@ -1,22 +1,17 @@
-20 20
-W W W W W W W W W W W W W W W W W W W W
-W G G W G G G G G G G G G W G G G G G W
-W G G W G G G G G G G G G W G W G G G W
-W S S S S S S S S S S S G W G W G G G W
-W G G G G G W G G G W S G W G G G G G W
-W G G G G G W G G G W S G W G G G G G W
-W G G G G G W G G G W S G W G G G G G W
-W G G W G G W G G G W S G G G G W G G W
-W G G W G G W W W G W S G G G G W G G W
-W G G W Q Q Q Q W G W S S S S G W G G W
-W G G W Q Q Q Q G G W G G G S G W G G W
-W G G G Q Q Q Q G G G G G W S G W G G W
-W G G G Q Q Q Q Q Q Q G G W S S S S S W
-W G G G G G W Q Q Q Q W G W S G G G G W
-W G G W G G W Q Q Q Q W G W S G G G G W
-W G G W G G W Q Q Q Q W G G S W G G G W
-W G G W S S W W W G G W G G S W G G G W
-W G G W G G G G W S S S S S S W G G G W
-W G G W G G G G W S G G G G G G G G G W
-W W W W W W W W W W W W W W W W W W W W
-18 18
+﻿15 15
+W W W W W W W W W W W W W W W
+W S S S G G W G G W Q Q Q Q W
+W S S W G G W G G W S Q Q Q W
+W S G W G G W W G W S S Q Q W
+W G G W G G G G G W G S S Q W
+W G G W G G G G G W G G S S W
+W G G G G G G G G G G G W S W
+W G G G G G G G G G G G W G W
+W G G G G G W S G G G G W G W
+W G G W G G W S G G W G W G W
+W G G W Q G W S S G W G G G W
+W G G W Q Q W W S S W G G G W
+W G G W Q Q Q S S S S G G G W
+W G G W Q Q Q Q S S S S G G W
+W W W W W W W W W W W W W W W
+6 6
