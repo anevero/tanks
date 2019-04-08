@@ -16,7 +16,8 @@ SOURCES += \
     rocket.cpp \
     bot.cpp \
     improvedbot.cpp \
-    cleverbot.cpp
+    cleverbot.cpp \
+    obstaclandbonus.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -26,7 +27,8 @@ HEADERS += \
     rocket.h \
     bot.h \
     improvedbot.h \
-    cleverbot.h
+    cleverbot.h \
+    obstaclandbonus.h
 
 RESOURCES += \
     resources.qrc
