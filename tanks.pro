@@ -33,6 +33,11 @@ HEADERS += \
 RESOURCES += \
     resources.qrc
 
+TRANSLATIONS += \
+    translations/tanks_be_BY.ts \
+    translations/tanks_en_US.ts \
+    translations/tanks_ru_RU.ts
+
 RC_ICONS = app_icon.ico
 
-VERSION = 0.3.0.0
+VERSION = 0.4.0.0

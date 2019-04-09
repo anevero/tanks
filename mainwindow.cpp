@@ -1,52 +1,41 @@
 ﻿#include "mainwindow.h"
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent), map_(new Map(1)) {
-  new_game_button_ = new QPushButton("New game", this);
-  pause_continue_button_ = new QPushButton("Pause", this);
-  switch_map_menu_ = new QComboBox(this);
-  switch_tank_menu_ = new QComboBox(this);
-  switch_difficulty_menu_ = new QComboBox(this);
-  switch_map_label_ = new QLabel(this);
-  switch_tank_label_ = new QLabel(this);
-  switch_difficulty_label_ = new QLabel(this);
-
-  int map_number = 1;
-  QFileInfo map_file(":/maps/map" + QString::number(map_number) + ".txt");
-  while (map_file.exists() && map_file.isFile()) {
-    switch_map_menu_->addItem("Map " + QString::number(map_number));
-    map_number++;
-    map_file = QFileInfo(":/maps/map" + QString::number(map_number) + ".txt");
-  }
-
-  QFile tanks_input_file(":/tanks_info/tanks.txt");
-  tanks_input_file.open(QIODevice::ReadOnly);
-  QTextStream in(&tanks_input_file);
-  int number_of_tank_types;
-  in >> number_of_tank_types;
-  for (int i = 0; i < number_of_tank_types; ++i) {
-    TankQualities qualities;
-    in >> qualities.speed >> qualities.rate_of_fire >> qualities.max_health;
-    available_tank_types_.push_back(qualities);
-    switch_tank_menu_->addItem("Tank " + QString::number(i + 1));
-  }
-  tanks_input_file.close();
-
-  for (int i = 0; i < difficulty_levels_names_.size(); ++i) {
-    switch_difficulty_menu_->addItem(difficulty_levels_names_[i]);
-  }
-
-  switch_map_label_->setText("Map:");
-  switch_tank_label_->setText("Tank:");
-  switch_difficulty_label_->setText("Difficulty:");
+    : QMainWindow(parent),
+      new_game_button_(new QPushButton(tr("New game"), this)),
+      pause_continue_button_(new QPushButton(tr("Pause"), this)),
+      settings_button_(new QPushButton(tr("Settings"), this)),
+      virtual_keys_buttons_(
+          {new QPushButton("Q", this), new QPushButton("W", this),
+           new QPushButton("A", this), new QPushButton("S", this),
+           new QPushButton("D", this)}),
+      virtual_keys_encodings_(
+          {Qt::Key_Q, Qt::Key_W, Qt::Key_A, Qt::Key_S, Qt::Key_D}),
+      map_(new Map(1)) {
+  new_game_button_->setFocusPolicy(Qt::NoFocus);
+  pause_continue_button_->setFocusPolicy(Qt::NoFocus);
+  settings_button_->setFocusPolicy(Qt::NoFocus);
 
   setMinimumSize(600, 450);
   resize(600, 450);
-  connect(new_game_button_, SIGNAL(clicked()), this, SLOT(RedrawContent()));
+
+  connect(new_game_button_, SIGNAL(clicked()), this, SLOT(NewGame()));
   connect(pause_continue_button_, SIGNAL(clicked()), this,
           SLOT(PauseOrContinue()));
+  connect(settings_button_, SIGNAL(clicked()), this, SLOT(Settings()));
 
-  RedrawContent();
+  for (int i = 0; i < virtual_keys_buttons_.size(); ++i) {
+    connect(virtual_keys_buttons_[i], &QPushButton::clicked,
+            [this, i]() { PressVirtualKey(virtual_keys_encodings_[i]); });
+    virtual_keys_buttons_[i]->setFocusPolicy(Qt::NoFocus);
+  }
+
+  if (QTouchDevice::devices().empty()) {
+    ToggleVirtualKeys();
+  }
+
+  InitializeNewGameDialog();
+  InitializeSettingsDialog();
 }
 
 void MainWindow::mouseReleaseEvent(QMouseEvent *event) {
@@ -60,7 +49,7 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event) {
       time_since_tooltip_appearing_ = 0;
       QToolTip::showText(
           event->globalPos(),
-          "Health: " +
+          tr("Health") + ": " +
               QString::number(
                   std::dynamic_pointer_cast<Tank>(object)->GetCurrentHealth()));
       break;
@@ -69,6 +58,7 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event) {
 }
 
 void MainWindow::keyReleaseEvent(QKeyEvent *event) {
+  if (timer_id_ == 0) return;
   auto tank = std::dynamic_pointer_cast<Tank>(tanks_[0]);
   if (tank->IsMovingOrRotating() || (paused_ && event->key() != Qt::Key_Escape))
     return;
@@ -78,21 +68,25 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event) {
       pause_continue_button_->animateClick();
       break;
     case 1062:
+    case Qt::Key_Up:
     case Qt::Key_W:
       tank->TurnReverseOff();
       tank->StartMovement(1, tanks_);
       break;
     case 1067:
+    case Qt::Key_Down:
     case Qt::Key_S:
       tank->TurnReverseOn();
       tank->StartMovement(1, tanks_);
       break;
     case 1060:
+    case Qt::Key_Left:
     case Qt::Key_A:
       tank->TurnRotationReverseOn();
       tank->StartRotation();
       break;
     case 1042:
+    case Qt::Key_Right:
     case Qt::Key_D:
       tank->TurnRotationReverseOff();
       tank->StartRotation();
@@ -178,8 +172,6 @@ void MainWindow::timerEvent(QTimerEvent *) {
   for (const auto &object : rockets_) {
     if (object->GetTimeToFinishMovement() != 0) {
       object->Move(timer_duration_);
-    } else if (object->GetTimeToFinishRotation() != 0) {
-      object->Rotate(timer_duration_);
     }
   }
 
@@ -187,7 +179,7 @@ void MainWindow::timerEvent(QTimerEvent *) {
   while (it != rockets_.end()) {
     if ((*it)->GetTimeToFinishMovement() == 0 &&
         (*it)->GetCellsToFinishMovement() != 0) {
-      (*it)->StartMovement(((*it)->GetCellsToFinishMovement()) - 1, tanks_);
+      (*it)->StartMovement(((*it)->GetCellsToFinishMovement()), tanks_);
     }
     if (!(*it)->IsMovingOrRotating()) {
       it = rockets_.erase(it);
@@ -207,6 +199,21 @@ void MainWindow::timerEvent(QTimerEvent *) {
   repaint();
 }
 
+void MainWindow::NewGame() {
+  if (!paused_) PauseOrContinue();
+  new_game_dialog_->exec();
+  switch_map_menu_->setCurrentIndex(current_game_options_.map_number);
+  switch_tank_menu_->setCurrentIndex(current_game_options_.tank_number);
+  switch_difficulty_menu_->setCurrentIndex(
+      current_game_options_.difficulty_level_number);
+}
+
+void MainWindow::Settings() {
+  if (!paused_) PauseOrContinue();
+  settings_dialog_->exec();
+  virtual_keys_checkbox_->setChecked(virtual_keys_shown_);
+}
+
 void MainWindow::UpdateIndents() {
   sq_width_ = 4 * std::min(width() / 4, height() / 3);
   sq_height_ = 3 * std::min(width() / 4, height() / 3);
@@ -224,57 +231,59 @@ void MainWindow::RedrawButtons() {
       w_indent_ + static_cast<int>(0.04 * sq_width_),
       h_indent_ + static_cast<int>(0.11 * sq_height_),
       static_cast<int>(0.2 * sq_width_), static_cast<int>(0.05 * sq_height_));
-  switch_map_label_->setGeometry(
-      w_indent_ + static_cast<int>(0.04 * sq_width_),
-      h_indent_ + static_cast<int>(0.18 * sq_height_),
-      static_cast<int>(0.2 * sq_width_), static_cast<int>(0.05 * sq_height_));
-  switch_map_menu_->setGeometry(w_indent_ + static_cast<int>(0.04 * sq_width_),
-                                h_indent_ + static_cast<int>(0.23 * sq_height_),
+  settings_button_->setGeometry(w_indent_ + static_cast<int>(0.04 * sq_width_),
+                                h_indent_ + static_cast<int>(0.17 * sq_height_),
                                 static_cast<int>(0.2 * sq_width_),
                                 static_cast<int>(0.05 * sq_height_));
-  switch_tank_label_->setGeometry(
-      w_indent_ + static_cast<int>(0.04 * sq_width_),
-      h_indent_ + static_cast<int>(0.3 * sq_height_),
-      static_cast<int>(0.2 * sq_width_), static_cast<int>(0.05 * sq_height_));
-  switch_tank_menu_->setGeometry(
-      w_indent_ + static_cast<int>(0.04 * sq_width_),
-      h_indent_ + static_cast<int>(0.35 * sq_height_),
-      static_cast<int>(0.2 * sq_width_), static_cast<int>(0.05 * sq_height_));
-  switch_difficulty_label_->setGeometry(
-      w_indent_ + static_cast<int>(0.04 * sq_width_),
-      h_indent_ + static_cast<int>(0.42 * sq_height_),
-      static_cast<int>(0.2 * sq_width_), static_cast<int>(0.05 * sq_height_));
-  switch_difficulty_menu_->setGeometry(
-      w_indent_ + static_cast<int>(0.04 * sq_width_),
-      h_indent_ + static_cast<int>(0.47 * sq_height_),
-      static_cast<int>(0.2 * sq_width_), static_cast<int>(0.05 * sq_height_));
+
+  if (virtual_keys_shown_) {
+    for (int i = 0; i < number_of_virtual_keys_in_first_row_; ++i) {
+      virtual_keys_buttons_[i]->setGeometry(
+          w_indent_ + static_cast<int>(0.04 * sq_width_) +
+              i * static_cast<int>(0.2 * sq_width_ / 3),
+          height() - static_cast<int>(0.19 * sq_height_),
+          static_cast<int>(0.2 * sq_width_ / 3),
+          static_cast<int>(0.07 * sq_height_));
+    }
+    for (int i = number_of_virtual_keys_in_first_row_;
+         i < virtual_keys_buttons_.size(); ++i) {
+      virtual_keys_buttons_[i]->setGeometry(
+          w_indent_ + static_cast<int>(0.04 * sq_width_) +
+              static_cast<int>((i - number_of_virtual_keys_in_first_row_) *
+                               0.2 * sq_width_ / 3),
+          height() - static_cast<int>(0.12 * sq_height_),
+          static_cast<int>(0.2 * sq_width_ / 3),
+          static_cast<int>(0.07 * sq_height_));
+    }
+  }
 }
 
 void MainWindow::RedrawContent() {
   killTimer(timer_id_);
   timer_id_ = 0;
-  map_.reset(new Map(switch_map_menu_->currentIndex() + 1));
+  map_.reset(new Map(current_game_options_.map_number + 1));
   tanks_.clear();
   rockets_.clear();
 
-  pause_continue_button_->setText("Pause");
+  pause_continue_button_->setText(tr("Pause"));
   paused_ = false;
 
   tanks_.append(std::shared_ptr<Movable>(
       new Tank(map_, map_->GetTankInitCellX(), map_->GetTankInitCellY(),
-               available_tank_types_[switch_tank_menu_->currentIndex()],
+               available_tank_types_[current_game_options_.tank_number],
                Direction::Up)));
 
   QFile bots_input_file(
       ":/tanks_info/bots" +
-      QString::number(switch_map_menu_->currentIndex() + 1) +
-      QString::number(switch_difficulty_menu_->currentIndex() + 1) + ".txt");
+      QString::number(current_game_options_.map_number + 1) +
+      QString::number(current_game_options_.difficulty_level_number + 1) +
+      ".txt");
   if (!bots_input_file.exists()) {
     QMessageBox message;
     message.setIcon(QMessageBox::Information);
     message.setText(
-        "This level of difficulty isn't available on this map. \n"
-        "Try to switch to another map.");
+        tr("This level of difficulty isn't available on this map. \n"
+           "Try to switch to another map."));
     message.exec();
     return;
   }
@@ -290,10 +299,11 @@ void MainWindow::RedrawContent() {
   for (int i = 0; i < number_of_bots; ++i) {
     BotQualities qualities;
     qualities.tank.max_health =
-        70 + 15 * switch_difficulty_menu_->currentIndex();
+        70 + 15 * current_game_options_.difficulty_level_number;
     qualities.tank.rate_of_fire =
-        1000 - 150 * switch_difficulty_menu_->currentIndex();
-    qualities.tank.speed = 1000 - 150 * switch_difficulty_menu_->currentIndex();
+        1000 - 150 * current_game_options_.difficulty_level_number;
+    qualities.tank.speed =
+        1000 - 150 * current_game_options_.difficulty_level_number;
     in >> qualities.init_cell_x >> qualities.init_cell_y >>
         qualities.moving_length >> qualities.amount_of_turns >>
         qualities.side_rotation_frequency;
@@ -317,15 +327,20 @@ void MainWindow::RedrawContent() {
 
 void MainWindow::PauseOrContinue() {
   if (paused_) {
-    pause_continue_button_->setText("Pause");
+    pause_continue_button_->setText(tr("Pause"));
     paused_ = false;
     timer_id_ = startTimer(timer_duration_);
   } else if (timer_id_ != 0) {
-    pause_continue_button_->setText("Continue");
+    pause_continue_button_->setText(tr("Continue"));
     paused_ = true;
     killTimer(timer_id_);
     timer_id_ = 0;
   }
+}
+
+void MainWindow::PressVirtualKey(Qt::Key key) {
+  QKeyEvent *event = new QKeyEvent(QEvent::KeyRelease, key, Qt::NoModifier);
+  QApplication::instance()->sendEvent(this, event);
 }
 
 void MainWindow::FindInteractingObjects() {
@@ -403,6 +418,14 @@ bool MainWindow::IsRocketByThisTank(
 
 int MainWindow::GetTimerDuration() const { return timer_duration_; }
 
+void MainWindow::ToggleVirtualKeys() {
+  virtual_keys_shown_ = !virtual_keys_shown_;
+  for (int i = 0; i < virtual_keys_buttons_.size(); ++i) {
+    virtual_keys_buttons_[i]->setVisible(virtual_keys_shown_);
+  }
+  RedrawButtons();
+}
+
 void MainWindow::GameOver() {
   killTimer(timer_id_);
   timer_id_ = 0;
@@ -411,14 +434,128 @@ void MainWindow::GameOver() {
   message.setIcon(QMessageBox::Information);
   if (tanks_.size() == number_of_player_tanks_) {
     message.setText(
-        "You win! \n"
-        "You can start a new game with help of appropriate button "
-        "on the left.");
+        tr("You win! \n"
+           "You can start a new game with help of appropriate button "
+           "on the left."));
   } else {
     message.setText(
-        "You died! \n"
-        "You can start a new game with help of appropriate button "
-        "on the left.");
+        tr("You died! \n"
+           "You can start a new game with help of appropriate button "
+           "on the left."));
   }
   message.exec();
+}
+
+void MainWindow::InitializeNewGameDialog() {
+  new_game_dialog_ = new QDialog(this);
+
+  new_game_info_label_ =
+      new QLabel(tr("Choose map, tank and difficulty"), new_game_dialog_);
+
+  switch_map_label_ =
+      new QLabel(QString(tr("Map")) + QString(":"), new_game_dialog_);
+  switch_map_menu_ = new QComboBox(new_game_dialog_);
+
+  int map_number = 1;
+  QFileInfo map_file(":/maps/map" + QString::number(map_number) + ".txt");
+  while (map_file.exists() && map_file.isFile()) {
+    switch_map_menu_->addItem(tr("Map") + " " + QString::number(map_number));
+    map_number++;
+    map_file = QFileInfo(":/maps/map" + QString::number(map_number) + ".txt");
+  }
+
+  switch_tank_label_ =
+      new QLabel(QString(tr("Tank")) + QString(":"), new_game_dialog_);
+  switch_tank_menu_ = new QComboBox(new_game_dialog_);
+
+  QFile tanks_input_file(":/tanks_info/tanks.txt");
+  tanks_input_file.open(QIODevice::ReadOnly);
+  QTextStream in(&tanks_input_file);
+  int number_of_tank_types;
+  in >> number_of_tank_types;
+  for (int i = 0; i < number_of_tank_types; ++i) {
+    TankQualities qualities;
+    in >> qualities.speed >> qualities.rate_of_fire >> qualities.max_health;
+    available_tank_types_.push_back(qualities);
+    switch_tank_menu_->addItem(tr("Tank") + " " + QString::number(i + 1));
+  }
+  tanks_input_file.close();
+
+  switch_difficulty_label_ =
+      new QLabel(QString(tr("Difficulty")) + QString(":"), new_game_dialog_);
+  switch_difficulty_menu_ = new QComboBox(new_game_dialog_);
+
+  for (int i = 0; i < difficulty_levels_names_.size(); ++i) {
+    switch_difficulty_menu_->addItem(difficulty_levels_names_[i]);
+  }
+
+  new_game_dialog_layout_ = new QFormLayout(new_game_dialog_);
+  new_game_dialog_layout_->addRow(new_game_info_label_);
+  new_game_dialog_layout_->addRow(switch_map_label_);
+  new_game_dialog_layout_->addRow(switch_map_menu_);
+  new_game_dialog_layout_->addRow(switch_tank_label_);
+  new_game_dialog_layout_->addRow(switch_tank_menu_);
+  new_game_dialog_layout_->addRow(switch_difficulty_label_);
+  new_game_dialog_layout_->addRow(switch_difficulty_menu_);
+
+  new_game_dialog_buttons_ = new QDialogButtonBox(
+      QDialogButtonBox::Ok, Qt::Horizontal, new_game_dialog_);
+
+  new_game_dialog_layout_->addRow(new_game_dialog_buttons_);
+
+  connect(new_game_dialog_buttons_->button(QDialogButtonBox::Ok),
+          &QPushButton::clicked, [&]() {
+            current_game_options_.map_number = switch_map_menu_->currentIndex();
+            current_game_options_.tank_number =
+                switch_tank_menu_->currentIndex();
+            current_game_options_.difficulty_level_number =
+                switch_difficulty_menu_->currentIndex();
+            RedrawContent();
+          });
+  connect(new_game_dialog_buttons_, SIGNAL(accepted()), new_game_dialog_,
+          SLOT(accept()));
+}
+
+void MainWindow::InitializeSettingsDialog() {
+  settings_dialog_ = new QDialog(this);
+
+  virtual_keys_checkbox_ =
+      new QCheckBox(tr("Activate virtual keys"), settings_dialog_);
+  virtual_keys_checkbox_->setChecked(virtual_keys_shown_);
+
+  language_menu_label_ =
+      new QLabel(QString(tr("Language")) + QString(":"), settings_dialog_);
+
+  language_menu_ = new QComboBox(settings_dialog_);
+  language_menu_->addItem(tr("Default"));
+  language_menu_->addItem(tr("Belarusian"));
+  language_menu_->addItem(tr("English"));
+  language_menu_->addItem(tr("Russian"));
+  language_menu_->setEnabled(false);
+
+  settings_separator_label_ = new QLabel(this);
+  version_label_ = new QLabel(QString(tr("App version")) + QString(": ") +
+                              QString("0.4.0.0"));
+
+  settings_dialog_layout_ = new QFormLayout(settings_dialog_);
+  settings_dialog_layout_->addRow(virtual_keys_checkbox_);
+  settings_dialog_layout_->addRow(language_menu_label_);
+  settings_dialog_layout_->addRow(language_menu_);
+  settings_dialog_layout_->addRow(settings_separator_label_);
+  settings_dialog_layout_->addRow(version_label_);
+
+  settings_dialog_buttons_ = new QDialogButtonBox(
+      QDialogButtonBox::Ok, Qt::Horizontal, settings_dialog_);
+
+  settings_dialog_layout_->addRow(settings_dialog_buttons_);
+
+  connect(settings_dialog_buttons_->button(QDialogButtonBox::Ok),
+          &QPushButton::clicked, [&]() {
+            if (virtual_keys_shown_ != virtual_keys_checkbox_->isChecked()) {
+              ToggleVirtualKeys();
+            }
+          });
+
+  connect(settings_dialog_buttons_, SIGNAL(accepted()), settings_dialog_,
+          SLOT(accept()));
 }
