@@ -162,7 +162,7 @@ void MainWindow::timerEvent(QTimerEvent *) {
   }
 
   for (const auto &object : tanks_) {
-    if (object->GetTimeToFinishMovement() != 0) {
+    if (object->GetTimeToFinishMovement() > 0) {
       object->Move(timer_duration_);
     } else if (object->GetTimeToFinishRotation() != 0) {
       object->Rotate(timer_duration_);
@@ -170,14 +170,14 @@ void MainWindow::timerEvent(QTimerEvent *) {
   }
 
   for (const auto &object : rockets_) {
-    if (object->GetTimeToFinishMovement() != 0) {
+    if (object->GetTimeToFinishMovement() > 0) {
       object->Move(timer_duration_);
     }
   }
 
   auto it = rockets_.begin();
   while (it != rockets_.end()) {
-    if ((*it)->GetTimeToFinishMovement() == 0 &&
+    if ((*it)->GetTimeToFinishMovement() <= 0 &&
         (*it)->GetCellsToFinishMovement() != 0) {
       (*it)->StartMovement(((*it)->GetCellsToFinishMovement()), tanks_);
     }
@@ -348,6 +348,10 @@ void MainWindow::FindInteractingObjects() {
   while (tank != tanks_.end()) {
     auto rocket = rockets_.begin();
     while (rocket != rockets_.end()) {
+      if (std::dynamic_pointer_cast<Rocket>(*rocket) == nullptr) {
+        rocket++;
+        continue;
+      }
       if (HaveObjectsCollided(*rocket, *tank)) {
         std::dynamic_pointer_cast<Tank>(*tank)->MinusHealth(
             std::dynamic_pointer_cast<Rocket>(*rocket)->GetPower());
@@ -375,24 +379,31 @@ bool MainWindow::HaveObjectsCollided(
 }
 
 void MainWindow::CheckDeadObjects() {
-  auto bot = tanks_.begin();
+  auto object = tanks_.begin();
   for (int i = 0; i < number_of_player_tanks_; ++i) {
     if (std::dynamic_pointer_cast<Tank>(tanks_[i])->IsDead()) {
       GameOver();
       return;
     }
-    bot = std::next(bot);
+    object = std::next(object);
   }
-  while (bot != tanks_.end()) {
-    if (std::dynamic_pointer_cast<Tank>(*bot)->IsDead()) {
-      bot = tanks_.erase(bot);
+  while (object != tanks_.end()) {
+    if (std::dynamic_pointer_cast<Tank>(*object)->IsDead()) {
+      MakeBoom(*object);
+      object = tanks_.erase(object);
       continue;
     }
-    bot++;
+    object++;
   }
   if (tanks_.size() == number_of_player_tanks_) {
     GameOver();
   }
+}
+
+void MainWindow::MakeBoom(std::shared_ptr<Movable>& object) {
+  std::shared_ptr<Boom> boom(new Boom(map_, object, 500));
+  rockets_.append(boom);
+  boom->StartMovement(1, tanks_);
 }
 
 void MainWindow::ShootRocket(std::shared_ptr<Tank> &tank) {

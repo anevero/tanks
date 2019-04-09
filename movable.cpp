@@ -120,7 +120,7 @@ int Movable::GetTimeToFinishRotation() const {
 }
 
 bool Movable::IsMovingOrRotating() const {
-  return (GetTimeToFinishMovement() != 0 || GetTimeToFinishRotation() != 0 ||
+  return (GetTimeToFinishMovement() > 0 || GetTimeToFinishRotation() != 0 ||
           GetCellsToFinishMovement() != 0);
 }
 
