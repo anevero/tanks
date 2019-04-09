@@ -34,6 +34,13 @@ MainWindow::MainWindow(QWidget *parent)
     ToggleVirtualKeys();
   }
 
+  obstacles_and_bonuses.resize(map_->GetHeight());
+  for (int i = 0; i < map_->GetHeight(); i++) {
+    for (int j = 0; j < map_->GetWidth(); j++) {
+      obstacles_and_bonuses[i].resize(map_->GetWidth());
+    }
+  }
+
   InitializeNewGameDialog();
   InitializeSettingsDialog();
 }
@@ -121,6 +128,12 @@ void MainWindow::paintEvent(QPaintEvent *) {
   }
   for (const auto &object : rockets_) {
     object->Draw(p);
+  }
+
+  for (const auto &vector : obstacles_and_bonuses) {
+    for (const auto &object : vector) {
+      object->Draw(p);
+    }
   }
   p.end();
 }
@@ -464,6 +477,22 @@ void MainWindow::InitializeNewGameDialog() {
     map_file = QFileInfo(":/maps/map" + QString::number(map_number) + ".txt");
   }
 
+  //  QFile obstacles_file(
+  //      ":/obstacles/obstacle" +
+  //      QString::number(current_game_options_.map_number + 1) +
+  //      QString::number(current_game_options_.difficulty_level_number + 1) +
+  //      ".txt");
+  //  obstacles_file.open(QIODevice::ReadOnly);
+  //  QTextStream ir(&obstacles_file);
+  //  int number_of_obstacles, x, y;
+  //  ir >> number_of_obstacles;
+  //  for (int i = 0; i < number_of_obstacles; ++i) {
+  //    ir >> x >> y;
+  std::shared_ptr<Obstacle> obstacle(new Obstacle(map_, 2, 2));
+  obstacles_and_bonuses[2][2] = obstacle;
+  //}
+
+  //  obstacles_file.close();
   switch_tank_label_ =
       new QLabel(QString(tr("Tank")) + QString(":"), new_game_dialog_);
   switch_tank_menu_ = new QComboBox(new_game_dialog_);

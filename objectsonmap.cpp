@@ -31,19 +31,6 @@ void Bonus::LoadImage() {
   scaled_image_ = image_;
 }
 
-void Bonus::RandomCoordinates() {
-  int x, y;
-  while (true) {
-    x = rand() % map_->GetWidth() + 1;
-    y = rand() % map_->GetHeight() + 1;
-    if (map_->GetField(x, y) != CellType::Wall) {
-      x_map_object_ = x;
-      y_map_object_ = y;
-      break;
-    }
-  }
-}
-
 Obstacle::Obstacle(std::shared_ptr<Map>& map, int x, int y)
     : ObjectsOnMap(map, x, y) {
   LoadImage();

@@ -41,7 +41,6 @@ class Map {
   void WallsPrecalc();
 
   QVector<QVector<CellType>> map_;
-  // QVector<QVector<ObjectsOnMap>> objects_on_map_;
   QVector<QVector<int>> walls_precalc_;
   QVector<QImage> images_;
   QVector<QImage> scaled_images_;
