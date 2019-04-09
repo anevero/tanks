@@ -12,10 +12,12 @@ void Boom::LoadImage() {
 }
 
 void Boom::Draw(QPainter& painter) {
+  painter.save();
   painter.setOpacity(0.85);
   painter.translate(cur_upper_left_x_ + cur_width_ / 2,
                     cur_upper_left_y_ + cur_height_ / 2);
   painter.drawImage(-cur_width_ / 2, -cur_height_ / 2, scaled_image_);
+  painter.restore();
 }
 
 void Boom::StartMovement(int number_of_cells,
@@ -30,8 +32,8 @@ void Boom::UpdateCoordinates() {
   int cur_cell_height =
       static_cast<int>(map_->GetHeight() / map_->GetNumberOfCellsVertically());
 
-  double movement_proportion =
-      1 - static_cast<double>(time_to_finish_movement_) / current_speed_;
+  double movement_proportion = cells_to_finish_movement_ + 1
+      - static_cast<double>(time_to_finish_movement_) / current_speed_;
 
   cur_width_ = cur_cell_width
       + 2 * static_cast<int>(cur_cell_width * movement_proportion);
