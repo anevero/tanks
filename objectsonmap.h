@@ -1,29 +1,42 @@
 ﻿#ifndef OBSTACLANDBONUS_H
 #define OBSTACLANDBONUS_H
 
+#include <QDebug>
+#include <QImage>
+#include <QList>
+#include <QObject>
+#include <QVector>
+#include <memory>
+#include "map.h"
+
 class ObjectsOnMap {
  public:
-  ObjectsOnMap(int x, int y, bool is_there_smth);
-  virtual void LoadImage();
+  ObjectsOnMap(std::shared_ptr<Map>& map, int x, int y);
+  virtual void LoadImage() = 0;
   virtual ~ObjectsOnMap() = default;
-  virtual void Draw();
-  bool IsThereSmth();
+  void Draw(QPainter& painter);
+  void RescaleImage();
 
  protected:
+  std::shared_ptr<Map> map_;
   int x_map_object_, y_map_object_;
-  bool is_there_smth_;
+  QImage image_;
+  QImage scaled_image_;
 };
 
 class Obstacle : public ObjectsOnMap {
  public:
-  Obstacle(int x, int y);
-  void Draw() override;
+  Obstacle(std::shared_ptr<Map>& map, int x, int y);
+  void LoadImage() override;
 };
 
 class Bonus : public ObjectsOnMap {
  public:
-  Bonus(int x, int y);
-  void Draw() override;
+  Bonus(std::shared_ptr<Map>& map, int x, int y);
+  void LoadImage() override;
+  void RandomCoordinates();
+
+ private:
 };
 
 #endif  // OBSTACLANDBONUS_H

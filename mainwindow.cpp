@@ -284,10 +284,10 @@ void MainWindow::RedrawContent() {
   int number_of_standart_bots, number_of_improved_bots, number_of_clever_bots,
       number_of_bots;
   in >> number_of_standart_bots >> number_of_improved_bots >>
-        number_of_clever_bots;
-  number_of_bots = number_of_standart_bots + number_of_improved_bots +
-        number_of_clever_bots;
-  for (int i = 0; i < number_of_bots ; ++i) {
+      number_of_clever_bots;
+  number_of_bots =
+      number_of_standart_bots + number_of_improved_bots + number_of_clever_bots;
+  for (int i = 0; i < number_of_bots; ++i) {
     BotQualities qualities;
     qualities.tank.max_health =
         70 + 15 * switch_difficulty_menu_->currentIndex();
