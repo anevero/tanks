@@ -348,8 +348,11 @@ void MainWindow::FindInteractingObjects() {
   while (tank != tanks_.end()) {
     auto rocket = rockets_.begin();
     while (rocket != rockets_.end()) {
-      if (std::dynamic_pointer_cast<Rocket>(*rocket) == nullptr) {}
-      else if (HaveObjectsCollided(*rocket, *tank)) {
+      if (std::dynamic_pointer_cast<Rocket>(*rocket) == nullptr) {
+        rocket++;
+        continue;
+      }
+      if (HaveObjectsCollided(*rocket, *tank)) {
         std::dynamic_pointer_cast<Tank>(*tank)->MinusHealth(
             std::dynamic_pointer_cast<Rocket>(*rocket)->GetPower());
         rocket = rockets_.erase(rocket);
