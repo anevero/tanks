@@ -209,8 +209,6 @@ void MainWindow::timerEvent(QTimerEvent *) {
   for (const auto &object : rockets_) {
     if (object->GetTimeToFinishMovement() != 0) {
       object->Move(timer_duration_);
-    } else if (object->GetTimeToFinishRotation() != 0) {
-      object->Rotate(timer_duration_);
     }
   }
 
@@ -218,7 +216,7 @@ void MainWindow::timerEvent(QTimerEvent *) {
   while (it != rockets_.end()) {
     if ((*it)->GetTimeToFinishMovement() == 0 &&
         (*it)->GetCellsToFinishMovement() != 0) {
-      (*it)->StartMovement(((*it)->GetCellsToFinishMovement()) - 1, tanks_);
+      (*it)->StartMovement(((*it)->GetCellsToFinishMovement()), tanks_);
     }
     if (!(*it)->IsMovingOrRotating()) {
       it = rockets_.erase(it);

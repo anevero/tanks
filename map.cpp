@@ -8,8 +8,8 @@ Map::Map(int map_number) {
   int map_width_in_cells, map_height_in_cells;
   in >> map_width_in_cells >> map_height_in_cells;
 
-  map_.resize(map_width_in_cells);
-  walls_precalc_.resize(map_width_in_cells);
+  map_.resize(map_height_in_cells);
+  walls_precalc_.resize(map_height_in_cells);
 
   for (int i = 0; i < map_height_in_cells; ++i) {
     for (int j = 0; j < map_width_in_cells; ++j) {
@@ -76,8 +76,8 @@ CellType Map::GetField(int cell_x, int cell_y) const {
 int Map::GetWallsPrecalc(int cell_x, int cell_y) const {
   return walls_precalc_[cell_x][cell_y];
 }
-int Map::GetNumberOfCellsHorizontally() const { return map_.size(); }
-int Map::GetNumberOfCellsVertically() const { return map_[0].size(); }
+int Map::GetNumberOfCellsHorizontally() const { return map_[0].size(); }
+int Map::GetNumberOfCellsVertically() const { return map_.size(); }
 int Map::GetUpperLeftX() const { return cur_upper_left_x_; }
 int Map::GetUpperLeftY() const { return cur_upper_left_y_; }
 int Map::GetWidth() const { return cur_width_; }
