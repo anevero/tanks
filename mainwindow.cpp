@@ -34,13 +34,6 @@ MainWindow::MainWindow(QWidget *parent)
     ToggleVirtualKeys();
   }
 
-  obstacles_and_bonuses.resize(map_->GetHeight());
-  for (int i = 0; i < map_->GetHeight(); i++) {
-    for (int j = 0; j < map_->GetWidth(); j++) {
-      obstacles_and_bonuses[i].resize(map_->GetWidth());
-    }
-  }
-
   InitializeNewGameDialog();
   InitializeSettingsDialog();
 }
@@ -130,9 +123,11 @@ void MainWindow::paintEvent(QPaintEvent *) {
     object->Draw(p);
   }
 
-  for (const auto &vector : obstacles_and_bonuses) {
+  for (const auto &vector : obstacles_and_bonuses_) {
     for (const auto &object : vector) {
-      object->Draw(p);
+      if (object != nullptr) {
+        object->Draw(p);
+      }
     }
   }
   p.end();
@@ -278,6 +273,11 @@ void MainWindow::RedrawContent() {
   tanks_.clear();
   rockets_.clear();
 
+  obstacles_and_bonuses_.resize(map_->GetNumberOfCellsVertically());
+  for (int i = 0; i < map_->GetNumberOfCellsVertically(); i++) {
+    obstacles_and_bonuses_[i].resize(map_->GetNumberOfCellsHorizontally());
+  }
+
   pause_continue_button_->setText(tr("Pause"));
   paused_ = false;
 
@@ -333,6 +333,31 @@ void MainWindow::RedrawContent() {
     }
   }
   bots_input_file.close();
+
+  QFile obstacles_file(
+      ":/obstacles/obstacle" +
+      QString::number(current_game_options_.map_number + 1) +
+      QString::number(current_game_options_.difficulty_level_number + 1) +
+      ".txt");
+
+  obstacles_file.open(QIODevice::ReadOnly);
+  QTextStream ir(&obstacles_file);
+  int number_of_obstacles, x, y;
+  ir >> number_of_obstacles;
+
+  for (int i = 0; i < map_->GetNumberOfCellsVertically(); ++i) {
+    for (int j = 0; j < map_->GetNumberOfCellsVertically(); ++j) {
+      obstacles_and_bonuses_[i][j] = nullptr;
+    }
+  }
+
+  for (int i = 0; i < number_of_obstacles; ++i) {
+    ir >> x >> y;
+    obstacles_and_bonuses_[x][y] =
+        std::shared_ptr<Obstacle>(new Obstacle(map_, x, y));
+  }
+
+  obstacles_file.close();
 
   timer_id_ = startTimer(timer_duration_);
   repaint();
@@ -477,22 +502,6 @@ void MainWindow::InitializeNewGameDialog() {
     map_file = QFileInfo(":/maps/map" + QString::number(map_number) + ".txt");
   }
 
-  //  QFile obstacles_file(
-  //      ":/obstacles/obstacle" +
-  //      QString::number(current_game_options_.map_number + 1) +
-  //      QString::number(current_game_options_.difficulty_level_number + 1) +
-  //      ".txt");
-  //  obstacles_file.open(QIODevice::ReadOnly);
-  //  QTextStream ir(&obstacles_file);
-  //  int number_of_obstacles, x, y;
-  //  ir >> number_of_obstacles;
-  //  for (int i = 0; i < number_of_obstacles; ++i) {
-  //    ir >> x >> y;
-  std::shared_ptr<Obstacle> obstacle(new Obstacle(map_, 2, 2));
-  obstacles_and_bonuses[2][2] = obstacle;
-  //}
-
-  //  obstacles_file.close();
   switch_tank_label_ =
       new QLabel(QString(tr("Tank")) + QString(":"), new_game_dialog_);
   switch_tank_menu_ = new QComboBox(new_game_dialog_);

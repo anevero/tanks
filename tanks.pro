@@ -17,7 +17,7 @@ SOURCES += \
     bot.cpp \
     improvedbot.cpp \
     cleverbot.cpp \
-    objectsonmap.cpp
+    objectonmap.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -28,7 +28,7 @@ HEADERS += \
     bot.h \
     improvedbot.h \
     cleverbot.h \
-    objectsonmap.h
+    objectonmap.h
 
 RESOURCES += \
     resources.qrc

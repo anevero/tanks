@@ -28,7 +28,7 @@
 #include "cleverbot.h"
 #include "improvedbot.h"
 #include "map.h"
-#include "objectsonmap.h"
+#include "objectonmap.h"
 #include "rocket.h"
 #include "tank.h"
 
@@ -113,7 +113,7 @@ class MainWindow : public QMainWindow {
   std::shared_ptr<Map> map_;
   QList<std::shared_ptr<Movable>> tanks_;
   QList<std::shared_ptr<Movable>> rockets_;
-  QVector<QVector<std::shared_ptr<ObjectsOnMap>>> obstacles_and_bonuses;
+  QVector<QVector<std::shared_ptr<ObjectOnMap>>> obstacles_and_bonuses_;
 
   int number_of_player_tanks_ = 1;
   QVector<QString> difficulty_levels_names_ = {tr("Easy"), tr("Normal"),

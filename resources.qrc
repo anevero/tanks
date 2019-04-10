@@ -12,6 +12,8 @@
     <file>textures/bot.png</file>
     <file>textures/improved_bot.png</file>
     <file>textures/clever_bot.png</file>
+    <file>textures/log.png</file>
+    <file>textures/aptechka.png</file>
     <file>tanks_info/tanks.txt</file>
     <file>tanks_info/bots11.txt</file>
     <file>tanks_info/bots12.txt</file>

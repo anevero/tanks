@@ -9,34 +9,32 @@
 #include <memory>
 #include "map.h"
 
-class ObjectsOnMap {
+class ObjectOnMap {
  public:
-  ObjectsOnMap(std::shared_ptr<Map>& map, int x, int y);
+  ObjectOnMap(std::shared_ptr<Map>& map, int x, int y);
   virtual void LoadImage() = 0;
-  virtual ~ObjectsOnMap() = default;
+  virtual ~ObjectOnMap() = default;
   void Draw(QPainter& painter);
   void RescaleImage();
 
  protected:
   std::shared_ptr<Map> map_;
-  int x_map_object_, y_map_object_;
+  int x_, y_;
   QImage image_;
   QImage scaled_image_;
 };
 
-class Obstacle : public ObjectsOnMap {
+class Obstacle : public ObjectOnMap {
  public:
   Obstacle(std::shared_ptr<Map>& map, int x, int y);
   void LoadImage() override;
 };
 
-class Bonus : public ObjectsOnMap {
+class Bonus : public ObjectOnMap {
  public:
   Bonus(std::shared_ptr<Map>& map, int x, int y);
   void LoadImage() override;
   void RandomCoordinates();
-
- private:
 };
 
 #endif  // OBSTACLANDBONUS_H
