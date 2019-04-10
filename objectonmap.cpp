@@ -6,14 +6,6 @@ ObjectOnMap::ObjectOnMap(std::shared_ptr<Map>& map, int x, int y)
 void ObjectOnMap::Draw(QPainter& painter) {
   RescaleImage();
   painter.save();
-  int cur_width =
-      static_cast<int>(map_->GetWidth() / map_->GetNumberOfCellsHorizontally());
-  int cur_height =
-      static_cast<int>(map_->GetHeight() / map_->GetNumberOfCellsVertically());
-
-  int cur_upper_left_x_ = map_->GetUpperLeftX() + x_ * cur_width;
-
-  int cur_upper_left_y_ = map_->GetUpperLeftY() + y_ * cur_height;
   painter.translate(cur_upper_left_x_ + cur_width / 2,
                     cur_upper_left_y_ + cur_height / 2);
   painter.drawImage(-cur_width / 2, -cur_height / 2, scaled_image_);
@@ -21,6 +13,7 @@ void ObjectOnMap::Draw(QPainter& painter) {
 }
 
 void ObjectOnMap::RescaleImage() {
+  UpdateCoordinates();
   if (scaled_image_.width() == map_->GetWidth() &&
       scaled_image_.height() == map_->GetHeight()) {
     return;
@@ -31,6 +24,17 @@ void ObjectOnMap::RescaleImage() {
       static_cast<int>(map_->GetHeight() / map_->GetNumberOfCellsVertically());
 
   scaled_image_ = image_.scaled(cur_width, cur_height, Qt::KeepAspectRatio);
+}
+
+void ObjectOnMap::UpdateCoordinates() {
+  cur_width =
+      static_cast<int>(map_->GetWidth() / map_->GetNumberOfCellsHorizontally());
+  cur_height =
+      static_cast<int>(map_->GetHeight() / map_->GetNumberOfCellsVertically());
+
+  cur_upper_left_x_ = map_->GetUpperLeftX() + x_ * cur_width;
+
+  cur_upper_left_y_ = map_->GetUpperLeftY() + y_ * cur_height;
 }
 
 Bonus::Bonus(std::shared_ptr<Map>& map, int x, int y) : ObjectOnMap(map, x, y) {

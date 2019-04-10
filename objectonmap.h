@@ -16,10 +16,11 @@ class ObjectOnMap {
   virtual ~ObjectOnMap() = default;
   void Draw(QPainter& painter);
   void RescaleImage();
+  void UpdateCoordinates();
 
  protected:
   std::shared_ptr<Map> map_;
-  int x_, y_;
+  int x_, y_, cur_width, cur_height, cur_upper_left_x_, cur_upper_left_y_;
   QImage image_;
   QImage scaled_image_;
 };
