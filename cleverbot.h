@@ -7,8 +7,7 @@
 
 class CleverBot : public ImprovedBot {
  public:
-  CleverBot(std::shared_ptr<Map>& map, BotQualities qualities,
-            Direction direction);
+  CleverBot(std::shared_ptr<Map>& map, BotQualities qualities);
   void LoadImage() override;
 
  protected:

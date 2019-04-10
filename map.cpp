@@ -37,6 +37,7 @@ Map::Map(int map_number) {
   in >> tank_init_cell_x_ >> tank_init_cell_y_;
   tank_init_cell_x_--;
   tank_init_cell_y_--;
+  in >> tank_start_direction_;
 
   input_file.close();
 
@@ -84,6 +85,7 @@ int Map::GetWidth() const { return cur_width_; }
 int Map::GetHeight() const { return cur_height_; }
 int Map::GetTankInitCellX() const { return tank_init_cell_x_; }
 int Map::GetTankInitCellY() const { return tank_init_cell_y_; }
+QString Map::GetTankStartDirection() const { return tank_start_direction_; }
 
 void Map::RescaleImages() {
   if (scaled_images_[0].width() == cur_cell_width_ + 2 &&
