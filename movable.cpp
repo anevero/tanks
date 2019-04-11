@@ -41,8 +41,12 @@ void Movable::StartMovement(
 
   if (std::dynamic_pointer_cast<Obstacle>(objects[new_cell_x][new_cell_y]) !=
       nullptr) {
-    current_speed_ = current_speed_ * 2;
     objects[new_cell_x][new_cell_y] = nullptr;
+    if (dynamic_cast<Rocket*>(this) != nullptr) {
+      cells_to_finish_movement_ = 0;
+      return;
+    }
+    current_speed_ = current_speed_ * 2;
   }
 
   cell_x_ = new_cell_x;
