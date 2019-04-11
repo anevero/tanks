@@ -278,7 +278,7 @@ void MainWindow::RedrawContent() {
   paused_ = false;
 
   available_tank_types_[current_game_options_.tank_number].direction =
-          DetermineDirection(map_->GetTankStartDirection());
+      DetermineDirection(map_->GetTankStartDirection());
   tanks_.append(std::shared_ptr<Movable>(
       new Tank(map_, map_->GetTankInitCellX(), map_->GetTankInitCellY(),
                available_tank_types_[current_game_options_.tank_number])));
@@ -322,14 +322,11 @@ void MainWindow::RedrawContent() {
     qualities.tank.direction = DetermineDirection(start_direction);
 
     if (i < number_of_standart_bots) {
-      tanks_.append(
-          std::shared_ptr<Movable>(new Bot(map_, qualities)));
+      tanks_.append(std::shared_ptr<Movable>(new Bot(map_, qualities)));
     } else if (i < number_of_standart_bots + number_of_improved_bots) {
-      tanks_.append(std::shared_ptr<Movable>(
-          new ImprovedBot(map_, qualities)));
+      tanks_.append(std::shared_ptr<Movable>(new ImprovedBot(map_, qualities)));
     } else {
-      tanks_.append(std::shared_ptr<Movable>(
-          new CleverBot(map_, qualities)));
+      tanks_.append(std::shared_ptr<Movable>(new CleverBot(map_, qualities)));
     }
   }
   bots_input_file.close();
@@ -438,10 +435,10 @@ void MainWindow::CheckDeadObjects() {
   }
 }
 
-void MainWindow::MakeBoom(std::shared_ptr<Movable>& object) {
+void MainWindow::MakeBoom(std::shared_ptr<Movable> &object) {
   std::shared_ptr<Boom> boom(new Boom(map_, object, 500));
   rockets_.append(boom);
-  boom->StartMovement(1, tanks_);
+  boom->StartMovement(1, tanks_, obstacles_and_bonuses_);
 }
 
 void MainWindow::ShootRocket(std::shared_ptr<Tank> &tank) {
@@ -613,8 +610,14 @@ void MainWindow::InitializeSettingsDialog() {
 }
 
 Direction MainWindow::DetermineDirection(const QString &start_direction) const {
-  if (start_direction == "up") { return Direction::Up; }
-  if (start_direction == "down") { return Direction::Down; }
-  if (start_direction == "left") { return Direction::Left; }
+  if (start_direction == "up") {
+    return Direction::Up;
+  }
+  if (start_direction == "down") {
+    return Direction::Down;
+  }
+  if (start_direction == "left") {
+    return Direction::Left;
+  }
   return Direction::Right;
 }

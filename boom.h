@@ -1,4 +1,4 @@
-#ifndef BOOM_H
+﻿#ifndef BOOM_H
 #define BOOM_H
 
 #include <QDebug>
@@ -13,8 +13,9 @@ class Boom : public Movable {
   void Draw(QPainter& painter) override;
 
   void UpdateCoordinates() override;
-  void StartMovement(int number_of_cells,
-                     QList<std::shared_ptr<Movable>>&) override;
+  void StartMovement(
+      int number_of_cells, QList<std::shared_ptr<Movable>>&,
+      std::vector<std::vector<std::shared_ptr<ObjectOnMap>>>&) override;
 };
 
-#endif // BOOM_H
+#endif  // BOOM_H
