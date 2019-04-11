@@ -480,7 +480,6 @@ void MainWindow::InitializeNewGameDialog() {
   }
 
   switch_tank_label_ =
-
       new QLabel(QString(tr("Tank")) + QString(":"), new_game_dialog_);
   switch_tank_menu_ = new QComboBox(new_game_dialog_);
 
