@@ -22,7 +22,12 @@ class ObjectOnMap {
 
  protected:
   std::shared_ptr<Map> map_;
-  int x_, y_, cur_width, cur_height, cur_upper_left_x_, cur_upper_left_y_;
+  int x_;
+  int y_;
+  int cur_width;
+  int cur_height;
+  int cur_upper_left_x_;
+  int cur_upper_left_y_;
   QImage image_;
   QImage scaled_image_;
 };

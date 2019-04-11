@@ -24,6 +24,7 @@
 #include <QtGlobal>
 #include <algorithm>
 #include <memory>
+#include <vector>
 #include "bot.h"
 #include "cleverbot.h"
 #include "improvedbot.h"
@@ -113,7 +114,7 @@ class MainWindow : public QMainWindow {
   std::shared_ptr<Map> map_;
   QList<std::shared_ptr<Movable>> tanks_;
   QList<std::shared_ptr<Movable>> rockets_;
-  QVector<QVector<std::shared_ptr<ObjectOnMap>>> obstacles_and_bonuses_;
+  std::vector<std::vector<std::shared_ptr<ObjectOnMap>>> obstacles_and_bonuses_;
 
   int number_of_player_tanks_ = 1;
   QVector<QString> difficulty_levels_names_ = {tr("Easy"), tr("Normal"),

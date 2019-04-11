@@ -15,7 +15,7 @@ Movable::Movable(std::shared_ptr<Map>& map, int cell_x, int cell_y,
 
 void Movable::StartMovement(
     int number_of_cells, QList<std::shared_ptr<Movable>>& tanks,
-    QVector<QVector<std::shared_ptr<ObjectOnMap>>>& objects) {
+    std::vector<std::vector<std::shared_ptr<ObjectOnMap>>>& objects) {
   int new_cell_x = cell_x_ + reverse_ * (directions_[1] - directions_[3]);
   int new_cell_y = cell_y_ + reverse_ * (directions_[2] - directions_[0]);
   if (map_->GetField(new_cell_x, new_cell_y) == CellType::Wall) {
@@ -39,9 +39,10 @@ void Movable::StartMovement(
             basic_speed_);
   }
 
-  if (std::dynamic_pointer_cast<Obstacle>(objects[new_cell_x][new_cell_y]) !=
-      nullptr) {
-    objects[new_cell_x][new_cell_y] = nullptr;
+  if (std::dynamic_pointer_cast<Obstacle>(objects[static_cast<unsigned>(
+          new_cell_x)][static_cast<unsigned>(new_cell_y)]) != nullptr) {
+    objects[static_cast<unsigned>(new_cell_x)]
+           [static_cast<unsigned>(new_cell_y)] = nullptr;
     if (dynamic_cast<Rocket*>(this) != nullptr) {
       cells_to_finish_movement_ = 0;
       return;

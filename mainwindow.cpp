@@ -274,11 +274,6 @@ void MainWindow::RedrawContent() {
   tanks_.clear();
   rockets_.clear();
 
-  obstacles_and_bonuses_.resize(map_->GetNumberOfCellsVertically());
-  for (int i = 0; i < map_->GetNumberOfCellsVertically(); i++) {
-    obstacles_and_bonuses_[i].resize(map_->GetNumberOfCellsHorizontally());
-  }
-
   pause_continue_button_->setText(tr("Pause"));
   paused_ = false;
 
@@ -346,11 +341,11 @@ void MainWindow::RedrawContent() {
   int number_of_obstacles, x, y;
   ir >> number_of_obstacles;
 
-  for (int i = 0; i < map_->GetNumberOfCellsVertically(); ++i) {
-    for (int j = 0; j < map_->GetNumberOfCellsVertically(); ++j) {
-      obstacles_and_bonuses_[i][j] = nullptr;
-    }
-  }
+  obstacles_and_bonuses_ =
+      std::vector<std::vector<std::shared_ptr<ObjectOnMap>>>(
+          map_->GetNumberOfCellsVertically(),
+          std::vector<std::shared_ptr<ObjectOnMap>>(
+              map_->GetNumberOfCellsHorizontally(), nullptr));
 
   for (int i = 0; i < number_of_obstacles; ++i) {
     ir >> x >> y;

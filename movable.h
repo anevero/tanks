@@ -21,7 +21,7 @@ class Movable {
 
   virtual void StartMovement(
       int number_of_cells, QList<std::shared_ptr<Movable>>& tanks,
-      QVector<QVector<std::shared_ptr<ObjectOnMap>>>& objects);
+      std::vector<std::vector<std::shared_ptr<ObjectOnMap>>>& objects);
   virtual void Move(int milliseconds_passed);
   virtual void TurnReverseOn();
   virtual void TurnReverseOff();
