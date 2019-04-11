@@ -39,15 +39,15 @@ void Movable::StartMovement(
             basic_speed_);
   }
 
-  if (std::dynamic_pointer_cast<Obstacle>(objects[static_cast<unsigned>(
-          new_cell_x)][static_cast<unsigned>(new_cell_y)]) != nullptr) {
+  if (objects[static_cast<unsigned>(new_cell_x)]
+             [static_cast<unsigned>(new_cell_y)] != nullptr) {
     objects[static_cast<unsigned>(new_cell_x)]
            [static_cast<unsigned>(new_cell_y)] = nullptr;
     if (dynamic_cast<Rocket*>(this) != nullptr) {
       cells_to_finish_movement_ = 0;
       return;
     }
-    current_speed_ = current_speed_ * 2;
+    current_speed_ *= 2;
   }
 
   cell_x_ = new_cell_x;

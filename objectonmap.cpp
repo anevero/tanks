@@ -6,9 +6,9 @@ ObjectOnMap::ObjectOnMap(std::shared_ptr<Map>& map, int x, int y)
 void ObjectOnMap::Draw(QPainter& painter) {
   RescaleImage();
   painter.save();
-  painter.translate(cur_upper_left_x_ + cur_width / 2,
-                    cur_upper_left_y_ + cur_height / 2);
-  painter.drawImage(-cur_width / 2, -cur_height / 2, scaled_image_);
+  painter.translate(cur_upper_left_x_ + cur_width_ / 2,
+                    cur_upper_left_y_ + cur_height_ / 2);
+  painter.drawImage(-cur_width_ / 2, -cur_height_ / 2, scaled_image_);
   painter.restore();
 }
 
@@ -27,14 +27,14 @@ void ObjectOnMap::RescaleImage() {
 }
 
 void ObjectOnMap::UpdateCoordinates() {
-  cur_width =
+  cur_width_ =
       static_cast<int>(map_->GetWidth() / map_->GetNumberOfCellsHorizontally());
-  cur_height =
+  cur_height_ =
       static_cast<int>(map_->GetHeight() / map_->GetNumberOfCellsVertically());
 
-  cur_upper_left_x_ = map_->GetUpperLeftX() + x_ * cur_width;
+  cur_upper_left_x_ = map_->GetUpperLeftX() + x_ * cur_width_;
 
-  cur_upper_left_y_ = map_->GetUpperLeftY() + y_ * cur_height;
+  cur_upper_left_y_ = map_->GetUpperLeftY() + y_ * cur_height_;
 }
 
 int ObjectOnMap::GetX() { return x_; }

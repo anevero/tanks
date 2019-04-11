@@ -24,10 +24,10 @@ class ObjectOnMap {
   std::shared_ptr<Map> map_;
   int x_;
   int y_;
-  int cur_width;
-  int cur_height;
-  int cur_upper_left_x_;
-  int cur_upper_left_y_;
+  int cur_width_{};
+  int cur_height_{};
+  int cur_upper_left_x_{};
+  int cur_upper_left_y_{};
   QImage image_;
   QImage scaled_image_;
 };
@@ -42,7 +42,6 @@ class Bonus : public ObjectOnMap {
  public:
   Bonus(std::shared_ptr<Map>& map, int x, int y);
   void LoadImage() override;
-  void RandomCoordinates();
 };
 
 #endif  // OBSTACLANDBONUS_H
