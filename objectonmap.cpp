@@ -37,6 +37,10 @@ void ObjectOnMap::UpdateCoordinates() {
   cur_upper_left_y_ = map_->GetUpperLeftY() + y_ * cur_height;
 }
 
+int ObjectOnMap::GetX() { return x_; }
+
+int ObjectOnMap::GetY() { return y_; }
+
 Bonus::Bonus(std::shared_ptr<Map>& map, int x, int y) : ObjectOnMap(map, x, y) {
   LoadImage();
 }

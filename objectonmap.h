@@ -17,6 +17,8 @@ class ObjectOnMap {
   void Draw(QPainter& painter);
   void RescaleImage();
   void UpdateCoordinates();
+  int GetX();
+  int GetY();
 
  protected:
   std::shared_ptr<Map> map_;

@@ -50,6 +50,7 @@ class Movable {
   virtual int GetHeight() const;
   virtual int GetCellX() const;
   virtual int GetCellY() const;
+  virtual void SetCurrentSpeed(int amount);
 
  protected:
   virtual void SwitchToNextDirection();

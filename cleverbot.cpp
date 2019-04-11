@@ -1,4 +1,4 @@
-#include "cleverbot.h"
+﻿#include "cleverbot.h"
 
 CleverBot::CleverBot(std::shared_ptr<Map>& map, BotQualities qualities,
                      Direction direction)
@@ -29,7 +29,8 @@ bool CleverBot::IsRotationStartNeeded(std::shared_ptr<Tank>) {
   return false;
 }
 
-bool CleverBot::IsMovingStartNeeded(const QList<std::shared_ptr<Movable>>& objects) {
+bool CleverBot::IsMovingStartNeeded(
+    const QList<std::shared_ptr<Movable>>& objects) {
   auto tank = objects[0];
   if (time_to_finish_movement_ <= 0 && time_to_finish_rotation_ <= 0) {
     Bfs(objects, tank->GetCellX(), tank->GetCellY());
@@ -49,16 +50,16 @@ bool CleverBot::IsMovingStartNeeded(const QList<std::shared_ptr<Movable>>& objec
       delta_x = -1;
     }
 
-    if (distance_[cell_x - delta_x][cell_y - delta_y]
-        == distance_[cell_x][cell_y] - 1) {
-      if (distance_[cell_x][cell_y] - 1
-          == distance_[tank->GetCellX()][tank->GetCellY()]) {
+    if (distance_[cell_x - delta_x][cell_y - delta_y] ==
+        distance_[cell_x][cell_y] - 1) {
+      if (distance_[cell_x][cell_y] - 1 ==
+          distance_[tank->GetCellX()][tank->GetCellY()]) {
         return false;
       }
       number_of_cells_to_move_ = 1;
       return true;
-    } else if (distance_[cell_x - delta_y][cell_y - delta_x]
-        == distance_[cell_x][cell_y] - 1) {
+    } else if (distance_[cell_x - delta_y][cell_y - delta_x] ==
+               distance_[cell_x][cell_y] - 1) {
       if (delta_x == 0) {
         TurnRotationReverseOn();
       } else {
@@ -66,8 +67,8 @@ bool CleverBot::IsMovingStartNeeded(const QList<std::shared_ptr<Movable>>& objec
       }
       number_of_turns_ = 2;
       return false;
-    } else if (distance_[cell_x + delta_y][cell_y + delta_x]
-        == distance_[cell_x][cell_y] - 1) {
+    } else if (distance_[cell_x + delta_y][cell_y + delta_x] ==
+               distance_[cell_x][cell_y] - 1) {
       if (delta_x == 0) {
         TurnRotationReverseOff();
       } else {
@@ -75,8 +76,8 @@ bool CleverBot::IsMovingStartNeeded(const QList<std::shared_ptr<Movable>>& objec
       }
       number_of_turns_ = 2;
       return false;
-    } else if (distance_[cell_x + delta_x][cell_y + delta_y]
-        == distance_[cell_x][cell_y] - 1) {
+    } else if (distance_[cell_x + delta_x][cell_y + delta_y] ==
+               distance_[cell_x][cell_y] - 1) {
       number_of_turns_ = 3;
       return false;
     }
@@ -84,8 +85,8 @@ bool CleverBot::IsMovingStartNeeded(const QList<std::shared_ptr<Movable>>& objec
   return false;
 }
 
-void CleverBot::Bfs(const QList<std::shared_ptr<Movable>> objects,
-                    int cell_x, int cell_y) {
+void CleverBot::Bfs(const QList<std::shared_ptr<Movable>> objects, int cell_x,
+                    int cell_y) {
   QQueue<CellInfo> cells;
   cells.push_back({cell_x, cell_y, 0});
 
@@ -102,8 +103,7 @@ void CleverBot::Bfs(const QList<std::shared_ptr<Movable>> objects,
     cell_y = cells.front().cell_y;
     int current_distance = cells.front().distance;
     cells.pop_front();
-    if (cell_x < 0 || cell_x >= width ||
-        cell_y < 0 || cell_y >= height) {
+    if (cell_x < 0 || cell_x >= width || cell_y < 0 || cell_y >= height) {
       continue;
     }
     if (map_->GetField(cell_x, cell_y) == CellType::Wall) {
@@ -125,7 +125,9 @@ void CleverBot::Bfs(const QList<std::shared_ptr<Movable>> objects,
         break;
       }
     }
-    if (bad_cell) { continue; }
+    if (bad_cell) {
+      continue;
+    }
 
     distance_[cell_x][cell_y] = current_distance;
     cells.push_back({cell_x + 1, cell_y, current_distance + 1});

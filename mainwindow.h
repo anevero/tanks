@@ -74,6 +74,7 @@ class MainWindow : public QMainWindow {
   void GameOver();
   void InitializeNewGameDialog();
   void InitializeSettingsDialog();
+  void DestroyObstackle();
 
  private:
   bool paused_ = false;

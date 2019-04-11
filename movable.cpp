@@ -152,6 +152,8 @@ int Movable::GetHeight() const { return cur_height_; }
 int Movable::GetCellX() const { return cell_x_; }
 int Movable::GetCellY() const { return cell_y_; }
 
+void Movable::SetCurrentSpeed(int amount) { current_speed_ *= amount; }
+
 void Movable::SwitchToNextDirection() {
   int current_direction = GetIntDirection();
   directions_[current_direction] = 0;

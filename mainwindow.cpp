@@ -431,6 +431,8 @@ void MainWindow::CheckDeadObjects() {
   if (tanks_.size() == number_of_player_tanks_) {
     GameOver();
   }
+
+  DestroyObstackle();
 }
 
 void MainWindow::ShootRocket(std::shared_ptr<Tank> &tank) {
@@ -596,4 +598,15 @@ void MainWindow::InitializeSettingsDialog() {
 
   connect(settings_dialog_buttons_, SIGNAL(accepted()), settings_dialog_,
           SLOT(accept()));
+}
+
+void MainWindow::DestroyObstackle() {
+  for (auto &object : tanks_) {
+    if (std::dynamic_pointer_cast<Obstacle>(
+            obstacles_and_bonuses_[object->GetCellX()][object->GetCellY()]) !=
+        nullptr) {
+      object->SetCurrentSpeed(2);
+      obstacles_and_bonuses_[object->GetCellX()][object->GetCellY()] = nullptr;
+    }
+  }
 }
