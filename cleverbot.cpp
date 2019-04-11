@@ -1,8 +1,7 @@
 ﻿#include "cleverbot.h"
 
-CleverBot::CleverBot(std::shared_ptr<Map>& map, BotQualities qualities,
-                     Direction direction)
-    : ImprovedBot(map, qualities, direction) {
+CleverBot::CleverBot(std::shared_ptr<Map>& map, BotQualities qualities)
+    : ImprovedBot(map, qualities) {
   LoadImage();
   int height = map_->GetNumberOfCellsVertically();
   int width = map_->GetNumberOfCellsHorizontally();

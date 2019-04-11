@@ -7,8 +7,7 @@
 
 class ImprovedBot : public Bot {
  public:
-  ImprovedBot(std::shared_ptr<Map>& map, BotQualities qualities,
-              Direction direction);
+  ImprovedBot(std::shared_ptr<Map>& map, BotQualities qualities);
   virtual void LoadImage() override;
 
  protected:

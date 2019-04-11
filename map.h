@@ -35,6 +35,7 @@ class Map {
   int GetHeight() const;
   int GetTankInitCellX() const;
   int GetTankInitCellY() const;
+  QString GetTankStartDirection() const;
 
  private:
   void RescaleImages();
@@ -53,6 +54,7 @@ class Map {
   int cur_cell_height_{};
   int tank_init_cell_x_;
   int tank_init_cell_y_;
+  QString tank_start_direction_;
 
   const int number_of_cell_types_ = 4;
 };

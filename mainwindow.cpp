@@ -170,7 +170,7 @@ void MainWindow::timerEvent(QTimerEvent *) {
   }
 
   for (const auto &object : tanks_) {
-    if (object->GetTimeToFinishMovement() != 0) {
+    if (object->GetTimeToFinishMovement() > 0) {
       object->Move(timer_duration_);
     } else if (object->GetTimeToFinishRotation() != 0) {
       object->Rotate(timer_duration_);
@@ -178,14 +178,14 @@ void MainWindow::timerEvent(QTimerEvent *) {
   }
 
   for (const auto &object : rockets_) {
-    if (object->GetTimeToFinishMovement() != 0) {
+    if (object->GetTimeToFinishMovement() > 0) {
       object->Move(timer_duration_);
     }
   }
 
   auto it = rockets_.begin();
   while (it != rockets_.end()) {
-    if ((*it)->GetTimeToFinishMovement() == 0 &&
+    if ((*it)->GetTimeToFinishMovement() <= 0 &&
         (*it)->GetCellsToFinishMovement() != 0) {
       (*it)->StartMovement(((*it)->GetCellsToFinishMovement()), tanks_,
                            obstacles_and_bonuses_);
@@ -277,10 +277,11 @@ void MainWindow::RedrawContent() {
   pause_continue_button_->setText(tr("Pause"));
   paused_ = false;
 
+  available_tank_types_[current_game_options_.tank_number].direction =
+          DetermineDirection(map_->GetTankStartDirection());
   tanks_.append(std::shared_ptr<Movable>(
       new Tank(map_, map_->GetTankInitCellX(), map_->GetTankInitCellY(),
-               available_tank_types_[current_game_options_.tank_number],
-               Direction::Up)));
+               available_tank_types_[current_game_options_.tank_number])));
 
   QFile bots_input_file(
       ":/tanks_info/bots" +
@@ -305,8 +306,10 @@ void MainWindow::RedrawContent() {
       number_of_clever_bots;
   number_of_bots =
       number_of_standart_bots + number_of_improved_bots + number_of_clever_bots;
+
   for (int i = 0; i < number_of_bots; ++i) {
     BotQualities qualities;
+    QString start_direction;
     qualities.tank.max_health =
         70 + 15 * current_game_options_.difficulty_level_number;
     qualities.tank.rate_of_fire =
@@ -315,17 +318,18 @@ void MainWindow::RedrawContent() {
         1000 - 150 * current_game_options_.difficulty_level_number;
     in >> qualities.init_cell_x >> qualities.init_cell_y >>
         qualities.moving_length >> qualities.amount_of_turns >>
-        qualities.side_rotation_frequency;
+        qualities.side_rotation_frequency >> start_direction;
+    qualities.tank.direction = DetermineDirection(start_direction);
 
     if (i < number_of_standart_bots) {
       tanks_.append(
-          std::shared_ptr<Movable>(new Bot(map_, qualities, Direction::Up)));
+          std::shared_ptr<Movable>(new Bot(map_, qualities)));
     } else if (i < number_of_standart_bots + number_of_improved_bots) {
       tanks_.append(std::shared_ptr<Movable>(
-          new ImprovedBot(map_, qualities, Direction::Up)));
+          new ImprovedBot(map_, qualities)));
     } else {
       tanks_.append(std::shared_ptr<Movable>(
-          new CleverBot(map_, qualities, Direction::Up)));
+          new CleverBot(map_, qualities)));
     }
   }
   bots_input_file.close();
@@ -382,6 +386,10 @@ void MainWindow::FindInteractingObjects() {
   while (tank != tanks_.end()) {
     auto rocket = rockets_.begin();
     while (rocket != rockets_.end()) {
+      if (std::dynamic_pointer_cast<Rocket>(*rocket) == nullptr) {
+        rocket++;
+        continue;
+      }
       if (HaveObjectsCollided(*rocket, *tank)) {
         std::dynamic_pointer_cast<Tank>(*tank)->MinusHealth(
             std::dynamic_pointer_cast<Rocket>(*rocket)->GetPower());
@@ -409,24 +417,31 @@ bool MainWindow::HaveObjectsCollided(
 }
 
 void MainWindow::CheckDeadObjects() {
-  auto bot = tanks_.begin();
+  auto object = tanks_.begin();
   for (int i = 0; i < number_of_player_tanks_; ++i) {
     if (std::dynamic_pointer_cast<Tank>(tanks_[i])->IsDead()) {
       GameOver();
       return;
     }
-    bot = std::next(bot);
+    object = std::next(object);
   }
-  while (bot != tanks_.end()) {
-    if (std::dynamic_pointer_cast<Tank>(*bot)->IsDead()) {
-      bot = tanks_.erase(bot);
+  while (object != tanks_.end()) {
+    if (std::dynamic_pointer_cast<Tank>(*object)->IsDead()) {
+      MakeBoom(*object);
+      object = tanks_.erase(object);
       continue;
     }
-    bot++;
+    object++;
   }
   if (tanks_.size() == number_of_player_tanks_) {
     GameOver();
   }
+}
+
+void MainWindow::MakeBoom(std::shared_ptr<Movable>& object) {
+  std::shared_ptr<Boom> boom(new Boom(map_, object, 500));
+  rockets_.append(boom);
+  boom->StartMovement(1, tanks_);
 }
 
 void MainWindow::ShootRocket(std::shared_ptr<Tank> &tank) {
@@ -509,6 +524,7 @@ void MainWindow::InitializeNewGameDialog() {
   QTextStream in(&tanks_input_file);
   int number_of_tank_types;
   in >> number_of_tank_types;
+
   for (int i = 0; i < number_of_tank_types; ++i) {
     TankQualities qualities;
     in >> qualities.speed >> qualities.rate_of_fire >> qualities.max_health;
@@ -594,4 +610,11 @@ void MainWindow::InitializeSettingsDialog() {
 
   connect(settings_dialog_buttons_, SIGNAL(accepted()), settings_dialog_,
           SLOT(accept()));
+}
+
+Direction MainWindow::DetermineDirection(const QString &start_direction) const {
+  if (start_direction == "up") { return Direction::Up; }
+  if (start_direction == "down") { return Direction::Down; }
+  if (start_direction == "left") { return Direction::Left; }
+  return Direction::Right;
 }
