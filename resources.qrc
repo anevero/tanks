@@ -28,6 +28,17 @@
     <file>tanks_info/bots42.txt</file>
     <file>tanks_info/bots43.txt</file>
     <file>obstacles/obstacle11.txt</file>
+    <file>obstacles/obstacle12.txt</file>
+    <file>obstacles/obstacle13.txt</file>
+    <file>obstacles/obstacle21.txt</file>
+    <file>obstacles/obstacle22.txt</file>
+    <file>obstacles/obstacle23.txt</file>
+    <file>obstacles/obstacle31.txt</file>
+    <file>obstacles/obstacle32.txt</file>
+    <file>obstacles/obstacle33.txt</file>
+    <file>obstacles/obstacle41.txt</file>
+    <file>obstacles/obstacle42.txt</file>
+    <file>obstacles/obstacle43.txt</file>
     <file>translations/tanks_be_BY.qm</file>
     <file>translations/tanks_en_US.qm</file>
     <file>translations/tanks_ru_RU.qm</file>
