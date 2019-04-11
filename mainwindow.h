@@ -75,6 +75,7 @@ class MainWindow : public QMainWindow {
   void GameOver();
   void InitializeNewGameDialog();
   void InitializeSettingsDialog();
+  Direction DetermineDirection(const QString& start_direction) const;
 
  private:
   bool paused_ = false;

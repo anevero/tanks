@@ -1,8 +1,7 @@
 #include "improvedbot.h"
 
-ImprovedBot::ImprovedBot(std::shared_ptr<Map>& map, BotQualities qualities,
-                         Direction direction)
-    : Bot(map, qualities, direction) {
+ImprovedBot::ImprovedBot(std::shared_ptr<Map>& map, BotQualities qualities)
+    : Bot(map, qualities) {
   LoadImage();
 }
 

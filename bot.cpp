@@ -1,8 +1,7 @@
 #include "bot.h"
 
-Bot::Bot(std::shared_ptr<Map>& map, BotQualities qualities, Direction direction)
-    : Tank(map, qualities.init_cell_x, qualities.init_cell_y, qualities.tank,
-           direction),
+Bot::Bot(std::shared_ptr<Map>& map, BotQualities qualities)
+    : Tank(map, qualities.init_cell_x, qualities.init_cell_y, qualities.tank),
       moving_length_(qualities.moving_length),
       amount_of_turns_(qualities.amount_of_turns),
       side_rotation_frequency_(qualities.side_rotation_frequency) {
