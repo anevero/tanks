@@ -74,7 +74,6 @@ class MainWindow : public QMainWindow {
   void GameOver();
   void InitializeNewGameDialog();
   void InitializeSettingsDialog();
-  void DestroyObstackle(std::shared_ptr<Tank> tank);
 
  private:
   bool paused_ = false;

@@ -71,14 +71,13 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event) {
     case Qt::Key_Up:
     case Qt::Key_W:
       tank->TurnReverseOff();
-      tank->StartMovement(1, tanks_);
-      DestroyObstackle(tank);
+      tank->StartMovement(1, tanks_, obstacles_and_bonuses_);
       break;
     case 1067:
     case Qt::Key_Down:
     case Qt::Key_S:
       tank->TurnReverseOn();
-      tank->StartMovement(1, tanks_);
+      tank->StartMovement(1, tanks_, obstacles_and_bonuses_);
       break;
     case 1060:
     case Qt::Key_Left:
@@ -158,8 +157,7 @@ void MainWindow::timerEvent(QTimerEvent *) {
       }
 
       if (bot->IsMovingStartNeeded(tanks_)) {
-        bot->StartMovement(1, tanks_);
-        DestroyObstackle(bot);
+        bot->StartMovement(1, tanks_, obstacles_and_bonuses_);
       } else if (bot->IsRotationStartNeeded(
                      std::dynamic_pointer_cast<Tank>(tanks_[0]))) {
         bot->StartRotation();
@@ -189,7 +187,8 @@ void MainWindow::timerEvent(QTimerEvent *) {
   while (it != rockets_.end()) {
     if ((*it)->GetTimeToFinishMovement() == 0 &&
         (*it)->GetCellsToFinishMovement() != 0) {
-      (*it)->StartMovement(((*it)->GetCellsToFinishMovement()), tanks_);
+      (*it)->StartMovement(((*it)->GetCellsToFinishMovement()), tanks_,
+                           obstacles_and_bonuses_);
     }
     if (!(*it)->IsMovingOrRotating()) {
       it = rockets_.erase(it);
@@ -439,9 +438,11 @@ void MainWindow::ShootRocket(std::shared_ptr<Tank> &tank) {
   std::shared_ptr<Rocket> rocket(new Rocket(map_, tank, 250, 10));
   rockets_.append(rocket);
   if (rocket->GetIntDirection() == 1 || rocket->GetIntDirection() == 3) {
-    rocket->StartMovement(map_->GetNumberOfCellsHorizontally(), tanks_);
+    rocket->StartMovement(map_->GetNumberOfCellsHorizontally(), tanks_,
+                          obstacles_and_bonuses_);
   } else {
-    rocket->StartMovement(map_->GetNumberOfCellsVertically(), tanks_);
+    rocket->StartMovement(map_->GetNumberOfCellsVertically(), tanks_,
+                          obstacles_and_bonuses_);
   }
 }
 
@@ -598,13 +599,4 @@ void MainWindow::InitializeSettingsDialog() {
 
   connect(settings_dialog_buttons_, SIGNAL(accepted()), settings_dialog_,
           SLOT(accept()));
-}
-
-void MainWindow::DestroyObstackle(std::shared_ptr<Tank> tank) {
-  if (std::dynamic_pointer_cast<Obstacle>(
-          obstacles_and_bonuses_[tank->GetCellX()][tank->GetCellY()]) !=
-      nullptr) {
-    tank->SetCurrentSpeed(2);
-    obstacles_and_bonuses_[tank->GetCellX()][tank->GetCellY()] = nullptr;
-  }
 }

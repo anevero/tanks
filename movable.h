@@ -19,8 +19,9 @@ class Movable {
   virtual ~Movable() = default;
   virtual void LoadImage() = 0;
 
-  virtual void StartMovement(int number_of_cells,
-                             QList<std::shared_ptr<Movable>>& tanks);
+  virtual void StartMovement(
+      int number_of_cells, QList<std::shared_ptr<Movable>>& tanks,
+      QVector<QVector<std::shared_ptr<ObjectOnMap>>>& objects);
   virtual void Move(int milliseconds_passed);
   virtual void TurnReverseOn();
   virtual void TurnReverseOff();
@@ -51,7 +52,6 @@ class Movable {
   virtual int GetHeight() const;
   virtual int GetCellX() const;
   virtual int GetCellY() const;
-  virtual void SetCurrentSpeed(int amount);
 
  protected:
   virtual void SwitchToNextDirection();

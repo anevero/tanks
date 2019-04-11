@@ -13,8 +13,9 @@ Movable::Movable(std::shared_ptr<Map>& map, int cell_x, int cell_y,
   directions_[static_cast<int>(direction)] = 1;
 }
 
-void Movable::StartMovement(int number_of_cells,
-                            QList<std::shared_ptr<Movable>>& tanks) {
+void Movable::StartMovement(
+    int number_of_cells, QList<std::shared_ptr<Movable>>& tanks,
+    QVector<QVector<std::shared_ptr<ObjectOnMap>>>& objects) {
   int new_cell_x = cell_x_ + reverse_ * (directions_[1] - directions_[3]);
   int new_cell_y = cell_y_ + reverse_ * (directions_[2] - directions_[0]);
   if (map_->GetField(new_cell_x, new_cell_y) == CellType::Wall) {
@@ -36,6 +37,12 @@ void Movable::StartMovement(int number_of_cells,
         static_cast<int>(map_->GetField(cell_x_, cell_y_)) * basic_speed_,
         static_cast<int>(map_->GetField(new_cell_x, new_cell_y)) *
             basic_speed_);
+  }
+
+  if (std::dynamic_pointer_cast<Obstacle>(objects[new_cell_x][new_cell_y]) !=
+      nullptr) {
+    current_speed_ = current_speed_ * 2;
+    objects[new_cell_x][new_cell_y] = nullptr;
   }
 
   cell_x_ = new_cell_x;
@@ -151,8 +158,6 @@ int Movable::GetWidth() const { return cur_width_; }
 int Movable::GetHeight() const { return cur_height_; }
 int Movable::GetCellX() const { return cell_x_; }
 int Movable::GetCellY() const { return cell_y_; }
-
-void Movable::SetCurrentSpeed(int amount) { current_speed_ *= amount; }
 
 void Movable::SwitchToNextDirection() {
   int current_direction = GetIntDirection();
