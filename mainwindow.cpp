@@ -72,6 +72,7 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event) {
     case Qt::Key_W:
       tank->TurnReverseOff();
       tank->StartMovement(1, tanks_);
+      DestroyObstackle(tank);
       break;
     case 1067:
     case Qt::Key_Down:
@@ -158,6 +159,7 @@ void MainWindow::timerEvent(QTimerEvent *) {
 
       if (bot->IsMovingStartNeeded(tanks_)) {
         bot->StartMovement(1, tanks_);
+        DestroyObstackle(bot);
       } else if (bot->IsRotationStartNeeded(
                      std::dynamic_pointer_cast<Tank>(tanks_[0]))) {
         bot->StartRotation();
@@ -431,8 +433,6 @@ void MainWindow::CheckDeadObjects() {
   if (tanks_.size() == number_of_player_tanks_) {
     GameOver();
   }
-
-  DestroyObstackle();
 }
 
 void MainWindow::ShootRocket(std::shared_ptr<Tank> &tank) {
@@ -600,13 +600,11 @@ void MainWindow::InitializeSettingsDialog() {
           SLOT(accept()));
 }
 
-void MainWindow::DestroyObstackle() {
-  for (auto &object : tanks_) {
-    if (std::dynamic_pointer_cast<Obstacle>(
-            obstacles_and_bonuses_[object->GetCellX()][object->GetCellY()]) !=
-        nullptr) {
-      object->SetCurrentSpeed(2);
-      obstacles_and_bonuses_[object->GetCellX()][object->GetCellY()] = nullptr;
-    }
+void MainWindow::DestroyObstackle(std::shared_ptr<Tank> tank) {
+  if (std::dynamic_pointer_cast<Obstacle>(
+          obstacles_and_bonuses_[tank->GetCellX()][tank->GetCellY()]) !=
+      nullptr) {
+    tank->SetCurrentSpeed(2);
+    obstacles_and_bonuses_[tank->GetCellX()][tank->GetCellY()] = nullptr;
   }
 }

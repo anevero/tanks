@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <memory>
 #include "map.h"
+#include "objectonmap.h"
 
 enum class Direction { Up = 0, Right = 1, Down = 2, Left = 3 };
 
