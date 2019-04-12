@@ -338,19 +338,20 @@ void MainWindow::RedrawContent() {
       ".txt");
 
   obstacles_file.open(QIODevice::ReadOnly);
-  QTextStream ir(&obstacles_file);
+  in.setDevice(&obstacles_file);
   int number_of_obstacles, x, y;
-  ir >> number_of_obstacles;
+  in >> number_of_obstacles;
 
   obstacles_and_bonuses_ =
       std::vector<std::vector<std::shared_ptr<ObjectOnMap>>>(
-          map_->GetNumberOfCellsVertically(),
+          static_cast<unsigned>(map_->GetNumberOfCellsVertically()),
           std::vector<std::shared_ptr<ObjectOnMap>>(
-              map_->GetNumberOfCellsHorizontally(), nullptr));
+              static_cast<unsigned>(map_->GetNumberOfCellsHorizontally()),
+              nullptr));
 
   for (int i = 0; i < number_of_obstacles; ++i) {
-    ir >> x >> y;
-    obstacles_and_bonuses_[x][y] =
+    in >> x >> y;
+    obstacles_and_bonuses_[static_cast<unsigned>(x)][static_cast<unsigned>(y)] =
         std::shared_ptr<Obstacle>(new Obstacle(map_, x, y));
   }
 
