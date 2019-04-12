@@ -71,13 +71,13 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event) {
     case Qt::Key_Up:
     case Qt::Key_W:
       tank->TurnReverseOff();
-      tank->StartMovement(1, tanks_);
+      tank->StartMovement(1, tanks_, obstacles_and_bonuses_);
       break;
     case 1067:
     case Qt::Key_Down:
     case Qt::Key_S:
       tank->TurnReverseOn();
-      tank->StartMovement(1, tanks_);
+      tank->StartMovement(1, tanks_, obstacles_and_bonuses_);
       break;
     case 1060:
     case Qt::Key_Left:
@@ -122,6 +122,14 @@ void MainWindow::paintEvent(QPaintEvent *) {
   for (const auto &object : rockets_) {
     object->Draw(p);
   }
+
+  for (const auto &vector : obstacles_and_bonuses_) {
+    for (const auto &object : vector) {
+      if (object != nullptr) {
+        object->Draw(p);
+      }
+    }
+  }
   p.end();
 }
 
@@ -149,7 +157,7 @@ void MainWindow::timerEvent(QTimerEvent *) {
       }
 
       if (bot->IsMovingStartNeeded(tanks_)) {
-        bot->StartMovement(1, tanks_);
+        bot->StartMovement(1, tanks_, obstacles_and_bonuses_);
       } else if (bot->IsRotationStartNeeded(
                      std::dynamic_pointer_cast<Tank>(tanks_[0]))) {
         bot->StartRotation();
@@ -179,7 +187,8 @@ void MainWindow::timerEvent(QTimerEvent *) {
   while (it != rockets_.end()) {
     if ((*it)->GetTimeToFinishMovement() <= 0 &&
         (*it)->GetCellsToFinishMovement() != 0) {
-      (*it)->StartMovement(((*it)->GetCellsToFinishMovement()), tanks_);
+      (*it)->StartMovement(((*it)->GetCellsToFinishMovement()), tanks_,
+                           obstacles_and_bonuses_);
     }
     if (!(*it)->IsMovingOrRotating()) {
       it = rockets_.erase(it);
@@ -269,7 +278,7 @@ void MainWindow::RedrawContent() {
   paused_ = false;
 
   available_tank_types_[current_game_options_.tank_number].direction =
-          DetermineDirection(map_->GetTankStartDirection());
+      DetermineDirection(map_->GetTankStartDirection());
   tanks_.append(std::shared_ptr<Movable>(
       new Tank(map_, map_->GetTankInitCellX(), map_->GetTankInitCellY(),
                available_tank_types_[current_game_options_.tank_number])));
@@ -313,17 +322,40 @@ void MainWindow::RedrawContent() {
     qualities.tank.direction = DetermineDirection(start_direction);
 
     if (i < number_of_standart_bots) {
-      tanks_.append(
-          std::shared_ptr<Movable>(new Bot(map_, qualities)));
+      tanks_.append(std::shared_ptr<Movable>(new Bot(map_, qualities)));
     } else if (i < number_of_standart_bots + number_of_improved_bots) {
-      tanks_.append(std::shared_ptr<Movable>(
-          new ImprovedBot(map_, qualities)));
+      tanks_.append(std::shared_ptr<Movable>(new ImprovedBot(map_, qualities)));
     } else {
-      tanks_.append(std::shared_ptr<Movable>(
-          new CleverBot(map_, qualities)));
+      tanks_.append(std::shared_ptr<Movable>(new CleverBot(map_, qualities)));
     }
   }
   bots_input_file.close();
+
+  QFile obstacles_file(
+      ":/obstacles/obstacle" +
+      QString::number(current_game_options_.map_number + 1) +
+      QString::number(current_game_options_.difficulty_level_number + 1) +
+      ".txt");
+
+  obstacles_file.open(QIODevice::ReadOnly);
+  in.setDevice(&obstacles_file);
+  int number_of_obstacles, x, y;
+  in >> number_of_obstacles;
+
+  obstacles_and_bonuses_ =
+      std::vector<std::vector<std::shared_ptr<ObjectOnMap>>>(
+          static_cast<unsigned>(map_->GetNumberOfCellsVertically()),
+          std::vector<std::shared_ptr<ObjectOnMap>>(
+              static_cast<unsigned>(map_->GetNumberOfCellsHorizontally()),
+              nullptr));
+
+  for (int i = 0; i < number_of_obstacles; ++i) {
+    in >> x >> y;
+    obstacles_and_bonuses_[static_cast<unsigned>(x)][static_cast<unsigned>(y)] =
+        std::shared_ptr<Obstacle>(new Obstacle(map_, x, y));
+  }
+
+  obstacles_file.close();
 
   timer_id_ = startTimer(timer_duration_);
   repaint();
@@ -404,19 +436,21 @@ void MainWindow::CheckDeadObjects() {
   }
 }
 
-void MainWindow::MakeBoom(std::shared_ptr<Movable>& object) {
+void MainWindow::MakeBoom(std::shared_ptr<Movable> &object) {
   std::shared_ptr<Boom> boom(new Boom(map_, object, 500));
   rockets_.append(boom);
-  boom->StartMovement(1, tanks_);
+  boom->StartMovement(1, tanks_, obstacles_and_bonuses_);
 }
 
 void MainWindow::ShootRocket(std::shared_ptr<Tank> &tank) {
   std::shared_ptr<Rocket> rocket(new Rocket(map_, tank, 250, 10));
   rockets_.append(rocket);
   if (rocket->GetIntDirection() == 1 || rocket->GetIntDirection() == 3) {
-    rocket->StartMovement(map_->GetNumberOfCellsHorizontally(), tanks_);
+    rocket->StartMovement(map_->GetNumberOfCellsHorizontally(), tanks_,
+                          obstacles_and_bonuses_);
   } else {
-    rocket->StartMovement(map_->GetNumberOfCellsVertically(), tanks_);
+    rocket->StartMovement(map_->GetNumberOfCellsVertically(), tanks_,
+                          obstacles_and_bonuses_);
   }
 }
 
@@ -577,8 +611,14 @@ void MainWindow::InitializeSettingsDialog() {
 }
 
 Direction MainWindow::DetermineDirection(const QString &start_direction) const {
-  if (start_direction == "up") { return Direction::Up; }
-  if (start_direction == "down") { return Direction::Down; }
-  if (start_direction == "left") { return Direction::Left; }
+  if (start_direction == "up") {
+    return Direction::Up;
+  }
+  if (start_direction == "down") {
+    return Direction::Down;
+  }
+  if (start_direction == "left") {
+    return Direction::Left;
+  }
   return Direction::Right;
 }

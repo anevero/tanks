@@ -17,6 +17,7 @@ SOURCES += \
     bot.cpp \
     improvedbot.cpp \
     cleverbot.cpp \
+    objectonmap.cpp \
     boom.cpp
 
 HEADERS += \
@@ -28,6 +29,7 @@ HEADERS += \
     bot.h \
     improvedbot.h \
     cleverbot.h \
+    objectonmap.h \
     boom.h
 
 RESOURCES += \

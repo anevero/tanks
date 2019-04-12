@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <memory>
 #include "map.h"
+#include "objectonmap.h"
 
 enum class Direction { Up = 0, Right = 1, Down = 2, Left = 3 };
 
@@ -18,8 +19,9 @@ class Movable {
   virtual ~Movable() = default;
   virtual void LoadImage() = 0;
 
-  virtual void StartMovement(int number_of_cells,
-                             QList<std::shared_ptr<Movable>>& tanks);
+  virtual void StartMovement(
+      int number_of_cells, QList<std::shared_ptr<Movable>>& tanks,
+      std::vector<std::vector<std::shared_ptr<ObjectOnMap>>>& objects);
   virtual void Move(int milliseconds_passed);
   virtual void TurnReverseOn();
   virtual void TurnReverseOff();
