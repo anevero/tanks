@@ -26,11 +26,6 @@
         <translation>Здоровье</translation>
     </message>
     <message>
-        <source>This level of difficulty isn&apos;t available on this map. 
-Try to switch to another map.</source>
-        <translation type="vanished">Этот уровень сложности недоступен на выбранной карте. Попробуйте переключиться на другую карту.</translation>
-    </message>
-    <message>
         <location filename="../mainwindow.cpp" line="358"/>
         <source>Continue</source>
         <translation>Продолжить</translation>
@@ -72,7 +67,7 @@ You can start a new game with help of appropriate button on the left.</source>
     <message>
         <location filename="../mainwindow.cpp" line="564"/>
         <source>Activate virtual keys</source>
-        <translation>Активировать виртуальные клавиши</translation>
+        <translation>Виртуальные клавиши</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="568"/>
@@ -80,42 +75,44 @@ You can start a new game with help of appropriate button on the left.</source>
         <translation>Язык</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="571"/>
-        <source>Default</source>
-        <translation>По умолчанию</translation>
+        <location filename="../mainwindow.cpp" line="577"/>
+        <source>Language will be changed
+after application restart</source>
+        <translation>Язык изменится после
+перезапуска приложения</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="572"/>
+        <location filename="../mainwindow.cpp" line="571"/>
         <source>Belarusian</source>
         <translation>Беларуская</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="573"/>
+        <location filename="../mainwindow.cpp" line="572"/>
         <source>English</source>
         <translation>English</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="574"/>
+        <location filename="../mainwindow.cpp" line="573"/>
         <source>Russian</source>
         <translation>Русский</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="578"/>
+        <location filename="../mainwindow.cpp" line="581"/>
         <source>App version</source>
         <translation>Версия</translation>
     </message>
     <message>
-        <location filename="../mainwindow.h" line="123"/>
+        <location filename="../mainwindow.h" line="126"/>
         <source>Easy</source>
         <translation>Легко</translation>
     </message>
     <message>
-        <location filename="../mainwindow.h" line="123"/>
+        <location filename="../mainwindow.h" line="126"/>
         <source>Normal</source>
         <translation>Нормально</translation>
     </message>
     <message>
-        <location filename="../mainwindow.h" line="124"/>
+        <location filename="../mainwindow.h" line="127"/>
         <source>Hard</source>
         <translation>Тяжело</translation>
     </message>

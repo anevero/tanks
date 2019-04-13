@@ -568,11 +568,14 @@ void MainWindow::InitializeSettingsDialog() {
       new QLabel(QString(tr("Language")) + QString(":"), settings_dialog_);
 
   language_menu_ = new QComboBox(settings_dialog_);
-  language_menu_->addItem(tr("Default"));
   language_menu_->addItem(tr("Belarusian"));
   language_menu_->addItem(tr("English"));
   language_menu_->addItem(tr("Russian"));
-  language_menu_->setEnabled(false);
+  DetermineCurrentLanguageSettings();
+
+  language_menu_restart_label_ =
+      new QLabel(QString(tr("Language will be changed\n"
+                            "after application restart")));
 
   settings_separator_label_ = new QLabel(this);
   version_label_ = new QLabel(QString(tr("App version")) + QString(": ") +
@@ -582,6 +585,7 @@ void MainWindow::InitializeSettingsDialog() {
   settings_dialog_layout_->addRow(virtual_keys_checkbox_);
   settings_dialog_layout_->addRow(language_menu_label_);
   settings_dialog_layout_->addRow(language_menu_);
+  settings_dialog_layout_->addRow(language_menu_restart_label_);
   settings_dialog_layout_->addRow(settings_separator_label_);
   settings_dialog_layout_->addRow(version_label_);
 
@@ -595,10 +599,55 @@ void MainWindow::InitializeSettingsDialog() {
             if (virtual_keys_shown_ != virtual_keys_checkbox_->isChecked()) {
               ToggleVirtualKeys();
             }
+            ChangeCurrentLanguageSettings();
           });
 
   connect(settings_dialog_buttons_, SIGNAL(accepted()), settings_dialog_,
           SLOT(accept()));
+}
+
+void MainWindow::DetermineCurrentLanguageSettings() {
+  QString language;
+  QFile settings_file("settings.json");
+  settings_file.open(QIODevice::ReadOnly);
+  QString text = settings_file.readAll();
+  settings_file.close();
+  QJsonDocument json_document(QJsonDocument::fromJson(text.toUtf8()));
+  QJsonObject json = json_document.object();
+  language = json["language"].toString();
+
+  if (language == "be_BY") {
+    language_menu_->setCurrentIndex(0);
+  } else if (language == "en_US") {
+    language_menu_->setCurrentIndex(1);
+  } else if (language == "ru_RU") {
+    language_menu_->setCurrentIndex(2);
+  }
+}
+
+void MainWindow::ChangeCurrentLanguageSettings() {
+  QString language;
+  switch (language_menu_->currentIndex()) {
+    case 0:
+      language = "be_BY";
+      break;
+    case 1:
+      language = "en_US";
+      break;
+    case 2:
+      language = "ru_RU";
+      break;
+  }
+
+  QFile settings_file("settings.json");
+  QJsonObject new_json_obj;
+  new_json_obj["language"] = language;
+  QJsonDocument new_json_document(new_json_obj);
+  QString new_json_string = new_json_document.toJson();
+
+  settings_file.open(QIODevice::WriteOnly);
+  settings_file.write(new_json_string.toUtf8());
+  settings_file.close();
 }
 
 Direction MainWindow::DetermineDirection(const QString &start_direction) const {
