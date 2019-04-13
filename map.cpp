@@ -29,8 +29,6 @@ Map::Map(int map_number) {
   tank_init_cell_y_ = player_tank["initial_cell_y"].toInt();
   tank_start_direction_ = player_tank["initial_direction"].toString();
 
-  // do not forget ++ init cells from old maps
-
   QImage image;
   for (int i = 0; i < number_of_cell_types_; ++i) {
     image.load(":/textures/" + QString::number(i) + ".png");
