@@ -632,7 +632,7 @@ Direction MainWindow::DetermineDirection(const QString &start_direction) const {
 
 void MainWindow::RandomMedicalKit() {
   while (true) {
-    int x = 2, y = 2;
+    int x, y;
     x = rand() % (map_->GetNumberOfCellsHorizontally() - 1) + 1;
     y = rand() % (map_->GetNumberOfCellsVertically() - 1) + 1;
     for (auto &object : tanks_) {
