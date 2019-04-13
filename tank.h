@@ -27,6 +27,7 @@ class Tank : public Movable {
   virtual void IncreaseTimeSinceLastShot(int delta);
   virtual void SetZeroTimeFromLastShot();
   virtual int GetCurrentHealth() const;
+  virtual int GetMaxHealth() const;
   virtual void MinusHealth(int health = 10);
   virtual void PlusHealth(int health = 10);
   virtual bool IsDead() const;

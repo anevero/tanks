@@ -204,7 +204,7 @@ void MainWindow::timerEvent(QTimerEvent *) {
         GetTimerDuration());
   }
 
-  if (time_since_last_bonus_ == 15000) {
+  if (time_since_last_bonus_ == 1500) {
     RandomMedicalKit();
     time_since_last_bonus_ = 0;
   }
@@ -643,8 +643,8 @@ void MainWindow::RandomMedicalKit() {
            object->GetCellY() != static_cast<int>(y)) &&
           map_->GetField(static_cast<int>(x), static_cast<int>(y)) !=
               CellType::Wall) {
-        obstacles_and_bonuses_[x][y] = std::shared_ptr<Bonus>(
-            new Bonus(map_, static_cast<int>(x), static_cast<int>(y)));
+        obstacles_and_bonuses_[x][y] = std::shared_ptr<MedicalKit>(
+            new MedicalKit(map_, static_cast<int>(x), static_cast<int>(y)));
         return;
       }
     }

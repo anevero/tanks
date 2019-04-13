@@ -41,13 +41,28 @@ void Movable::StartMovement(
 
   if (objects[static_cast<unsigned>(new_cell_x)]
              [static_cast<unsigned>(new_cell_y)] != nullptr) {
-    objects[static_cast<unsigned>(new_cell_x)]
-           [static_cast<unsigned>(new_cell_y)] = nullptr;
-    if (dynamic_cast<Rocket*>(this) != nullptr) {
-      cells_to_finish_movement_ = 0;
-      return;
+    if (std::dynamic_pointer_cast<Obstacle>(objects[static_cast<unsigned>(
+            new_cell_x)][static_cast<unsigned>(new_cell_y)]) != nullptr) {
+      if (dynamic_cast<Rocket*>(this) != nullptr) {
+        cells_to_finish_movement_ = 0;
+        time_to_finish_movement_ = 0;
+      }
+      current_speed_ *= 2;
     }
-    current_speed_ *= 2;
+    if (std::dynamic_pointer_cast<MedicalKit>(objects[static_cast<unsigned>(
+            new_cell_x)][static_cast<unsigned>(new_cell_y)]) != nullptr &&
+        dynamic_cast<Tank*>(this) != nullptr) {
+      Tank* tank = dynamic_cast<Tank*>(this);
+      if (tank->GetMaxHealth() - tank->GetCurrentHealth() > 10) {
+        tank->PlusHealth(10);
+      } else {
+        tank->PlusHealth(tank->GetMaxHealth() - tank->GetCurrentHealth());
+      }
+    }
+    if (dynamic_cast<Rocket*>(this) == nullptr) {
+      objects[static_cast<unsigned>(new_cell_x)]
+             [static_cast<unsigned>(new_cell_y)] = nullptr;
+    }
   }
 
   cell_x_ = new_cell_x;
