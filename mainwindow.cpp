@@ -283,64 +283,46 @@ void MainWindow::RedrawContent() {
       new Tank(map_, map_->GetTankInitCellX(), map_->GetTankInitCellY(),
                available_tank_types_[current_game_options_.tank_number])));
 
-  QFile bots_input_file(
-      ":/tanks_info/bots" +
-      QString::number(current_game_options_.map_number + 1) +
-      QString::number(current_game_options_.difficulty_level_number + 1) +
-      ".txt");
-  if (!bots_input_file.exists()) {
-    QMessageBox message;
-    message.setIcon(QMessageBox::Information);
-    message.setText(
-        tr("This level of difficulty isn't available on this map. \n"
-           "Try to switch to another map."));
-    message.exec();
-    return;
-  }
+  QFile map_file(":/maps/map" +
+                 QString::number(current_game_options_.map_number + 1) +
+                 ".json");
+  map_file.open(QIODevice::ReadOnly);
+  QString text = map_file.readAll();
+  map_file.close();
+  QJsonDocument json_document(QJsonDocument::fromJson(text.toUtf8()));
+  QJsonObject json = json_document.object();
 
-  bots_input_file.open(QIODevice::ReadOnly);
-  QTextStream in(&bots_input_file);
-  int number_of_standart_bots, number_of_improved_bots, number_of_clever_bots,
-      number_of_bots;
-  in >> number_of_standart_bots >> number_of_improved_bots >>
-      number_of_clever_bots;
-  number_of_bots =
-      number_of_standart_bots + number_of_improved_bots + number_of_clever_bots;
+  QJsonArray bots =
+      json["difficulty"]
+          .toArray()[current_game_options_.difficulty_level_number]
+          .toObject()["bots"]
+          .toArray();
 
-  for (int i = 0; i < number_of_bots; ++i) {
+  for (int i = 0; i < bots.size(); ++i) {
     BotQualities qualities;
-    QString start_direction;
     qualities.tank.max_health =
         70 + 15 * current_game_options_.difficulty_level_number;
     qualities.tank.rate_of_fire =
         1000 - 150 * current_game_options_.difficulty_level_number;
     qualities.tank.speed =
         1000 - 150 * current_game_options_.difficulty_level_number;
-    in >> qualities.init_cell_x >> qualities.init_cell_y >>
-        qualities.moving_length >> qualities.amount_of_turns >>
-        qualities.side_rotation_frequency >> start_direction;
-    qualities.tank.direction = DetermineDirection(start_direction);
+    qualities.init_cell_x = bots[i].toObject()["initial_cell_x"].toInt();
+    qualities.init_cell_y = bots[i].toObject()["initial_cell_y"].toInt();
+    qualities.moving_length = bots[i].toObject()["moving_length"].toInt();
+    qualities.amount_of_turns = bots[i].toObject()["amount_of_turns"].toInt();
+    qualities.side_rotation_frequency =
+        bots[i].toObject()["side_rotation_frequency"].toInt();
+    qualities.tank.direction =
+        DetermineDirection(bots[i].toObject()["initial_direction"].toString());
 
-    if (i < number_of_standart_bots) {
+    if (bots[i].toObject()["type"].toString() == "standart") {
       tanks_.append(std::shared_ptr<Movable>(new Bot(map_, qualities)));
-    } else if (i < number_of_standart_bots + number_of_improved_bots) {
+    } else if (bots[i].toObject()["type"].toString() == "improved") {
       tanks_.append(std::shared_ptr<Movable>(new ImprovedBot(map_, qualities)));
     } else {
       tanks_.append(std::shared_ptr<Movable>(new CleverBot(map_, qualities)));
     }
   }
-  bots_input_file.close();
-
-  QFile obstacles_file(
-      ":/obstacles/obstacle" +
-      QString::number(current_game_options_.map_number + 1) +
-      QString::number(current_game_options_.difficulty_level_number + 1) +
-      ".txt");
-
-  obstacles_file.open(QIODevice::ReadOnly);
-  in.setDevice(&obstacles_file);
-  int number_of_obstacles, x, y;
-  in >> number_of_obstacles;
 
   obstacles_and_bonuses_ =
       std::vector<std::vector<std::shared_ptr<ObjectOnMap>>>(
@@ -349,13 +331,20 @@ void MainWindow::RedrawContent() {
               static_cast<unsigned>(map_->GetNumberOfCellsHorizontally()),
               nullptr));
 
-  for (int i = 0; i < number_of_obstacles; ++i) {
-    in >> x >> y;
-    obstacles_and_bonuses_[static_cast<unsigned>(x)][static_cast<unsigned>(y)] =
+  QJsonArray obstacles =
+      json["difficulty"]
+          .toArray()[current_game_options_.difficulty_level_number]
+          .toObject()["obstacles"]
+          .toArray();
+
+  int x, y;
+  for (int i = 0; i < obstacles.size(); ++i) {
+    x = obstacles[i].toArray()[0].toInt();
+    y = obstacles[i].toArray()[1].toInt();
+    obstacles_and_bonuses_[static_cast<unsigned int>(
+        x)][static_cast<unsigned int>(y)] =
         std::shared_ptr<Obstacle>(new Obstacle(map_, x, y));
   }
-
-  obstacles_file.close();
 
   timer_id_ = startTimer(timer_duration_);
   repaint();

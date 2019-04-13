@@ -14,9 +14,10 @@ Map::Map(int map_number) {
   map_.resize(map_height_in_cells);
   walls_precalc_.resize(map_height_in_cells);
 
+  QJsonArray array2D = map["map"].toArray();
   QJsonArray array;
   for (int i = 0; i < map_height_in_cells; ++i) {
-    array = map[QString::number(i)].toArray();
+    array = array2D[i].toArray();
     for (int j = 0; j < map_width_in_cells; ++j) {
       map_[i].push_back(static_cast<CellType>(array[j].toInt()));
     }
@@ -27,6 +28,8 @@ Map::Map(int map_number) {
   tank_init_cell_x_ = player_tank["initial_cell_x"].toInt();
   tank_init_cell_y_ = player_tank["initial_cell_y"].toInt();
   tank_start_direction_ = player_tank["initial_direction"].toString();
+
+  // do not forget ++ init cells from old maps
 
   QImage image;
   for (int i = 0; i < number_of_cell_types_; ++i) {
