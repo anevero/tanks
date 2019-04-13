@@ -45,7 +45,9 @@ void Movable::StartMovement(
             new_cell_x)][static_cast<unsigned>(new_cell_y)]) != nullptr) {
       if (dynamic_cast<Rocket*>(this) != nullptr) {
         cells_to_finish_movement_ = 0;
-        time_to_finish_movement_ = 0;
+        objects[static_cast<unsigned>(new_cell_x)]
+               [static_cast<unsigned>(new_cell_y)] = nullptr;
+        return;
       }
       current_speed_ *= 2;
     }

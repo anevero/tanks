@@ -204,7 +204,7 @@ void MainWindow::timerEvent(QTimerEvent *) {
         GetTimerDuration());
   }
 
-  if (time_since_last_bonus_ == 1500) {
+  if (time_since_last_bonus_ == 2000) {
     RandomMedicalKit();
     time_since_last_bonus_ = 0;
   }

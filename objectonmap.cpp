@@ -47,7 +47,7 @@ MedicalKit::MedicalKit(std::shared_ptr<Map>& map, int x, int y)
 }
 
 void MedicalKit::LoadImage() {
-  image_.load(":/textures/health.png");
+  image_.load(":/textures/medicalkit.png");
   scaled_image_ = image_;
 }
 
