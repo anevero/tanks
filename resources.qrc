@@ -2,7 +2,7 @@
 <qresource>
     <file>maps/map1.json</file>
     <file>maps/map2.json</file>
-    <file>maps/map3.txt</file>
+    <file>maps/map3.json</file>
     <file>maps/map4.txt</file>
     <file>textures/0.png</file>
     <file>textures/1.png</file>
@@ -17,15 +17,9 @@
     <file>textures/rocket.png</file>
     <file>textures/boom.png</file>
     <file>tanks_info/tanks.json</file>
-    <file>tanks_info/bots31.txt</file>
-    <file>tanks_info/bots32.txt</file>
-    <file>tanks_info/bots33.txt</file>
     <file>tanks_info/bots41.txt</file>
     <file>tanks_info/bots42.txt</file>
     <file>tanks_info/bots43.txt</file>
-    <file>obstacles/obstacle31.txt</file>
-    <file>obstacles/obstacle32.txt</file>
-    <file>obstacles/obstacle33.txt</file>
     <file>obstacles/obstacle41.txt</file>
     <file>obstacles/obstacle42.txt</file>
     <file>obstacles/obstacle43.txt</file>
