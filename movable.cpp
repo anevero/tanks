@@ -50,20 +50,19 @@ void Movable::StartMovement(
         return;
       }
       current_speed_ *= 2;
-    }
-    if (std::dynamic_pointer_cast<MedicalKit>(objects[static_cast<unsigned>(
-            new_cell_x)][static_cast<unsigned>(new_cell_y)]) != nullptr &&
-        dynamic_cast<Tank*>(this) != nullptr) {
-      Tank* tank = dynamic_cast<Tank*>(this);
-      if (tank->GetMaxHealth() - tank->GetCurrentHealth() > 10) {
-        tank->PlusHealth(10);
-      } else {
-        tank->PlusHealth(tank->GetMaxHealth() - tank->GetCurrentHealth());
-      }
-    }
-    if (dynamic_cast<Rocket*>(this) == nullptr) {
       objects[static_cast<unsigned>(new_cell_x)]
              [static_cast<unsigned>(new_cell_y)] = nullptr;
+    } else {
+      if (dynamic_cast<Tank*>(this) != nullptr) {
+        Tank* tank = dynamic_cast<Tank*>(this);
+        if (tank->GetMaxHealth() - tank->GetCurrentHealth() > 10) {
+          tank->PlusHealth(10);
+        } else {
+          tank->PlusHealth(tank->GetMaxHealth() - tank->GetCurrentHealth());
+        }
+        objects[static_cast<unsigned>(new_cell_x)]
+               [static_cast<unsigned>(new_cell_y)] = nullptr;
+      }
     }
   }
 
