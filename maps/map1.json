@@ -74,7 +74,169 @@
         [8, 10]
       ]
     },
-    {},
-    {}
+    {
+      "bots": [
+        {
+          "type": "standart",
+          "initial_cell_x": 2,
+          "initial_cell_y": 7,
+          "moving_length": 1,
+          "amount_of_turns": 1,
+          "side_rotation_frequency": 2,
+          "initial_direction": "right"
+        },
+        {
+          "type": "standart",
+          "initial_cell_x": 8,
+          "initial_cell_y": 12,
+          "moving_length": 5,
+          "amount_of_turns": 1,
+          "side_rotation_frequency": 2,
+          "initial_direction": "down"
+        },
+        {
+          "type": "standart",
+          "initial_cell_x": 13,
+          "initial_cell_y": 3,
+          "moving_length": 3,
+          "amount_of_turns": 1,
+          "side_rotation_frequency": 2,
+          "initial_direction": "left"
+        },
+        {
+          "type": "improved",
+          "initial_cell_x": 8,
+          "initial_cell_y": 3,
+          "moving_length": 4,
+          "amount_of_turns": 1,
+          "side_rotation_frequency": 1,
+          "initial_direction": "down"
+        },
+        {
+          "type": "improved",
+          "initial_cell_x": 13,
+          "initial_cell_y": 13,
+          "moving_length": 10,
+          "amount_of_turns": 1,
+          "side_rotation_frequency": 4,
+          "initial_direction": "up"
+        }
+      ],
+      "obstacles": [
+        [4, 6],
+        [4, 7],
+        [4, 8],
+        [10, 6],
+        [10, 7],
+        [10, 8],
+        [5, 3],
+        [6, 3],
+        [1, 9],
+        [2, 9],
+        [3, 9],
+        [6, 10],
+        [6, 11],
+        [7, 10],
+        [8, 10],
+        [7, 4],
+        [8, 4],
+        [12, 13],
+        [12, 12],
+        [13, 12]
+      ]
+    },
+    {
+      "bots": [
+        {
+          "type": "standart",
+          "initial_cell_x": 2,
+          "initial_cell_y": 7,
+          "moving_length": 1,
+          "amount_of_turns": 1,
+          "side_rotation_frequency": 2,
+          "initial_direction": "right"
+        },
+        {
+          "type": "standart",
+          "initial_cell_x": 8,
+          "initial_cell_y": 12,
+          "moving_length": 5,
+          "amount_of_turns": 1,
+          "side_rotation_frequency": 3,
+          "initial_direction": "up"
+        },
+        {
+          "type": "standart",
+          "initial_cell_x": 4,
+          "initial_cell_y": 2,
+          "moving_length": 8,
+          "amount_of_turns": 1,
+          "side_rotation_frequency": 2,
+          "initial_direction": "left"
+        },
+        {
+          "type": "improved",
+          "initial_cell_x": 13,
+          "initial_cell_y": 3,
+          "moving_length": 3,
+          "amount_of_turns": 1,
+          "side_rotation_frequency": 2,
+          "initial_direction": "left"
+        },
+        {
+          "type": "improved",
+          "initial_cell_x": 8,
+          "initial_cell_y": 3,
+          "moving_length": 10,
+          "amount_of_turns": 1,
+          "side_rotation_frequency": 4,
+          "initial_direction": "down"
+        },
+        {
+          "type": "clever",
+          "initial_cell_x": 2,
+          "initial_cell_y": 13,
+          "moving_length": 0,
+          "amount_of_turns": 0,
+          "side_rotation_frequency": 0,
+          "initial_direction": "left"
+        },
+        {
+          "type": "clever",
+          "initial_cell_x": 12,
+          "initial_cell_y": 1,
+          "moving_length": 0,
+          "amount_of_turns": 0,
+          "side_rotation_frequency": 0,
+          "initial_direction": "up"
+        }
+      ],
+      "obstacles": [
+        [4, 6],
+        [4, 7],
+        [4, 8],
+        [10, 6],
+        [10, 7],
+        [10, 8],
+        [5, 3],
+        [6, 3],
+        [1, 9],
+        [2, 9],
+        [3, 9],
+        [7, 4],
+        [8, 4],
+        [12, 13],
+        [12, 12],
+        [13, 12],
+        [12, 4],
+        [13, 4],
+        [4, 1],
+        [5, 1],
+        [5, 2],
+        [11, 2],
+        [12, 2],
+        [13, 2]
+      ]
+    }
   ]
 }

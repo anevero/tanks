@@ -1,6 +1,5 @@
 <RCC>
 <qresource>
-    <file>maps/map1.txt</file>
     <file>maps/map1.json</file>
     <file>maps/map2.txt</file>
     <file>maps/map3.txt</file>
@@ -15,10 +14,9 @@
     <file>textures/clever_bot.png</file>
     <file>textures/log.png</file>
     <file>textures/aptechka.png</file>
-    <file>tanks_info/tanks.txt</file>
-    <file>tanks_info/bots11.txt</file>
-    <file>tanks_info/bots12.txt</file>
-    <file>tanks_info/bots13.txt</file>
+    <file>textures/rocket.png</file>
+    <file>textures/boom.png</file>
+    <file>tanks_info/tanks.json</file>
     <file>tanks_info/bots21.txt</file>
     <file>tanks_info/bots22.txt</file>
     <file>tanks_info/bots23.txt</file>
@@ -28,9 +26,6 @@
     <file>tanks_info/bots41.txt</file>
     <file>tanks_info/bots42.txt</file>
     <file>tanks_info/bots43.txt</file>
-    <file>obstacles/obstacle11.txt</file>
-    <file>obstacles/obstacle12.txt</file>
-    <file>obstacles/obstacle13.txt</file>
     <file>obstacles/obstacle21.txt</file>
     <file>obstacles/obstacle22.txt</file>
     <file>obstacles/obstacle23.txt</file>
@@ -43,7 +38,5 @@
     <file>translations/tanks_be_BY.qm</file>
     <file>translations/tanks_en_US.qm</file>
     <file>translations/tanks_ru_RU.qm</file>
-    <file>textures/rocket.png</file>
-    <file>textures/boom.png</file>
 </qresource>
 </RCC>

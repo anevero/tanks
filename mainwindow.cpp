@@ -337,10 +337,9 @@ void MainWindow::RedrawContent() {
           .toObject()["obstacles"]
           .toArray();
 
-  int x, y;
   for (int i = 0; i < obstacles.size(); ++i) {
-    x = obstacles[i].toArray()[0].toInt();
-    y = obstacles[i].toArray()[1].toInt();
+    int x = obstacles[i].toArray()[0].toInt();
+    int y = obstacles[i].toArray()[1].toInt();
     obstacles_and_bonuses_[static_cast<unsigned int>(
         x)][static_cast<unsigned int>(y)] =
         std::shared_ptr<Obstacle>(new Obstacle(map_, x, y));
@@ -495,30 +494,33 @@ void MainWindow::InitializeNewGameDialog() {
   switch_map_menu_ = new QComboBox(new_game_dialog_);
 
   int map_number = 1;
-  QFileInfo map_file(":/maps/map" + QString::number(map_number) + ".txt");
+  QFileInfo map_file(":/maps/map" + QString::number(map_number) + ".json");
   while (map_file.exists() && map_file.isFile()) {
     switch_map_menu_->addItem(tr("Map") + " " + QString::number(map_number));
     map_number++;
-    map_file = QFileInfo(":/maps/map" + QString::number(map_number) + ".txt");
+    map_file = QFileInfo(":/maps/map" + QString::number(map_number) + ".json");
   }
 
   switch_tank_label_ =
       new QLabel(QString(tr("Tank")) + QString(":"), new_game_dialog_);
   switch_tank_menu_ = new QComboBox(new_game_dialog_);
 
-  QFile tanks_input_file(":/tanks_info/tanks.txt");
-  tanks_input_file.open(QIODevice::ReadOnly);
-  QTextStream in(&tanks_input_file);
-  int number_of_tank_types;
-  in >> number_of_tank_types;
+  QFile tanks_file(":/tanks_info/tanks.json");
+  tanks_file.open(QIODevice::ReadOnly);
+  QString text = tanks_file.readAll();
+  tanks_file.close();
+  QJsonDocument json_document(QJsonDocument::fromJson(text.toUtf8()));
+  QJsonObject json = json_document.object();
+  QJsonArray tanks = json["tanks"].toArray();
 
-  for (int i = 0; i < number_of_tank_types; ++i) {
+  for (int i = 0; i < tanks.size(); ++i) {
     TankQualities qualities;
-    in >> qualities.speed >> qualities.rate_of_fire >> qualities.max_health;
+    qualities.speed = tanks[i].toObject()["speed"].toInt();
+    qualities.rate_of_fire = tanks[i].toObject()["rate_of_fire"].toInt();
+    qualities.max_health = tanks[i].toObject()["max_health"].toInt();
     available_tank_types_.push_back(qualities);
     switch_tank_menu_->addItem(tr("Tank") + " " + QString::number(i + 1));
   }
-  tanks_input_file.close();
 
   switch_difficulty_label_ =
       new QLabel(QString(tr("Difficulty")) + QString(":"), new_game_dialog_);
