@@ -145,7 +145,7 @@ void MainWindow::timerEvent(QTimerEvent *) {
     time_since_tooltip_appearing_ = 0;
   }
 
-  time_since_last_bonus_++;
+  time_since_last_bonus_ += timer_duration_;
 
   for (auto &object : tanks_) {
     if (std::dynamic_pointer_cast<Bot>(object) != nullptr) {
@@ -204,7 +204,7 @@ void MainWindow::timerEvent(QTimerEvent *) {
         GetTimerDuration());
   }
 
-  if (time_since_last_bonus_ == 2000) {
+  if (time_since_last_bonus_ == 20000) {
     RandomMedicalKit();
     time_since_last_bonus_ = 0;
   }
@@ -631,7 +631,8 @@ Direction MainWindow::DetermineDirection(const QString &start_direction) const {
 }
 
 void MainWindow::RandomMedicalKit() {
-  while (true) {
+  int temp = 100;
+  while (temp > 0) {
     int x, y;
     x = rand() % (map_->GetNumberOfCellsHorizontally() - 1) + 1;
     y = rand() % (map_->GetNumberOfCellsVertically() - 1) + 1;
@@ -645,5 +646,6 @@ void MainWindow::RandomMedicalKit() {
         return;
       }
     }
+    temp--;
   }
 }

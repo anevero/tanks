@@ -52,11 +52,13 @@ void Movable::StartMovement(
       current_speed_ *= 2;
       objects[static_cast<unsigned>(new_cell_x)]
              [static_cast<unsigned>(new_cell_y)] = nullptr;
-    } else {
+    } else if (std::dynamic_pointer_cast<MedicalKit>(
+                   objects[static_cast<unsigned>(new_cell_x)]
+                          [static_cast<unsigned>(new_cell_y)]) != nullptr) {
       if (dynamic_cast<Tank*>(this) != nullptr) {
         Tank* tank = dynamic_cast<Tank*>(this);
-        if (tank->GetMaxHealth() - tank->GetCurrentHealth() > 10) {
-          tank->PlusHealth(10);
+        if (tank->GetMaxHealth() - tank->GetCurrentHealth() > 35) {
+          tank->PlusHealth(35);
         } else {
           tank->PlusHealth(tank->GetMaxHealth() - tank->GetCurrentHealth());
         }
