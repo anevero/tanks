@@ -631,20 +631,17 @@ Direction MainWindow::DetermineDirection(const QString &start_direction) const {
 }
 
 void MainWindow::RandomMedicalKit() {
-  unsigned x = 2, y = 2;
   while (true) {
-    x = static_cast<unsigned>(
-        rand() % (map_->GetNumberOfCellsHorizontally() - 1) + 1);
-    y = static_cast<unsigned>(
-        rand() % (map_->GetNumberOfCellsVertically() - 1) + 1);
+    int x = 2, y = 2;
+    x = rand() % (map_->GetNumberOfCellsHorizontally() - 1) + 1;
+    y = rand() % (map_->GetNumberOfCellsVertically() - 1) + 1;
     for (auto &object : tanks_) {
-      if (obstacles_and_bonuses_[x][y] == nullptr &&
-          (object->GetCellX() != static_cast<int>(x) ||
-           object->GetCellY() != static_cast<int>(y)) &&
-          map_->GetField(static_cast<int>(x), static_cast<int>(y)) !=
-              CellType::Wall) {
-        obstacles_and_bonuses_[x][y] = std::shared_ptr<MedicalKit>(
-            new MedicalKit(map_, static_cast<int>(x), static_cast<int>(y)));
+      if (obstacles_and_bonuses_[static_cast<unsigned>(x)]
+                                [static_cast<unsigned>(y)] == nullptr &&
+          (object->GetCellX() != x || object->GetCellY() != y) &&
+          map_->GetField(x, y) != CellType::Wall) {
+        obstacles_and_bonuses_[static_cast<unsigned>(x)][static_cast<unsigned>(
+            y)] = std::shared_ptr<MedicalKit>(new MedicalKit(map_, x, y));
         return;
       }
     }
