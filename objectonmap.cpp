@@ -46,7 +46,7 @@ Bonus::Bonus(std::shared_ptr<Map>& map, int x, int y) : ObjectOnMap(map, x, y) {
 }
 
 void Bonus::LoadImage() {
-  image_.load(":/textures/aptechka.png");
+  image_.load(":/textures/health.png");
   scaled_image_ = image_;
 }
 

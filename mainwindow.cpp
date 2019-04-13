@@ -145,6 +145,8 @@ void MainWindow::timerEvent(QTimerEvent *) {
     time_since_tooltip_appearing_ = 0;
   }
 
+  time_since_last_bonus_++;
+
   for (auto &object : tanks_) {
     if (std::dynamic_pointer_cast<Bot>(object) != nullptr) {
       std::shared_ptr<Bot> bot = std::dynamic_pointer_cast<Bot>(object);
@@ -200,6 +202,11 @@ void MainWindow::timerEvent(QTimerEvent *) {
   for (const auto &object : tanks_) {
     std::dynamic_pointer_cast<Tank>(object)->IncreaseTimeSinceLastShot(
         GetTimerDuration());
+  }
+
+  if (time_since_last_bonus_ == 15000) {
+    RandomMedicalKit();
+    time_since_last_bonus_ = 0;
   }
 
   FindInteractingObjects();
@@ -624,15 +631,18 @@ Direction MainWindow::DetermineDirection(const QString &start_direction) const {
 }
 
 void MainWindow::RandomMedicalKit() {
-  unsigned x, y;
+  unsigned x = 2, y = 2;
   while (true) {
-    x = static_cast<unsigned>(rand() % map_->GetNumberOfCellsHorizontally() +
-                              1);
-    y = static_cast<unsigned>(rand() % map_->GetNumberOfCellsVertically() + 1);
+    x = static_cast<unsigned>(
+        rand() % (map_->GetNumberOfCellsHorizontally() - 1) + 1);
+    y = static_cast<unsigned>(
+        rand() % (map_->GetNumberOfCellsVertically() - 1) + 1);
     for (auto &object : tanks_) {
-      if (obstacles_and_bonuses_[x][y] != nullptr &&
-          object->GetCellX() == static_cast<int>(x) &&
-          object->GetCellY() == static_cast<int>(y)) {
+      if (obstacles_and_bonuses_[x][y] == nullptr &&
+          (object->GetCellX() != static_cast<int>(x) ||
+           object->GetCellY() != static_cast<int>(y)) &&
+          map_->GetField(static_cast<int>(x), static_cast<int>(y)) !=
+              CellType::Wall) {
         obstacles_and_bonuses_[x][y] = std::shared_ptr<Bonus>(
             new Bonus(map_, static_cast<int>(x), static_cast<int>(y)));
         return;
