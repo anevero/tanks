@@ -622,3 +622,21 @@ Direction MainWindow::DetermineDirection(const QString &start_direction) const {
   }
   return Direction::Right;
 }
+
+void MainWindow::RandomMedicalKit() {
+  unsigned x, y;
+  while (true) {
+    x = static_cast<unsigned>(rand() % map_->GetNumberOfCellsHorizontally() +
+                              1);
+    y = static_cast<unsigned>(rand() % map_->GetNumberOfCellsVertically() + 1);
+    for (auto &object : tanks_) {
+      if (obstacles_and_bonuses_[x][y] != nullptr &&
+          object->GetCellX() == static_cast<int>(x) &&
+          object->GetCellY() == static_cast<int>(y)) {
+        obstacles_and_bonuses_[x][y] = std::shared_ptr<Bonus>(
+            new Bonus(map_, static_cast<int>(x), static_cast<int>(y)));
+        return;
+      }
+    }
+  }
+}
