@@ -50,8 +50,6 @@ void Movable::StartMovement(
         return;
       }
       current_speed_ *= 2;
-      objects[static_cast<unsigned>(new_cell_x)]
-             [static_cast<unsigned>(new_cell_y)] = nullptr;
     } else if (std::dynamic_pointer_cast<MedicalKit>(
                    objects[static_cast<unsigned>(new_cell_x)]
                           [static_cast<unsigned>(new_cell_y)]) != nullptr) {
@@ -62,10 +60,15 @@ void Movable::StartMovement(
         } else {
           tank->PlusHealth(tank->GetMaxHealth() - tank->GetCurrentHealth());
         }
+      } else {
+        cells_to_finish_movement_ = 0;
         objects[static_cast<unsigned>(new_cell_x)]
                [static_cast<unsigned>(new_cell_y)] = nullptr;
+        return;
       }
     }
+    objects[static_cast<unsigned>(new_cell_x)]
+           [static_cast<unsigned>(new_cell_y)] = nullptr;
   }
 
   cell_x_ = new_cell_x;

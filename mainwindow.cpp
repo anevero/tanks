@@ -204,7 +204,7 @@ void MainWindow::timerEvent(QTimerEvent *) {
         GetTimerDuration());
   }
 
-  if (time_since_last_bonus_ == 20000) {
+  if (time_since_last_bonus_ == 3000) {
     RandomMedicalKit();
     time_since_last_bonus_ = 0;
   }
@@ -631,6 +631,15 @@ Direction MainWindow::DetermineDirection(const QString &start_direction) const {
 }
 
 void MainWindow::RandomMedicalKit() {
+  for (unsigned i = 0; i < obstacles_and_bonuses_.size(); i++) {
+    for (unsigned j = 0; j < obstacles_and_bonuses_[i].size(); j++) {
+      if (std::dynamic_pointer_cast<MedicalKit>(obstacles_and_bonuses_[i][j]) !=
+          nullptr) {
+        obstacles_and_bonuses_[i][j] = nullptr;
+      }
+    }
+  }
+
   int temp = 100;
   while (temp > 0) {
     int x, y;
