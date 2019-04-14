@@ -69,7 +69,7 @@ class MainWindow : public QMainWindow {
                            const std::shared_ptr<Movable> &obj2) const;
   void CheckDeadObjects();
   void ShootRocket(std::shared_ptr<Tank> &tank);
-  void MakeBoom(std::shared_ptr<Movable>& object);
+  void MakeBoom(std::shared_ptr<Movable> &object);
   bool IsRocketByThisTank(const std::shared_ptr<Movable> &rocket,
                           const std::shared_ptr<Movable> &tank) const;
   int GetTimerDuration() const;
@@ -77,7 +77,8 @@ class MainWindow : public QMainWindow {
   void GameOver();
   void InitializeNewGameDialog();
   void InitializeSettingsDialog();
-  Direction DetermineDirection(const QString& start_direction) const;
+  Direction DetermineDirection(const QString &start_direction) const;
+  void RandomMedicalKit();
 
  private:
   bool paused_ = false;
@@ -128,6 +129,7 @@ class MainWindow : public QMainWindow {
   int timer_id_ = 0;
   int time_since_tooltip_appearing_ = 0;
   int time_for_showing_tooltip_ = 1200;
+  int time_since_last_bonus_ = 0;
   int sq_width_;
   int sq_height_;
   int w_indent_;

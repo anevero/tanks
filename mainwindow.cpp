@@ -145,6 +145,8 @@ void MainWindow::timerEvent(QTimerEvent *) {
     time_since_tooltip_appearing_ = 0;
   }
 
+  time_since_last_bonus_ += timer_duration_;
+
   for (auto &object : tanks_) {
     if (std::dynamic_pointer_cast<Bot>(object) != nullptr) {
       std::shared_ptr<Bot> bot = std::dynamic_pointer_cast<Bot>(object);
@@ -200,6 +202,11 @@ void MainWindow::timerEvent(QTimerEvent *) {
   for (const auto &object : tanks_) {
     std::dynamic_pointer_cast<Tank>(object)->IncreaseTimeSinceLastShot(
         GetTimerDuration());
+  }
+
+  if (time_since_last_bonus_ == 20000) {
+    RandomMedicalKit();
+    time_since_last_bonus_ = 0;
   }
 
   FindInteractingObjects();
@@ -621,4 +628,33 @@ Direction MainWindow::DetermineDirection(const QString &start_direction) const {
     return Direction::Left;
   }
   return Direction::Right;
+}
+
+void MainWindow::RandomMedicalKit() {
+  for (size_t i = 0; i < obstacles_and_bonuses_.size(); i++) {
+    for (size_t j = 0; j < obstacles_and_bonuses_[i].size(); j++) {
+      if (std::dynamic_pointer_cast<MedicalKit>(obstacles_and_bonuses_[i][j]) !=
+          nullptr) {
+        obstacles_and_bonuses_[i][j] = nullptr;
+      }
+    }
+  }
+
+  int temp = 100;
+  while (temp > 0) {
+    int x, y;
+    x = rand() % (map_->GetNumberOfCellsHorizontally() - 1) + 1;
+    y = rand() % (map_->GetNumberOfCellsVertically() - 1) + 1;
+    for (auto &object : tanks_) {
+      if (obstacles_and_bonuses_[static_cast<unsigned>(x)]
+                                [static_cast<unsigned>(y)] == nullptr &&
+          (object->GetCellX() != x || object->GetCellY() != y) &&
+          map_->GetField(x, y) != CellType::Wall) {
+        obstacles_and_bonuses_[static_cast<unsigned>(x)][static_cast<unsigned>(
+            y)] = std::shared_ptr<MedicalKit>(new MedicalKit(map_, x, y));
+        return;
+      }
+    }
+    temp--;
+  }
 }

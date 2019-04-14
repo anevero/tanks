@@ -41,12 +41,13 @@ int ObjectOnMap::GetX() { return x_; }
 
 int ObjectOnMap::GetY() { return y_; }
 
-Bonus::Bonus(std::shared_ptr<Map>& map, int x, int y) : ObjectOnMap(map, x, y) {
+MedicalKit::MedicalKit(std::shared_ptr<Map>& map, int x, int y)
+    : ObjectOnMap(map, x, y) {
   LoadImage();
 }
 
-void Bonus::LoadImage() {
-  image_.load(":/textures/aptechka.png");
+void MedicalKit::LoadImage() {
+  image_.load(":/textures/medicalkit.png");
   scaled_image_ = image_;
 }
 
