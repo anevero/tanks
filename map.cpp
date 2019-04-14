@@ -1,45 +1,33 @@
 ﻿#include "map.h"
 
 Map::Map(int map_number) {
-  QFile input_file(":/maps/map" + QString::number(map_number) + ".txt");
+  QFile input_file(":/data/map" + QString::number(map_number) + ".json");
   input_file.open(QIODevice::ReadOnly);
-  QTextStream in(&input_file);
+  QString text = input_file.readAll();
+  input_file.close();
+  QJsonDocument json_document(QJsonDocument::fromJson(text.toUtf8()));
+  QJsonObject json = json_document.object();
 
-  int map_width_in_cells, map_height_in_cells;
-  in >> map_width_in_cells >> map_height_in_cells;
-
+  QJsonObject map = json["map"].toObject();
+  int map_width_in_cells = map["width"].toInt();
+  int map_height_in_cells = map["height"].toInt();
   map_.resize(map_height_in_cells);
   walls_precalc_.resize(map_height_in_cells);
 
+  QJsonArray array2D = map["map"].toArray();
+  QJsonArray array;
   for (int i = 0; i < map_height_in_cells; ++i) {
+    array = array2D[i].toArray();
     for (int j = 0; j < map_width_in_cells; ++j) {
-      in.skipWhiteSpace();
-      char temp_value;
-      in >> temp_value;
-      switch (temp_value) {
-        case ('G'):
-          map_[j].push_back(CellType::Grass);
-          break;
-        case ('W'):
-          map_[j].push_back(CellType::Wall);
-          break;
-        case ('S'):
-          map_[j].push_back(CellType::Sand);
-          break;
-        case ('Q'):
-          map_[j].push_back(CellType::Water);
-          break;
-      }
+      map_[i].push_back(static_cast<CellType>(array[j].toInt()));
     }
   }
   WallsPrecalc();
 
-  in >> tank_init_cell_x_ >> tank_init_cell_y_;
-  tank_init_cell_x_--;
-  tank_init_cell_y_--;
-  in >> tank_start_direction_;
-
-  input_file.close();
+  QJsonObject player_tank = json["player_tank"].toObject();
+  tank_init_cell_x_ = player_tank["initial_cell_x"].toInt();
+  tank_init_cell_y_ = player_tank["initial_cell_y"].toInt();
+  tank_start_direction_ = player_tank["initial_direction"].toString();
 
   QImage image;
   for (int i = 0; i < number_of_cell_types_; ++i) {

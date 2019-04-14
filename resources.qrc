@@ -1,9 +1,10 @@
 <RCC>
 <qresource>
-    <file>maps/map1.txt</file>
-    <file>maps/map2.txt</file>
-    <file>maps/map3.txt</file>
-    <file>maps/map4.txt</file>
+    <file>data/map1.json</file>
+    <file>data/map2.json</file>
+    <file>data/map3.json</file>
+    <file>data/map4.json</file>
+    <file>data/tanks.json</file>
     <file>textures/0.png</file>
     <file>textures/1.png</file>
     <file>textures/2.png</file>
@@ -13,36 +14,11 @@
     <file>textures/improved_bot.png</file>
     <file>textures/clever_bot.png</file>
     <file>textures/log.png</file>
+    <file>textures/rocket.png</file>
+    <file>textures/boom.png</file>
     <file>textures/medicalkit.png</file>
-    <file>tanks_info/tanks.txt</file>
-    <file>tanks_info/bots11.txt</file>
-    <file>tanks_info/bots12.txt</file>
-    <file>tanks_info/bots13.txt</file>
-    <file>tanks_info/bots21.txt</file>
-    <file>tanks_info/bots22.txt</file>
-    <file>tanks_info/bots23.txt</file>
-    <file>tanks_info/bots31.txt</file>
-    <file>tanks_info/bots32.txt</file>
-    <file>tanks_info/bots33.txt</file>
-    <file>tanks_info/bots41.txt</file>
-    <file>tanks_info/bots42.txt</file>
-    <file>tanks_info/bots43.txt</file>
-    <file>obstacles/obstacle11.txt</file>
-    <file>obstacles/obstacle12.txt</file>
-    <file>obstacles/obstacle13.txt</file>
-    <file>obstacles/obstacle21.txt</file>
-    <file>obstacles/obstacle22.txt</file>
-    <file>obstacles/obstacle23.txt</file>
-    <file>obstacles/obstacle31.txt</file>
-    <file>obstacles/obstacle32.txt</file>
-    <file>obstacles/obstacle33.txt</file>
-    <file>obstacles/obstacle41.txt</file>
-    <file>obstacles/obstacle42.txt</file>
-    <file>obstacles/obstacle43.txt</file>
     <file>translations/tanks_be_BY.qm</file>
     <file>translations/tanks_en_US.qm</file>
     <file>translations/tanks_ru_RU.qm</file>
-    <file>textures/rocket.png</file>
-    <file>textures/boom.png</file>
 </qresource>
 </RCC>

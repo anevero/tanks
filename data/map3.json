@@ -1,0 +1,241 @@
+{
+  "map": {
+    "width": 15,
+    "height": 15,
+    "map": [
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 3, 3, 3, 3, 2, 2, 1, 1, 1, 0, 1, 1, 1, 0],
+      [0, 3, 3, 3, 2, 2, 1, 1, 1, 1, 0, 1, 1, 1, 0],
+      [0, 3, 3, 2, 2, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0],
+      [0, 3, 2, 2, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 0],
+      [0, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0],
+      [0, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0],
+      [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0],
+      [0, 1, 1, 0, 0, 0, 0, 0, 2, 1, 1, 1, 1, 1, 0],
+      [0, 1, 1, 1, 0, 3, 3, 3, 2, 1, 1, 1, 1, 1, 0],
+      [0, 1, 1, 1, 0, 3, 3, 2, 2, 1, 0, 0, 1, 1, 0],
+      [0, 1, 1, 1, 0, 3, 2, 2, 1, 1, 0, 1, 1, 1, 0],
+      [0, 1, 1, 1, 0, 2, 2, 1, 1, 1, 0, 1, 1, 1, 0],
+      [0, 1, 1, 1, 0, 2, 1, 1, 1, 1, 0, 1, 1, 1, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    ]
+  },
+  "player_tank": {
+    "initial_cell_x": 6,
+    "initial_cell_y": 6,
+    "initial_direction": "left"
+  },
+  "difficulty": [
+    {
+      "bots": [
+        {
+          "type": "standart",
+          "initial_cell_x": 3,
+          "initial_cell_y": 12,
+          "moving_length": 6,
+          "amount_of_turns": 1,
+          "side_rotation_frequency": 4,
+          "initial_direction": "down"
+        },
+        {
+          "type": "standart",
+          "initial_cell_x": 3,
+          "initial_cell_y": 3,
+          "moving_length": 3,
+          "amount_of_turns": 1,
+          "side_rotation_frequency": 2,
+          "initial_direction": "right"
+        },
+        {
+          "type": "standart",
+          "initial_cell_x": 13,
+          "initial_cell_y": 13,
+          "moving_length": 6,
+          "amount_of_turns": 1,
+          "side_rotation_frequency": 4,
+          "initial_direction": "up"
+        }
+      ],
+      "obstacles": [
+        [1, 8],
+        [2, 8],
+        [5, 5],
+        [5, 6],
+        [5, 7],
+        [6, 5],
+        [6, 7],
+        [7, 5],
+        [7, 6],
+        [7, 7],
+        [12, 9],
+        [13, 9]
+      ]
+    },
+    {
+      "bots": [
+        {
+          "type": "standart",
+          "initial_cell_x": 3,
+          "initial_cell_y": 12,
+          "moving_length": 6,
+          "amount_of_turns": 1,
+          "side_rotation_frequency": 4,
+          "initial_direction": "down"
+        },
+        {
+          "type": "standart",
+          "initial_cell_x": 3,
+          "initial_cell_y": 3,
+          "moving_length": 8,
+          "amount_of_turns": 1,
+          "side_rotation_frequency": 2,
+          "initial_direction": "right"
+        },
+        {
+          "type": "standart",
+          "initial_cell_x": 9,
+          "initial_cell_y": 6,
+          "moving_length": 6,
+          "amount_of_turns": 1,
+          "side_rotation_frequency": 4,
+          "initial_direction": "up"
+        },
+        {
+          "type": "improved",
+          "initial_cell_x": 13,
+          "initial_cell_y": 13,
+          "moving_length": 6,
+          "amount_of_turns": 2,
+          "side_rotation_frequency": 1,
+          "initial_direction": "up"
+        },
+        {
+          "type": "improved",
+          "initial_cell_x": 13,
+          "initial_cell_y": 1,
+          "moving_length": 4,
+          "amount_of_turns": 1,
+          "side_rotation_frequency": 4,
+          "initial_direction": "left"
+        }
+      ],
+      "obstacles": [
+        [1, 8],
+        [2, 8],
+        [5, 5],
+        [5, 6],
+        [5, 7],
+        [6, 5],
+        [6, 7],
+        [7, 5],
+        [7, 6],
+        [7, 7],
+        [12, 9],
+        [13, 9],
+        [4, 3],
+        [4, 4],
+        [3, 7],
+        [2, 7],
+        [1, 7],
+        [12, 3],
+        [13, 3]
+      ]
+    },
+    {
+      "bots": [
+        {
+          "type": "standart",
+          "initial_cell_x": 3,
+          "initial_cell_y": 12,
+          "moving_length": 6,
+          "amount_of_turns": 1,
+          "side_rotation_frequency": 4,
+          "initial_direction": "down"
+        },
+        {
+          "type": "standart",
+          "initial_cell_x": 3,
+          "initial_cell_y": 3,
+          "moving_length": 8,
+          "amount_of_turns": 1,
+          "side_rotation_frequency": 2,
+          "initial_direction": "right"
+        },
+        {
+          "type": "standart",
+          "initial_cell_x": 9,
+          "initial_cell_y": 6,
+          "moving_length": 6,
+          "amount_of_turns": 1,
+          "side_rotation_frequency": 4,
+          "initial_direction": "up"
+        },
+        {
+          "type": "improved",
+          "initial_cell_x": 13,
+          "initial_cell_y": 13,
+          "moving_length": 6,
+          "amount_of_turns": 2,
+          "side_rotation_frequency": 1,
+          "initial_direction": "up"
+        },
+        {
+          "type": "improved",
+          "initial_cell_x": 13,
+          "initial_cell_y": 1,
+          "moving_length": 4,
+          "amount_of_turns": 1,
+          "side_rotation_frequency": 4,
+          "initial_direction": "left"
+        },
+        {
+          "type": "clever",
+          "initial_cell_x": 6,
+          "initial_cell_y": 10,
+          "moving_length": 1,
+          "amount_of_turns": 2,
+          "side_rotation_frequency": 1,
+          "initial_direction": "down"
+        },
+        {
+          "type": "clever",
+          "initial_cell_x": 9,
+          "initial_cell_y": 13,
+          "moving_length": 1,
+          "amount_of_turns": 2,
+          "side_rotation_frequency": 1,
+          "initial_direction": "right"
+        }
+      ],
+      "obstacles": [
+        [1, 8],
+        [2, 8],
+        [5, 5],
+        [5, 6],
+        [5, 7],
+        [6, 5],
+        [6, 7],
+        [7, 5],
+        [7, 6],
+        [7, 7],
+        [12, 9],
+        [13, 9],
+        [4, 3],
+        [4, 4],
+        [3, 7],
+        [2, 7],
+        [1, 7],
+        [12, 3],
+        [13, 3],
+        [7, 9],
+        [7, 10],
+        [7, 11],
+        [9, 12],
+        [8, 12],
+        [8, 13],
+        [6, 11],
+        [5, 11]
+      ]
+    }
+  ]
+}

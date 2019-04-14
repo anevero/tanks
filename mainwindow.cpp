@@ -290,64 +290,41 @@ void MainWindow::RedrawContent() {
       new Tank(map_, map_->GetTankInitCellX(), map_->GetTankInitCellY(),
                available_tank_types_[current_game_options_.tank_number])));
 
-  QFile bots_input_file(
-      ":/tanks_info/bots" +
-      QString::number(current_game_options_.map_number + 1) +
-      QString::number(current_game_options_.difficulty_level_number + 1) +
-      ".txt");
-  if (!bots_input_file.exists()) {
-    QMessageBox message;
-    message.setIcon(QMessageBox::Information);
-    message.setText(
-        tr("This level of difficulty isn't available on this map. \n"
-           "Try to switch to another map."));
-    message.exec();
-    return;
-  }
+  QJsonObject json = GetJsonObjectFromFile(
+      ":/data/map" + QString::number(current_game_options_.map_number + 1) +
+      ".json");
 
-  bots_input_file.open(QIODevice::ReadOnly);
-  QTextStream in(&bots_input_file);
-  int number_of_standart_bots, number_of_improved_bots, number_of_clever_bots,
-      number_of_bots;
-  in >> number_of_standart_bots >> number_of_improved_bots >>
-      number_of_clever_bots;
-  number_of_bots =
-      number_of_standart_bots + number_of_improved_bots + number_of_clever_bots;
+  QJsonArray bots =
+      json["difficulty"]
+          .toArray()[current_game_options_.difficulty_level_number]
+          .toObject()["bots"]
+          .toArray();
 
-  for (int i = 0; i < number_of_bots; ++i) {
+  for (int i = 0; i < bots.size(); ++i) {
     BotQualities qualities;
-    QString start_direction;
     qualities.tank.max_health =
         70 + 15 * current_game_options_.difficulty_level_number;
     qualities.tank.rate_of_fire =
         1000 - 150 * current_game_options_.difficulty_level_number;
     qualities.tank.speed =
         1000 - 150 * current_game_options_.difficulty_level_number;
-    in >> qualities.init_cell_x >> qualities.init_cell_y >>
-        qualities.moving_length >> qualities.amount_of_turns >>
-        qualities.side_rotation_frequency >> start_direction;
-    qualities.tank.direction = DetermineDirection(start_direction);
+    qualities.init_cell_x = bots[i].toObject()["initial_cell_x"].toInt();
+    qualities.init_cell_y = bots[i].toObject()["initial_cell_y"].toInt();
+    qualities.moving_length = bots[i].toObject()["moving_length"].toInt();
+    qualities.amount_of_turns = bots[i].toObject()["amount_of_turns"].toInt();
+    qualities.side_rotation_frequency =
+        bots[i].toObject()["side_rotation_frequency"].toInt();
+    qualities.tank.direction =
+        DetermineDirection(bots[i].toObject()["initial_direction"].toString());
 
-    if (i < number_of_standart_bots) {
+    if (bots[i].toObject()["type"].toString() == "standart") {
       tanks_.append(std::shared_ptr<Movable>(new Bot(map_, qualities)));
-    } else if (i < number_of_standart_bots + number_of_improved_bots) {
+    } else if (bots[i].toObject()["type"].toString() == "improved") {
       tanks_.append(std::shared_ptr<Movable>(new ImprovedBot(map_, qualities)));
     } else {
       tanks_.append(std::shared_ptr<Movable>(new CleverBot(map_, qualities)));
     }
   }
-  bots_input_file.close();
-
-  QFile obstacles_file(
-      ":/obstacles/obstacle" +
-      QString::number(current_game_options_.map_number + 1) +
-      QString::number(current_game_options_.difficulty_level_number + 1) +
-      ".txt");
-
-  obstacles_file.open(QIODevice::ReadOnly);
-  in.setDevice(&obstacles_file);
-  int number_of_obstacles, x, y;
-  in >> number_of_obstacles;
 
   obstacles_and_bonuses_ =
       std::vector<std::vector<std::shared_ptr<ObjectOnMap>>>(
@@ -356,13 +333,19 @@ void MainWindow::RedrawContent() {
               static_cast<unsigned>(map_->GetNumberOfCellsHorizontally()),
               nullptr));
 
-  for (int i = 0; i < number_of_obstacles; ++i) {
-    in >> x >> y;
-    obstacles_and_bonuses_[static_cast<unsigned>(x)][static_cast<unsigned>(y)] =
+  QJsonArray obstacles =
+      json["difficulty"]
+          .toArray()[current_game_options_.difficulty_level_number]
+          .toObject()["obstacles"]
+          .toArray();
+
+  for (int i = 0; i < obstacles.size(); ++i) {
+    int x = obstacles[i].toArray()[0].toInt();
+    int y = obstacles[i].toArray()[1].toInt();
+    obstacles_and_bonuses_[static_cast<unsigned int>(
+        x)][static_cast<unsigned int>(y)] =
         std::shared_ptr<Obstacle>(new Obstacle(map_, x, y));
   }
-
-  obstacles_file.close();
 
   timer_id_ = startTimer(timer_duration_);
   repaint();
@@ -513,30 +496,28 @@ void MainWindow::InitializeNewGameDialog() {
   switch_map_menu_ = new QComboBox(new_game_dialog_);
 
   int map_number = 1;
-  QFileInfo map_file(":/maps/map" + QString::number(map_number) + ".txt");
+  QFileInfo map_file(":/data/map" + QString::number(map_number) + ".json");
   while (map_file.exists() && map_file.isFile()) {
     switch_map_menu_->addItem(tr("Map") + " " + QString::number(map_number));
     map_number++;
-    map_file = QFileInfo(":/maps/map" + QString::number(map_number) + ".txt");
+    map_file = QFileInfo(":/data/map" + QString::number(map_number) + ".json");
   }
 
   switch_tank_label_ =
       new QLabel(QString(tr("Tank")) + QString(":"), new_game_dialog_);
   switch_tank_menu_ = new QComboBox(new_game_dialog_);
 
-  QFile tanks_input_file(":/tanks_info/tanks.txt");
-  tanks_input_file.open(QIODevice::ReadOnly);
-  QTextStream in(&tanks_input_file);
-  int number_of_tank_types;
-  in >> number_of_tank_types;
+  QJsonObject json = GetJsonObjectFromFile(":/data/tanks.json");
+  QJsonArray tanks = json["tanks"].toArray();
 
-  for (int i = 0; i < number_of_tank_types; ++i) {
+  for (int i = 0; i < tanks.size(); ++i) {
     TankQualities qualities;
-    in >> qualities.speed >> qualities.rate_of_fire >> qualities.max_health;
+    qualities.speed = tanks[i].toObject()["speed"].toInt();
+    qualities.rate_of_fire = tanks[i].toObject()["rate_of_fire"].toInt();
+    qualities.max_health = tanks[i].toObject()["max_health"].toInt();
     available_tank_types_.push_back(qualities);
     switch_tank_menu_->addItem(tr("Tank") + " " + QString::number(i + 1));
   }
-  tanks_input_file.close();
 
   switch_difficulty_label_ =
       new QLabel(QString(tr("Difficulty")) + QString(":"), new_game_dialog_);
@@ -584,11 +565,14 @@ void MainWindow::InitializeSettingsDialog() {
       new QLabel(QString(tr("Language")) + QString(":"), settings_dialog_);
 
   language_menu_ = new QComboBox(settings_dialog_);
-  language_menu_->addItem(tr("Default"));
   language_menu_->addItem(tr("Belarusian"));
   language_menu_->addItem(tr("English"));
   language_menu_->addItem(tr("Russian"));
-  language_menu_->setEnabled(false);
+  DetermineCurrentLanguageSettings();
+
+  language_menu_restart_label_ =
+      new QLabel(QString(tr("Language will be changed\n"
+                            "after application restart")));
 
   settings_separator_label_ = new QLabel(this);
   version_label_ = new QLabel(QString(tr("App version")) + QString(": ") +
@@ -598,6 +582,7 @@ void MainWindow::InitializeSettingsDialog() {
   settings_dialog_layout_->addRow(virtual_keys_checkbox_);
   settings_dialog_layout_->addRow(language_menu_label_);
   settings_dialog_layout_->addRow(language_menu_);
+  settings_dialog_layout_->addRow(language_menu_restart_label_);
   settings_dialog_layout_->addRow(settings_separator_label_);
   settings_dialog_layout_->addRow(version_label_);
 
@@ -611,10 +596,59 @@ void MainWindow::InitializeSettingsDialog() {
             if (virtual_keys_shown_ != virtual_keys_checkbox_->isChecked()) {
               ToggleVirtualKeys();
             }
+            ChangeCurrentLanguageSettings();
           });
 
   connect(settings_dialog_buttons_, SIGNAL(accepted()), settings_dialog_,
           SLOT(accept()));
+}
+
+void MainWindow::DetermineCurrentLanguageSettings() {
+  QString language;
+  QJsonObject json = GetJsonObjectFromFile("settings.json");
+  language = json["language"].toString();
+
+  if (language == "be_BY") {
+    language_menu_->setCurrentIndex(0);
+  } else if (language == "en_US") {
+    language_menu_->setCurrentIndex(1);
+  } else if (language == "ru_RU") {
+    language_menu_->setCurrentIndex(2);
+  }
+}
+
+void MainWindow::ChangeCurrentLanguageSettings() {
+  QString language;
+  switch (language_menu_->currentIndex()) {
+    case 0:
+      language = "be_BY";
+      break;
+    case 1:
+      language = "en_US";
+      break;
+    case 2:
+      language = "ru_RU";
+      break;
+  }
+
+  QFile settings_file("settings.json");
+  QJsonObject new_json_obj;
+  new_json_obj["language"] = language;
+  QJsonDocument new_json_document(new_json_obj);
+  QString new_json_string = new_json_document.toJson();
+
+  settings_file.open(QIODevice::WriteOnly);
+  settings_file.write(new_json_string.toUtf8());
+  settings_file.close();
+}
+
+QJsonObject MainWindow::GetJsonObjectFromFile(const QString &filepath) {
+  QFile file(filepath);
+  file.open(QIODevice::ReadOnly);
+  QString text = file.readAll();
+  file.close();
+  QJsonDocument json_document(QJsonDocument::fromJson(text.toUtf8()));
+  return std::move(json_document.object());
 }
 
 Direction MainWindow::DetermineDirection(const QString &start_direction) const {

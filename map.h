@@ -4,19 +4,16 @@
 #include <QDebug>
 #include <QFile>
 #include <QImage>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
 #include <QPainter>
 #include <QPair>
 #include <QString>
 #include <QTextStream>
 #include <QVector>
 
-enum class CellType {
-  Wall = 0,
-  Grass = 1,
-  Sand = 2,
-  Water = 3
-  // to be continued
-};
+enum class CellType { Wall = 0, Grass = 1, Sand = 2, Water = 3 };
 
 class Map {
  public:

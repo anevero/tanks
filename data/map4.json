@@ -1,0 +1,291 @@
+{
+  "map": {
+    "width": 15,
+    "height": 15,
+    "map": [
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 2, 2, 2, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 0],
+      [0, 2, 2, 0, 1, 1, 0, 1, 1, 0, 3, 3, 3, 3, 0],
+      [0, 2, 1, 0, 1, 1, 0, 0, 1, 0, 2, 3, 3, 3, 0],
+      [0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 2, 2, 3, 3, 0],
+      [0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 2, 2, 3, 0],
+      [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 2, 0],
+      [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0],
+      [0, 1, 1, 1, 1, 1, 0, 2, 1, 1, 1, 1, 0, 1, 0],
+      [0, 1, 1, 0, 1, 1, 0, 2, 1, 1, 0, 1, 0, 1, 0],
+      [0, 1, 1, 0, 3, 1, 0, 2, 2, 1, 0, 1, 1, 1, 0],
+      [0, 1, 1, 0, 3, 3, 0, 0, 2, 2, 0, 1, 1, 1, 0],
+      [0, 1, 1, 0, 3, 3, 3, 2, 2, 2, 2, 1, 1, 1, 0],
+      [0, 1, 1, 0, 3, 3, 3, 3, 2, 2, 2, 2, 1, 1, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    ]
+  },
+  "player_tank": {
+    "initial_cell_x": 5,
+    "initial_cell_y": 5,
+    "initial_direction": "up"
+  },
+  "difficulty": [
+    {
+      "bots": [
+        {
+          "type": "standart",
+          "initial_cell_x": 4,
+          "initial_cell_y": 4,
+          "moving_length": 5,
+          "amount_of_turns": 1,
+          "side_rotation_frequency": 10,
+          "initial_direction": "down"
+        },
+        {
+          "type": "standart",
+          "initial_cell_x": 12,
+          "initial_cell_y": 1,
+          "moving_length": 2,
+          "amount_of_turns": 1,
+          "side_rotation_frequency": 2,
+          "initial_direction": "up"
+        },
+        {
+          "type": "standart",
+          "initial_cell_x": 2,
+          "initial_cell_y": 12,
+          "moving_length": 20,
+          "amount_of_turns": 2,
+          "side_rotation_frequency": 2,
+          "initial_direction": "up"
+        },
+        {
+          "type": "standart",
+          "initial_cell_x": 13,
+          "initial_cell_y": 9,
+          "moving_length": 0,
+          "amount_of_turns": 1,
+          "side_rotation_frequency": 4,
+          "initial_direction": "left"
+        }
+      ],
+      "obstacles": [
+        [6, 3],
+        [5, 4],
+        [5, 6],
+        [4, 5],
+        [4, 6],
+        [1, 10],
+        [1, 11],
+        [10, 5]
+      ]
+    },
+    {
+      "bots": [
+        {
+          "type": "standart",
+          "initial_cell_x": 4,
+          "initial_cell_y": 4,
+          "moving_length": 5,
+          "amount_of_turns": 1,
+          "side_rotation_frequency": 10,
+          "initial_direction": "down"
+        },
+        {
+          "type": "standart",
+          "initial_cell_x": 12,
+          "initial_cell_y": 1,
+          "moving_length": 2,
+          "amount_of_turns": 1,
+          "side_rotation_frequency": 2,
+          "initial_direction": "up"
+        },
+        {
+          "type": "standart",
+          "initial_cell_x": 2,
+          "initial_cell_y": 12,
+          "moving_length": 20,
+          "amount_of_turns": 2,
+          "side_rotation_frequency": 2,
+          "initial_direction": "up"
+        },
+        {
+          "type": "standart",
+          "initial_cell_x": 13,
+          "initial_cell_y": 9,
+          "moving_length": 0,
+          "amount_of_turns": 1,
+          "side_rotation_frequency": 4,
+          "initial_direction": "left"
+        },
+        {
+          "type": "standart",
+          "initial_cell_x": 7,
+          "initial_cell_y": 13,
+          "moving_length": 3,
+          "amount_of_turns": 1,
+          "side_rotation_frequency": 1,
+          "initial_direction": "right"
+        },
+        {
+          "type": "improved",
+          "initial_cell_x": 1,
+          "initial_cell_y": 2,
+          "moving_length": 20,
+          "amount_of_turns": 1,
+          "side_rotation_frequency": 2,
+          "initial_direction": "down"
+        },
+        {
+          "type": "improved",
+          "initial_cell_x": 9,
+          "initial_cell_y": 5,
+          "moving_length": 5,
+          "amount_of_turns": 3,
+          "side_rotation_frequency": 1,
+          "initial_direction": "up"
+        },
+        {
+          "type": "improved",
+          "initial_cell_x": 11,
+          "initial_cell_y": 10,
+          "moving_length": 0,
+          "amount_of_turns": 2,
+          "side_rotation_frequency": 3,
+          "initial_direction": "up"
+        }
+      ],
+      "obstacles": [
+        [6, 3],
+        [5, 4],
+        [5, 6],
+        [4, 5],
+        [4, 6],
+        [1, 10],
+        [1, 11],
+        [10, 5],
+        [1, 3],
+        [2, 4],
+        [8, 8],
+        [9, 8],
+        [12, 11],
+        [11, 11],
+        [6, 11],
+        [7, 11]
+      ]
+    },
+    {
+      "bots": [
+        {
+          "type": "standart",
+          "initial_cell_x": 4,
+          "initial_cell_y": 4,
+          "moving_length": 5,
+          "amount_of_turns": 1,
+          "side_rotation_frequency": 10,
+          "initial_direction": "down"
+        },
+        {
+          "type": "standart",
+          "initial_cell_x": 12,
+          "initial_cell_y": 1,
+          "moving_length": 2,
+          "amount_of_turns": 1,
+          "side_rotation_frequency": 2,
+          "initial_direction": "up"
+        },
+        {
+          "type": "standart",
+          "initial_cell_x": 2,
+          "initial_cell_y": 12,
+          "moving_length": 20,
+          "amount_of_turns": 2,
+          "side_rotation_frequency": 2,
+          "initial_direction": "up"
+        },
+        {
+          "type": "standart",
+          "initial_cell_x": 13,
+          "initial_cell_y": 9,
+          "moving_length": 0,
+          "amount_of_turns": 1,
+          "side_rotation_frequency": 4,
+          "initial_direction": "left"
+        },
+        {
+          "type": "standart",
+          "initial_cell_x": 7,
+          "initial_cell_y": 13,
+          "moving_length": 3,
+          "amount_of_turns": 1,
+          "side_rotation_frequency": 1,
+          "initial_direction": "right"
+        },
+        {
+          "type": "improved",
+          "initial_cell_x": 1,
+          "initial_cell_y": 2,
+          "moving_length": 20,
+          "amount_of_turns": 1,
+          "side_rotation_frequency": 2,
+          "initial_direction": "down"
+        },
+        {
+          "type": "improved",
+          "initial_cell_x": 9,
+          "initial_cell_y": 5,
+          "moving_length": 5,
+          "amount_of_turns": 3,
+          "side_rotation_frequency": 1,
+          "initial_direction": "up"
+        },
+        {
+          "type": "improved",
+          "initial_cell_x": 11,
+          "initial_cell_y": 10,
+          "moving_length": 0,
+          "amount_of_turns": 2,
+          "side_rotation_frequency": 3,
+          "initial_direction": "up"
+        },
+        {
+          "type": "clever",
+          "initial_cell_x": 13,
+          "initial_cell_y": 4,
+          "moving_length": 1,
+          "amount_of_turns": 1,
+          "side_rotation_frequency": 0,
+          "initial_direction": "left"
+        },
+        {
+          "type": "clever",
+          "initial_cell_x": 13,
+          "initial_cell_y": 13,
+          "moving_length": 1,
+          "amount_of_turns": 1,
+          "side_rotation_frequency": 1,
+          "initial_direction": "up"
+        }
+      ],
+      "obstacles": [
+        [6, 3],
+        [5, 4],
+        [5, 6],
+        [4, 5],
+        [4, 6],
+        [1, 10],
+        [1, 11],
+        [10, 5],
+        [1, 3],
+        [2, 4],
+        [8, 8],
+        [9, 8],
+        [12, 11],
+        [11, 11],
+        [6, 11],
+        [7, 11],
+        [13, 2],
+        [12, 2],
+        [12, 4],
+        [10, 12],
+        [10, 13]
+      ]
+    }
+  ]
+}

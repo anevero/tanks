@@ -77,6 +77,9 @@ class MainWindow : public QMainWindow {
   void GameOver();
   void InitializeNewGameDialog();
   void InitializeSettingsDialog();
+  void DetermineCurrentLanguageSettings();
+  void ChangeCurrentLanguageSettings();
+  QJsonObject GetJsonObjectFromFile(const QString &filepath);
   Direction DetermineDirection(const QString &start_direction) const;
   void RandomMedicalKit();
 
@@ -103,6 +106,7 @@ class MainWindow : public QMainWindow {
   QCheckBox *virtual_keys_checkbox_;
   QComboBox *language_menu_;
   QLabel *language_menu_label_;
+  QLabel *language_menu_restart_label_;
   QLabel *settings_separator_label_;
   QLabel *version_label_;
 
