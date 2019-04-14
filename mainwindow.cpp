@@ -283,14 +283,9 @@ void MainWindow::RedrawContent() {
       new Tank(map_, map_->GetTankInitCellX(), map_->GetTankInitCellY(),
                available_tank_types_[current_game_options_.tank_number])));
 
-  QFile map_file(":/data/map" +
-                 QString::number(current_game_options_.map_number + 1) +
-                 ".json");
-  map_file.open(QIODevice::ReadOnly);
-  QString text = map_file.readAll();
-  map_file.close();
-  QJsonDocument json_document(QJsonDocument::fromJson(text.toUtf8()));
-  QJsonObject json = json_document.object();
+  QJsonObject json = GetJsonObjectFromFile(
+      ":/data/map" + QString::number(current_game_options_.map_number + 1) +
+      ".json");
 
   QJsonArray bots =
       json["difficulty"]
@@ -505,12 +500,7 @@ void MainWindow::InitializeNewGameDialog() {
       new QLabel(QString(tr("Tank")) + QString(":"), new_game_dialog_);
   switch_tank_menu_ = new QComboBox(new_game_dialog_);
 
-  QFile tanks_file(":/data/tanks.json");
-  tanks_file.open(QIODevice::ReadOnly);
-  QString text = tanks_file.readAll();
-  tanks_file.close();
-  QJsonDocument json_document(QJsonDocument::fromJson(text.toUtf8()));
-  QJsonObject json = json_document.object();
+  QJsonObject json = GetJsonObjectFromFile(":/data/tanks.json");
   QJsonArray tanks = json["tanks"].toArray();
 
   for (int i = 0; i < tanks.size(); ++i) {
@@ -608,12 +598,7 @@ void MainWindow::InitializeSettingsDialog() {
 
 void MainWindow::DetermineCurrentLanguageSettings() {
   QString language;
-  QFile settings_file("settings.json");
-  settings_file.open(QIODevice::ReadOnly);
-  QString text = settings_file.readAll();
-  settings_file.close();
-  QJsonDocument json_document(QJsonDocument::fromJson(text.toUtf8()));
-  QJsonObject json = json_document.object();
+  QJsonObject json = GetJsonObjectFromFile("settings.json");
   language = json["language"].toString();
 
   if (language == "be_BY") {
@@ -648,6 +633,15 @@ void MainWindow::ChangeCurrentLanguageSettings() {
   settings_file.open(QIODevice::WriteOnly);
   settings_file.write(new_json_string.toUtf8());
   settings_file.close();
+}
+
+QJsonObject MainWindow::GetJsonObjectFromFile(const QString &filepath) {
+  QFile file(filepath);
+  file.open(QIODevice::ReadOnly);
+  QString text = file.readAll();
+  file.close();
+  QJsonDocument json_document(QJsonDocument::fromJson(text.toUtf8()));
+  return std::move(json_document.object());
 }
 
 Direction MainWindow::DetermineDirection(const QString &start_direction) const {

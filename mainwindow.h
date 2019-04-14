@@ -79,6 +79,7 @@ class MainWindow : public QMainWindow {
   void InitializeSettingsDialog();
   void DetermineCurrentLanguageSettings();
   void ChangeCurrentLanguageSettings();
+  QJsonObject GetJsonObjectFromFile(const QString &filepath);
   Direction DetermineDirection(const QString &start_direction) const;
 
  private:
