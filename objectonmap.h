@@ -38,9 +38,9 @@ class Obstacle : public ObjectOnMap {
   void LoadImage() override;
 };
 
-class Bonus : public ObjectOnMap {
+class MedicalKit : public ObjectOnMap {
  public:
-  Bonus(std::shared_ptr<Map>& map, int x, int y);
+  MedicalKit(std::shared_ptr<Map>& map, int x, int y);
   void LoadImage() override;
 };
 

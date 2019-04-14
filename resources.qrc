@@ -14,9 +14,9 @@
     <file>textures/improved_bot.png</file>
     <file>textures/clever_bot.png</file>
     <file>textures/log.png</file>
-    <file>textures/aptechka.png</file>
     <file>textures/rocket.png</file>
     <file>textures/boom.png</file>
+    <file>textures/medicalkit.png</file>
     <file>translations/tanks_be_BY.qm</file>
     <file>translations/tanks_en_US.qm</file>
     <file>translations/tanks_ru_RU.qm</file>

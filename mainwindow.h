@@ -81,6 +81,7 @@ class MainWindow : public QMainWindow {
   void ChangeCurrentLanguageSettings();
   QJsonObject GetJsonObjectFromFile(const QString &filepath);
   Direction DetermineDirection(const QString &start_direction) const;
+  void RandomMedicalKit();
 
  private:
   bool paused_ = false;
@@ -132,6 +133,7 @@ class MainWindow : public QMainWindow {
   int timer_id_ = 0;
   int time_since_tooltip_appearing_ = 0;
   int time_for_showing_tooltip_ = 1200;
+  int time_since_last_bonus_ = 0;
   int sq_width_;
   int sq_height_;
   int w_indent_;

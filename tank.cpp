@@ -58,6 +58,8 @@ void Tank::SetZeroTimeFromLastShot() { time_since_last_shot_ = 0; }
 
 int Tank::GetCurrentHealth() const { return current_health_; }
 
+int Tank::GetMaxHealth() const { return max_health_; }
+
 void Tank::MinusHealth(int health) { current_health_ -= health; }
 
 void Tank::PlusHealth(int health) { current_health_ += health; }
