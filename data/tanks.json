@@ -1,19 +1,22 @@
-{
+﻿{
   "tanks": [
     {
       "speed": 500,
       "rate_of_fire": 300,
-      "max_health": 200
+      "max_health": 200,
+      "max_charge" : 50
     },
     {
       "speed": 350,
       "rate_of_fire": 450,
-      "max_health": 150
+      "max_health": 150,
+      "max_charge" : 50
     },
     {
       "speed": 250,
       "rate_of_fire": 300,
-      "max_health": 250
+      "max_health": 250,
+      "max_charge" : 50
     }
   ]
 }

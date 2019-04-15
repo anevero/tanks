@@ -442,6 +442,7 @@ void MainWindow::ShootRocket(std::shared_ptr<Tank> &tank) {
     rocket->StartMovement(map_->GetNumberOfCellsVertically(), tanks_,
                           obstacles_and_bonuses_);
   }
+  tank->MinusCharge(1);
 }
 
 bool MainWindow::IsRocketByThisTank(
@@ -515,6 +516,7 @@ void MainWindow::InitializeNewGameDialog() {
     qualities.speed = tanks[i].toObject()["speed"].toInt();
     qualities.rate_of_fire = tanks[i].toObject()["rate_of_fire"].toInt();
     qualities.max_health = tanks[i].toObject()["max_health"].toInt();
+    qualities.max_charge = tanks[i].toObject()["max_charge"].toInt();
     available_tank_types_.push_back(qualities);
     switch_tank_menu_->addItem(tr("Tank") + " " + QString::number(i + 1));
   }

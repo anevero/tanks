@@ -1,4 +1,4 @@
-#ifndef BOT_H
+﻿#ifndef BOT_H
 #define BOT_H
 
 #include <QDebug>
@@ -23,7 +23,7 @@ class Bot : public Tank {
  public:
   Bot(std::shared_ptr<Map>& map, BotQualities qualities);
   virtual void LoadImage() override;
-
+  virtual void MinusCharge(int charge) override;
   virtual bool IsTurnNeeded() const;
   virtual bool IsMoveNeeded() const;
   virtual bool IsRotationStartNeeded(std::shared_ptr<Tank>);
@@ -38,10 +38,10 @@ class Bot : public Tank {
   const int side_rotation_frequency_;
 
   virtual bool CheckDirection(int& tank, int& bot, int direction);
-  bool IsWallBetweenObjectsX(std::shared_ptr<Map> map,
-                             int tank_x, int tank_y, int bot_x, int bot_y);
-  bool IsWallBetweenObjectsY(std::shared_ptr<Map> map,
-                             int tank_x, int tank_y, int bot_x, int bot_y);
+  bool IsWallBetweenObjectsX(std::shared_ptr<Map> map, int tank_x, int tank_y,
+                             int bot_x, int bot_y);
+  bool IsWallBetweenObjectsY(std::shared_ptr<Map> map, int tank_x, int tank_y,
+                             int bot_x, int bot_y);
 };
 
 #endif  // BOT_H
