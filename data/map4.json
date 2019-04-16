@@ -1,4 +1,4 @@
-{
+﻿{
   "map": {
     "width": 15,
     "height": 15,
@@ -238,7 +238,7 @@
         {
           "type": "improved",
           "initial_cell_x": 11,
-          "initial_cell_y": 10,
+          "initial_cell_y": 9,
           "moving_length": 0,
           "amount_of_turns": 2,
           "side_rotation_frequency": 3,
