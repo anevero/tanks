@@ -82,7 +82,7 @@ class MainWindow : public QMainWindow {
   void ChangeCurrentLanguageSettings();
   QJsonObject GetJsonObjectFromFile(const QString &filepath);
   Direction DetermineDirection(const QString &start_direction) const;
-  void RandomMedicalKit(Bonus bonus);
+  void RandomBonus(Bonus bonus);
 
  private:
   bool paused_ = false;
@@ -112,6 +112,7 @@ class MainWindow : public QMainWindow {
   QLabel *version_label_;
 
   QPushButton *charge_indicator_;
+
   QPushButton *new_game_button_;
   QPushButton *pause_continue_button_;
   QPushButton *settings_button_;

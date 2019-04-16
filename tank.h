@@ -31,10 +31,10 @@ class Tank : public Movable {
   virtual int GetMaxHealth() const;
   virtual void MinusHealth(int health = 10);
   virtual void PlusHealth(int health = 10);
-  virtual int GetCurrentCharge() const;
-  virtual int GetMaxCharge() const;
-  virtual void MinusCharge(int charge = 1);
-  virtual void PlusCharge(int charge = 10);
+  int GetCurrentCharge() const;
+  int GetMaxCharge() const;
+  void MinusCharge(int charge = 1);
+  void PlusCharge(int charge = 10);
   virtual bool IsDead() const;
   virtual int GetTimeSinceLastShot() const;
   virtual int GetRateOfFire() const;

@@ -50,39 +50,26 @@ void Movable::StartMovement(
         return;
       }
       current_speed_ *= 2;
-    } else if (std::dynamic_pointer_cast<MedicalKit>(
-                   objects[static_cast<unsigned>(new_cell_x)]
-                          [static_cast<unsigned>(new_cell_y)]) != nullptr) {
-      if (dynamic_cast<Tank*>(this) != nullptr) {
-        Tank* tank = dynamic_cast<Tank*>(this);
-        if (tank->GetMaxHealth() - tank->GetCurrentHealth() > 35) {
-          tank->PlusHealth(35);
-        } else {
-          tank->PlusHealth(tank->GetMaxHealth() - tank->GetCurrentHealth());
-        }
-      } else {
-        cells_to_finish_movement_ = 0;
-        objects[static_cast<unsigned>(new_cell_x)]
-               [static_cast<unsigned>(new_cell_y)] = nullptr;
-        return;
-      }
-    } else if (std::dynamic_pointer_cast<Charge>(
-                   objects[static_cast<unsigned>(new_cell_x)]
-                          [static_cast<unsigned>(new_cell_y)]) != nullptr) {
-      if (dynamic_cast<Tank*>(this) != nullptr) {
-        Tank* tank = dynamic_cast<Tank*>(this);
-        if (tank->GetMaxCharge() - tank->GetCurrentCharge() > 10) {
-          tank->PlusCharge(10);
-        } else {
-          tank->PlusCharge(tank->GetMaxCharge() - tank->GetCurrentCharge());
-        }
-      } else {
-        cells_to_finish_movement_ = 0;
-        objects[static_cast<unsigned>(new_cell_x)]
-               [static_cast<unsigned>(new_cell_y)] = nullptr;
-        return;
-      }
     }
+    if (dynamic_cast<Tank*>(this) != nullptr) {
+      Tank* tank = dynamic_cast<Tank*>(this);
+      if (std::dynamic_pointer_cast<MedicalKit>(objects[static_cast<unsigned>(
+              new_cell_x)][static_cast<unsigned>(new_cell_y)]) != nullptr) {
+        tank->PlusHealth(
+            std::min(35, tank->GetMaxHealth() - tank->GetCurrentHealth()));
+      } else if (std::dynamic_pointer_cast<Charge>(
+                     objects[static_cast<unsigned>(new_cell_x)]
+                            [static_cast<unsigned>(new_cell_y)]) != nullptr) {
+        tank->PlusCharge(
+            std::min(10, tank->GetMaxCharge() - tank->GetCurrentCharge()));
+      }
+    } else {
+      cells_to_finish_movement_ = 0;
+      objects[static_cast<unsigned>(new_cell_x)]
+             [static_cast<unsigned>(new_cell_y)] = nullptr;
+      return;
+    }
+
     objects[static_cast<unsigned>(new_cell_x)]
            [static_cast<unsigned>(new_cell_y)] = nullptr;
   }

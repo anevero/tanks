@@ -209,11 +209,11 @@ void MainWindow::timerEvent(QTimerEvent *) {
   }
 
   if (time_since_last_medicalkit_ == 20000) {
-    RandomMedicalKit(Bonus::MedicalKit);
+    RandomBonus(Bonus::MedicalKit);
     time_since_last_medicalkit_ = 0;
   }
   if (time_since_last_charge_ == 15000) {
-    RandomMedicalKit(Bonus::Charge);
+    RandomBonus(Bonus::Charge);
     time_since_last_charge_ = 0;
   }
 
@@ -283,10 +283,10 @@ void MainWindow::RedrawButtons() {
 }
 
 void MainWindow::RedrawCharge(QPainter &painter) {
-  charge_indicator_->setGeometry(
-      w_indent_ + static_cast<int>(0.04 * sq_width_),
-      h_indent_ + static_cast<int>(0.23 * sq_height_),
-      static_cast<int>(0.2 * sq_width_), static_cast<int>(0.2 * sq_height_));
+  charge_indicator_->setGeometry(w_indent_ + static_cast<int>(0.04 * sq_width_),
+                                 height() - static_cast<int>(0.46 * sq_height_),
+                                 static_cast<int>(0.2 * sq_width_),
+                                 static_cast<int>(0.2 * sq_height_));
   std::shared_ptr<Tank> tank;
   if (tanks_.size() != 0) {
     tank = std::dynamic_pointer_cast<Tank>(tanks_[0]);
@@ -295,7 +295,7 @@ void MainWindow::RedrawCharge(QPainter &painter) {
     painter.setBrush(Qt::yellow);
     painter.drawRect(
         w_indent_ + static_cast<int>(0.04 * sq_width_),
-        h_indent_ + static_cast<int>(0.44 * sq_height_),
+        height() - static_cast<int>(0.25 * sq_height_),
         static_cast<int>(0.19 * tank->GetTimeSinceLastShot() * sq_width_) /
             tank->GetRateOfFire(),
         sq_height_ / 32);
@@ -697,7 +697,7 @@ Direction MainWindow::DetermineDirection(const QString &start_direction) const {
   return Direction::Right;
 }
 
-void MainWindow::RandomMedicalKit(Bonus bonus) {
+void MainWindow::RandomBonus(Bonus bonus) {
   for (size_t i = 0; i < obstacles_and_bonuses_.size(); i++) {
     for (size_t j = 0; j < obstacles_and_bonuses_[i].size(); j++) {
       if (bonus == Bonus::MedicalKit) {

@@ -28,6 +28,10 @@ class Bot : public Tank {
   virtual bool IsRotationStartNeeded(std::shared_ptr<Tank>);
   virtual bool IsMovingStartNeeded(const QList<std::shared_ptr<Movable>>&);
   virtual bool IsShotNeeded(std::shared_ptr<Map>, std::shared_ptr<Tank>);
+  int GetCurrentCharge() const = delete;
+  int GetMaxCharge() const = delete;
+  void MinusCharge(int charge = 1) = delete;
+  void PlusCharge(int charge = 10) = delete;
 
  protected:
   int number_of_cells_to_move_ = 0;
