@@ -9,6 +9,8 @@
 #include <memory>
 #include "map.h"
 
+enum class Bonus { MedicalKit, Charge };
+
 class ObjectOnMap {
  public:
   ObjectOnMap(std::shared_ptr<Map>& map, int x, int y);
@@ -44,4 +46,9 @@ class MedicalKit : public ObjectOnMap {
   void LoadImage() override;
 };
 
+class Charge : public ObjectOnMap {
+ public:
+  Charge(std::shared_ptr<Map>& map, int x, int y);
+  void LoadImage() override;
+};
 #endif  // OBSTACLANDBONUS_H

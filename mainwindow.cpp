@@ -131,6 +131,7 @@ void MainWindow::paintEvent(QPaintEvent *) {
       }
     }
   }
+
   RedrawCharge(p);
   p.end();
 }
@@ -147,7 +148,8 @@ void MainWindow::timerEvent(QTimerEvent *) {
     time_since_tooltip_appearing_ = 0;
   }
 
-  time_since_last_bonus_ += timer_duration_;
+  time_since_last_medicalkit_ += timer_duration_;
+  time_since_last_charge_ += timer_duration_;
 
   for (auto &object : tanks_) {
     if (std::dynamic_pointer_cast<Bot>(object) != nullptr) {
@@ -206,9 +208,13 @@ void MainWindow::timerEvent(QTimerEvent *) {
         GetTimerDuration());
   }
 
-  if (time_since_last_bonus_ == 20000) {
-    RandomMedicalKit();
-    time_since_last_bonus_ = 0;
+  if (time_since_last_medicalkit_ == 20000) {
+    RandomMedicalKit(Bonus::MedicalKit);
+    time_since_last_medicalkit_ = 0;
+  }
+  if (time_since_last_charge_ == 15000) {
+    RandomMedicalKit(Bonus::Charge);
+    time_since_last_charge_ = 0;
   }
 
   FindInteractingObjects();
@@ -691,12 +697,19 @@ Direction MainWindow::DetermineDirection(const QString &start_direction) const {
   return Direction::Right;
 }
 
-void MainWindow::RandomMedicalKit() {
+void MainWindow::RandomMedicalKit(Bonus bonus) {
   for (size_t i = 0; i < obstacles_and_bonuses_.size(); i++) {
     for (size_t j = 0; j < obstacles_and_bonuses_[i].size(); j++) {
-      if (std::dynamic_pointer_cast<MedicalKit>(obstacles_and_bonuses_[i][j]) !=
-          nullptr) {
-        obstacles_and_bonuses_[i][j] = nullptr;
+      if (bonus == Bonus::MedicalKit) {
+        if (std::dynamic_pointer_cast<MedicalKit>(
+                obstacles_and_bonuses_[i][j]) != nullptr) {
+          obstacles_and_bonuses_[i][j] = nullptr;
+        }
+      } else if (bonus == Bonus::Charge) {
+        if (std::dynamic_pointer_cast<Charge>(obstacles_and_bonuses_[i][j]) !=
+            nullptr) {
+          obstacles_and_bonuses_[i][j] = nullptr;
+        }
       }
     }
   }
@@ -711,8 +724,15 @@ void MainWindow::RandomMedicalKit() {
                                 [static_cast<unsigned>(y)] == nullptr &&
           (object->GetCellX() != x || object->GetCellY() != y) &&
           map_->GetField(x, y) != CellType::Wall) {
-        obstacles_and_bonuses_[static_cast<unsigned>(x)][static_cast<unsigned>(
-            y)] = std::shared_ptr<MedicalKit>(new MedicalKit(map_, x, y));
+        if (bonus == Bonus::MedicalKit) {
+          obstacles_and_bonuses_[static_cast<unsigned>(
+              x)][static_cast<unsigned>(y)] =
+              std::shared_ptr<MedicalKit>(new MedicalKit(map_, x, y));
+        } else if (bonus == Bonus::Charge) {
+          obstacles_and_bonuses_[static_cast<unsigned>(
+              x)][static_cast<unsigned>(y)] =
+              std::shared_ptr<Charge>(new Charge(map_, x, y));
+        }
         return;
       }
     }

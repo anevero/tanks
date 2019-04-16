@@ -66,6 +66,22 @@ void Movable::StartMovement(
                [static_cast<unsigned>(new_cell_y)] = nullptr;
         return;
       }
+    } else if (std::dynamic_pointer_cast<Charge>(
+                   objects[static_cast<unsigned>(new_cell_x)]
+                          [static_cast<unsigned>(new_cell_y)]) != nullptr) {
+      if (dynamic_cast<Tank*>(this) != nullptr) {
+        Tank* tank = dynamic_cast<Tank*>(this);
+        if (tank->GetMaxCharge() - tank->GetCurrentCharge() > 50) {
+          tank->PlusCharge(15);
+        } else {
+          tank->PlusCharge(tank->GetMaxCharge() - tank->GetCurrentCharge());
+        }
+      } else {
+        cells_to_finish_movement_ = 0;
+        objects[static_cast<unsigned>(new_cell_x)]
+               [static_cast<unsigned>(new_cell_y)] = nullptr;
+        return;
+      }
     }
     objects[static_cast<unsigned>(new_cell_x)]
            [static_cast<unsigned>(new_cell_y)] = nullptr;
