@@ -13,8 +13,6 @@ void Bot::LoadImage() {
   scaled_image_ = image_;
 }
 
-void Bot::MinusCharge(int charge) { return; }
-
 bool Bot::IsTurnNeeded() const { return time_to_finish_rotation_ > 0; }
 
 bool Bot::IsRotationStartNeeded(std::shared_ptr<Tank>) {

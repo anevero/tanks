@@ -23,7 +23,6 @@ class Bot : public Tank {
  public:
   Bot(std::shared_ptr<Map>& map, BotQualities qualities);
   virtual void LoadImage() override;
-  virtual void MinusCharge(int charge) override;
   virtual bool IsTurnNeeded() const;
   virtual bool IsMoveNeeded() const;
   virtual bool IsRotationStartNeeded(std::shared_ptr<Tank>);

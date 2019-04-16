@@ -25,7 +25,6 @@ void Tank::Draw(QPainter& painter) {
   painter.drawImage(-cur_width_ / 2, -cur_height_ / 2, scaled_image_);
   painter.restore();
   DrawHealth(painter);
-  DrawCharge(painter);
 }
 
 void Tank::DrawHealth(QPainter& painter) {
@@ -47,27 +46,8 @@ void Tank::DrawHealth(QPainter& painter) {
   painter.restore();
 }
 
-void Tank::DrawCharge(QPainter& painter) {
-  painter.save();
-  painter.translate(cur_upper_left_x_ + cur_width_ / 2,
-                    cur_upper_left_y_ + cur_height_ / 8 + cur_height_ / 4);
-  painter.setBrush(Qt::yellow);
-  painter.drawRect(-cur_width_ / 2, 5 * cur_height_ / 8,
-                   current_charge_ * cur_width_ / max_charge_, cur_height_ / 8);
-  painter.setBrush(Qt::white);
-  painter.drawRect(-cur_width_ / 2 + current_charge_ * cur_width_ / max_charge_,
-                   5 * cur_height_ / 8,
-                   (max_charge_ - current_charge_) * cur_width_ / max_charge_,
-                   cur_height_ / 8);
-  painter.restore();
-}
-
 bool Tank::IsAbleToShoot() const {
-  if (current_charge_ > 0) {
-    return time_since_last_shot_ >= rate_of_fire_;
-  } else {
-    return false;
-  }
+  return current_charge_ > 0 && time_since_last_shot_ >= rate_of_fire_;
 }
 
 void Tank::IncreaseTimeSinceLastShot(int delta) {
@@ -77,21 +57,14 @@ void Tank::IncreaseTimeSinceLastShot(int delta) {
 }
 
 void Tank::SetZeroTimeFromLastShot() { time_since_last_shot_ = 0; }
-
 int Tank::GetCurrentHealth() const { return current_health_; }
-
 int Tank::GetMaxHealth() const { return max_health_; }
-
 void Tank::MinusHealth(int health) { current_health_ -= health; }
-
 void Tank::PlusHealth(int health) { current_health_ += health; }
-
 int Tank::GetCurrentCharge() const { return current_charge_; }
-
 int Tank::GetMaxCharge() const { return max_charge_; }
-
 void Tank::MinusCharge(int charge) { current_charge_ -= charge; }
-
 void Tank::PlusCharge(int charge) { current_charge_ += charge; }
-
 bool Tank::IsDead() const { return current_health_ <= 0; }
+int Tank::GetTimeSinceLastShot() const { return time_since_last_shot_; }
+int Tank::GetRateOfFire() const { return rate_of_fire_; }

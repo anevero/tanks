@@ -2,6 +2,7 @@
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent),
+      charge_indicator_(new QPushButton(this)),
       new_game_button_(new QPushButton(tr("New game"), this)),
       pause_continue_button_(new QPushButton(tr("Pause"), this)),
       settings_button_(new QPushButton(tr("Settings"), this)),
@@ -130,6 +131,7 @@ void MainWindow::paintEvent(QPaintEvent *) {
       }
     }
   }
+  RedrawCharge(p);
   p.end();
 }
 
@@ -271,6 +273,27 @@ void MainWindow::RedrawButtons() {
           static_cast<int>(0.2 * sq_width_ / 3),
           static_cast<int>(0.07 * sq_height_));
     }
+  }
+}
+
+void MainWindow::RedrawCharge(QPainter &painter) {
+  charge_indicator_->setGeometry(
+      w_indent_ + static_cast<int>(0.04 * sq_width_),
+      h_indent_ + static_cast<int>(0.23 * sq_height_),
+      static_cast<int>(0.2 * sq_width_), static_cast<int>(0.2 * sq_height_));
+  std::shared_ptr<Tank> tank;
+  if (tanks_.size() != 0) {
+    tank = std::dynamic_pointer_cast<Tank>(tanks_[0]);
+    charge_indicator_->setText(QString::number(tank->GetCurrentCharge()));
+    painter.save();
+    painter.setBrush(Qt::yellow);
+    painter.drawRect(
+        w_indent_ + static_cast<int>(0.04 * sq_width_),
+        h_indent_ + static_cast<int>(0.44 * sq_height_),
+        static_cast<int>(0.19 * tank->GetTimeSinceLastShot() * sq_width_) /
+            tank->GetRateOfFire(),
+        sq_height_ / 32);
+    painter.restore();
   }
 }
 
@@ -442,7 +465,9 @@ void MainWindow::ShootRocket(std::shared_ptr<Tank> &tank) {
     rocket->StartMovement(map_->GetNumberOfCellsVertically(), tanks_,
                           obstacles_and_bonuses_);
   }
-  tank->MinusCharge(1);
+  if (std::dynamic_pointer_cast<std::shared_ptr<Bot>>(tank) == nullptr) {
+    tank->MinusCharge();
+  }
 }
 
 bool MainWindow::IsRocketByThisTank(

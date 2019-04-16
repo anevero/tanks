@@ -59,6 +59,7 @@ class MainWindow : public QMainWindow {
   void Settings();
   void UpdateIndents();
   void RedrawButtons();
+  void RedrawCharge(QPainter &painter);
   void RedrawContent();
   void PauseOrContinue();
   void PressVirtualKey(Qt::Key key);
@@ -110,6 +111,7 @@ class MainWindow : public QMainWindow {
   QLabel *settings_separator_label_;
   QLabel *version_label_;
 
+  QPushButton *charge_indicator_;
   QPushButton *new_game_button_;
   QPushButton *pause_continue_button_;
   QPushButton *settings_button_;
