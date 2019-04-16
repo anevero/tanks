@@ -22,6 +22,7 @@ struct BotQualities {
 class Bot : public Tank {
  public:
   Bot(std::shared_ptr<Map>& map, BotQualities qualities);
+  virtual ~Bot() override = default;
   virtual void LoadImage() override;
   virtual bool IsTurnNeeded() const;
   virtual bool IsMoveNeeded() const;

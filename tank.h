@@ -20,6 +20,7 @@ class Tank : public Movable {
  public:
   Tank(std::shared_ptr<Map>& map, int init_cell_x, int init_cell_y,
        TankQualities qualities);
+  virtual ~Tank() override = default;
   virtual void LoadImage() override;
   void Draw(QPainter& painter) override;
   virtual void DrawHealth(QPainter& painter);
