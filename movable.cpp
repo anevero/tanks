@@ -71,8 +71,8 @@ void Movable::StartMovement(
                           [static_cast<unsigned>(new_cell_y)]) != nullptr) {
       if (dynamic_cast<Tank*>(this) != nullptr) {
         Tank* tank = dynamic_cast<Tank*>(this);
-        if (tank->GetMaxCharge() - tank->GetCurrentCharge() > 50) {
-          tank->PlusCharge(15);
+        if (tank->GetMaxCharge() - tank->GetCurrentCharge() > 10) {
+          tank->PlusCharge(10);
         } else {
           tank->PlusCharge(tank->GetMaxCharge() - tank->GetCurrentCharge());
         }
