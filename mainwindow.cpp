@@ -209,11 +209,11 @@ void MainWindow::timerEvent(QTimerEvent *) {
   }
 
   if (time_since_last_medicalkit_ == 20000) {
-    RandomBonus(Bonus::MedicalKit);
+    RandomBonus(Bonus::TypeMedicalKit);
     time_since_last_medicalkit_ = 0;
   }
   if (time_since_last_charge_ == 15000) {
-    RandomBonus(Bonus::Charge);
+    RandomBonus(Bonus::TypeCharge);
     time_since_last_charge_ = 0;
   }
 
@@ -700,12 +700,12 @@ Direction MainWindow::DetermineDirection(const QString &start_direction) const {
 void MainWindow::RandomBonus(Bonus bonus) {
   for (size_t i = 0; i < obstacles_and_bonuses_.size(); i++) {
     for (size_t j = 0; j < obstacles_and_bonuses_[i].size(); j++) {
-      if (bonus == Bonus::MedicalKit) {
+      if (bonus == Bonus::TypeMedicalKit) {
         if (std::dynamic_pointer_cast<MedicalKit>(
                 obstacles_and_bonuses_[i][j]) != nullptr) {
           obstacles_and_bonuses_[i][j] = nullptr;
         }
-      } else if (bonus == Bonus::Charge) {
+      } else if (bonus == Bonus::TypeCharge) {
         if (std::dynamic_pointer_cast<Charge>(obstacles_and_bonuses_[i][j]) !=
             nullptr) {
           obstacles_and_bonuses_[i][j] = nullptr;
@@ -724,11 +724,11 @@ void MainWindow::RandomBonus(Bonus bonus) {
                                 [static_cast<unsigned>(y)] == nullptr &&
           (object->GetCellX() != x || object->GetCellY() != y) &&
           map_->GetField(x, y) != CellType::Wall) {
-        if (bonus == Bonus::MedicalKit) {
+        if (bonus == Bonus::TypeMedicalKit) {
           obstacles_and_bonuses_[static_cast<unsigned>(
               x)][static_cast<unsigned>(y)] =
               std::shared_ptr<MedicalKit>(new MedicalKit(map_, x, y));
-        } else if (bonus == Bonus::Charge) {
+        } else if (bonus == Bonus::TypeCharge) {
           obstacles_and_bonuses_[static_cast<unsigned>(
               x)][static_cast<unsigned>(y)] =
               std::shared_ptr<Charge>(new Charge(map_, x, y));

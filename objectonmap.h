@@ -9,7 +9,7 @@
 #include <memory>
 #include "map.h"
 
-enum class Bonus { MedicalKit, Charge };
+enum class Bonus { TypeMedicalKit, TypeCharge };
 
 class ObjectOnMap {
  public:

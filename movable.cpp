@@ -43,12 +43,6 @@ void Movable::StartMovement(
              [static_cast<unsigned>(new_cell_y)] != nullptr) {
     if (std::dynamic_pointer_cast<Obstacle>(objects[static_cast<unsigned>(
             new_cell_x)][static_cast<unsigned>(new_cell_y)]) != nullptr) {
-      if (dynamic_cast<Rocket*>(this) != nullptr) {
-        cells_to_finish_movement_ = 0;
-        objects[static_cast<unsigned>(new_cell_x)]
-               [static_cast<unsigned>(new_cell_y)] = nullptr;
-        return;
-      }
       current_speed_ *= 2;
     }
     if (dynamic_cast<Tank*>(this) != nullptr) {
@@ -63,13 +57,13 @@ void Movable::StartMovement(
         tank->PlusCharge(
             std::min(10, tank->GetMaxCharge() - tank->GetCurrentCharge()));
       }
-    } else {
+    }
+    if (dynamic_cast<Rocket*>(this) != nullptr) {
       cells_to_finish_movement_ = 0;
       objects[static_cast<unsigned>(new_cell_x)]
              [static_cast<unsigned>(new_cell_y)] = nullptr;
       return;
     }
-
     objects[static_cast<unsigned>(new_cell_x)]
            [static_cast<unsigned>(new_cell_y)] = nullptr;
   }
