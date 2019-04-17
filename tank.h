@@ -12,7 +12,7 @@ struct TankQualities {
   int speed;
   int rate_of_fire;
   int max_health;
-  int max_charge = 1;
+  int max_charge;
   Direction direction;
 };
 

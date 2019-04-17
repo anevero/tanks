@@ -47,7 +47,7 @@ void Tank::DrawHealth(QPainter& painter) {
 }
 
 bool Tank::IsAbleToShoot() const {
-  return current_charge_ > 0 && time_since_last_shot_ >= rate_of_fire_;
+  return (current_charge_ > 0 && time_since_last_shot_ >= rate_of_fire_);
 }
 
 void Tank::IncreaseTimeSinceLastShot(int delta) {

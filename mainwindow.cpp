@@ -13,6 +13,7 @@ MainWindow::MainWindow(QWidget *parent)
       virtual_keys_encodings_(
           {Qt::Key_Q, Qt::Key_W, Qt::Key_A, Qt::Key_S, Qt::Key_D}),
       map_(new Map(1)) {
+  charge_indicator_->hide();
   new_game_button_->setFocusPolicy(Qt::NoFocus);
   pause_continue_button_->setFocusPolicy(Qt::NoFocus);
   settings_button_->setFocusPolicy(Qt::NoFocus);
@@ -230,6 +231,7 @@ void MainWindow::NewGame() {
   switch_tank_menu_->setCurrentIndex(current_game_options_.tank_number);
   switch_difficulty_menu_->setCurrentIndex(
       current_game_options_.difficulty_level_number);
+  charge_indicator_->show();
 }
 
 void MainWindow::Settings() {
@@ -337,6 +339,7 @@ void MainWindow::RedrawContent() {
         1000 - 150 * current_game_options_.difficulty_level_number;
     qualities.tank.speed =
         1000 - 150 * current_game_options_.difficulty_level_number;
+    qualities.tank.max_charge = 1;
     qualities.init_cell_x = bots[i].toObject()["initial_cell_x"].toInt();
     qualities.init_cell_y = bots[i].toObject()["initial_cell_y"].toInt();
     qualities.moving_length = bots[i].toObject()["moving_length"].toInt();
