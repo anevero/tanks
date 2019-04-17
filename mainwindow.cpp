@@ -471,7 +471,7 @@ void MainWindow::ShootRocket(std::shared_ptr<Tank> &tank) {
     rocket->StartMovement(map_->GetNumberOfCellsVertically(), tanks_,
                           obstacles_and_bonuses_);
   }
-  if (std::dynamic_pointer_cast<std::shared_ptr<Bot>>(tank) == nullptr) {
+  if (std::dynamic_pointer_cast<Bot>(tank) == nullptr) {
     tank->MinusCharge();
   }
 }
