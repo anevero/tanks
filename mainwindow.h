@@ -141,6 +141,8 @@ class MainWindow : public QMainWindow {
   int sq_height_;
   int w_indent_;
   int h_indent_;
+
+  QString app_version_ = "0.5.0.0";
 };
 
 #endif  // MAINWINDOW_H

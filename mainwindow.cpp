@@ -599,8 +599,8 @@ void MainWindow::InitializeSettingsDialog() {
                             "after application restart")));
 
   settings_separator_label_ = new QLabel(this);
-  version_label_ = new QLabel(QString(tr("App version")) + QString(": ") +
-                              QString("0.4.0.0"));
+  version_label_ =
+      new QLabel(QString(tr("App version")) + QString(": ") + app_version_);
 
   settings_dialog_layout_ = new QFormLayout(settings_dialog_);
   settings_dialog_layout_->addRow(virtual_keys_checkbox_);
