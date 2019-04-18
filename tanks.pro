@@ -18,7 +18,8 @@ SOURCES += \
     improvedbot.cpp \
     cleverbot.cpp \
     objectonmap.cpp \
-    boom.cpp
+    boom.cpp \
+    portal.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -30,7 +31,8 @@ HEADERS += \
     improvedbot.h \
     cleverbot.h \
     objectonmap.h \
-    boom.h
+    boom.h \
+    portal.h
 
 RESOURCES += \
     resources.qrc

@@ -22,6 +22,7 @@
 #include <QTouchDevice>
 #include <QTranslator>
 #include <QtGlobal>
+#include <QVector>
 #include <algorithm>
 #include <memory>
 #include <vector>
@@ -31,6 +32,7 @@
 #include "improvedbot.h"
 #include "map.h"
 #include "objectonmap.h"
+#include "portal.h"
 #include "rocket.h"
 #include "tank.h"
 
@@ -123,6 +125,7 @@ class MainWindow : public QMainWindow {
   QList<std::shared_ptr<Movable>> tanks_;
   QList<std::shared_ptr<Movable>> rockets_;
   std::vector<std::vector<std::shared_ptr<ObjectOnMap>>> obstacles_and_bonuses_;
+  QList<QPair<std::shared_ptr<Movable>, Coordinates>> objects_copies_;
 
   int number_of_player_tanks_ = 1;
   QVector<QString> difficulty_levels_names_ = {tr("Easy"), tr("Normal"),

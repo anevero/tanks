@@ -41,6 +41,9 @@ bool ImprovedBot::IsShotNeeded(std::shared_ptr<Map> map,
     int tank_y = tank->GetCellY();
     int bot_x = GetCellX();
     int bot_y = GetCellY();
+    if (map_->GetField(tank_x, tank_y) == CellType::Forest) {
+      return false;
+    }
 
     if (tank_x == bot_x) {
       if (IsWallBetweenObjectsX(map, tank_x, tank_y, bot_x, bot_y)) {

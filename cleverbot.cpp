@@ -3,12 +3,12 @@
 CleverBot::CleverBot(std::shared_ptr<Map>& map, BotQualities qualities)
     : ImprovedBot(map, qualities) {
   LoadImage();
-  int height = map_->GetNumberOfCellsVertically();
-  int width = map_->GetNumberOfCellsHorizontally();
-  distance_.resize(width);
-  for (int i = 0; i < height; ++i) {
-    for (int j = 0; j < width; ++j) {
-      distance_[j].push_back(height * width);
+  height_ = map_->GetNumberOfCellsVertically();
+  width_ = map_->GetNumberOfCellsHorizontally();
+  distance_.resize(width_);
+  for (int i = 0; i < height_; ++i) {
+    for (int j = 0; j < width_; ++j) {
+      distance_[j].push_back(height_ * width_);
     }
   }
 }
@@ -18,11 +18,14 @@ void CleverBot::LoadImage() {
   scaled_image_ = image_;
 }
 
-bool CleverBot::IsRotationStartNeeded(std::shared_ptr<Tank>) {
+bool CleverBot::IsRotationStartNeeded(std::shared_ptr<Tank> tank) {
   if (time_to_finish_rotation_ <= 0 && time_to_finish_movement_ <= 0) {
     if (number_of_turns_ > 0) {
       number_of_turns_--;
       return number_of_turns_ > 0;
+    }
+    if (map_->GetField(tank->GetCellX(), tank->GetCellY()) == CellType::Forest) {
+      return Bot::IsRotationStartNeeded(tank);
     }
   }
   return false;
@@ -49,7 +52,10 @@ bool CleverBot::IsMovingStartNeeded(
       delta_x = -1;
     }
 
-    if (distance_[cell_x - delta_x][cell_y - delta_y] ==
+    if (map_->GetField(tank->GetCellX(), tank->GetCellY()) ==
+        CellType::Forest) {
+      return Bot::IsMovingStartNeeded(objects);
+    } else if (distance_[cell_x - delta_x][cell_y - delta_y] ==
         distance_[cell_x][cell_y] - 1) {
       if (distance_[cell_x][cell_y] - 1 ==
           distance_[tank->GetCellX()][tank->GetCellY()]) {
@@ -89,11 +95,9 @@ void CleverBot::Bfs(const QList<std::shared_ptr<Movable>> objects, int cell_x,
   QQueue<CellInfo> cells;
   cells.push_back({cell_x, cell_y, 0});
 
-  int height = map_->GetNumberOfCellsVertically();
-  int width = map_->GetNumberOfCellsHorizontally();
-  for (int i = 0; i < height; ++i) {
-    for (int j = 0; j < width; ++j) {
-      distance_[j][i] = height * width;
+  for (int i = 0; i < height_; ++i) {
+    for (int j = 0; j < width_; ++j) {
+      distance_[j][i] = height_ * width_;
     }
   }
 
@@ -102,7 +106,7 @@ void CleverBot::Bfs(const QList<std::shared_ptr<Movable>> objects, int cell_x,
     cell_y = cells.front().cell_y;
     int current_distance = cells.front().distance;
     cells.pop_front();
-    if (cell_x < 0 || cell_x >= width || cell_y < 0 || cell_y >= height) {
+    if (cell_x < 0 || cell_x >= width_ || cell_y < 0 || cell_y >= height_) {
       continue;
     }
     if (map_->GetField(cell_x, cell_y) == CellType::Wall) {

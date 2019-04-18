@@ -6,13 +6,19 @@
 #include <QList>
 #include <QVector>
 #include <algorithm>
+#include <cmath>
 #include <memory>
 #include "map.h"
 #include "objectonmap.h"
+#include "portal.h"
 
 enum class Direction { Up = 0, Right = 1, Down = 2, Left = 3 };
 
-class Movable {
+struct Coordinates {
+  int x, y;
+};
+
+class Movable : public std::enable_shared_from_this<Movable> {
  public:
   Movable(std::shared_ptr<Map>& map, int cell_x, int cell_y,
           Direction direction, int speed);
@@ -21,6 +27,7 @@ class Movable {
 
   virtual void StartMovement(
       int number_of_cells, QList<std::shared_ptr<Movable>>& tanks,
+      QList<QPair<std::shared_ptr<Movable>, Coordinates>>& objects_copies_,
       std::vector<std::vector<std::shared_ptr<ObjectOnMap>>>& objects);
   virtual void Move(int milliseconds_passed);
   virtual void TurnReverseOn();
@@ -33,6 +40,7 @@ class Movable {
 
   virtual void UpdateCoordinates();
   virtual void Draw(QPainter& painter) = 0;
+  virtual void ReturnToOriginal();
 
   virtual int GetSpeed() const;
 
@@ -63,6 +71,8 @@ class Movable {
 
   int cur_upper_left_x_{};
   int cur_upper_left_y_{};
+  int prev_upper_left_x_{};
+  int prev_upper_left_y_{};
   int cur_width_{};
   int cur_height_{};
 
@@ -77,6 +87,7 @@ class Movable {
   int current_rotate_degree_;
   int time_to_finish_rotation_ = 0;
   int rotate_reverse_ = 1;
+  double opacity_ = 1.;
 
   QImage image_;
   QImage scaled_image_;

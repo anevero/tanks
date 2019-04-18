@@ -71,13 +71,13 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event) {
     case Qt::Key_Up:
     case Qt::Key_W:
       tank->TurnReverseOff();
-      tank->StartMovement(1, tanks_, obstacles_and_bonuses_);
+      tank->StartMovement(1, tanks_, objects_copies_, obstacles_and_bonuses_);
       break;
     case 1067:
     case Qt::Key_Down:
     case Qt::Key_S:
       tank->TurnReverseOn();
-      tank->StartMovement(1, tanks_, obstacles_and_bonuses_);
+      tank->StartMovement(1, tanks_, objects_copies_, obstacles_and_bonuses_);
       break;
     case 1060:
     case Qt::Key_Left:
@@ -112,23 +112,31 @@ void MainWindow::paintEvent(QPaintEvent *) {
   for (const auto &object : rockets_) {
     object->UpdateCoordinates();
   }
+  for (const auto &object : objects_copies_) {
+    auto tank = std::dynamic_pointer_cast<Tank>(object.first);
+    tank->UpdateCoordinates(object.second.x, object.second.y);
+  }
 
   QPainter p;
   p.begin(this);
   map_->DrawMap(p);
-  for (const auto &object : tanks_) {
-    object->Draw(p);
-  }
-  for (const auto &object : rockets_) {
-    object->Draw(p);
-  }
-
   for (const auto &vector : obstacles_and_bonuses_) {
     for (const auto &object : vector) {
       if (object != nullptr) {
         object->Draw(p);
       }
     }
+  }
+
+  for (const auto &object : objects_copies_) {
+    object.first->Draw(p);
+    object.first->ReturnToOriginal();
+  }
+  for (const auto &object : tanks_) {
+    object->Draw(p);
+  }
+  for (const auto &object : rockets_) {
+    object->Draw(p);
   }
   p.end();
 }
@@ -159,7 +167,7 @@ void MainWindow::timerEvent(QTimerEvent *) {
       }
 
       if (bot->IsMovingStartNeeded(tanks_)) {
-        bot->StartMovement(1, tanks_, obstacles_and_bonuses_);
+        bot->StartMovement(1, tanks_, objects_copies_, obstacles_and_bonuses_);
       } else if (bot->IsRotationStartNeeded(
                      std::dynamic_pointer_cast<Tank>(tanks_[0]))) {
         bot->StartRotation();
@@ -185,12 +193,23 @@ void MainWindow::timerEvent(QTimerEvent *) {
     }
   }
 
+  auto copy = objects_copies_.begin();
+  while (copy != objects_copies_.end()) {
+    if (copy->first->GetTimeToFinishMovement() <= 0) {
+      std::dynamic_pointer_cast<Tank>(copy->first)->UpdateCoordinates(
+                  copy->second.x, copy->second.y);
+      copy = objects_copies_.erase(copy);
+      continue;
+    }
+    copy++;
+  }
+
   auto it = rockets_.begin();
   while (it != rockets_.end()) {
     if ((*it)->GetTimeToFinishMovement() <= 0 &&
         (*it)->GetCellsToFinishMovement() != 0) {
       (*it)->StartMovement(((*it)->GetCellsToFinishMovement()), tanks_,
-                           obstacles_and_bonuses_);
+                           objects_copies_, obstacles_and_bonuses_);
     }
     if (!(*it)->IsMovingOrRotating()) {
       it = rockets_.erase(it);
@@ -347,6 +366,11 @@ void MainWindow::RedrawContent() {
         std::shared_ptr<Obstacle>(new Obstacle(map_, x, y));
   }
 
+  obstacles_and_bonuses_[1][1] =
+          std::shared_ptr<Portal>(new Portal(map_, 1, 1, 11, 11));
+  obstacles_and_bonuses_[11][11] =
+          std::shared_ptr<Portal>(new Portal(map_, 11, 11, 1, 1));
+
   timer_id_ = startTimer(timer_duration_);
   repaint();
 }
@@ -429,7 +453,7 @@ void MainWindow::CheckDeadObjects() {
 void MainWindow::MakeBoom(std::shared_ptr<Movable> &object) {
   std::shared_ptr<Boom> boom(new Boom(map_, object, 500));
   rockets_.append(boom);
-  boom->StartMovement(1, tanks_, obstacles_and_bonuses_);
+  boom->StartMovement(1, tanks_, objects_copies_, obstacles_and_bonuses_);
 }
 
 void MainWindow::ShootRocket(std::shared_ptr<Tank> &tank) {
@@ -437,10 +461,10 @@ void MainWindow::ShootRocket(std::shared_ptr<Tank> &tank) {
   rockets_.append(rocket);
   if (rocket->GetIntDirection() == 1 || rocket->GetIntDirection() == 3) {
     rocket->StartMovement(map_->GetNumberOfCellsHorizontally(), tanks_,
-                          obstacles_and_bonuses_);
+                          objects_copies_, obstacles_and_bonuses_);
   } else {
     rocket->StartMovement(map_->GetNumberOfCellsVertically(), tanks_,
-                          obstacles_and_bonuses_);
+                          objects_copies_, obstacles_and_bonuses_);
   }
 }
 
@@ -648,7 +672,7 @@ QJsonObject MainWindow::GetJsonObjectFromFile(const QString &filepath) {
   QString text = file.readAll();
   file.close();
   QJsonDocument json_document(QJsonDocument::fromJson(text.toUtf8()));
-  return std::move(json_document.object());
+  return json_document.object();
 }
 
 Direction MainWindow::DetermineDirection(const QString &start_direction) const {

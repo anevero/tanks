@@ -2,8 +2,9 @@
 
 Boom::Boom(std::shared_ptr<Map>& map, std::shared_ptr<Movable>& tank, int speed)
     : Movable(map, tank->GetCellX(), tank->GetCellY(), tank->GetDirection(),
-              speed) {
+              speed) {  
   LoadImage();
+  opacity_ = 0.85;
 }
 
 void Boom::LoadImage() {
@@ -13,7 +14,7 @@ void Boom::LoadImage() {
 
 void Boom::Draw(QPainter& painter) {
   painter.save();
-  painter.setOpacity(0.85);
+  painter.setOpacity(opacity_);
   painter.translate(cur_upper_left_x_ + cur_width_ / 2,
                     cur_upper_left_y_ + cur_height_ / 2);
   painter.drawImage(-cur_width_ / 2, -cur_height_ / 2, scaled_image_);
@@ -22,6 +23,7 @@ void Boom::Draw(QPainter& painter) {
 
 void Boom::StartMovement(
     int number_of_cells, QList<std::shared_ptr<Movable>>&,
+    QList<QPair<std::shared_ptr<Movable>, Coordinates>>&,
     std::vector<std::vector<std::shared_ptr<ObjectOnMap>>>&) {
   time_to_finish_movement_ += current_speed_;
   cells_to_finish_movement_ = number_of_cells - 1;

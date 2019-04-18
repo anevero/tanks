@@ -15,6 +15,7 @@ Movable::Movable(std::shared_ptr<Map>& map, int cell_x, int cell_y,
 
 void Movable::StartMovement(
     int number_of_cells, QList<std::shared_ptr<Movable>>& tanks,
+    QList<QPair<std::shared_ptr<Movable>, Coordinates>>& objects_copies_,
     std::vector<std::vector<std::shared_ptr<ObjectOnMap>>>& objects) {
   int new_cell_x = cell_x_ + reverse_ * (directions_[1] - directions_[3]);
   int new_cell_y = cell_y_ + reverse_ * (directions_[2] - directions_[0]);
@@ -33,7 +34,7 @@ void Movable::StartMovement(
         return;
       }
     }
-    current_speed_ = std ::max(
+    current_speed_ = std::max(
         static_cast<int>(map_->GetField(cell_x_, cell_y_)) * basic_speed_,
         static_cast<int>(map_->GetField(new_cell_x, new_cell_y)) *
             basic_speed_);
@@ -67,8 +68,33 @@ void Movable::StartMovement(
         return;
       }
     }
-    objects[static_cast<unsigned>(new_cell_x)]
-           [static_cast<unsigned>(new_cell_y)] = nullptr;
+    if (std::dynamic_pointer_cast<Portal>(objects[static_cast<unsigned>(
+            new_cell_x)][static_cast<unsigned>(new_cell_y)]) != nullptr) {
+      if (dynamic_cast<Rocket*>(this) == nullptr) {
+        std::shared_ptr<Portal> portal = std::dynamic_pointer_cast<Portal>(
+                objects[static_cast<unsigned>(new_cell_x)]
+                [static_cast<unsigned>(new_cell_y)]);
+
+        Direction direction = GetDirection();
+        int x = portal->GetNewCellX();
+        int y = portal->GetNewCellY();
+        if (direction == Direction::Up) { y--; }
+        else if (direction == Direction::Down) { y++; }
+        else if (direction == Direction::Left) { x--; }
+        else { x++; }
+
+        if (map_->GetField(x, y) == CellType::Wall) { return; }
+        for (const auto& object : tanks) {
+          if (object->GetCellX() == x && object->GetCellY() == y) {
+            return;
+          }
+        }
+        objects_copies_.append({shared_from_this(), {x, y}});
+      }
+    } else {
+      objects[static_cast<unsigned>(new_cell_x)]
+             [static_cast<unsigned>(new_cell_y)] = nullptr;
+    }
   }
 
   cell_x_ = new_cell_x;
@@ -128,6 +154,14 @@ void Movable::UpdateCoordinates() {
                      (directions_[2] * cur_cell_height * movement_proportion) -
                      (directions_[0] * cur_cell_height * movement_proportion));
 
+  if (map_->GetField(cell_x_, cell_y_) == CellType::Forest) {
+    if (movement_proportion <= 0.5) {
+      opacity_ = 0.5;
+    }
+  } else if (opacity_ < 1) {
+    opacity_ = 1;
+  }
+
   double rotation_proportion =
       static_cast<double>(time_to_finish_rotation_) / current_speed_;
   current_rotate_degree_ =
@@ -136,6 +170,11 @@ void Movable::UpdateCoordinates() {
   current_rotate_degree_ %= 360;
 
   RescaleImage();
+}
+
+void Movable::ReturnToOriginal() {
+  cur_upper_left_x_ = prev_upper_left_x_;
+  cur_upper_left_y_ = prev_upper_left_y_;
 }
 
 int Movable::GetSpeed() const { return current_speed_; }

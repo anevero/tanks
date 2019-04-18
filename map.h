@@ -13,7 +13,7 @@
 #include <QTextStream>
 #include <QVector>
 
-enum class CellType { Wall = 0, Grass = 1, Sand = 2, Water = 3 };
+enum class CellType { Wall = 0, Grass = 1, Sand = 2, Water = 3, Forest = 4 };
 
 class Map {
  public:
@@ -53,7 +53,7 @@ class Map {
   int tank_init_cell_y_;
   QString tank_start_direction_;
 
-  const int number_of_cell_types_ = 4;
+  const int number_of_cell_types_ = 5;
 };
 
 #endif  // MAP_H
