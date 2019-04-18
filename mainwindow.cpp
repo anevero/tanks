@@ -2,7 +2,7 @@
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent),
-      charge_indicator_(new QPushButton(this)),
+      charge_button_(new QPushButton(this)),
       new_game_button_(new QPushButton(tr("New game"), this)),
       pause_continue_button_(new QPushButton(tr("Pause"), this)),
       settings_button_(new QPushButton(tr("Settings"), this)),
@@ -13,7 +13,7 @@ MainWindow::MainWindow(QWidget *parent)
       virtual_keys_encodings_(
           {Qt::Key_Q, Qt::Key_W, Qt::Key_A, Qt::Key_S, Qt::Key_D}),
       map_(new Map(1)) {
-  charge_indicator_->hide();
+  charge_button_->hide();
   new_game_button_->setFocusPolicy(Qt::NoFocus);
   pause_continue_button_->setFocusPolicy(Qt::NoFocus);
   settings_button_->setFocusPolicy(Qt::NoFocus);
@@ -231,7 +231,6 @@ void MainWindow::NewGame() {
   switch_tank_menu_->setCurrentIndex(current_game_options_.tank_number);
   switch_difficulty_menu_->setCurrentIndex(
       current_game_options_.difficulty_level_number);
-  charge_indicator_->show();
 }
 
 void MainWindow::Settings() {
@@ -285,14 +284,14 @@ void MainWindow::RedrawButtons() {
 }
 
 void MainWindow::RedrawCharge(QPainter &painter) {
-  charge_indicator_->setGeometry(w_indent_ + static_cast<int>(0.04 * sq_width_),
-                                 height() - static_cast<int>(0.46 * sq_height_),
-                                 static_cast<int>(0.2 * sq_width_),
-                                 static_cast<int>(0.2 * sq_height_));
+  charge_button_->setGeometry(w_indent_ + static_cast<int>(0.04 * sq_width_),
+                              height() - static_cast<int>(0.46 * sq_height_),
+                              static_cast<int>(0.2 * sq_width_),
+                              static_cast<int>(0.2 * sq_height_));
   std::shared_ptr<Tank> tank;
   if (tanks_.size() != 0) {
     tank = std::dynamic_pointer_cast<Tank>(tanks_[0]);
-    charge_indicator_->setText(QString::number(tank->GetCurrentCharge()));
+    charge_button_->setText(QString::number(tank->GetCurrentCharge()));
     painter.save();
     painter.setBrush(Qt::yellow);
     painter.drawRect(
@@ -378,6 +377,8 @@ void MainWindow::RedrawContent() {
         x)][static_cast<unsigned int>(y)] =
         std::shared_ptr<Obstacle>(new Obstacle(map_, x, y));
   }
+
+  charge_button_->show();
 
   timer_id_ = startTimer(timer_duration_);
   repaint();
