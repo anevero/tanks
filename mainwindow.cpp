@@ -2,7 +2,9 @@
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent),
-      charge_button_(new QPushButton(this)),
+      light_charge_button_(new QPushButton(this)),
+      medium_charge_button_(new QPushButton(this)),
+      hard_charge_button_(new QPushButton(this)),
       new_game_button_(new QPushButton(tr("New game"), this)),
       pause_continue_button_(new QPushButton(tr("Pause"), this)),
       settings_button_(new QPushButton(tr("Settings"), this)),
@@ -13,7 +15,9 @@ MainWindow::MainWindow(QWidget *parent)
       virtual_keys_encodings_(
           {Qt::Key_Q, Qt::Key_W, Qt::Key_A, Qt::Key_S, Qt::Key_D}),
       map_(new Map(1)) {
-  charge_button_->hide();
+  light_charge_button_->hide();
+  medium_charge_button_->hide();
+  hard_charge_button_->hide();
   new_game_button_->setFocusPolicy(Qt::NoFocus);
   pause_continue_button_->setFocusPolicy(Qt::NoFocus);
   settings_button_->setFocusPolicy(Qt::NoFocus);
@@ -284,14 +288,33 @@ void MainWindow::RedrawButtons() {
 }
 
 void MainWindow::RedrawCharge(QPainter &painter) {
-  charge_button_->setGeometry(w_indent_ + static_cast<int>(0.04 * sq_width_),
-                              height() - static_cast<int>(0.46 * sq_height_),
-                              static_cast<int>(0.2 * sq_width_),
-                              static_cast<int>(0.2 * sq_height_));
   std::shared_ptr<Tank> tank;
+  light_charge_button_->setGeometry(
+      w_indent_ + static_cast<int>(0.04 * sq_width_),
+      height() - static_cast<int>(0.32 * sq_height_),
+      static_cast<int>(0.052 * sq_width_),
+      static_cast<int>(0.052 * sq_height_));
+
+  medium_charge_button_->setGeometry(
+      w_indent_ + static_cast<int>(0.11 * sq_width_),
+      height() - static_cast<int>(0.32 * sq_height_),
+      static_cast<int>(0.052 * sq_width_),
+      static_cast<int>(0.052 * sq_height_));
+
+  hard_charge_button_->setGeometry(
+      w_indent_ + static_cast<int>(0.18 * sq_width_),
+      height() - static_cast<int>(0.32 * sq_height_),
+      static_cast<int>(0.052 * sq_width_),
+      static_cast<int>(0.052 * sq_height_));
+
   if (tanks_.size() != 0) {
     tank = std::dynamic_pointer_cast<Tank>(tanks_[0]);
-    charge_button_->setText(QString::number(tank->GetCurrentCharge()));
+    light_charge_button_->setText(
+        QString::number(tank->GetLightCurrentCharge()));
+    medium_charge_button_->setText(
+        QString::number(tank->GetMediumCurrentCharge()));
+    hard_charge_button_->setText(QString::number(tank->GetHardCurrentCharge()));
+
     painter.save();
     painter.setBrush(Qt::yellow);
     painter.drawRect(
@@ -338,7 +361,9 @@ void MainWindow::RedrawContent() {
         1000 - 150 * current_game_options_.difficulty_level_number;
     qualities.tank.speed =
         1000 - 150 * current_game_options_.difficulty_level_number;
-    qualities.tank.max_charge = 1;
+    qualities.tank.max_light_charge = 1;
+    qualities.tank.max_medium_charge = 1;
+    qualities.tank.max_hard_charge = 1;
     qualities.init_cell_x = bots[i].toObject()["initial_cell_x"].toInt();
     qualities.init_cell_y = bots[i].toObject()["initial_cell_y"].toInt();
     qualities.moving_length = bots[i].toObject()["moving_length"].toInt();
@@ -378,7 +403,9 @@ void MainWindow::RedrawContent() {
         std::shared_ptr<Obstacle>(new Obstacle(map_, x, y));
   }
 
-  charge_button_->show();
+  light_charge_button_->show();
+  medium_charge_button_->show();
+  hard_charge_button_->show();
 
   timer_id_ = startTimer(timer_duration_);
   repaint();
@@ -476,7 +503,7 @@ void MainWindow::ShootRocket(std::shared_ptr<Tank> &tank) {
                           obstacles_and_bonuses_);
   }
   if (std::dynamic_pointer_cast<Bot>(tank) == nullptr) {
-    tank->MinusCharge();
+    tank->MinusLightCharge();
   }
 }
 
@@ -551,7 +578,11 @@ void MainWindow::InitializeNewGameDialog() {
     qualities.speed = tanks[i].toObject()["speed"].toInt();
     qualities.rate_of_fire = tanks[i].toObject()["rate_of_fire"].toInt();
     qualities.max_health = tanks[i].toObject()["max_health"].toInt();
-    qualities.max_charge = tanks[i].toObject()["max_charge"].toInt();
+    qualities.max_light_charge =
+        tanks[i].toObject()["max_light_charge"].toInt();
+    qualities.max_medium_charge =
+        tanks[i].toObject()["max_medium_charge"].toInt();
+    qualities.max_hard_charge = tanks[i].toObject()["max_hard_charge"].toInt();
     available_tank_types_.push_back(qualities);
     switch_tank_menu_->addItem(tr("Tank") + " " + QString::number(i + 1));
   }

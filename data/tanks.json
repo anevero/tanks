@@ -4,19 +4,25 @@
       "speed": 500,
       "rate_of_fire": 300,
       "max_health": 200,
-      "max_charge" : 50
+      "max_light_charge" : 30,
+      "max_medium_charge" : 15,
+      "max_hard_charge" : 5
     },
     {
       "speed": 350,
       "rate_of_fire": 450,
       "max_health": 150,
-      "max_charge" : 50
-    },
+      "max_light_charge" : 35,
+      "max_medium_charge" : 20,
+      "max_hard_charge" : 7
+        },
     {
       "speed": 250,
       "rate_of_fire": 300,
       "max_health": 250,
-      "max_charge" : 50
+      "max_light_charge" : 40,
+      "max_medium_charge" : 20,
+      "max_hard_charge" : 10
     }
   ]
 }

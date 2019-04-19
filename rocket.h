@@ -1,4 +1,4 @@
-#ifndef ROCKET_H
+﻿#ifndef ROCKET_H
 #define ROCKET_H
 
 #include <QDebug>
@@ -19,6 +19,18 @@ class Rocket : public Movable {
  private:
   std::shared_ptr<Tank> tank_;
   int power_ = 0;
+};
+
+class LightRocket : Rocket {
+  LightRocket();
+};
+
+class MediumRocket : Rocket {
+  MediumRocket();
+};
+
+class HardRocket : Rocket {
+  HardRocket();
 };
 
 #endif  // ROCKET_H

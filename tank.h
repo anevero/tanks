@@ -12,7 +12,9 @@ struct TankQualities {
   int speed;
   int rate_of_fire;
   int max_health;
-  int max_charge;
+  int max_light_charge;
+  int max_medium_charge;
+  int max_hard_charge;
   Direction direction;
 };
 
@@ -32,10 +34,18 @@ class Tank : public Movable {
   virtual int GetMaxHealth() const;
   virtual void MinusHealth(int health = 10);
   virtual void PlusHealth(int health = 10);
-  int GetCurrentCharge() const;
-  int GetMaxCharge() const;
-  void MinusCharge(int charge = 1);
-  void PlusCharge(int charge = 10);
+  int GetLightCurrentCharge() const;
+  int GetMaxLightCharge() const;
+  void MinusLightCharge(int charge = 1);
+  void PlusLightCharge(int charge = 10);
+  int GetMediumCurrentCharge() const;
+  int GetMaxMediumCharge() const;
+  void MinusMediumCharge(int charge = 1);
+  void PlusMediumCharge(int charge = 10);
+  int GetHardCurrentCharge() const;
+  int GetMaxHardCharge() const;
+  void MinusHardCharge(int charge = 1);
+  void PlusHardCharge(int charge = 10);
   virtual bool IsDead() const;
   virtual int GetTimeSinceLastShot() const;
   virtual int GetRateOfFire() const;
@@ -44,9 +54,13 @@ class Tank : public Movable {
   int rate_of_fire_;
   int time_since_last_shot_{};
   int current_health_{};
-  int current_charge_{};
+  int light_current_charge_{};
+  int medium_current_charge_{};
+  int hard_current_charge_{};
   const int max_health_{};
-  const int max_charge_{};
+  const int max_light_charge_{};
+  const int max_medium_charge_{};
+  const int max_hard_charge_{};
 };
 
 #endif  // TANK_H

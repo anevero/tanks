@@ -111,7 +111,9 @@ class MainWindow : public QMainWindow {
   QLabel *settings_separator_label_;
   QLabel *version_label_;
 
-  QPushButton *charge_button_;
+  QPushButton *light_charge_button_;
+  QPushButton *medium_charge_button_;
+  QPushButton *hard_charge_button_;
 
   QPushButton *new_game_button_;
   QPushButton *pause_continue_button_;
