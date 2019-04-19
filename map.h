@@ -31,6 +31,8 @@ class Map {
   int GetUpperLeftY() const;
   int GetWidth() const;
   int GetHeight() const;
+  int GetCellWidth() const;
+  int GetCellHeight() const;
   int GetTankInitCellX() const;
   int GetTankInitCellY() const;
   QString GetTankStartDirection() const;

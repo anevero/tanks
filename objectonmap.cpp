@@ -31,9 +31,7 @@ void ObjectOnMap::UpdateCoordinates() {
       static_cast<int>(map_->GetWidth() / map_->GetNumberOfCellsHorizontally());
   cur_height_ =
       static_cast<int>(map_->GetHeight() / map_->GetNumberOfCellsVertically());
-
   cur_upper_left_x_ = map_->GetUpperLeftX() + x_ * cur_width_;
-
   cur_upper_left_y_ = map_->GetUpperLeftY() + y_ * cur_height_;
 }
 

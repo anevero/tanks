@@ -63,6 +63,8 @@ int Map::GetUpperLeftX() const { return cur_upper_left_x_; }
 int Map::GetUpperLeftY() const { return cur_upper_left_y_; }
 int Map::GetWidth() const { return cur_width_; }
 int Map::GetHeight() const { return cur_height_; }
+int Map::GetCellWidth() const { return cur_cell_width_; }
+int Map::GetCellHeight() const { return cur_cell_height_; }
 int Map::GetTankInitCellX() const { return tank_init_cell_x_; }
 int Map::GetTankInitCellY() const { return tank_init_cell_y_; }
 QString Map::GetTankStartDirection() const { return tank_start_direction_; }

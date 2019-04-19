@@ -1,5 +1,5 @@
-﻿#ifndef OBSTACLANDBONUS_H
-#define OBSTACLANDBONUS_H
+﻿#ifndef OBJECTONMAP_H
+#define OBJECTONMAP_H
 
 #include <QDebug>
 #include <QImage>
@@ -44,4 +44,4 @@ class MedicalKit : public ObjectOnMap {
   void LoadImage() override;
 };
 
-#endif  // OBSTACLANDBONUS_H
+#endif  // OBJECTONMAP_H

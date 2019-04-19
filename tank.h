@@ -24,12 +24,12 @@ class Tank : public Movable {
   virtual void DrawHealth(QPainter& painter);
 
   virtual bool IsAbleToShoot() const;
-  virtual void IncreaseTimeSinceLastShot(int delta);
+  virtual void IncreaseTimeSinceLastShot(const int delta);
   virtual void SetZeroTimeFromLastShot();
   virtual int GetCurrentHealth() const;
   virtual int GetMaxHealth() const;
-  virtual void MinusHealth(int health = 10);
-  virtual void PlusHealth(int health = 10);
+  virtual void MinusHealth(const int health = 10);
+  virtual void PlusHealth(const int health = 10);
   virtual bool IsDead() const;
 
  protected:

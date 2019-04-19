@@ -77,7 +77,7 @@ void Movable::StartMovement(
   cells_to_finish_movement_ = number_of_cells - 1;
 }
 
-void Movable::Move(int milliseconds_passed) {
+void Movable::Move(const int milliseconds_passed) {
   time_to_finish_movement_ -= milliseconds_passed;
 }
 
@@ -96,7 +96,7 @@ void Movable::StartRotation() {
   time_to_finish_rotation_ = current_speed_;
 }
 
-void Movable::Rotate(int milliseconds_passed) {
+void Movable::Rotate(const int milliseconds_passed) {
   time_to_finish_rotation_ -= milliseconds_passed;
 }
 
@@ -105,28 +105,23 @@ void Movable::TurnRotationReverseOn() { rotate_reverse_ = -1; }
 void Movable::TurnRotationReverseOff() { rotate_reverse_ = 1; }
 
 void Movable::UpdateCoordinates() {
-  int cur_cell_width =
-      static_cast<int>(map_->GetWidth() / map_->GetNumberOfCellsHorizontally());
-  int cur_cell_height =
-      static_cast<int>(map_->GetHeight() / map_->GetNumberOfCellsVertically());
-
-  cur_width_ = cur_cell_width;
-  cur_height_ = cur_cell_height;
+  cur_width_ = map_->GetCellWidth();
+  cur_height_ = map_->GetCellHeight();
 
   double movement_proportion =
       static_cast<double>(time_to_finish_movement_) / current_speed_;
 
   cur_upper_left_x_ =
-      map_->GetUpperLeftX() + (cur_cell_width * cell_x_) -
-      reverse_ * static_cast<int>(
-                     (directions_[1] * cur_cell_width * movement_proportion) -
-                     (directions_[3] * cur_cell_width * movement_proportion));
+      map_->GetUpperLeftX() + (cur_width_ * cell_x_) -
+      reverse_ *
+          static_cast<int>((directions_[1] * cur_width_ * movement_proportion) -
+                           (directions_[3] * cur_width_ * movement_proportion));
 
   cur_upper_left_y_ =
-      map_->GetUpperLeftY() + (cur_cell_height * cell_y_) -
+      map_->GetUpperLeftY() + (cur_height_ * cell_y_) -
       reverse_ * static_cast<int>(
-                     (directions_[2] * cur_cell_height * movement_proportion) -
-                     (directions_[0] * cur_cell_height * movement_proportion));
+                     (directions_[2] * cur_height_ * movement_proportion) -
+                     (directions_[0] * cur_height_ * movement_proportion));
 
   double rotation_proportion =
       static_cast<double>(time_to_finish_rotation_) / current_speed_;

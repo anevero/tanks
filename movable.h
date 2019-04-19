@@ -22,12 +22,12 @@ class Movable {
   virtual void StartMovement(
       int number_of_cells, QList<std::shared_ptr<Movable>>& tanks,
       std::vector<std::vector<std::shared_ptr<ObjectOnMap>>>& objects);
-  virtual void Move(int milliseconds_passed);
+  virtual void Move(const int milliseconds_passed);
   virtual void TurnReverseOn();
   virtual void TurnReverseOff();
 
   virtual void StartRotation();
-  virtual void Rotate(int milliseconds_passed);
+  virtual void Rotate(const int milliseconds_passed);
   virtual void TurnRotationReverseOn();
   virtual void TurnRotationReverseOff();
 
