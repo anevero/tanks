@@ -49,12 +49,11 @@ void Map::UpdateCoordinates(int upper_left_x, int upper_left_y, int width,
 }
 
 void Map::DrawMap(QPainter& painter) {
-  QImage image;
   for (int i = 0; i < map_.size(); ++i) {
     for (int j = 0; j < map_[i].size(); ++j) {
-      image = scaled_images_[static_cast<int>(map_[i][j])];
       painter.drawImage(cur_upper_left_x_ + i * cur_cell_width_ - 1,
-                        cur_upper_left_y_ + j * cur_cell_height_ - 1, image);
+                        cur_upper_left_y_ + j * cur_cell_height_ - 1,
+                        scaled_images_[static_cast<int>(map_[i][j])]);
     }
   }
 }

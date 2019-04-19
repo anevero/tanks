@@ -58,7 +58,7 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event) {
 }
 
 void MainWindow::keyReleaseEvent(QKeyEvent *event) {
-  if (timer_id_ == 0) return;
+  if (timer_id_ == 0 && !paused_) return;
   auto tank = std::dynamic_pointer_cast<Tank>(tanks_[0]);
   if (tank->IsMovingOrRotating() || (paused_ && event->key() != Qt::Key_Escape))
     return;
