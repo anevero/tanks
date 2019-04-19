@@ -29,39 +29,32 @@ Map::Map(int map_number) {
   tank_init_cell_y_ = player_tank["initial_cell_y"].toInt();
   tank_start_direction_ = player_tank["initial_direction"].toString();
 
-  QImage image;
   for (int i = 0; i < number_of_cell_types_; ++i) {
-    image.load(":/textures/" + QString::number(i) + ".png");
-    images_.push_back(image);
+    images_.emplace_back(QImage(":/textures/" + QString::number(i) + ".png"));
   }
   scaled_images_ = images_;
 }
 
-void Map::UpdateCoordinates(int upper_left_x, int upper_left_y, int width,
-                            int height) {
+void Map::UpdateCoordinates(const int upper_left_x, const int upper_left_y,
+                            const int width, const int height) {
   cur_upper_left_x_ = upper_left_x;
   cur_upper_left_y_ = upper_left_y;
-  cur_width_ = width;
-  cur_height_ = height;
-  cur_cell_width_ = cur_width_ / map_.size();
-  cur_cell_height_ = cur_height_ / map_[0].size();
+  cur_cell_width_ = width / map_.size();
+  cur_cell_height_ = height / map_[0].size();
+  cur_width_ = cur_cell_width_ * map_.size();
+  cur_height_ = cur_cell_height_ * map_[0].size();
   RescaleImages();
+  FormMapImage();
 }
 
 void Map::DrawMap(QPainter& painter) {
-  for (int i = 0; i < map_.size(); ++i) {
-    for (int j = 0; j < map_[i].size(); ++j) {
-      painter.drawImage(cur_upper_left_x_ + i * cur_cell_width_ - 1,
-                        cur_upper_left_y_ + j * cur_cell_height_ - 1,
-                        scaled_images_[static_cast<int>(map_[i][j])]);
-    }
-  }
+  painter.drawImage(cur_upper_left_x_, cur_upper_left_y_, map_scaled_image_);
 }
 
-CellType Map::GetField(int cell_x, int cell_y) const {
+CellType Map::GetField(const int cell_x, const int cell_y) const {
   return map_[cell_x][cell_y];
 }
-int Map::GetWallsPrecalc(int cell_x, int cell_y) const {
+int Map::GetWallsPrecalc(const int cell_x, const int cell_y) const {
   return walls_precalc_[cell_x][cell_y];
 }
 int Map::GetNumberOfCellsHorizontally() const { return map_[0].size(); }
@@ -79,10 +72,27 @@ void Map::RescaleImages() {
       scaled_images_[0].height() == cur_cell_height_ + 2) {
     return;
   }
-  for (int i = 0; i < number_of_cell_types_; ++i) {
+  for (size_t i = 0; i < static_cast<size_t>(number_of_cell_types_); ++i) {
     scaled_images_[i] = images_[i].scaled(
         cur_cell_width_ + 2, cur_cell_height_ + 2, Qt::KeepAspectRatio);
   }
+}
+
+void Map::FormMapImage() {
+  if (map_scaled_image_.width() == cur_width_ &&
+      map_scaled_image_.height() == cur_height_) {
+    return;
+  }
+  map_scaled_image_ = QImage(cur_width_, cur_height_, QImage::Format_ARGB32);
+  QPainter p;
+  p.begin(&map_scaled_image_);
+  for (int i = 0; i < map_.size(); ++i) {
+    for (int j = 0; j < map_[i].size(); ++j) {
+      p.drawImage(i * cur_cell_width_, j * cur_cell_height_,
+                  scaled_images_[static_cast<size_t>(map_[i][j])]);
+    }
+  }
+  p.end();
 }
 
 void Map::WallsPrecalc() {

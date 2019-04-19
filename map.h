@@ -12,18 +12,19 @@
 #include <QString>
 #include <QTextStream>
 #include <QVector>
+#include <vector>
 
 enum class CellType { Wall = 0, Grass = 1, Sand = 2, Water = 3 };
 
 class Map {
  public:
   explicit Map(int map_number);
-  void UpdateCoordinates(int upper_left_x, int upper_left_y, int width,
-                         int height);
+  void UpdateCoordinates(const int upper_left_x, const int upper_left_y,
+                         const int width, const int height);
   void DrawMap(QPainter &painter);
 
-  CellType GetField(int cell_x, int cell_y) const;
-  int GetWallsPrecalc(int x, int y) const;
+  CellType GetField(const int cell_x, const int cell_y) const;
+  int GetWallsPrecalc(const int x, const int y) const;
   int GetNumberOfCellsHorizontally() const;
   int GetNumberOfCellsVertically() const;
   int GetUpperLeftX() const;
@@ -36,12 +37,14 @@ class Map {
 
  private:
   void RescaleImages();
+  void FormMapImage();
   void WallsPrecalc();
 
   QVector<QVector<CellType>> map_;
   QVector<QVector<int>> walls_precalc_;
-  QVector<QImage> images_;
-  QVector<QImage> scaled_images_;
+  std::vector<QImage> images_;
+  std::vector<QImage> scaled_images_;
+  QImage map_scaled_image_;
 
   int cur_upper_left_x_{};
   int cur_upper_left_y_{};
