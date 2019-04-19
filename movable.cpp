@@ -75,12 +75,11 @@ void Movable::StartMovement(
                 objects[static_cast<unsigned>(new_cell_x)]
                 [static_cast<unsigned>(new_cell_y)]);
 
-        Direction direction = GetDirection();
         int x = portal->GetNewCellX();
         int y = portal->GetNewCellY();
-        if (direction == Direction::Up) { y--; }
-        else if (direction == Direction::Down) { y++; }
-        else if (direction == Direction::Left) { x--; }
+        if (new_cell_y - cell_y_ == -1) { y--; }
+        else if (new_cell_y - cell_y_ == 1) { y++; }
+        else if (new_cell_x - cell_x_ == -1) { x--; }
         else { x++; }
 
         if (map_->GetField(x, y) == CellType::Wall) { return; }
@@ -90,6 +89,7 @@ void Movable::StartMovement(
           }
         }
         objects_copies_.append({shared_from_this(), {x, y}});
+        copy_existence_ = true;
       }
     } else {
       objects[static_cast<unsigned>(new_cell_x)]
@@ -141,6 +141,10 @@ void Movable::UpdateCoordinates() {
 
   double movement_proportion =
       static_cast<double>(time_to_finish_movement_) / current_speed_;
+  if (copy_existence_) {
+    opacity_ = movement_proportion;
+    prev_opacity_ = opacity_;
+  }
 
   cur_upper_left_x_ =
       map_->GetUpperLeftX() + (cur_cell_width * cell_x_) -
@@ -158,7 +162,7 @@ void Movable::UpdateCoordinates() {
     if (movement_proportion <= 0.5) {
       opacity_ = 0.5;
     }
-  } else if (opacity_ < 1) {
+  } else if (!copy_existence_) {
     opacity_ = 1;
   }
 
@@ -175,6 +179,7 @@ void Movable::UpdateCoordinates() {
 void Movable::ReturnToOriginal() {
   cur_upper_left_x_ = prev_upper_left_x_;
   cur_upper_left_y_ = prev_upper_left_y_;
+  opacity_ = prev_opacity_;
 }
 
 int Movable::GetSpeed() const { return current_speed_; }

@@ -30,7 +30,7 @@ void Tank::UpdateCoordinates(int cell_x, int cell_y) {
     if (GetTimeToFinishMovement() == 0) {
       cell_x_ = cell_x;
       cell_y_ = cell_y;
-      return;
+      copy_existence_ = false;
     }
 
     int cur_cell_width =
@@ -43,6 +43,7 @@ void Tank::UpdateCoordinates(int cell_x, int cell_y) {
 
     double movement_proportion =
         static_cast<double>(time_to_finish_movement_) / current_speed_;
+    opacity_ = 1 - movement_proportion;
 
     prev_upper_left_x_ = cur_upper_left_x_;
     prev_upper_left_y_ = cur_upper_left_y_;
@@ -62,7 +63,7 @@ void Tank::UpdateCoordinates(int cell_x, int cell_y) {
       if (movement_proportion <= 0.5) {
         opacity_ = 0.5;
       }
-    } else if (opacity_ < 1) {
+    } else if (copy_existence_) {
       opacity_ = 1;
     }
 

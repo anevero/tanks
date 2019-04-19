@@ -87,7 +87,9 @@ class Movable : public std::enable_shared_from_this<Movable> {
   int current_rotate_degree_;
   int time_to_finish_rotation_ = 0;
   int rotate_reverse_ = 1;
-  double opacity_ = 1.;
+  double opacity_ = 1;
+  double prev_opacity_ = 1;
+  bool copy_existence_ = false;
 
   QImage image_;
   QImage scaled_image_;

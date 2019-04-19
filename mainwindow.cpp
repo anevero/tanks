@@ -366,10 +366,24 @@ void MainWindow::RedrawContent() {
         std::shared_ptr<Obstacle>(new Obstacle(map_, x, y));
   }
 
-  obstacles_and_bonuses_[1][1] =
-          std::shared_ptr<Portal>(new Portal(map_, 1, 1, 11, 11));
-  obstacles_and_bonuses_[11][11] =
-          std::shared_ptr<Portal>(new Portal(map_, 11, 11, 1, 1));
+  QJsonArray portals =
+      json["difficulty"]
+          .toArray()[current_game_options_.difficulty_level_number]
+          .toObject()["portals"]
+          .toArray();
+
+  for (int i = 0; i < portals.size(); ++i) {
+    int curr_x = portals[i].toArray()[0].toInt();
+    int curr_y = portals[i].toArray()[1].toInt();
+    int new_x = portals[i].toArray()[2].toInt();
+    int new_y = portals[i].toArray()[3].toInt();
+    obstacles_and_bonuses_[static_cast<unsigned int>(
+        curr_x)][static_cast<unsigned int>(curr_y)] =
+        std::shared_ptr<Portal>(new Portal(map_, curr_x, curr_y, new_x, new_y));
+    obstacles_and_bonuses_[static_cast<unsigned int>(
+        new_x)][static_cast<unsigned int>(new_y)] =
+        std::shared_ptr<Portal>(new Portal(map_, new_x, new_y, curr_x, curr_y));
+  }
 
   timer_id_ = startTimer(timer_duration_);
   repaint();

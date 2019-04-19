@@ -2,7 +2,7 @@
 
 Boom::Boom(std::shared_ptr<Map>& map, std::shared_ptr<Movable>& tank, int speed)
     : Movable(map, tank->GetCellX(), tank->GetCellY(), tank->GetDirection(),
-              speed) {  
+              speed) {
   LoadImage();
   opacity_ = 0.85;
 }
