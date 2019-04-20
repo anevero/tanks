@@ -1,6 +1,6 @@
 #include "bot.h"
 
-Bot::Bot(const std::shared_ptr<Map>& map, const BotQualities qualities)
+Bot::Bot(const std::shared_ptr<Map>& map, const BotQualities& qualities)
     : Tank(map, qualities.init_cell_x, qualities.init_cell_y, qualities.tank),
       moving_length_(qualities.moving_length),
       amount_of_turns_(qualities.amount_of_turns),
