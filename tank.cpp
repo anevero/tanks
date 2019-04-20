@@ -1,7 +1,7 @@
 ﻿#include "tank.h"
 
-Tank::Tank(std::shared_ptr<Map>& map, int init_cell_x, int init_cell_y,
-           TankQualities qualities)
+Tank::Tank(const std::shared_ptr<Map>& map, const int init_cell_x,
+           const int init_cell_y, const TankQualities qualities)
     : Movable(map, init_cell_x, init_cell_y, qualities.direction,
               qualities.speed),
       rate_of_fire_(qualities.rate_of_fire),

@@ -7,6 +7,7 @@
 #include <QVector>
 #include <algorithm>
 #include <memory>
+#include <vector>
 #include "map.h"
 #include "objectonmap.h"
 
@@ -14,13 +15,13 @@ enum class Direction { Up = 0, Right = 1, Down = 2, Left = 3 };
 
 class Movable {
  public:
-  Movable(std::shared_ptr<Map>& map, int cell_x, int cell_y,
-          Direction direction, int speed);
+  Movable(const std::shared_ptr<Map>& map, const int cell_x, const int cell_y,
+          const Direction direction, const int speed);
   virtual ~Movable() = default;
   virtual void LoadImage() = 0;
 
   virtual void StartMovement(
-      int number_of_cells, QList<std::shared_ptr<Movable>>& tanks,
+      const int number_of_cells, const QList<std::shared_ptr<Movable>>& tanks,
       std::vector<std::vector<std::shared_ptr<ObjectOnMap>>>& objects);
   virtual void Move(const int milliseconds_passed);
   virtual void TurnReverseOn();
@@ -66,7 +67,7 @@ class Movable {
   int cur_width_{};
   int cur_height_{};
 
-  std::shared_ptr<Map> map_;
+  const std::shared_ptr<Map> map_;
   QVector<int> directions_ = {0, 0, 0, 0};
 
   int current_speed_{};

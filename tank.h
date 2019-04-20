@@ -17,8 +17,8 @@ struct TankQualities {
 
 class Tank : public Movable {
  public:
-  Tank(std::shared_ptr<Map>& map, int init_cell_x, int init_cell_y,
-       TankQualities qualities);
+  Tank(const std::shared_ptr<Map>& map, const int init_cell_x,
+       const int init_cell_y, const TankQualities qualities);
   virtual void LoadImage() override;
   void Draw(QPainter& painter) override;
   virtual void DrawHealth(QPainter& painter);

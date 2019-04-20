@@ -2,8 +2,8 @@
 #include "rocket.h"
 #include "tank.h"
 
-Movable::Movable(std::shared_ptr<Map>& map, int cell_x, int cell_y,
-                 Direction direction, int speed)
+Movable::Movable(const std::shared_ptr<Map>& map, const int cell_x,
+                 const int cell_y, const Direction direction, const int speed)
     : cell_x_(cell_x),
       cell_y_(cell_y),
       map_(map),
@@ -14,7 +14,7 @@ Movable::Movable(std::shared_ptr<Map>& map, int cell_x, int cell_y,
 }
 
 void Movable::StartMovement(
-    int number_of_cells, QList<std::shared_ptr<Movable>>& tanks,
+    const int number_of_cells, const QList<std::shared_ptr<Movable>>& tanks,
     std::vector<std::vector<std::shared_ptr<ObjectOnMap>>>& objects) {
   int new_cell_x = cell_x_ + reverse_ * (directions_[1] - directions_[3]);
   int new_cell_y = cell_y_ + reverse_ * (directions_[2] - directions_[0]);
@@ -29,7 +29,6 @@ void Movable::StartMovement(
           object->GetCellY() == new_cell_y) {
         cells_to_finish_movement_ = 0;
         object->cells_to_finish_movement_ = 0;
-        // зануление параметров движения танка
         return;
       }
     }
@@ -134,26 +133,20 @@ void Movable::UpdateCoordinates() {
 }
 
 int Movable::GetSpeed() const { return current_speed_; }
-
 int Movable::GetTimeToFinishMovement() const {
   return time_to_finish_movement_;
 }
-
 int Movable::GetCellsToFinishMovement() const {
   return cells_to_finish_movement_;
 }
-
 int Movable::GetTimeToFinishRotation() const {
   return time_to_finish_rotation_;
 }
-
 bool Movable::IsMovingOrRotating() const {
   return (GetTimeToFinishMovement() > 0 || GetTimeToFinishRotation() != 0 ||
           GetCellsToFinishMovement() != 0);
 }
-
 int Movable::GetReverseState() const { return reverse_; }
-
 int Movable::GetRotationReverseState() const { return rotate_reverse_; }
 
 int Movable::GetIntDirection() const {

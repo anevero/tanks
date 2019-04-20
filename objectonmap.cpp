@@ -1,6 +1,7 @@
 ﻿#include "objectonmap.h"
 
-ObjectOnMap::ObjectOnMap(std::shared_ptr<Map>& map, int x, int y)
+ObjectOnMap::ObjectOnMap(const std::shared_ptr<Map>& map, const int x,
+                         const int y)
     : map_(map), x_(x), y_(y) {}
 
 void ObjectOnMap::Draw(QPainter& painter) {
@@ -35,11 +36,12 @@ void ObjectOnMap::UpdateCoordinates() {
   cur_upper_left_y_ = map_->GetUpperLeftY() + y_ * cur_height_;
 }
 
-int ObjectOnMap::GetX() { return x_; }
+int ObjectOnMap::GetX() const { return x_; }
 
-int ObjectOnMap::GetY() { return y_; }
+int ObjectOnMap::GetY() const { return y_; }
 
-MedicalKit::MedicalKit(std::shared_ptr<Map>& map, int x, int y)
+MedicalKit::MedicalKit(const std::shared_ptr<Map>& map, const int x,
+                       const int y)
     : ObjectOnMap(map, x, y) {
   LoadImage();
 }
@@ -49,7 +51,7 @@ void MedicalKit::LoadImage() {
   scaled_image_ = image_;
 }
 
-Obstacle::Obstacle(std::shared_ptr<Map>& map, int x, int y)
+Obstacle::Obstacle(const std::shared_ptr<Map>& map, const int x, const int y)
     : ObjectOnMap(map, x, y) {
   LoadImage();
 }
