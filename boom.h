@@ -4,17 +4,19 @@
 #include <QDebug>
 #include <QPainter>
 #include <memory>
+#include <vector>
 #include "tank.h"
 
 class Boom : public Movable {
  public:
-  Boom(std::shared_ptr<Map>& map, std::shared_ptr<Movable>& tank, int speed);
+  Boom(const std::shared_ptr<Map>& map, const std::shared_ptr<Movable>& tank,
+       const int speed);
   void LoadImage() override;
   void Draw(QPainter& painter) override;
 
   void UpdateCoordinates() override;
   void StartMovement(
-      int number_of_cells, QList<std::shared_ptr<Movable>>&,
+      const int number_of_cells, const QList<std::shared_ptr<Movable>>&,
       std::vector<std::vector<std::shared_ptr<ObjectOnMap>>>&) override;
 };
 

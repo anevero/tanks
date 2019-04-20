@@ -2,8 +2,8 @@
 #include "rocket.h"
 #include "tank.h"
 
-Movable::Movable(std::shared_ptr<Map>& map, int cell_x, int cell_y,
-                 Direction direction, int speed)
+Movable::Movable(const std::shared_ptr<Map>& map, const int cell_x,
+                 const int cell_y, const Direction direction, const int speed)
     : cell_x_(cell_x),
       cell_y_(cell_y),
       map_(map),
@@ -14,7 +14,7 @@ Movable::Movable(std::shared_ptr<Map>& map, int cell_x, int cell_y,
 }
 
 void Movable::StartMovement(
-    int number_of_cells, QList<std::shared_ptr<Movable>>& tanks,
+    const int number_of_cells, const QList<std::shared_ptr<Movable>>& tanks,
     std::vector<std::vector<std::shared_ptr<ObjectOnMap>>>& objects) {
   int new_cell_x = cell_x_ + reverse_ * (directions_[1] - directions_[3]);
   int new_cell_y = cell_y_ + reverse_ * (directions_[2] - directions_[0]);
@@ -29,7 +29,6 @@ void Movable::StartMovement(
           object->GetCellY() == new_cell_y) {
         cells_to_finish_movement_ = 0;
         object->cells_to_finish_movement_ = 0;
-        // зануление параметров движения танка
         return;
       }
     }
@@ -77,7 +76,7 @@ void Movable::StartMovement(
   cells_to_finish_movement_ = number_of_cells - 1;
 }
 
-void Movable::Move(int milliseconds_passed) {
+void Movable::Move(const int milliseconds_passed) {
   time_to_finish_movement_ -= milliseconds_passed;
 }
 
@@ -96,7 +95,7 @@ void Movable::StartRotation() {
   time_to_finish_rotation_ = current_speed_;
 }
 
-void Movable::Rotate(int milliseconds_passed) {
+void Movable::Rotate(const int milliseconds_passed) {
   time_to_finish_rotation_ -= milliseconds_passed;
 }
 
@@ -105,28 +104,23 @@ void Movable::TurnRotationReverseOn() { rotate_reverse_ = -1; }
 void Movable::TurnRotationReverseOff() { rotate_reverse_ = 1; }
 
 void Movable::UpdateCoordinates() {
-  int cur_cell_width =
-      static_cast<int>(map_->GetWidth() / map_->GetNumberOfCellsHorizontally());
-  int cur_cell_height =
-      static_cast<int>(map_->GetHeight() / map_->GetNumberOfCellsVertically());
-
-  cur_width_ = cur_cell_width;
-  cur_height_ = cur_cell_height;
+  cur_width_ = map_->GetCellWidth();
+  cur_height_ = map_->GetCellHeight();
 
   double movement_proportion =
       static_cast<double>(time_to_finish_movement_) / current_speed_;
 
   cur_upper_left_x_ =
-      map_->GetUpperLeftX() + (cur_cell_width * cell_x_) -
-      reverse_ * static_cast<int>(
-                     (directions_[1] * cur_cell_width * movement_proportion) -
-                     (directions_[3] * cur_cell_width * movement_proportion));
+      map_->GetUpperLeftX() + (cur_width_ * cell_x_) -
+      reverse_ *
+          static_cast<int>((directions_[1] * cur_width_ * movement_proportion) -
+                           (directions_[3] * cur_width_ * movement_proportion));
 
   cur_upper_left_y_ =
-      map_->GetUpperLeftY() + (cur_cell_height * cell_y_) -
+      map_->GetUpperLeftY() + (cur_height_ * cell_y_) -
       reverse_ * static_cast<int>(
-                     (directions_[2] * cur_cell_height * movement_proportion) -
-                     (directions_[0] * cur_cell_height * movement_proportion));
+                     (directions_[2] * cur_height_ * movement_proportion) -
+                     (directions_[0] * cur_height_ * movement_proportion));
 
   double rotation_proportion =
       static_cast<double>(time_to_finish_rotation_) / current_speed_;
@@ -139,26 +133,20 @@ void Movable::UpdateCoordinates() {
 }
 
 int Movable::GetSpeed() const { return current_speed_; }
-
 int Movable::GetTimeToFinishMovement() const {
   return time_to_finish_movement_;
 }
-
 int Movable::GetCellsToFinishMovement() const {
   return cells_to_finish_movement_;
 }
-
 int Movable::GetTimeToFinishRotation() const {
   return time_to_finish_rotation_;
 }
-
 bool Movable::IsMovingOrRotating() const {
   return (GetTimeToFinishMovement() > 0 || GetTimeToFinishRotation() != 0 ||
           GetCellsToFinishMovement() != 0);
 }
-
 int Movable::GetReverseState() const { return reverse_; }
-
 int Movable::GetRotationReverseState() const { return rotate_reverse_; }
 
 int Movable::GetIntDirection() const {

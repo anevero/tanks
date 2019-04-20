@@ -17,19 +17,19 @@ struct TankQualities {
 
 class Tank : public Movable {
  public:
-  Tank(std::shared_ptr<Map>& map, int init_cell_x, int init_cell_y,
-       TankQualities qualities);
+  Tank(const std::shared_ptr<Map>& map, const int init_cell_x,
+       const int init_cell_y, const TankQualities& qualities);
   virtual void LoadImage() override;
   void Draw(QPainter& painter) override;
   virtual void DrawHealth(QPainter& painter);
 
   virtual bool IsAbleToShoot() const;
-  virtual void IncreaseTimeSinceLastShot(int delta);
+  virtual void IncreaseTimeSinceLastShot(const int delta);
   virtual void SetZeroTimeFromLastShot();
   virtual int GetCurrentHealth() const;
   virtual int GetMaxHealth() const;
-  virtual void MinusHealth(int health = 10);
-  virtual void PlusHealth(int health = 10);
+  virtual void MinusHealth(const int health = 10);
+  virtual void PlusHealth(const int health = 10);
   virtual bool IsDead() const;
 
  protected:
