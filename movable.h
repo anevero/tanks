@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <cmath>
 #include <memory>
+#include <vector>
 #include "map.h"
 #include "objectonmap.h"
 #include "portal.h"
@@ -20,21 +21,21 @@ struct Coordinates {
 
 class Movable : public std::enable_shared_from_this<Movable> {
  public:
-  Movable(std::shared_ptr<Map>& map, int cell_x, int cell_y,
-          Direction direction, int speed);
+  Movable(const std::shared_ptr<Map>& map, const int cell_x, const int cell_y,
+          const Direction direction, const int speed);
   virtual ~Movable() = default;
   virtual void LoadImage() = 0;
 
   virtual void StartMovement(
-      int number_of_cells, QList<std::shared_ptr<Movable>>& tanks,
+      const int number_of_cells, const QList<std::shared_ptr<Movable>>& tanks,
       QList<QPair<std::shared_ptr<Movable>, Coordinates>>& objects_copies_,
       std::vector<std::vector<std::shared_ptr<ObjectOnMap>>>& objects);
-  virtual void Move(int milliseconds_passed);
+  virtual void Move(const int milliseconds_passed);
   virtual void TurnReverseOn();
   virtual void TurnReverseOff();
 
   virtual void StartRotation();
-  virtual void Rotate(int milliseconds_passed);
+  virtual void Rotate(const int milliseconds_passed);
   virtual void TurnRotationReverseOn();
   virtual void TurnRotationReverseOff();
 
@@ -78,7 +79,7 @@ class Movable : public std::enable_shared_from_this<Movable> {
   int cur_width_{};
   int cur_height_{};
 
-  std::shared_ptr<Map> map_;
+  const std::shared_ptr<Map> map_;
   QVector<int> directions_ = {0, 0, 0, 0};
 
   int current_speed_{};

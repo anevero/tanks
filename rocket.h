@@ -8,8 +8,8 @@
 
 class Rocket : public Movable {
  public:
-  Rocket(std::shared_ptr<Map>& map, std::shared_ptr<Tank>& tank, int speed,
-         int power);
+  Rocket(const std::shared_ptr<Map>& map, const std::shared_ptr<Tank>& tank,
+         const int speed, const int power);
   void LoadImage() override;
   void Draw(QPainter& painter) override;
 
@@ -17,8 +17,8 @@ class Rocket : public Movable {
   int GetPower() const;
 
  private:
-  std::shared_ptr<Tank> tank_;
-  int power_ = 0;
+  const std::shared_ptr<Tank> tank_;
+  const int power_;
 };
 
 #endif  // ROCKET_H

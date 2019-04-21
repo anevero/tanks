@@ -1,7 +1,7 @@
 ﻿#include "tank.h"
 
-Tank::Tank(std::shared_ptr<Map>& map, int init_cell_x, int init_cell_y,
-           TankQualities qualities)
+Tank::Tank(const std::shared_ptr<Map>& map, const int init_cell_x,
+           const int init_cell_y, const TankQualities& qualities)
     : Movable(map, init_cell_x, init_cell_y, qualities.direction,
               qualities.speed),
       rate_of_fire_(qualities.rate_of_fire),
@@ -100,20 +100,15 @@ bool Tank::IsAbleToShoot() const {
   return time_since_last_shot_ >= rate_of_fire_;
 }
 
-void Tank::IncreaseTimeSinceLastShot(int delta) {
+void Tank::IncreaseTimeSinceLastShot(const int delta) {
   if (time_since_last_shot_ <= rate_of_fire_) {
     time_since_last_shot_ += delta;
   }
 }
 
 void Tank::SetZeroTimeFromLastShot() { time_since_last_shot_ = 0; }
-
 int Tank::GetCurrentHealth() const { return current_health_; }
-
 int Tank::GetMaxHealth() const { return max_health_; }
-
-void Tank::MinusHealth(int health) { current_health_ -= health; }
-
-void Tank::PlusHealth(int health) { current_health_ += health; }
-
+void Tank::MinusHealth(const int health) { current_health_ -= health; }
+void Tank::PlusHealth(const int health) { current_health_ += health; }
 bool Tank::IsDead() const { return current_health_ <= 0; }

@@ -1,6 +1,7 @@
 #include "improvedbot.h"
 
-ImprovedBot::ImprovedBot(std::shared_ptr<Map>& map, BotQualities qualities)
+ImprovedBot::ImprovedBot(const std::shared_ptr<Map>& map,
+                         const BotQualities& qualities)
     : Bot(map, qualities) {
   LoadImage();
 }
@@ -10,7 +11,7 @@ void ImprovedBot::LoadImage() {
   scaled_image_ = image_;
 }
 
-bool ImprovedBot::IsRotationStartNeeded(const std::shared_ptr<Tank> tank) {
+bool ImprovedBot::IsRotationStartNeeded(const std::shared_ptr<Tank>& tank) {
   if (time_to_finish_rotation_ <= 0 && time_to_finish_movement_ <= 0) {
     if (number_of_turns_ > 0) {
       number_of_turns_--;
@@ -33,8 +34,8 @@ bool ImprovedBot::IsRotationStartNeeded(const std::shared_ptr<Tank> tank) {
   return false;
 }
 
-bool ImprovedBot::IsShotNeeded(const std::shared_ptr<Map> map,
-                               const std::shared_ptr<Tank> tank) {
+bool ImprovedBot::IsShotNeeded(const std::shared_ptr<Map>& map,
+                               const std::shared_ptr<Tank>& tank) {
   if (time_to_finish_rotation_ <= 0 && time_to_finish_movement_ <= 0) {
     int direction = GetIntDirection();
     int tank_x = tank->GetCellX();

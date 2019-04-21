@@ -1,7 +1,8 @@
 #include "rocket.h"
 
-Rocket::Rocket(std::shared_ptr<Map>& map, std::shared_ptr<Tank>& tank,
-               int speed, int power)
+Rocket::Rocket(const std::shared_ptr<Map>& map,
+               const std::shared_ptr<Tank>& tank, const int speed,
+               const int power)
     : Movable(map, tank->GetCellX(), tank->GetCellY(), tank->GetDirection(),
               speed),
       tank_(tank),

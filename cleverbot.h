@@ -1,21 +1,23 @@
 #ifndef CLEVERBOT_H
 #define CLEVERBOT_H
 
+#include <QQueue>
+#include <QVector>
+#include <memory>
 #include "improvedbot.h"
 #include "portal.h"
-#include <QVector>
-#include <QQueue>
 
 class CleverBot : public ImprovedBot {
  public:
-  CleverBot(std::shared_ptr<Map>& map, BotQualities qualities);
+  CleverBot(const std::shared_ptr<Map>& map, const BotQualities& qualities);
   void LoadImage() override;
 
  protected:
-  bool IsRotationStartNeeded(const std::shared_ptr<Tank> tank) override;
-  bool IsMovingStartNeeded(const QList<std::shared_ptr<Movable>>& objects,
-                           const std::vector<std::vector<std::shared_ptr<
-                           ObjectOnMap>>>& portals) override;
+  bool IsRotationStartNeeded(const std::shared_ptr<Tank>&) override;
+  bool IsMovingStartNeeded(
+      const QList<std::shared_ptr<Movable>>& objects,
+      const std::vector<std::vector<std::shared_ptr<
+          ObjectOnMap>>>& portals) override;) override;
 
  private:
   struct CellInfo {
@@ -27,12 +29,9 @@ class CleverBot : public ImprovedBot {
   };
   QVector<QVector<int>> distance_;
 
-  void Bfs(const QList<std::shared_ptr<Movable>> objects,
+  void Bfs(const QList<std::shared_ptr<Movable>>& objects,
            const std::vector<std::vector<std::shared_ptr<
-           ObjectOnMap>>>& portals, int cell_x, int cell_y);
-
-  int height_;
-  int width_;
+               ObjectOnMap>>>& portals, int cell_x, int cell_y);
 };
 
-#endif // CLEVERBOT_H
+#endif  // CLEVERBOT_H

@@ -1,6 +1,7 @@
 ﻿#include "cleverbot.h"
 
-CleverBot::CleverBot(std::shared_ptr<Map>& map, BotQualities qualities)
+CleverBot::CleverBot(const std::shared_ptr<Map>& map,
+                     const BotQualities& qualities)
     : ImprovedBot(map, qualities) {
   LoadImage();
   height_ = map_->GetNumberOfCellsVertically();
@@ -18,7 +19,7 @@ void CleverBot::LoadImage() {
   scaled_image_ = image_;
 }
 
-bool CleverBot::IsRotationStartNeeded(const std::shared_ptr<Tank> tank) {
+bool CleverBot::IsRotationStartNeeded(const std::shared_ptr<Tank>&) {
   if (time_to_finish_rotation_ <= 0 && time_to_finish_movement_ <= 0) {
     if (number_of_turns_ > 0) {
       number_of_turns_--;
@@ -91,9 +92,9 @@ bool CleverBot::IsMovingStartNeeded(const QList<std::shared_ptr<Movable>>& objec
   return false;
 }
 
-void CleverBot::Bfs(const QList<std::shared_ptr<Movable>> objects,
+void CleverBot::Bfs(const QList<std::shared_ptr<Movable>>& objects,
                     const std::vector<std::vector<std::shared_ptr<
-                    ObjectOnMap>>>& portals, int cell_x, int cell_y) {
+                        ObjectOnMap>>>& portals, int cell_x, int cell_y) {
   QQueue<CellInfo> cells;
   cells.push_back({cell_x, cell_y, cell_x, cell_y, 0});
 
