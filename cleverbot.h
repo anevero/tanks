@@ -13,11 +13,11 @@ class CleverBot : public ImprovedBot {
   void LoadImage() override;
 
  protected:
-  bool IsRotationStartNeeded(const std::shared_ptr<Tank>&) override;
+  bool IsRotationStartNeeded(const std::shared_ptr<Tank>& tank) override;
   bool IsMovingStartNeeded(
       const QList<std::shared_ptr<Movable>>& objects,
       const std::vector<std::vector<std::shared_ptr<
-          ObjectOnMap>>>& portals) override;) override;
+      ObjectOnMap>>>& portals) override;
 
  private:
   struct CellInfo {
@@ -32,6 +32,8 @@ class CleverBot : public ImprovedBot {
   void Bfs(const QList<std::shared_ptr<Movable>>& objects,
            const std::vector<std::vector<std::shared_ptr<
                ObjectOnMap>>>& portals, int cell_x, int cell_y);
+  int height_;
+  int width_;
 };
 
 #endif  // CLEVERBOT_H

@@ -19,7 +19,7 @@ void CleverBot::LoadImage() {
   scaled_image_ = image_;
 }
 
-bool CleverBot::IsRotationStartNeeded(const std::shared_ptr<Tank>&) {
+bool CleverBot::IsRotationStartNeeded(const std::shared_ptr<Tank>& tank) {
   if (time_to_finish_rotation_ <= 0 && time_to_finish_movement_ <= 0) {
     if (number_of_turns_ > 0) {
       number_of_turns_--;
