@@ -26,9 +26,11 @@ class Bot : public Tank {
 
   virtual bool IsTurnNeeded() const;
   virtual bool IsMoveNeeded() const;
-  virtual bool IsRotationStartNeeded(std::shared_ptr<Tank>);
-  virtual bool IsMovingStartNeeded(const QList<std::shared_ptr<Movable>>&);
-  virtual bool IsShotNeeded(std::shared_ptr<Map>, std::shared_ptr<Tank>);
+  virtual bool IsRotationStartNeeded(const std::shared_ptr<Tank>);
+  virtual bool IsMovingStartNeeded(const QList<std::shared_ptr<Movable>>&,
+                                   const std::vector<std::vector<
+                                   std::shared_ptr<ObjectOnMap>>>&);
+  virtual bool IsShotNeeded(const std::shared_ptr<Map>, const std::shared_ptr<Tank>);
 
  protected:
   int number_of_cells_to_move_ = 0;
@@ -37,11 +39,14 @@ class Bot : public Tank {
   const int amount_of_turns_;
   const int side_rotation_frequency_;
 
-  virtual bool CheckDirection(int& tank, int& bot, int direction);
-  bool IsWallBetweenObjectsX(std::shared_ptr<Map> map,
-                             int tank_x, int tank_y, int bot_x, int bot_y);
-  bool IsWallBetweenObjectsY(std::shared_ptr<Map> map,
-                             int tank_x, int tank_y, int bot_x, int bot_y);
+  virtual bool CheckDirection(const int& tank, const int& bot,
+                              const int direction);
+  bool IsWallBetweenObjectsX(const std::shared_ptr<Map> map,
+                             const int tank_x, const int tank_y,
+                             const int bot_x, const int bot_y) const;
+  bool IsWallBetweenObjectsY(const std::shared_ptr<Map> map,
+                             const int tank_x, const int tank_y,
+                             const int bot_x, const int bot_y) const;
 };
 
 #endif  // BOT_H

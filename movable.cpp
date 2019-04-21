@@ -75,20 +75,17 @@ void Movable::StartMovement(
                 objects[static_cast<unsigned>(new_cell_x)]
                 [static_cast<unsigned>(new_cell_y)]);
 
-        int x = portal->GetNewCellX();
-        int y = portal->GetNewCellY();
-        if (new_cell_y - cell_y_ == -1) { y--; }
-        else if (new_cell_y - cell_y_ == 1) { y++; }
-        else if (new_cell_x - cell_x_ == -1) { x--; }
-        else { x++; }
+        Coordinates cells = GetNewPortalCells(portal->GetNewCellX(),
+                                              portal->GetNewCellY(),
+                                              new_cell_x, new_cell_y);
 
-        if (map_->GetField(x, y) == CellType::Wall) { return; }
+        if (map_->GetField(cells.x, cells.y) == CellType::Wall) { return; }
         for (const auto& object : tanks) {
-          if (object->GetCellX() == x && object->GetCellY() == y) {
+          if (object->GetCellX() == cells.x && object->GetCellY() == cells.y) {
             return;
           }
         }
-        objects_copies_.append({shared_from_this(), {x, y}});
+        objects_copies_.append({shared_from_this(), {cells.x, cells.y}});
         copy_existence_ = true;
       }
     } else {
@@ -228,6 +225,16 @@ int Movable::GetWidth() const { return cur_width_; }
 int Movable::GetHeight() const { return cur_height_; }
 int Movable::GetCellX() const { return cell_x_; }
 int Movable::GetCellY() const { return cell_y_; }
+
+Coordinates Movable::GetNewPortalCells(int portal_cell_x, int portal_cell_y,
+                              int new_cell_x, int new_cell_y) {
+  Coordinates cells = {portal_cell_x, portal_cell_y};
+  if (new_cell_y - cell_y_ == -1) { cells.y--; }
+  else if (new_cell_y - cell_y_ == 1) { cells.y++; }
+  else if (new_cell_x - cell_x_ == -1) { cells.x--; }
+  else { cells.x++; }
+  return cells;
+}
 
 void Movable::SwitchToNextDirection() {
   int current_direction = GetIntDirection();

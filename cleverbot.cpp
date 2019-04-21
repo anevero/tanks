@@ -18,7 +18,7 @@ void CleverBot::LoadImage() {
   scaled_image_ = image_;
 }
 
-bool CleverBot::IsRotationStartNeeded(std::shared_ptr<Tank> tank) {
+bool CleverBot::IsRotationStartNeeded(const std::shared_ptr<Tank> tank) {
   if (time_to_finish_rotation_ <= 0 && time_to_finish_movement_ <= 0) {
     if (number_of_turns_ > 0) {
       number_of_turns_--;
@@ -31,11 +31,12 @@ bool CleverBot::IsRotationStartNeeded(std::shared_ptr<Tank> tank) {
   return false;
 }
 
-bool CleverBot::IsMovingStartNeeded(
-    const QList<std::shared_ptr<Movable>>& objects) {
+bool CleverBot::IsMovingStartNeeded(const QList<std::shared_ptr<Movable>>& objects,
+                                    const std::vector<std::vector<std::shared_ptr<
+                                    ObjectOnMap>>>& portals) {
   auto tank = objects[0];
   if (time_to_finish_movement_ <= 0 && time_to_finish_rotation_ <= 0) {
-    Bfs(objects, tank->GetCellX(), tank->GetCellY());
+    Bfs(objects, portals, tank->GetCellX(), tank->GetCellY());
     int direction = GetIntDirection();
     int cell_x = GetCellX();
     int cell_y = GetCellY();
@@ -54,7 +55,7 @@ bool CleverBot::IsMovingStartNeeded(
 
     if (map_->GetField(tank->GetCellX(), tank->GetCellY()) ==
         CellType::Forest) {
-      return Bot::IsMovingStartNeeded(objects);
+      return Bot::IsMovingStartNeeded(objects, portals);
     } else if (distance_[cell_x - delta_x][cell_y - delta_y] ==
         distance_[cell_x][cell_y] - 1) {
       if (distance_[cell_x][cell_y] - 1 ==
@@ -90,10 +91,11 @@ bool CleverBot::IsMovingStartNeeded(
   return false;
 }
 
-void CleverBot::Bfs(const QList<std::shared_ptr<Movable>> objects, int cell_x,
-                    int cell_y) {
+void CleverBot::Bfs(const QList<std::shared_ptr<Movable>> objects,
+                    const std::vector<std::vector<std::shared_ptr<
+                    ObjectOnMap>>>& portals, int cell_x, int cell_y) {
   QQueue<CellInfo> cells;
-  cells.push_back({cell_x, cell_y, 0});
+  cells.push_back({cell_x, cell_y, cell_x, cell_y, 0});
 
   for (int i = 0; i < height_; ++i) {
     for (int j = 0; j < width_; ++j) {
@@ -104,9 +106,11 @@ void CleverBot::Bfs(const QList<std::shared_ptr<Movable>> objects, int cell_x,
   while (!cells.empty()) {
     cell_x = cells.front().cell_x;
     cell_y = cells.front().cell_y;
+    int prev_cell_x = cells.front().prev_cell_x;
+    int prev_cell_y = cells.front().prev_cell_y;
     int current_distance = cells.front().distance;
     cells.pop_front();
-    if (cell_x < 0 || cell_x >= width_ || cell_y < 0 || cell_y >= height_) {
+    if (cell_x <= 0 || cell_x >= width_ || cell_y <= 0 || cell_y >= height_) {
       continue;
     }
     if (map_->GetField(cell_x, cell_y) == CellType::Wall) {
@@ -132,10 +136,33 @@ void CleverBot::Bfs(const QList<std::shared_ptr<Movable>> objects, int cell_x,
       continue;
     }
 
+    if (std::dynamic_pointer_cast<Portal>(portals[static_cast<unsigned>(
+                    cell_x)][static_cast<unsigned>(cell_y)]) != nullptr) {
+      std::shared_ptr<Portal> portal = std::dynamic_pointer_cast<Portal>(
+              portals[static_cast<unsigned>(cell_x)]
+              [static_cast<unsigned>(cell_y)]);
+      distance_[portal->GetNewCellX()][portal->GetNewCellY()] = current_distance - 1;
+      int portal_cell_x = portal->GetNewCellX();
+      int portal_cell_y = portal->GetNewCellY();
+      if (cell_x - prev_cell_x == 1) {
+        portal_cell_x++;
+      } else if (cell_x - prev_cell_x == -1) {
+        portal_cell_x--;
+      } else if (cell_y - prev_cell_y == 1) {
+        portal_cell_y++;
+      } else {
+        portal_cell_y--;
+      }
+
+      cells.push_back({portal_cell_x, portal_cell_y, portal->GetX(),
+                       portal->GetY(), current_distance});
+      continue;
+    }
+
     distance_[cell_x][cell_y] = current_distance;
-    cells.push_back({cell_x + 1, cell_y, current_distance + 1});
-    cells.push_back({cell_x - 1, cell_y, current_distance + 1});
-    cells.push_back({cell_x, cell_y + 1, current_distance + 1});
-    cells.push_back({cell_x, cell_y - 1, current_distance + 1});
+    cells.push_back({cell_x + 1, cell_y, cell_x, cell_y, current_distance + 1});
+    cells.push_back({cell_x - 1, cell_y, cell_x, cell_y, current_distance + 1});
+    cells.push_back({cell_x, cell_y + 1, cell_x, cell_y, current_distance + 1});
+    cells.push_back({cell_x, cell_y - 1, cell_x, cell_y, current_distance + 1});
   }
 }

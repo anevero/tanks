@@ -11,9 +11,9 @@ class ImprovedBot : public Bot {
   virtual void LoadImage() override;
 
  protected:
-  bool CheckDirection(int& tank, int& bot, int direction) override;
-  bool IsRotationStartNeeded(std::shared_ptr<Tank> tank) override;
-  bool IsShotNeeded(std::shared_ptr<Map>, std::shared_ptr<Tank>) override;
+  bool CheckDirection(const int& tank, const int& bot, const int direction) override;
+  bool IsRotationStartNeeded(const std::shared_ptr<Tank> tank) override;
+  bool IsShotNeeded(const std::shared_ptr<Map>, const std::shared_ptr<Tank>) override;
 
  private:
   bool ChangeDirection();

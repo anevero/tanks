@@ -166,10 +166,10 @@ void MainWindow::timerEvent(QTimerEvent *) {
         ShootRocket(tank);
       }
 
-      if (bot->IsMovingStartNeeded(tanks_)) {
+      if (bot->IsMovingStartNeeded(tanks_, obstacles_and_bonuses_)) {
         bot->StartMovement(1, tanks_, objects_copies_, obstacles_and_bonuses_);
       } else if (bot->IsRotationStartNeeded(
-                     std::dynamic_pointer_cast<Tank>(tanks_[0]))) {
+          std::dynamic_pointer_cast<Tank>(tanks_[0]))) {
         bot->StartRotation();
       }
 
@@ -197,7 +197,7 @@ void MainWindow::timerEvent(QTimerEvent *) {
   while (copy != objects_copies_.end()) {
     if (copy->first->GetTimeToFinishMovement() <= 0) {
       std::dynamic_pointer_cast<Tank>(copy->first)->UpdateCoordinates(
-                  copy->second.x, copy->second.y);
+          copy->second.x, copy->second.y);
       copy = objects_copies_.erase(copy);
       continue;
     }
@@ -458,6 +458,16 @@ void MainWindow::CheckDeadObjects() {
       continue;
     }
     object++;
+  }
+
+  auto copy = objects_copies_.begin();
+  while (copy != objects_copies_.end()) {
+    if (std::dynamic_pointer_cast<Tank>(copy->first)->IsDead()) {
+      MakeBoom(copy->first);
+      copy = objects_copies_.erase(copy);
+      continue;
+    }
+    copy++;
   }
   if (tanks_.size() == number_of_player_tanks_) {
     GameOver();

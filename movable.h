@@ -65,6 +65,8 @@ class Movable : public std::enable_shared_from_this<Movable> {
   virtual void SwitchToNextDirection();
   virtual void SwitchToPrevDirection();
   virtual void RescaleImage();
+  Coordinates GetNewPortalCells(int portal_cell_x, int portal_cell_y,
+                                int new_cell_x, int new_cell_y);
 
   int cell_x_;
   int cell_y_;

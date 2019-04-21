@@ -256,14 +256,14 @@
           "initial_cell_y": 4,
           "moving_length": 10,
           "amount_of_turns": 1,
-          "side_rotation_frequency": 0,
+          "side_rotation_frequency": 4,
           "initial_direction": "left"
         },
         {
           "type": "clever",
           "initial_cell_x": 13,
           "initial_cell_y": 13,
-          "moving_length": 0,
+          "moving_length": 4,
           "amount_of_turns": 1,
           "side_rotation_frequency": 1,
           "initial_direction": "up"

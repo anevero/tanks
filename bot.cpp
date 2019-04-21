@@ -15,7 +15,7 @@ void Bot::LoadImage() {
 
 bool Bot::IsTurnNeeded() const { return time_to_finish_rotation_ > 0; }
 
-bool Bot::IsRotationStartNeeded(std::shared_ptr<Tank>) {
+bool Bot::IsRotationStartNeeded(const std::shared_ptr<Tank>) {
   if (time_to_finish_rotation_ <= 0 && time_to_finish_movement_ <= 0) {
     if (number_of_turns_ > 0) {
       number_of_turns_--;
@@ -37,7 +37,9 @@ bool Bot::IsRotationStartNeeded(std::shared_ptr<Tank>) {
 
 bool Bot::IsMoveNeeded() const { return time_to_finish_movement_ > 0; }
 
-bool Bot::IsMovingStartNeeded(const QList<std::shared_ptr<Movable>>&) {
+bool Bot::IsMovingStartNeeded(const QList<std::shared_ptr<Movable>>&,
+                              const std::vector<std::vector<
+                              std::shared_ptr<ObjectOnMap>>>&) {
   if (time_to_finish_movement_ <= 0 && time_to_finish_rotation_ <= 0) {
     if (number_of_cells_to_move_ == 0) {
       if (number_of_turns_ == 0) {
@@ -53,7 +55,7 @@ bool Bot::IsMovingStartNeeded(const QList<std::shared_ptr<Movable>>&) {
   return false;
 }
 
-bool Bot::IsShotNeeded(std::shared_ptr<Map> map, std::shared_ptr<Tank> tank) {
+bool Bot::IsShotNeeded(const std::shared_ptr<Map> map, const std::shared_ptr<Tank> tank) {
   if (time_to_finish_rotation_ == 0 && time_to_finish_movement_ == 0) {
     int direction = GetIntDirection();
     int tank_x = tank->GetCellX();
@@ -90,7 +92,7 @@ bool Bot::IsShotNeeded(std::shared_ptr<Map> map, std::shared_ptr<Tank> tank) {
   return false;
 }
 
-bool Bot::CheckDirection(int& tank, int& bot, int direction) {
+bool Bot::CheckDirection(const int& tank, const int& bot, const int direction) {
   if (tank > bot) {
     if (direction == 0 || direction == 3) {
       return false;
@@ -101,9 +103,9 @@ bool Bot::CheckDirection(int& tank, int& bot, int direction) {
   return true;
 }
 
-bool Bot::IsWallBetweenObjectsX(std::shared_ptr<Map> map,
-                                int tank_x, int tank_y,
-                                int bot_x, int bot_y) {
+bool Bot::IsWallBetweenObjectsX(const std::shared_ptr<Map> map,
+                                const int tank_x, const int tank_y,
+                                const int bot_x, const int bot_y) const {
   int walls_count = map->GetWallsPrecalc(bot_x, bot_y);
   walls_count += map->GetWallsPrecalc(tank_x - 1, tank_y - 1);
   walls_count -= map->GetWallsPrecalc(tank_x, tank_y - 1);
@@ -114,9 +116,9 @@ bool Bot::IsWallBetweenObjectsX(std::shared_ptr<Map> map,
   return false;
 }
 
-bool Bot::IsWallBetweenObjectsY(std::shared_ptr<Map> map,
-                                int tank_x, int tank_y,
-                                int bot_x, int bot_y) {
+bool Bot::IsWallBetweenObjectsY(const std::shared_ptr<Map> map,
+                                const int tank_x, const int tank_y,
+                                const int bot_x, const int bot_y) const {
   int walls_count = map->GetWallsPrecalc(bot_x, bot_y);
   walls_count += map->GetWallsPrecalc(tank_x - 1, tank_y - 1);
   walls_count -= map->GetWallsPrecalc(tank_x - 1, tank_y);
