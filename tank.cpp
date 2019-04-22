@@ -6,6 +6,7 @@ Tank::Tank(std::shared_ptr<Map>& map, int init_cell_x, int init_cell_y,
               qualities.speed),
       rate_of_fire_(qualities.rate_of_fire),
       current_health_(qualities.max_health),
+      type_of_charge_(0),
       light_current_charge_(qualities.max_light_charge),
       medium_current_charge_(qualities.max_medium_charge),
       hard_current_charge_(qualities.max_hard_charge),
@@ -67,6 +68,8 @@ int Tank::GetCurrentHealth() const { return current_health_; }
 int Tank::GetMaxHealth() const { return max_health_; }
 void Tank::MinusHealth(int health) { current_health_ -= health; }
 void Tank::PlusHealth(int health) { current_health_ += health; }
+void Tank::ChangeTypeOfCharge(int type) { type_of_charge_ = type; }
+int Tank::GetTypeOfCharge() const { return type_of_charge_; }
 int Tank::GetLightCurrentCharge() const { return light_current_charge_; }
 int Tank::GetMaxLightCharge() const { return max_light_charge_; }
 void Tank::MinusLightCharge(int charge) { light_current_charge_ -= charge; }

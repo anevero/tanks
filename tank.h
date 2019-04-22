@@ -34,6 +34,8 @@ class Tank : public Movable {
   virtual int GetMaxHealth() const;
   virtual void MinusHealth(int health = 10);
   virtual void PlusHealth(int health = 10);
+  void ChangeTypeOfCharge(int type);
+  int GetTypeOfCharge() const;
   int GetLightCurrentCharge() const;
   int GetMaxLightCharge() const;
   void MinusLightCharge(int charge = 1);
@@ -54,6 +56,7 @@ class Tank : public Movable {
   int rate_of_fire_;
   int time_since_last_shot_{};
   int current_health_{};
+  int type_of_charge_{};
   int light_current_charge_{};
   int medium_current_charge_{};
   int hard_current_charge_{};

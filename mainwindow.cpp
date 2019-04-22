@@ -104,6 +104,15 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event) {
         ShootRocket(tank);
       }
       break;
+    case Qt::Key_1:
+      tank->ChangeTypeOfCharge(0);
+      break;
+    case Qt::Key_2:
+      tank->ChangeTypeOfCharge(1);
+      break;
+    case Qt::Key_3:
+      tank->ChangeTypeOfCharge(2);
+      break;
   }
 }
 
@@ -503,7 +512,13 @@ void MainWindow::ShootRocket(std::shared_ptr<Tank> &tank) {
                           obstacles_and_bonuses_);
   }
   if (std::dynamic_pointer_cast<Bot>(tank) == nullptr) {
-    tank->MinusLightCharge();
+    if (tank->GetTypeOfCharge() == 0) {
+      tank->MinusLightCharge();
+    } else if (tank->GetTypeOfCharge() == 1) {
+      tank->MinusMediumCharge();
+    } else if (tank->GetTypeOfCharge() == 2) {
+      tank->MinusHardCharge();
+    }
   }
 }
 
