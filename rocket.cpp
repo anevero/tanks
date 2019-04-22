@@ -1,11 +1,12 @@
-#include "rocket.h"
+﻿#include "rocket.h"
 
 Rocket::Rocket(std::shared_ptr<Map>& map, std::shared_ptr<Tank>& tank,
-               int speed, int power)
+               int speed, int power, TypeOfRocket type)
     : Movable(map, tank->GetCellX(), tank->GetCellY(), tank->GetDirection(),
               speed),
       tank_(tank),
-      power_(power) {
+      power_(power),
+      type_(type) {
   LoadImage();
 }
 

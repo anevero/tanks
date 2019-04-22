@@ -40,6 +40,15 @@ MainWindow::MainWindow(QWidget *parent)
     ToggleVirtualKeys();
   }
 
+  types_of_rockets_.resize(3);
+  RocketParametrs light_rocket = {7, 100, true};
+  RocketParametrs medium_rocket = {15, 200, true};
+  RocketParametrs hard_rocket = {30, 300, false};
+  types_of_rockets_[static_cast<int>(TypeOfRocket::LightRocket)] = light_rocket;
+  types_of_rockets_[static_cast<int>(TypeOfRocket::MediumRocket)] =
+      medium_rocket;
+  types_of_rockets_[static_cast<int>(TypeOfRocket::HardRocket)] = hard_rocket;
+
   InitializeNewGameDialog();
   InitializeSettingsDialog();
 }
@@ -105,13 +114,13 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event) {
       }
       break;
     case Qt::Key_1:
-      tank->ChangeTypeOfCharge(0);
+      tank->ChangeTypeOfCharge(static_cast<int>(TypeOfRocket::LightRocket));
       break;
     case Qt::Key_2:
-      tank->ChangeTypeOfCharge(1);
+      tank->ChangeTypeOfCharge(static_cast<int>(TypeOfRocket::MediumRocket));
       break;
     case Qt::Key_3:
-      tank->ChangeTypeOfCharge(2);
+      tank->ChangeTypeOfCharge(static_cast<int>(TypeOfRocket::HardRocket));
       break;
   }
 }
@@ -502,7 +511,36 @@ void MainWindow::MakeBoom(std::shared_ptr<Movable> &object) {
 }
 
 void MainWindow::ShootRocket(std::shared_ptr<Tank> &tank) {
-  std::shared_ptr<Rocket> rocket(new Rocket(map_, tank, 250, 10));
+  std::shared_ptr<Rocket> rocket;
+  if (std::dynamic_pointer_cast<Bot>(tank) == nullptr) {
+    if (tank->GetTypeOfCharge() ==
+        static_cast<int>(TypeOfRocket::LightRocket)) {
+      rocket = std::shared_ptr<Rocket>(new Rocket(
+          map_, tank,
+          types_of_rockets_[static_cast<int>(TypeOfRocket::LightRocket)].speed_,
+          types_of_rockets_[static_cast<int>(TypeOfRocket::LightRocket)].power_,
+          TypeOfRocket::LightRocket));
+    } else if (tank->GetTypeOfCharge() ==
+               static_cast<int>(TypeOfRocket::MediumRocket)) {
+      rocket = std::shared_ptr<Rocket>(new Rocket(
+          map_, tank,
+          types_of_rockets_[static_cast<int>(TypeOfRocket::MediumRocket)]
+              .speed_,
+          types_of_rockets_[static_cast<int>(TypeOfRocket::MediumRocket)]
+              .power_,
+          TypeOfRocket::MediumRocket));
+    } else if (tank->GetTypeOfCharge() ==
+               static_cast<int>(TypeOfRocket::HardRocket)) {
+      rocket = std::shared_ptr<Rocket>(new Rocket(
+          map_, tank,
+          types_of_rockets_[static_cast<int>(TypeOfRocket::HardRocket)].speed_,
+          types_of_rockets_[static_cast<int>(TypeOfRocket::HardRocket)].power_,
+          TypeOfRocket::HardRocket));
+    }
+  } else {
+    rocket = std::shared_ptr<Rocket>(
+        new Rocket(map_, tank, 250, 10, TypeOfRocket::MediumRocket));
+  }
   rockets_.append(rocket);
   if (rocket->GetIntDirection() == 1 || rocket->GetIntDirection() == 3) {
     rocket->StartMovement(map_->GetNumberOfCellsHorizontally(), tanks_,
@@ -512,11 +550,14 @@ void MainWindow::ShootRocket(std::shared_ptr<Tank> &tank) {
                           obstacles_and_bonuses_);
   }
   if (std::dynamic_pointer_cast<Bot>(tank) == nullptr) {
-    if (tank->GetTypeOfCharge() == 0) {
+    if (tank->GetTypeOfCharge() ==
+        static_cast<int>(TypeOfRocket::LightRocket)) {
       tank->MinusLightCharge();
-    } else if (tank->GetTypeOfCharge() == 1) {
+    } else if (tank->GetTypeOfCharge() ==
+               static_cast<int>(TypeOfRocket::MediumRocket)) {
       tank->MinusMediumCharge();
-    } else if (tank->GetTypeOfCharge() == 2) {
+    } else if (tank->GetTypeOfCharge() ==
+               static_cast<int>(TypeOfRocket::HardRocket)) {
       tank->MinusHardCharge();
     }
   }

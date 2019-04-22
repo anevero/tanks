@@ -134,6 +134,8 @@ class MainWindow : public QMainWindow {
                                                tr("Hard")};
   QVector<TankQualities> available_tank_types_;
 
+  QVector<RocketParametrs> types_of_rockets_;
+
   int timer_duration_ = 10;
   int timer_id_ = 0;
   int time_since_tooltip_appearing_ = 0;

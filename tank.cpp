@@ -52,9 +52,20 @@ void Tank::DrawHealth(QPainter& painter) {
 }
 
 bool Tank::IsAbleToShoot() const {
-  return ((light_current_charge_ > 0 || medium_current_charge_ > 0 ||
-           hard_current_charge_ > 0) &&
-          time_since_last_shot_ >= rate_of_fire_);
+  if (time_since_last_shot_ >= rate_of_fire_) {
+    if (type_of_charge_ == 0 && light_current_charge_ > 0) {
+      return true;
+    } else if (type_of_charge_ == 1 && medium_current_charge_ > 0) {
+      return true;
+    } else if (type_of_charge_ == 2 && hard_current_charge_ > 0) {
+      return true;
+
+    } else {
+      return false;
+    }
+  } else {
+    return false;
+  }
 }
 
 void Tank::IncreaseTimeSinceLastShot(int delta) {

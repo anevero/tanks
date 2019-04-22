@@ -6,10 +6,18 @@
 #include <memory>
 #include "tank.h"
 
+enum class TypeOfRocket { LightRocket = 0, MediumRocket = 1, HardRocket = 2 };
+
+struct RocketParametrs {
+  int power_;
+  int speed_;
+  bool obstacle_;
+};
+
 class Rocket : public Movable {
  public:
   Rocket(std::shared_ptr<Map>& map, std::shared_ptr<Tank>& tank, int speed,
-         int power);
+         int power, TypeOfRocket type);
   void LoadImage() override;
   void Draw(QPainter& painter) override;
 
@@ -19,18 +27,7 @@ class Rocket : public Movable {
  private:
   std::shared_ptr<Tank> tank_;
   int power_ = 0;
-};
-
-class LightRocket : Rocket {
-  LightRocket();
-};
-
-class MediumRocket : Rocket {
-  MediumRocket();
-};
-
-class HardRocket : Rocket {
-  HardRocket();
+  TypeOfRocket type_;
 };
 
 #endif  // ROCKET_H
