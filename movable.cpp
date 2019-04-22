@@ -19,6 +19,8 @@ void Movable::StartMovement(
     std::vector<std::vector<std::shared_ptr<ObjectOnMap>>>& objects) {
   int new_cell_x = cell_x_ + reverse_ * (directions_[1] - directions_[3]);
   int new_cell_y = cell_y_ + reverse_ * (directions_[2] - directions_[0]);
+  int old_cell_x = new_cell_x;
+  int old_cell_y = new_cell_y;
   if (map_->GetField(new_cell_x, new_cell_y) == CellType::Wall) {
     cells_to_finish_movement_ = 0;
     return;
@@ -37,6 +39,31 @@ void Movable::StartMovement(
         static_cast<int>(map_->GetField(cell_x_, cell_y_)) * basic_speed_,
         static_cast<int>(map_->GetField(new_cell_x, new_cell_y)) *
             basic_speed_);
+  }
+
+  if (std::dynamic_pointer_cast<Portal>(objects[static_cast<unsigned>(
+          new_cell_x)][static_cast<unsigned>(new_cell_y)]) != nullptr) {
+    if (dynamic_cast<Rocket*>(this) == nullptr) {
+      std::shared_ptr<Portal> portal = std::dynamic_pointer_cast<Portal>(
+              objects[static_cast<unsigned>(new_cell_x)]
+              [static_cast<unsigned>(new_cell_y)]);
+
+      Coordinates cells = GetNewPortalCells(portal->GetNewCellX(),
+                                            portal->GetNewCellY(),
+                                            new_cell_x, new_cell_y);
+
+      if (map_->GetField(cells.x, cells.y) == CellType::Wall) { return; }
+      for (const auto& object : tanks) {
+        if (object->GetCellX() == cells.x && object->GetCellY() == cells.y) {
+          return;
+        }
+      }
+      objects_copies_.append({shared_from_this(), {cells.x, cells.y}});
+      copy_existence_ = true;
+
+      new_cell_x = cells.x;
+      new_cell_y = cells.y;
+    }
   }
 
   if (objects[static_cast<unsigned>(new_cell_x)]
@@ -67,32 +94,14 @@ void Movable::StartMovement(
         return;
       }
     }
-    if (std::dynamic_pointer_cast<Portal>(objects[static_cast<unsigned>(
-            new_cell_x)][static_cast<unsigned>(new_cell_y)]) != nullptr) {
-      if (dynamic_cast<Rocket*>(this) == nullptr) {
-        std::shared_ptr<Portal> portal = std::dynamic_pointer_cast<Portal>(
-                objects[static_cast<unsigned>(new_cell_x)]
-                [static_cast<unsigned>(new_cell_y)]);
-
-        Coordinates cells = GetNewPortalCells(portal->GetNewCellX(),
-                                              portal->GetNewCellY(),
-                                              new_cell_x, new_cell_y);
-
-        if (map_->GetField(cells.x, cells.y) == CellType::Wall) { return; }
-        for (const auto& object : tanks) {
-          if (object->GetCellX() == cells.x && object->GetCellY() == cells.y) {
-            return;
-          }
-        }
-        objects_copies_.append({shared_from_this(), {cells.x, cells.y}});
-        copy_existence_ = true;
-      }
-    } else {
-      objects[static_cast<unsigned>(new_cell_x)]
-             [static_cast<unsigned>(new_cell_y)] = nullptr;
-    }
+  }
+  if (new_cell_x != old_cell_x || new_cell_y != old_cell_y) {
+    objects[static_cast<unsigned>(new_cell_x)]
+           [static_cast<unsigned>(new_cell_y)] = nullptr;
   }
 
+  new_cell_x = old_cell_x;
+  new_cell_y = old_cell_y;
   cell_x_ = new_cell_x;
   cell_y_ = new_cell_y;
   time_to_finish_movement_ += current_speed_;
@@ -126,25 +135,36 @@ void Movable::TurnRotationReverseOn() { rotate_reverse_ = -1; }
 
 void Movable::TurnRotationReverseOff() { rotate_reverse_ = 1; }
 
-void Movable::UpdateCoordinates() {
+void Movable::UpdateCoordinates(int cell_x, int cell_y) {
+  if ((cell_x_ != cell_x || cell_y_ != cell_y) &&
+       GetTimeToFinishMovement() == 0) {
+    cell_x_ = cell_x;
+    cell_y_ = cell_y;
+    copy_existence_ = false;
+  }
+
   cur_width_ = map_->GetCellWidth();
   cur_height_ = map_->GetCellHeight();
 
   double movement_proportion =
       static_cast<double>(time_to_finish_movement_) / current_speed_;
-  if (copy_existence_) {
+  if (copy_existence_ && cell_x_ == cell_x && cell_y_ == cell_y) {
     opacity_ = movement_proportion;
     prev_opacity_ = opacity_;
+  } else if (copy_existence_) {
+    opacity_ = 1 - movement_proportion;
   }
 
+  prev_upper_left_x_ = cur_upper_left_x_;
+  prev_upper_left_y_ = cur_upper_left_y_;
   cur_upper_left_x_ =
-      map_->GetUpperLeftX() + (cur_width_ * cell_x_) -
+      map_->GetUpperLeftX() + (cur_width_ * cell_x) -
       reverse_ *
           static_cast<int>((directions_[1] * cur_width_ * movement_proportion) -
                            (directions_[3] * cur_width_ * movement_proportion));
 
   cur_upper_left_y_ =
-      map_->GetUpperLeftY() + (cur_height_ * cell_y_) -
+      map_->GetUpperLeftY() + (cur_height_ * cell_y) -
       reverse_ * static_cast<int>(
                      (directions_[2] * cur_height_ * movement_proportion) -
                      (directions_[0] * cur_height_ * movement_proportion));

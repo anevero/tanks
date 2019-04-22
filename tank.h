@@ -21,7 +21,6 @@ class Tank : public Movable {
        const int init_cell_y, const TankQualities& qualities);
   virtual void LoadImage() override;
   void Draw(QPainter& painter) override;
-  void UpdateCoordinates(int cell_x, int cell_y);
   virtual void DrawHealth(QPainter& painter);
 
   virtual bool IsAbleToShoot() const;
@@ -33,7 +32,7 @@ class Tank : public Movable {
   virtual void PlusHealth(const int health = 10);
   virtual bool IsDead() const;
 
- protected:  
+ protected:
   int rate_of_fire_;
   int time_since_last_shot_{};
   int current_health_{};

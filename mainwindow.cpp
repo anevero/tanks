@@ -107,10 +107,10 @@ void MainWindow::paintEvent(QPaintEvent *) {
                           static_cast<int>(0.68 * sq_width_),
                           static_cast<int>(0.9 * sq_height_));
   for (const auto &object : tanks_) {
-    object->UpdateCoordinates();
+    object->UpdateCoordinates(object->GetCellX(), object->GetCellY());
   }
   for (const auto &object : rockets_) {
-    object->UpdateCoordinates();
+    object->UpdateCoordinates(object->GetCellX(), object->GetCellY());
   }
   for (const auto &object : objects_copies_) {
     auto tank = std::dynamic_pointer_cast<Tank>(object.first);

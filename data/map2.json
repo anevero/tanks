@@ -21,8 +21,8 @@
     ]
   },
   "player_tank": {
-    "initial_cell_x": 9,
-    "initial_cell_y": 1,
+    "initial_cell_x": 7,
+    "initial_cell_y": 5,
     "initial_direction": "down"
   },
   "difficulty": [

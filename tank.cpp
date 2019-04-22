@@ -26,57 +26,6 @@ void Tank::Draw(QPainter& painter) {
   DrawHealth(painter);
 }
 
-void Tank::UpdateCoordinates(int cell_x, int cell_y) {
-    if (GetTimeToFinishMovement() == 0) {
-      cell_x_ = cell_x;
-      cell_y_ = cell_y;
-      copy_existence_ = false;
-    }
-
-    int cur_cell_width =
-        static_cast<int>(map_->GetWidth() / map_->GetNumberOfCellsHorizontally());
-    int cur_cell_height =
-        static_cast<int>(map_->GetHeight() / map_->GetNumberOfCellsVertically());
-
-    cur_width_ = cur_cell_width;
-    cur_height_ = cur_cell_height;
-
-    double movement_proportion =
-        static_cast<double>(time_to_finish_movement_) / current_speed_;
-    opacity_ = 1 - movement_proportion;
-
-    prev_upper_left_x_ = cur_upper_left_x_;
-    prev_upper_left_y_ = cur_upper_left_y_;
-    cur_upper_left_x_ =
-        map_->GetUpperLeftX() + (cur_cell_width * cell_x) -
-        reverse_ * static_cast<int>(
-                       (directions_[1] * cur_cell_width * movement_proportion) -
-                       (directions_[3] * cur_cell_width * movement_proportion));
-
-    cur_upper_left_y_ =
-        map_->GetUpperLeftY() + (cur_cell_height * cell_y) -
-        reverse_ * static_cast<int>(
-                       (directions_[2] * cur_cell_height * movement_proportion) -
-                       (directions_[0] * cur_cell_height * movement_proportion));
-
-    if (map_->GetField(cell_x, cell_y) == CellType::Forest) {
-      if (movement_proportion <= 0.5) {
-        opacity_ = 0.5;
-      }
-    } else if (copy_existence_) {
-      opacity_ = 1;
-    }
-
-    double rotation_proportion =
-        static_cast<double>(time_to_finish_rotation_) / current_speed_;
-    current_rotate_degree_ =
-        GetIntDirection() * 90 -
-        rotate_reverse_ * static_cast<int>(90 * rotation_proportion);
-    current_rotate_degree_ %= 360;
-
-    RescaleImage();
-}
-
 void Tank::DrawHealth(QPainter& painter) {
   painter.save();
   painter.translate(cur_upper_left_x_ + cur_width_ / 2,

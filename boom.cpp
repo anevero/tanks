@@ -30,7 +30,7 @@ void Boom::StartMovement(
   cells_to_finish_movement_ = number_of_cells - 1;
 }
 
-void Boom::UpdateCoordinates() {
+void Boom::UpdateCoordinates(int, int) {
   int cur_cell_width =
       static_cast<int>(map_->GetWidth() / map_->GetNumberOfCellsHorizontally());
   int cur_cell_height =

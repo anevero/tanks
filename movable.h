@@ -39,7 +39,7 @@ class Movable : public std::enable_shared_from_this<Movable> {
   virtual void TurnRotationReverseOn();
   virtual void TurnRotationReverseOff();
 
-  virtual void UpdateCoordinates();
+  virtual void UpdateCoordinates(int cell_x, int cell_y);
   virtual void Draw(QPainter& painter) = 0;
   virtual void ReturnToOriginal();
 
