@@ -35,6 +35,13 @@ void Movable::StartMovement(
         return;
       }
     }
+    for (const auto& object : objects_copies_) {
+      if (object.second.x == new_cell_x && object.second.y == new_cell_y) {
+        cells_to_finish_movement_ = 0;
+        object.first->cells_to_finish_movement_ = 0;
+        return;
+      }
+    }
     current_speed_ = std::max(
         static_cast<int>(map_->GetField(cell_x_, cell_y_)) * basic_speed_,
         static_cast<int>(map_->GetField(new_cell_x, new_cell_y)) *
@@ -131,7 +138,7 @@ void Movable::TurnRotationReverseOn() { rotate_reverse_ = -1; }
 
 void Movable::TurnRotationReverseOff() { rotate_reverse_ = 1; }
 
-void Movable::UpdateCoordinates(int cell_x, int cell_y) {
+void Movable::UpdateCoordinates(const int cell_x, const int cell_y) {
   if ((cell_x_ != cell_x || cell_y_ != cell_y) &&
        GetTimeToFinishMovement() == 0) {
     cell_x_ = cell_x;

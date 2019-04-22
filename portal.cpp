@@ -1,7 +1,7 @@
 #include "portal.h"
 
-Portal::Portal(std::shared_ptr<Map>& map, int x, int y,
-               int new_cell_x, int new_cell_y)
+Portal::Portal(const std::shared_ptr<Map> &map, const int x, const int y,
+               const int new_cell_x, const int new_cell_y)
     : ObjectOnMap(map, x, y), new_cell_x_(new_cell_x), new_cell_y_(new_cell_y) {
   LoadImage();
 }

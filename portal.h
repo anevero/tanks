@@ -7,8 +7,8 @@
 
 class Portal : public ObjectOnMap {
  public:
-  Portal(std::shared_ptr<Map>& map, int cell_x, int cell_y,
-         int new_cell_x, int new_cell_y);
+  Portal(const std::shared_ptr<Map>& map, const int cell_x, const int cell_y,
+         const int new_cell_x, const int new_cell_y);
 
   void LoadImage() override;
   int GetNewCellX() const;

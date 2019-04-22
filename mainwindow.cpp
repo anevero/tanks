@@ -696,7 +696,7 @@ QJsonObject MainWindow::GetJsonObjectFromFile(const QString &filepath) {
   QString text = file.readAll();
   file.close();
   QJsonDocument json_document(QJsonDocument::fromJson(text.toUtf8()));
-  return json_document.object();
+  return std::move(json_document.object());
 }
 
 Direction MainWindow::DetermineDirection(const QString &start_direction) const {

@@ -16,7 +16,8 @@
 enum class Direction { Up = 0, Right = 1, Down = 2, Left = 3 };
 
 struct Coordinates {
-  int x, y;
+  int x;
+  int y;
 };
 
 class Movable : public std::enable_shared_from_this<Movable> {
@@ -39,7 +40,7 @@ class Movable : public std::enable_shared_from_this<Movable> {
   virtual void TurnRotationReverseOn();
   virtual void TurnRotationReverseOff();
 
-  virtual void UpdateCoordinates(int cell_x, int cell_y);
+  virtual void UpdateCoordinates(const int cell_x, const int cell_y);
   virtual void Draw(QPainter& painter) = 0;
   virtual void ReturnToOriginal();
 
