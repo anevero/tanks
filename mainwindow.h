@@ -66,7 +66,7 @@ class MainWindow : public QMainWindow {
   void RedrawContent();
   void PauseOrContinue();
   void PressVirtualKey(Qt::Key key);
-  void ChangeButton(int type);
+  void ChangeChargeButton(int type);
 
  private:
   void FindInteractingObjects();

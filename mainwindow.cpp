@@ -33,11 +33,11 @@ MainWindow::MainWindow(QWidget *parent)
           SLOT(PauseOrContinue()));
   connect(settings_button_, SIGNAL(clicked()), this, SLOT(Settings()));
   connect(light_charge_button_, &QPushButton::clicked,
-          [&]() { ChangeButton(0); });
+          [&]() { ChangeChargeButton(0); });
   connect(medium_charge_button_, &QPushButton::clicked,
-          [&]() { ChangeButton(1); });
+          [&]() { ChangeChargeButton(1); });
   connect(hard_charge_button_, &QPushButton::clicked,
-          [&]() { ChangeButton(2); });
+          [&]() { ChangeChargeButton(2); });
   for (int i = 0; i < virtual_keys_buttons_.size(); ++i) {
     connect(virtual_keys_buttons_[i], &QPushButton::clicked,
             [this, i]() { PressVirtualKey(virtual_keys_encodings_[i]); });
@@ -528,15 +528,9 @@ void MainWindow::PressVirtualKey(Qt::Key key) {
   QApplication::instance()->sendEvent(this, event);
 }
 
-void MainWindow::ChangeButton(int type) {
+void MainWindow::ChangeChargeButton(int type) {
   std::shared_ptr<Tank> tank = std::dynamic_pointer_cast<Tank>(tanks_[0]);
-  if (type == 0) {
-    tank->ChangeTypeOfCharge(0);
-  } else if (type == 1) {
-    tank->ChangeTypeOfCharge(1);
-  } else if (type == 2) {
-    tank->ChangeTypeOfCharge(2);
-  }
+  tank->ChangeTypeOfCharge(type);
 }
 
 void MainWindow::FindInteractingObjects() {
