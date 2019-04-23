@@ -307,26 +307,65 @@ void MainWindow::RedrawButtons() {
 
 void MainWindow::RedrawCharge(QPainter &painter) {
   std::shared_ptr<Tank> tank;
-  light_charge_button_->setGeometry(
-      w_indent_ + static_cast<int>(0.04 * sq_width_),
-      height() - static_cast<int>(0.32 * sq_height_),
-      static_cast<int>(0.052 * sq_width_),
-      static_cast<int>(0.052 * sq_height_));
-
-  medium_charge_button_->setGeometry(
-      w_indent_ + static_cast<int>(0.11 * sq_width_),
-      height() - static_cast<int>(0.32 * sq_height_),
-      static_cast<int>(0.052 * sq_width_),
-      static_cast<int>(0.052 * sq_height_));
-
-  hard_charge_button_->setGeometry(
-      w_indent_ + static_cast<int>(0.18 * sq_width_),
-      height() - static_cast<int>(0.32 * sq_height_),
-      static_cast<int>(0.052 * sq_width_),
-      static_cast<int>(0.052 * sq_height_));
-
   if (tanks_.size() != 0) {
     tank = std::dynamic_pointer_cast<Tank>(tanks_[0]);
+    if (tank->GetTypeOfCharge() ==
+        static_cast<int>(TypeOfRocket::MediumRocket)) {
+      light_charge_button_->setGeometry(
+          w_indent_ + static_cast<int>(0.04 * sq_width_),
+          height() - static_cast<int>(0.32 * sq_height_),
+          static_cast<int>(0.05 * sq_width_),
+          static_cast<int>(0.05 * sq_height_));
+
+      medium_charge_button_->setGeometry(
+          w_indent_ + static_cast<int>(0.1 * sq_width_),
+          height() - static_cast<int>(0.355 * sq_height_),
+          static_cast<int>(0.08 * sq_width_),
+          static_cast<int>(0.08 * sq_height_));
+
+      hard_charge_button_->setGeometry(
+          w_indent_ + static_cast<int>(0.19 * sq_width_),
+          height() - static_cast<int>(0.32 * sq_height_),
+          static_cast<int>(0.05 * sq_width_),
+          static_cast<int>(0.05 * sq_height_));
+    } else if (tank->GetTypeOfCharge() ==
+               static_cast<int>(TypeOfRocket::HardRocket)) {
+      light_charge_button_->setGeometry(
+          w_indent_ + static_cast<int>(0.04 * sq_width_),
+          height() - static_cast<int>(0.32 * sq_height_),
+          static_cast<int>(0.05 * sq_width_),
+          static_cast<int>(0.05 * sq_height_));
+
+      medium_charge_button_->setGeometry(
+          w_indent_ + static_cast<int>(0.1 * sq_width_),
+          height() - static_cast<int>(0.32 * sq_height_),
+          static_cast<int>(0.05 * sq_width_),
+          static_cast<int>(0.05 * sq_height_));
+
+      hard_charge_button_->setGeometry(
+          w_indent_ + static_cast<int>(0.16 * sq_width_),
+          height() - static_cast<int>(0.355 * sq_height_),
+          static_cast<int>(0.08 * sq_width_),
+          static_cast<int>(0.08 * sq_height_));
+    } else {
+      light_charge_button_->setGeometry(
+          w_indent_ + static_cast<int>(0.04 * sq_width_),
+          height() - static_cast<int>(0.355 * sq_height_),
+          static_cast<int>(0.08 * sq_width_),
+          static_cast<int>(0.08 * sq_height_));
+
+      medium_charge_button_->setGeometry(
+          w_indent_ + static_cast<int>(0.13 * sq_width_),
+          height() - static_cast<int>(0.32 * sq_height_),
+          static_cast<int>(0.05 * sq_width_),
+          static_cast<int>(0.05 * sq_height_));
+
+      hard_charge_button_->setGeometry(
+          w_indent_ + static_cast<int>(0.19 * sq_width_),
+          height() - static_cast<int>(0.32 * sq_height_),
+          static_cast<int>(0.05 * sq_width_),
+          static_cast<int>(0.05 * sq_height_));
+    }
     light_charge_button_->setText(
         QString::number(tank->GetLightCurrentCharge()));
     medium_charge_button_->setText(
