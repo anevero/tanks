@@ -9,6 +9,7 @@
     <file>textures/1.png</file>
     <file>textures/2.png</file>
     <file>textures/3.png</file>
+    <file>textures/4.png</file>
     <file>textures/tank.png</file>
     <file>textures/bot.png</file>
     <file>textures/improved_bot.png</file>
@@ -18,6 +19,7 @@
     <file>textures/boom.png</file>
     <file>textures/medicalkit.png</file>
     <file>textures/charge.png</file>
+    <file>textures/portal.png</file>
     <file>translations/tanks_be_BY.qm</file>
     <file>translations/tanks_en_US.qm</file>
     <file>translations/tanks_ru_RU.qm</file>

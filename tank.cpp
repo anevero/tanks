@@ -1,7 +1,7 @@
 ﻿#include "tank.h"
 
-Tank::Tank(std::shared_ptr<Map>& map, int init_cell_x, int init_cell_y,
-           TankQualities qualities)
+Tank::Tank(const std::shared_ptr<Map>& map, const int init_cell_x,
+           const int init_cell_y, const TankQualities& qualities)
     : Movable(map, init_cell_x, init_cell_y, qualities.direction,
               qualities.speed),
       rate_of_fire_(qualities.rate_of_fire),
@@ -27,6 +27,7 @@ void Tank::Draw(QPainter& painter) {
   painter.translate(cur_upper_left_x_ + cur_width_ / 2,
                     cur_upper_left_y_ + cur_height_ / 2);
   painter.rotate(current_rotate_degree_);
+  painter.setOpacity(opacity_);
   painter.drawImage(-cur_width_ / 2, -cur_height_ / 2, scaled_image_);
   painter.restore();
   DrawHealth(painter);
@@ -58,7 +59,7 @@ bool Tank::IsAbleToShoot() const {
           (type_of_charge_ == 2 && hard_current_charge_ > 0));
 }
 
-void Tank::IncreaseTimeSinceLastShot(int delta) {
+void Tank::IncreaseTimeSinceLastShot(const int delta) {
   if (time_since_last_shot_ <= rate_of_fire_) {
     time_since_last_shot_ += delta;
   }
@@ -67,8 +68,8 @@ void Tank::IncreaseTimeSinceLastShot(int delta) {
 void Tank::SetZeroTimeFromLastShot() { time_since_last_shot_ = 0; }
 int Tank::GetCurrentHealth() const { return current_health_; }
 int Tank::GetMaxHealth() const { return max_health_; }
-void Tank::MinusHealth(int health) { current_health_ -= health; }
-void Tank::PlusHealth(int health) { current_health_ += health; }
+void Tank::MinusHealth(const int health) { current_health_ -= health; }
+void Tank::PlusHealth(const int health) { current_health_ += health; }
 void Tank::ChangeTypeOfCharge(int type) { type_of_charge_ = type; }
 int Tank::GetTypeOfCharge() const { return type_of_charge_; }
 int Tank::GetCurrentCharge(int type) const {

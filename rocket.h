@@ -16,8 +16,8 @@ struct RocketParameters {
 
 class Rocket : public Movable {
  public:
-  Rocket(std::shared_ptr<Map>& map, std::shared_ptr<Tank>& tank, int speed,
-         int power, TypeOfRocket type);
+  Rocket(const std::shared_ptr<Map>& map, const std::shared_ptr<Tank>& tank,
+         const int speed, const int power, const TypeOfRocket& type);
   void LoadImage() override;
   void Draw(QPainter& painter) override;
 
@@ -26,9 +26,9 @@ class Rocket : public Movable {
   TypeOfRocket GetTypeOfRocket() const;
 
  private:
-  std::shared_ptr<Tank> tank_;
-  int power_ = 0;
-  TypeOfRocket type_;
+  const std::shared_ptr<Tank> tank_;
+  const int power_;
+  const TypeOfRocket type_;
 };
 
 #endif  // ROCKET_H

@@ -1,6 +1,7 @@
 #include "improvedbot.h"
 
-ImprovedBot::ImprovedBot(std::shared_ptr<Map>& map, BotQualities qualities)
+ImprovedBot::ImprovedBot(const std::shared_ptr<Map>& map,
+                         const BotQualities& qualities)
     : Bot(map, qualities) {
   LoadImage();
 }
@@ -10,7 +11,7 @@ void ImprovedBot::LoadImage() {
   scaled_image_ = image_;
 }
 
-bool ImprovedBot::IsRotationStartNeeded(std::shared_ptr<Tank> tank) {
+bool ImprovedBot::IsRotationStartNeeded(const std::shared_ptr<Tank>& tank) {
   if (time_to_finish_rotation_ <= 0 && time_to_finish_movement_ <= 0) {
     if (number_of_turns_ > 0) {
       number_of_turns_--;
@@ -33,14 +34,17 @@ bool ImprovedBot::IsRotationStartNeeded(std::shared_ptr<Tank> tank) {
   return false;
 }
 
-bool ImprovedBot::IsShotNeeded(std::shared_ptr<Map> map,
-                               std::shared_ptr<Tank> tank) {
+bool ImprovedBot::IsShotNeeded(const std::shared_ptr<Map>& map,
+                               const std::shared_ptr<Tank>& tank) {
   if (time_to_finish_rotation_ <= 0 && time_to_finish_movement_ <= 0) {
     int direction = GetIntDirection();
     int tank_x = tank->GetCellX();
     int tank_y = tank->GetCellY();
     int bot_x = GetCellX();
     int bot_y = GetCellY();
+    if (map_->GetField(tank_x, tank_y) == CellType::Forest) {
+      return false;
+    }
 
     if (tank_x == bot_x) {
       if (IsWallBetweenObjectsX(map, tank_x, tank_y, bot_x, bot_y)) {
@@ -83,7 +87,8 @@ bool ImprovedBot::IsShotNeeded(std::shared_ptr<Map> map,
   return false;
 }
 
-bool ImprovedBot::CheckDirection(int& tank, int& bot, int direction) {
+bool ImprovedBot::CheckDirection(const int& tank, const int& bot,
+                                 const int direction) {
   number_of_cells_to_move_ = 0;
   number_of_turns_ = 1;
   if (tank > bot) {

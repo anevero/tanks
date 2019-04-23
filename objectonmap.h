@@ -1,5 +1,5 @@
-﻿#ifndef OBSTACLANDBONUS_H
-#define OBSTACLANDBONUS_H
+﻿#ifndef OBJECTONMAP_H
+#define OBJECTONMAP_H
 
 #include <QDebug>
 #include <QImage>
@@ -13,17 +13,17 @@ enum class Bonus { TypeMedicalKit, TypeCharge };
 
 class ObjectOnMap {
  public:
-  ObjectOnMap(std::shared_ptr<Map>& map, int x, int y);
+  ObjectOnMap(const std::shared_ptr<Map>& map, const int x, const int y);
   virtual void LoadImage() = 0;
   virtual ~ObjectOnMap() = default;
   void Draw(QPainter& painter);
   void RescaleImage();
   void UpdateCoordinates();
-  int GetX();
-  int GetY();
+  int GetX() const;
+  int GetY() const;
 
  protected:
-  std::shared_ptr<Map> map_;
+  const std::shared_ptr<Map> map_;
   int x_;
   int y_;
   int cur_width_{};
@@ -36,13 +36,13 @@ class ObjectOnMap {
 
 class Obstacle : public ObjectOnMap {
  public:
-  Obstacle(std::shared_ptr<Map>& map, int x, int y);
+  Obstacle(const std::shared_ptr<Map>& map, const int x, const int y);
   void LoadImage() override;
 };
 
 class MedicalKit : public ObjectOnMap {
  public:
-  MedicalKit(std::shared_ptr<Map>& map, int x, int y);
+  MedicalKit(const std::shared_ptr<Map>& map, const int x, const int y);
   void LoadImage() override;
 };
 
@@ -51,4 +51,5 @@ class Charge : public ObjectOnMap {
   Charge(std::shared_ptr<Map>& map, int x, int y);
   void LoadImage() override;
 };
-#endif  // OBSTACLANDBONUS_H
+
+#endif  // OBJECTONMAP_H

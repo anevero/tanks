@@ -69,7 +69,7 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event) {
 }
 
 void MainWindow::keyReleaseEvent(QKeyEvent *event) {
-  if (timer_id_ == 0) return;
+  if (timer_id_ == 0 && !paused_) return;
   auto tank = std::dynamic_pointer_cast<Tank>(tanks_[0]);
   if ((event->key() != Qt::Key_1 && event->key() != Qt::Key_2 &&
        event->key() != Qt::Key_3 && tank->IsMovingOrRotating()) ||
@@ -84,13 +84,13 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event) {
     case Qt::Key_Up:
     case Qt::Key_W:
       tank->TurnReverseOff();
-      tank->StartMovement(1, tanks_, obstacles_and_bonuses_);
+      tank->StartMovement(1, tanks_, objects_copies_, obstacles_and_bonuses_);
       break;
     case 1067:
     case Qt::Key_Down:
     case Qt::Key_S:
       tank->TurnReverseOn();
-      tank->StartMovement(1, tanks_, obstacles_and_bonuses_);
+      tank->StartMovement(1, tanks_, objects_copies_, obstacles_and_bonuses_);
       break;
     case 1060:
     case Qt::Key_Left:
@@ -129,28 +129,36 @@ void MainWindow::paintEvent(QPaintEvent *) {
                           static_cast<int>(0.68 * sq_width_),
                           static_cast<int>(0.9 * sq_height_));
   for (const auto &object : tanks_) {
-    object->UpdateCoordinates();
+    object->UpdateCoordinates(object->GetCellX(), object->GetCellY());
   }
   for (const auto &object : rockets_) {
-    object->UpdateCoordinates();
+    object->UpdateCoordinates(object->GetCellX(), object->GetCellY());
+  }
+  for (const auto &object : objects_copies_) {
+    auto tank = std::dynamic_pointer_cast<Tank>(object.first);
+    tank->UpdateCoordinates(object.second.x, object.second.y);
   }
 
   QPainter p;
   p.begin(this);
   map_->DrawMap(p);
-  for (const auto &object : tanks_) {
-    object->Draw(p);
-  }
-  for (const auto &object : rockets_) {
-    object->Draw(p);
-  }
-
   for (const auto &vector : obstacles_and_bonuses_) {
     for (const auto &object : vector) {
       if (object != nullptr) {
         object->Draw(p);
       }
     }
+  }
+
+  for (const auto &object : objects_copies_) {
+    object.first->Draw(p);
+    object.first->ReturnToOriginal();
+  }
+  for (const auto &object : tanks_) {
+    object->Draw(p);
+  }
+  for (const auto &object : rockets_) {
+    object->Draw(p);
   }
 
   RedrawCharge(p);
@@ -183,10 +191,10 @@ void MainWindow::timerEvent(QTimerEvent *) {
         ShootRocket(tank);
       }
 
-      if (bot->IsMovingStartNeeded(tanks_)) {
-        bot->StartMovement(1, tanks_, obstacles_and_bonuses_);
+      if (bot->IsMovingStartNeeded(tanks_, obstacles_and_bonuses_)) {
+        bot->StartMovement(1, tanks_, objects_copies_, obstacles_and_bonuses_);
       } else if (bot->IsRotationStartNeeded(
-                     std::dynamic_pointer_cast<Tank>(tanks_[0]))) {
+          std::dynamic_pointer_cast<Tank>(tanks_[0]))) {
         bot->StartRotation();
       }
 
@@ -210,12 +218,23 @@ void MainWindow::timerEvent(QTimerEvent *) {
     }
   }
 
+  auto copy = objects_copies_.begin();
+  while (copy != objects_copies_.end()) {
+    if (copy->first->GetTimeToFinishMovement() <= 0) {
+      std::dynamic_pointer_cast<Tank>(copy->first)->UpdateCoordinates(
+          copy->second.x, copy->second.y);
+      copy = objects_copies_.erase(copy);
+      continue;
+    }
+    copy++;
+  }
+
   auto it = rockets_.begin();
   while (it != rockets_.end()) {
     if ((*it)->GetTimeToFinishMovement() <= 0 &&
         (*it)->GetCellsToFinishMovement() != 0) {
       (*it)->StartMovement(((*it)->GetCellsToFinishMovement()), tanks_,
-                           obstacles_and_bonuses_);
+                           objects_copies_, obstacles_and_bonuses_);
     }
     if (!(*it)->IsMovingOrRotating()) {
       it = rockets_.erase(it);
@@ -459,6 +478,25 @@ void MainWindow::RedrawContent() {
         std::shared_ptr<Obstacle>(new Obstacle(map_, x, y));
   }
 
+  QJsonArray portals =
+      json["difficulty"]
+          .toArray()[current_game_options_.difficulty_level_number]
+          .toObject()["portals"]
+          .toArray();
+
+  for (int i = 0; i < portals.size(); ++i) {
+    int curr_x = portals[i].toArray()[0].toInt();
+    int curr_y = portals[i].toArray()[1].toInt();
+    int new_x = portals[i].toArray()[2].toInt();
+    int new_y = portals[i].toArray()[3].toInt();
+    obstacles_and_bonuses_[static_cast<unsigned int>(
+        curr_x)][static_cast<unsigned int>(curr_y)] =
+        std::shared_ptr<Portal>(new Portal(map_, curr_x, curr_y, new_x, new_y));
+    obstacles_and_bonuses_[static_cast<unsigned int>(
+        new_x)][static_cast<unsigned int>(new_y)] =
+        std::shared_ptr<Portal>(new Portal(map_, new_x, new_y, curr_x, curr_y));
+  }
+
   light_charge_button_->show();
   medium_charge_button_->show();
   hard_charge_button_->show();
@@ -537,6 +575,16 @@ void MainWindow::CheckDeadObjects() {
     }
     object++;
   }
+
+  auto copy = objects_copies_.begin();
+  while (copy != objects_copies_.end()) {
+    if (std::dynamic_pointer_cast<Tank>(copy->first)->IsDead()) {
+      MakeBoom(copy->first);
+      copy = objects_copies_.erase(copy);
+      continue;
+    }
+    copy++;
+  }
   if (tanks_.size() == number_of_player_tanks_) {
     GameOver();
   }
@@ -545,7 +593,7 @@ void MainWindow::CheckDeadObjects() {
 void MainWindow::MakeBoom(std::shared_ptr<Movable> &object) {
   std::shared_ptr<Boom> boom(new Boom(map_, object, 500));
   rockets_.append(boom);
-  boom->StartMovement(1, tanks_, obstacles_and_bonuses_);
+  boom->StartMovement(1, tanks_, objects_copies_, obstacles_and_bonuses_);
 }
 
 void MainWindow::ShootRocket(std::shared_ptr<Tank> &tank) {
@@ -563,10 +611,10 @@ void MainWindow::ShootRocket(std::shared_ptr<Tank> &tank) {
   rockets_.append(rocket);
   if (rocket->GetIntDirection() == 1 || rocket->GetIntDirection() == 3) {
     rocket->StartMovement(map_->GetNumberOfCellsHorizontally(), tanks_,
-                          obstacles_and_bonuses_);
+                          objects_copies_, obstacles_and_bonuses_);
   } else {
     rocket->StartMovement(map_->GetNumberOfCellsVertically(), tanks_,
-                          obstacles_and_bonuses_);
+                          objects_copies_, obstacles_and_bonuses_);
   }
   if (std::dynamic_pointer_cast<Bot>(tank) == nullptr) {
     if (tank->GetTypeOfCharge() ==

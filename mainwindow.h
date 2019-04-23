@@ -21,9 +21,11 @@
 #include <QToolTip>
 #include <QTouchDevice>
 #include <QTranslator>
+#include <QVector>
 #include <QtGlobal>
 #include <algorithm>
 #include <memory>
+#include <utility>
 #include <vector>
 #include "boom.h"
 #include "bot.h"
@@ -31,6 +33,7 @@
 #include "improvedbot.h"
 #include "map.h"
 #include "objectonmap.h"
+#include "portal.h"
 #include "rocket.h"
 #include "tank.h"
 
@@ -69,6 +72,7 @@ class MainWindow : public QMainWindow {
   bool HaveObjectsCollided(const std::shared_ptr<Movable> &obj1,
                            const std::shared_ptr<Movable> &obj2) const;
   void CheckDeadObjects();
+  void FormObjectsOnMapImage();
   void ShootRocket(std::shared_ptr<Tank> &tank);
   void MakeBoom(std::shared_ptr<Movable> &object);
   bool IsRocketByThisTank(const std::shared_ptr<Movable> &rocket,
@@ -121,25 +125,27 @@ class MainWindow : public QMainWindow {
 
   QVector<QPushButton *> virtual_keys_buttons_;
   QVector<Qt::Key> virtual_keys_encodings_;
-  int number_of_virtual_keys_in_first_row_ = 2;
-  int number_of_virtual_keys_in_second_row_ = 3;
+  const int number_of_virtual_keys_in_first_row_ = 2;
+  const int number_of_virtual_keys_in_second_row_ = 3;
 
   std::shared_ptr<Map> map_;
   QList<std::shared_ptr<Movable>> tanks_;
   QList<std::shared_ptr<Movable>> rockets_;
   std::vector<std::vector<std::shared_ptr<ObjectOnMap>>> obstacles_and_bonuses_;
+  QList<QPair<std::shared_ptr<Movable>, Coordinates>> objects_copies_;
 
-  int number_of_player_tanks_ = 1;
-  QVector<QString> difficulty_levels_names_ = {tr("Easy"), tr("Normal"),
-                                               tr("Hard")};
+  const int number_of_player_tanks_ = 1;
+  const QVector<QString> difficulty_levels_names_ = {tr("Easy"), tr("Normal"),
+                                                     tr("Hard")};
   QVector<TankQualities> available_tank_types_;
 
+  const int timer_duration_ = 10;
   QVector<RocketParameters> types_of_rockets_;
 
-  int timer_duration_ = 10;
   int timer_id_ = 0;
   int time_since_tooltip_appearing_ = 0;
-  int time_for_showing_tooltip_ = 1200;
+  const int time_for_showing_tooltip_ = 1200;
+  int time_since_last_bonus_ = 0;
   int time_since_last_medicalkit_ = 0;
   int time_since_last_charge_ = 0;
   int sq_width_;
@@ -147,7 +153,7 @@ class MainWindow : public QMainWindow {
   int w_indent_;
   int h_indent_;
 
-  QString app_version_ = "0.5.0.0";
+  const QString app_version_ = "0.5.0.0";
 };
 
 #endif  // MAINWINDOW_H
