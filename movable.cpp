@@ -59,9 +59,12 @@ void Movable::StartMovement(
       }
     }
     if (dynamic_cast<Rocket*>(this) != nullptr) {
+      Rocket* rocket = dynamic_cast<Rocket*>(this);
       cells_to_finish_movement_ = 0;
-      objects[static_cast<unsigned>(new_cell_x)]
-             [static_cast<unsigned>(new_cell_y)] = nullptr;
+      if (rocket->GetTypeOfRocket() != TypeOfRocket::HardRocket) {
+        objects[static_cast<unsigned>(new_cell_x)]
+               [static_cast<unsigned>(new_cell_y)] = nullptr;
+      }
       return;
     }
     objects[static_cast<unsigned>(new_cell_x)]

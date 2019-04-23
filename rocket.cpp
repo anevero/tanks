@@ -27,3 +27,4 @@ void Rocket::Draw(QPainter& painter) {
 std::shared_ptr<Tank> Rocket::GetAttachedTank() const { return tank_; }
 
 int Rocket::GetPower() const { return power_; }
+TypeOfRocket Rocket::GetTypeOfRocket() const { return type_; }

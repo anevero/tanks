@@ -23,6 +23,7 @@ class Rocket : public Movable {
 
   std::shared_ptr<Tank> GetAttachedTank() const;
   int GetPower() const;
+  TypeOfRocket GetTypeOfRocket() const;
 
  private:
   std::shared_ptr<Tank> tank_;
