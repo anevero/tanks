@@ -8,10 +8,10 @@
 
 enum class TypeOfRocket { LightRocket = 0, MediumRocket = 1, HardRocket = 2 };
 
-struct RocketParametrs {
+struct RocketParameters {
   int power_;
   int speed_;
-  bool obstacle_;
+  bool obstacle_break_;
 };
 
 class Rocket : public Movable {

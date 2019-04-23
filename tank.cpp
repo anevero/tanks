@@ -52,20 +52,10 @@ void Tank::DrawHealth(QPainter& painter) {
 }
 
 bool Tank::IsAbleToShoot() const {
-  if (time_since_last_shot_ >= rate_of_fire_) {
-    if (type_of_charge_ == 0 && light_current_charge_ > 0) {
-      return true;
-    } else if (type_of_charge_ == 1 && medium_current_charge_ > 0) {
-      return true;
-    } else if (type_of_charge_ == 2 && hard_current_charge_ > 0) {
-      return true;
-
-    } else {
-      return false;
-    }
-  } else {
-    return false;
-  }
+  return (time_since_last_shot_ >= rate_of_fire_) &&
+         ((type_of_charge_ == 0 && light_current_charge_ > 0) ||
+          (type_of_charge_ == 1 && medium_current_charge_ > 0) ||
+          (type_of_charge_ == 2 && hard_current_charge_ > 0));
 }
 
 void Tank::IncreaseTimeSinceLastShot(int delta) {
@@ -81,18 +71,44 @@ void Tank::MinusHealth(int health) { current_health_ -= health; }
 void Tank::PlusHealth(int health) { current_health_ += health; }
 void Tank::ChangeTypeOfCharge(int type) { type_of_charge_ = type; }
 int Tank::GetTypeOfCharge() const { return type_of_charge_; }
-int Tank::GetLightCurrentCharge() const { return light_current_charge_; }
-int Tank::GetMaxLightCharge() const { return max_light_charge_; }
-void Tank::MinusLightCharge(int charge) { light_current_charge_ -= charge; }
-void Tank::PlusLightCharge(int charge) { light_current_charge_ += charge; }
-int Tank::GetMediumCurrentCharge() const { return medium_current_charge_; }
-int Tank::GetMaxMediumCharge() const { return max_medium_charge_; }
-void Tank::MinusMediumCharge(int charge) { medium_current_charge_ -= charge; }
-void Tank::PlusMediumCharge(int charge) { medium_current_charge_ += charge; }
-int Tank::GetHardCurrentCharge() const { return hard_current_charge_; }
-int Tank::GetMaxHardCharge() const { return max_hard_charge_; }
-void Tank::MinusHardCharge(int charge) { hard_current_charge_ -= charge; }
-void Tank::PlusHardCharge(int charge) { hard_current_charge_ += charge; }
+int Tank::GetCurrentCharge(int type) const {
+  if (type == 0) {
+    return light_current_charge_;
+  } else if (type == 1) {
+    return medium_current_charge_;
+  } else {
+    return hard_current_charge_;
+  }
+}
+int Tank::GetMaxCharge(int type) const {
+  if (type == 0) {
+    return max_light_charge_;
+  } else if (type == 1) {
+    return max_medium_charge_;
+  } else {
+    return max_hard_charge_;
+  }
+}
+
+void Tank::MinusCharge(int type, int charge) {
+  if (type == 0) {
+    light_current_charge_ -= charge;
+  } else if (type == 1) {
+    medium_current_charge_ -= charge;
+  } else {
+    hard_current_charge_ -= charge;
+  }
+}
+void Tank::PlusCharge(int type, int charge) {
+  if (type == 0) {
+    light_current_charge_ += charge;
+  } else if (type == 1) {
+    medium_current_charge_ += charge;
+  } else {
+    hard_current_charge_ += charge;
+  }
+}
+
 bool Tank::IsDead() const { return current_health_ <= 0; }
 int Tank::GetTimeSinceLastShot() const { return time_since_last_shot_; }
 int Tank::GetRateOfFire() const { return rate_of_fire_; }
