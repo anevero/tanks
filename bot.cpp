@@ -28,6 +28,7 @@ bool Bot::IsRotationStartNeeded(const std::shared_ptr<Tank>&) {
         TurnRotationReverseOff();
       }
       number_of_turns_ = amount_of_turns_;
+      number_of_turns_--;
       return true;
     }
   }
@@ -36,7 +37,9 @@ bool Bot::IsRotationStartNeeded(const std::shared_ptr<Tank>&) {
 
 bool Bot::IsMoveNeeded() const { return time_to_finish_movement_ > 0; }
 
-bool Bot::IsMovingStartNeeded(const QList<std::shared_ptr<Movable>>&) {
+bool Bot::IsMovingStartNeeded(const QList<std::shared_ptr<Movable>>&,
+                              const std::vector<std::vector<
+                              std::shared_ptr<ObjectOnMap>>>&) {
   if (time_to_finish_movement_ <= 0 && time_to_finish_rotation_ <= 0) {
     if (number_of_cells_to_move_ == 0) {
       if (number_of_turns_ == 0) {
@@ -60,6 +63,9 @@ bool Bot::IsShotNeeded(const std::shared_ptr<Map>& map,
     int tank_y = tank->GetCellY();
     int bot_x = GetCellX();
     int bot_y = GetCellY();
+    if (map_->GetField(tank_x, tank_y) == CellType::Forest) {
+      return false;
+    }
 
     if (direction == 0 || direction == 2) {
       if (tank_x == bot_x) {

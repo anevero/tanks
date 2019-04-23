@@ -20,6 +20,7 @@ void Tank::Draw(QPainter& painter) {
   painter.translate(cur_upper_left_x_ + cur_width_ / 2,
                     cur_upper_left_y_ + cur_height_ / 2);
   painter.rotate(current_rotate_degree_);
+  painter.setOpacity(opacity_);
   painter.drawImage(-cur_width_ / 2, -cur_height_ / 2, scaled_image_);
   painter.restore();
   DrawHealth(painter);

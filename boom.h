@@ -14,9 +14,10 @@ class Boom : public Movable {
   void LoadImage() override;
   void Draw(QPainter& painter) override;
 
-  void UpdateCoordinates() override;
+  void UpdateCoordinates(int cell_x, int cell_y) override;
   void StartMovement(
       const int number_of_cells, const QList<std::shared_ptr<Movable>>&,
+      QList<QPair<std::shared_ptr<Movable>, Coordinates>>&,
       std::vector<std::vector<std::shared_ptr<ObjectOnMap>>>&) override;
 };
 

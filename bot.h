@@ -27,7 +27,9 @@ class Bot : public Tank {
   virtual bool IsTurnNeeded() const;
   virtual bool IsMoveNeeded() const;
   virtual bool IsRotationStartNeeded(const std::shared_ptr<Tank>&);
-  virtual bool IsMovingStartNeeded(const QList<std::shared_ptr<Movable>>&);
+  virtual bool IsMovingStartNeeded(const QList<std::shared_ptr<Movable>>&,
+                                   const std::vector<std::vector<
+                                   std::shared_ptr<ObjectOnMap>>>&);
   virtual bool IsShotNeeded(const std::shared_ptr<Map>&,
                             const std::shared_ptr<Tank>&);
 
