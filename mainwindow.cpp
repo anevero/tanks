@@ -212,6 +212,27 @@ void MainWindow::timerEvent(QTimerEvent *) {
                            objects_copies_, obstacles_and_bonuses_);
     }
     if (!(*it)->IsMovingOrRotating()) {
+      if (std::dynamic_pointer_cast<Boom>(*it) != nullptr) {
+        for (const auto &tank : tanks_) {
+          if (tank->GetUpperLeftX() <= (*it)->GetLowerRightX() &&
+              tank->GetUpperLeftY() <= (*it)->GetLowerRightY() &&
+              tank->GetLowerRightX() >= (*it)->GetUpperLeftX() &&
+              tank->GetLowerRightY() >= (*it)->GetUpperLeftY()) {
+            std::dynamic_pointer_cast<Tank>(tank)->MinusHealth(20);
+          } else if (tank->GetLowerLeftX() <= (*it)->GetUpperRightX() &&
+                     tank->GetLowerLeftY() >= (*it)->GetUpperRightY() &&
+                     tank->GetUpperRightX() >= (*it)->GetLowerLeftX() &&
+                     tank->GetUpperRightY() <= (*it)->GetLowerLeftY()) {
+            std::dynamic_pointer_cast<Tank>(tank)->MinusHealth(20);
+          }
+        }
+
+        obstacles_and_bonuses_[static_cast<unsigned>((*it)->GetCellX() - 1)][
+                        static_cast<unsigned>((*it)->GetCellY())] = nullptr;
+        obstacles_and_bonuses_[static_cast<unsigned>((*it)->GetCellX() + 1)][
+                        static_cast<unsigned>((*it)->GetCellY())] = nullptr;
+      }
+
       it = rockets_.erase(it);
       continue;
     }

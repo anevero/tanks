@@ -58,6 +58,12 @@ class Movable : public std::enable_shared_from_this<Movable> {
 
   virtual int GetUpperLeftX() const;
   virtual int GetUpperLeftY() const;
+  virtual int GetUpperRightX() const;
+  virtual int GetUpperRightY() const;
+  virtual int GetLowerLeftX() const;
+  virtual int GetLowerLeftY() const;
+  virtual int GetLowerRightX() const;
+  virtual int GetLowerRightY() const;
   virtual int GetWidth() const;
   virtual int GetHeight() const;
   virtual int GetCellX() const;

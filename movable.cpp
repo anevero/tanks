@@ -232,6 +232,12 @@ Direction Movable::GetDirection() const {
 
 int Movable::GetUpperLeftX() const { return cur_upper_left_x_; }
 int Movable::GetUpperLeftY() const { return cur_upper_left_y_; }
+int Movable::GetUpperRightX() const { return cur_upper_left_x_ + cur_width_; }
+int Movable::GetUpperRightY() const { return cur_upper_left_y_; }
+int Movable::GetLowerLeftX() const { return cur_upper_left_x_; }
+int Movable::GetLowerLeftY() const { return cur_upper_left_y_ + cur_height_; }
+int Movable::GetLowerRightX() const { return cur_upper_left_x_ + cur_width_; }
+int Movable::GetLowerRightY() const { return cur_upper_left_y_ + cur_height_; }
 int Movable::GetWidth() const { return cur_width_; }
 int Movable::GetHeight() const { return cur_height_; }
 int Movable::GetCellX() const { return cell_x_; }
