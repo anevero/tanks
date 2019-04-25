@@ -5,12 +5,13 @@ Tank::Tank(const std::shared_ptr<Map>& map, const int init_cell_x,
     : Movable(map, init_cell_x, init_cell_y, qualities.direction,
               qualities.speed),
       rate_of_fire_(qualities.rate_of_fire),
-      current_health_(qualities.max_health),
       type_of_charge_(0),
       current_charge_({qualities.max_light_charge, qualities.max_medium_charge,
                        qualities.max_hard_charge}),
       max_charge_({qualities.max_light_charge, qualities.max_medium_charge,
-                   qualities.max_hard_charge}) {
+                   qualities.max_hard_charge}),
+      max_health_(qualities.max_health),
+      current_health_(qualities.max_health) {
   LoadImage();
 }
 
@@ -75,7 +76,11 @@ int Tank::GetMaxCharge(int type) const { return max_charge_[type]; }
 void Tank::MinusCharge(int type, int charge) {
   current_charge_[type] -= charge;
 }
-void Tank::PlusCharge(int type, int charge) { current_charge_[type] += charge; }
+void Tank::PlusCharge() {
+  int type = rand() % 2;
+  current_charge_[type] +=
+      std::min(10 - 2 * type, max_charge_[type] - current_charge_[type]);
+}
 
 bool Tank::IsDead() const { return current_health_ <= 0; }
 int Tank::GetTimeSinceLastShot() const { return time_since_last_shot_; }

@@ -529,8 +529,7 @@ void MainWindow::PressVirtualKey(Qt::Key key) {
 }
 
 void MainWindow::ChangeChargeButton(int type) {
-  std::shared_ptr<Tank> tank = std::dynamic_pointer_cast<Tank>(tanks_[0]);
-  tank->ChangeTypeOfCharge(type);
+  std::dynamic_pointer_cast<Tank>(tanks_[0])->ChangeTypeOfCharge(type);
 }
 
 void MainWindow::FindInteractingObjects() {
@@ -881,7 +880,7 @@ void MainWindow::RandomBonus(Bonus bonus) {
     for (auto &object : tanks_) {
       if (obstacles_and_bonuses_[static_cast<unsigned>(x)]
                                 [static_cast<unsigned>(y)] == nullptr &&
-          (object->GetCellX() != x || object->GetCellY() != y) &&
+          object->GetCellX() != x && object->GetCellY() != y &&
           map_->GetField(x, y) != CellType::Wall) {
         if (bonus == Bonus::TypeMedicalKit) {
           obstacles_and_bonuses_[static_cast<unsigned>(

@@ -87,8 +87,7 @@ void Movable::StartMovement(
       } else if (std::dynamic_pointer_cast<Charge>(
                      objects[static_cast<unsigned>(new_cell_x)]
                             [static_cast<unsigned>(new_cell_y)]) != nullptr) {
-        tank->PlusCharge(
-            0, std::min(10, tank->GetMaxCharge(0) - tank->GetCurrentCharge(0)));
+        tank->PlusCharge();
       }
     }
     if (dynamic_cast<Rocket*>(this) != nullptr) {

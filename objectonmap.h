@@ -48,7 +48,7 @@ class MedicalKit : public ObjectOnMap {
 
 class Charge : public ObjectOnMap {
  public:
-  Charge(std::shared_ptr<Map>& map, int x, int y);
+  Charge(const std::shared_ptr<Map>& map, int x, int y);
   void LoadImage() override;
 };
 

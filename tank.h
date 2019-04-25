@@ -39,7 +39,7 @@ class Tank : public Movable {
   int GetCurrentCharge(int type) const;
   int GetMaxCharge(int type) const;
   void MinusCharge(int type, int charge = 1);
-  void PlusCharge(int type, int charge = 10);
+  void PlusCharge();
   virtual bool IsDead() const;
   virtual int GetTimeSinceLastShot() const;
   virtual int GetRateOfFire() const;
@@ -47,17 +47,11 @@ class Tank : public Movable {
  protected:
   int rate_of_fire_;
   int time_since_last_shot_{};
-  int current_health_{};
   int type_of_charge_{};
   QVector<int> current_charge_;
   const QVector<int> max_charge_;
-  //  int light_current_charge_{};
-  //  int medium_current_charge_{};
-  //  int hard_current_charge_{};
   const int max_health_{};
-  //  const int max_light_charge_{};
-  //  const int max_medium_charge_{};
-  //  const int max_hard_charge_{};
+  int current_health_{};
 };
 
 #endif  // TANK_H
