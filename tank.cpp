@@ -77,7 +77,7 @@ void Tank::MinusCharge(int type, int charge) {
   current_charge_[type] -= charge;
 }
 void Tank::PlusCharge() {
-  int type = rand() % 2;
+  int type = qrand() % 3;
   current_charge_[type] +=
       std::min(10 - 2 * type, max_charge_[type] - current_charge_[type]);
 }

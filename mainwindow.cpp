@@ -16,6 +16,13 @@ MainWindow::MainWindow(QWidget *parent)
           {Qt::Key_Q, Qt::Key_W, Qt::Key_A, Qt::Key_S, Qt::Key_D}),
       map_(new Map(1)),
       types_of_rockets_({{7, 100, true}, {15, 200, true}, {30, 300, false}}) {
+  setMouseTracking(true);
+  light_charge_button_->setToolTip(
+      "Hight speed, low charge, can destroy obstacles");
+  medium_charge_button_->setToolTip(
+      "Medium speed, medium charge, can destroy obstacles");
+  hard_charge_button_->setToolTip(
+      "Low speed, hight charge, can't destroy obstacles");
   light_charge_button_->hide();
   medium_charge_button_->hide();
   hard_charge_button_->hide();
@@ -873,22 +880,20 @@ void MainWindow::RandomBonus(Bonus bonus) {
   }
 
   int temp = 100;
-  bool flag = false;
+  bool flag = true;
   while (temp > 0) {
     int x, y;
-    x = rand() % (map_->GetNumberOfCellsHorizontally() - 1) + 1;
-    y = rand() % (map_->GetNumberOfCellsVertically() - 1) + 1;
+    x = qrand() % (map_->GetNumberOfCellsHorizontally() - 1);
+    y = qrand() % (map_->GetNumberOfCellsVertically() - 1);
     for (auto &object : tanks_) {
       if (object->GetCellX() == x && object->GetCellY() == y) {
         flag = false;
         break;
-      } else {
-        flag = true;
       }
     }
     if (obstacles_and_bonuses_[static_cast<unsigned>(x)]
                               [static_cast<unsigned>(y)] == nullptr &&
-        flag == true && map_->GetField(x, y) != CellType::Wall) {
+        flag && map_->GetField(x, y) != CellType::Wall) {
       if (bonus == Bonus::TypeMedicalKit) {
         obstacles_and_bonuses_[static_cast<unsigned>(x)][static_cast<unsigned>(
             y)] = std::shared_ptr<MedicalKit>(new MedicalKit(map_, x, y));
