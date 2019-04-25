@@ -253,7 +253,7 @@ void MainWindow::timerEvent(QTimerEvent *) {
         GetTimerDuration());
   }
 
-  if (time_since_last_medicalkit_ == 2000) {
+  if (time_since_last_medicalkit_ == 20000) {
     RandomBonus(Bonus::TypeMedicalKit);
     time_since_last_medicalkit_ = 0;
   }
@@ -879,17 +879,16 @@ void MainWindow::RandomBonus(Bonus bonus) {
     x = rand() % (map_->GetNumberOfCellsHorizontally() - 1) + 1;
     y = rand() % (map_->GetNumberOfCellsVertically() - 1) + 1;
     for (auto &object : tanks_) {
-      if (obstacles_and_bonuses_[static_cast<unsigned>(x)]
-                                [static_cast<unsigned>(y)] == nullptr &&
-          object->GetCellX() != x && object->GetCellY() != y &&
-          map_->GetField(x, y) != CellType::Wall) {
-        flag = true;
-      } else {
-        temp = false;
+      if (object->GetCellX() == x && object->GetCellY() == y) {
+        flag = false;
         break;
+      } else {
+        flag = true;
       }
     }
-    if (flag == true) {
+    if (obstacles_and_bonuses_[static_cast<unsigned>(x)]
+                              [static_cast<unsigned>(y)] == nullptr &&
+        flag == true && map_->GetField(x, y) != CellType::Wall) {
       if (bonus == Bonus::TypeMedicalKit) {
         obstacles_and_bonuses_[static_cast<unsigned>(x)][static_cast<unsigned>(
             y)] = std::shared_ptr<MedicalKit>(new MedicalKit(map_, x, y));
