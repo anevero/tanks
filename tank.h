@@ -49,13 +49,15 @@ class Tank : public Movable {
   int time_since_last_shot_{};
   int current_health_{};
   int type_of_charge_{};
-  int light_current_charge_{};
-  int medium_current_charge_{};
-  int hard_current_charge_{};
+  QVector<int> current_charge_;
+  const QVector<int> max_charge_;
+  //  int light_current_charge_{};
+  //  int medium_current_charge_{};
+  //  int hard_current_charge_{};
   const int max_health_{};
-  const int max_light_charge_{};
-  const int max_medium_charge_{};
-  const int max_hard_charge_{};
+  //  const int max_light_charge_{};
+  //  const int max_medium_charge_{};
+  //  const int max_hard_charge_{};
 };
 
 #endif  // TANK_H

@@ -14,13 +14,15 @@ MainWindow::MainWindow(QWidget *parent)
            new QPushButton("D", this)}),
       virtual_keys_encodings_(
           {Qt::Key_Q, Qt::Key_W, Qt::Key_A, Qt::Key_S, Qt::Key_D}),
-      map_(new Map(1)) {
+      map_(new Map(1)),
+      types_of_rockets_({{7, 100, true}, {15, 200, true}, {30, 300, false}}) {
   light_charge_button_->hide();
   medium_charge_button_->hide();
   hard_charge_button_->hide();
   light_charge_button_->setFocusPolicy(Qt::NoFocus);
   medium_charge_button_->setFocusPolicy(Qt::NoFocus);
   hard_charge_button_->setFocusPolicy(Qt::NoFocus);
+
   new_game_button_->setFocusPolicy(Qt::NoFocus);
   pause_continue_button_->setFocusPolicy(Qt::NoFocus);
   settings_button_->setFocusPolicy(Qt::NoFocus);
@@ -47,8 +49,6 @@ MainWindow::MainWindow(QWidget *parent)
   if (QTouchDevice::devices().empty()) {
     ToggleVirtualKeys();
   }
-
-  types_of_rockets_ = {{7, 100, true}, {15, 200, true}, {30, 300, false}};
 
   InitializeNewGameDialog();
   InitializeSettingsDialog();
@@ -627,16 +627,7 @@ void MainWindow::ShootRocket(std::shared_ptr<Tank> &tank) {
                           objects_copies_, obstacles_and_bonuses_);
   }
   if (std::dynamic_pointer_cast<Bot>(tank) == nullptr) {
-    if (tank->GetTypeOfCharge() ==
-        static_cast<int>(TypeOfRocket::LightRocket)) {
-      tank->MinusCharge(static_cast<int>(TypeOfRocket::LightRocket));
-    } else if (tank->GetTypeOfCharge() ==
-               static_cast<int>(TypeOfRocket::MediumRocket)) {
-      tank->MinusCharge(static_cast<int>(TypeOfRocket::MediumRocket));
-    } else if (tank->GetTypeOfCharge() ==
-               static_cast<int>(TypeOfRocket::HardRocket)) {
-      tank->MinusCharge(static_cast<int>(TypeOfRocket::HardRocket));
-    }
+    tank->MinusCharge(tank->GetTypeOfCharge());
   }
 }
 

@@ -141,7 +141,7 @@ class MainWindow : public QMainWindow {
   QVector<TankQualities> available_tank_types_;
 
   const int timer_duration_ = 10;
-  QVector<RocketParameters> types_of_rockets_;
+  const QVector<RocketParameters> types_of_rockets_;
 
   int timer_id_ = 0;
   int time_since_tooltip_appearing_ = 0;
@@ -154,7 +154,7 @@ class MainWindow : public QMainWindow {
   int w_indent_;
   int h_indent_;
 
-  const QString app_version_ = "0.5.0.0";
+  const QString app_version_ = "0.6.0.0";
 };
 
 #endif  // MAINWINDOW_H
