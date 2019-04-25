@@ -214,15 +214,7 @@ void MainWindow::timerEvent(QTimerEvent *) {
     if (!(*it)->IsMovingOrRotating()) {
       if (std::dynamic_pointer_cast<Boom>(*it) != nullptr) {
         for (const auto &tank : tanks_) {
-          if (tank->GetUpperLeftX() <= (*it)->GetLowerRightX() &&
-              tank->GetUpperLeftY() <= (*it)->GetLowerRightY() &&
-              tank->GetLowerRightX() >= (*it)->GetUpperLeftX() &&
-              tank->GetLowerRightY() >= (*it)->GetUpperLeftY()) {
-            std::dynamic_pointer_cast<Tank>(tank)->MinusHealth(20);
-          } else if (tank->GetLowerLeftX() <= (*it)->GetUpperRightX() &&
-                     tank->GetLowerLeftY() >= (*it)->GetUpperRightY() &&
-                     tank->GetUpperRightX() >= (*it)->GetLowerLeftX() &&
-                     tank->GetUpperRightY() <= (*it)->GetLowerLeftY()) {
+          if (HaveObjectsCollided(*it, tank)) {
             std::dynamic_pointer_cast<Tank>(tank)->MinusHealth(20);
           }
         }
@@ -519,6 +511,9 @@ bool MainWindow::IsRocketByThisTank(
   auto casted_rocket = std::dynamic_pointer_cast<Rocket>(rocket);
   auto casted_tank = std::dynamic_pointer_cast<Tank>(tank);
   if (casted_rocket != nullptr && casted_tank != nullptr) {
+    if (std::dynamic_pointer_cast<Boom>(rocket) != nullptr) {
+      return false;
+    }
     return casted_tank == casted_rocket->GetAttachedTank();
   }
   return false;
