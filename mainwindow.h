@@ -16,13 +16,15 @@
 #include <QMessageBox>
 #include <QPainter>
 #include <QPushButton>
+#include <QSize>
 #include <QString>
+#include <QTextBrowser>
 #include <QTimer>
 #include <QToolTip>
 #include <QTouchDevice>
 #include <QTranslator>
-#include <QtGlobal>
 #include <QVector>
+#include <QtGlobal>
 #include <algorithm>
 #include <memory>
 #include <utility>
@@ -60,6 +62,7 @@ class MainWindow : public QMainWindow {
  private slots:
   void NewGame();
   void Settings();
+  void About();
   void UpdateIndents();
   void RedrawButtons();
   void RedrawContent();
@@ -81,6 +84,7 @@ class MainWindow : public QMainWindow {
   void GameOver();
   void InitializeNewGameDialog();
   void InitializeSettingsDialog();
+  void InitializeAboutDialog();
   void DetermineCurrentLanguageSettings();
   void ChangeCurrentLanguageSettings();
   QJsonObject GetJsonObjectFromFile(const QString &filepath);
@@ -114,9 +118,15 @@ class MainWindow : public QMainWindow {
   QLabel *settings_separator_label_;
   QLabel *version_label_;
 
+  QDialog *about_dialog_;
+  QDialogButtonBox *about_dialog_buttons_;
+  QFormLayout *about_dialog_layout_;
+  QTextBrowser *html_widget_;
+
   QPushButton *new_game_button_;
   QPushButton *pause_continue_button_;
   QPushButton *settings_button_;
+  QPushButton *about_button_;
 
   QVector<QPushButton *> virtual_keys_buttons_;
   QVector<Qt::Key> virtual_keys_encodings_;

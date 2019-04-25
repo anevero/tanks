@@ -10,8 +10,8 @@
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="6"/>
-        <location filename="../mainwindow.cpp" line="277"/>
-        <location filename="../mainwindow.cpp" line="354"/>
+        <location filename="../mainwindow.cpp" line="331"/>
+        <location filename="../mainwindow.cpp" line="422"/>
         <source>Pause</source>
         <translation>Pause</translation>
     </message>
@@ -21,98 +21,103 @@
         <translation>Settings</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="52"/>
+        <location filename="../mainwindow.cpp" line="8"/>
+        <source>About</source>
+        <translation>About</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="56"/>
         <source>Health</source>
         <translation>Health</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="358"/>
+        <location filename="../mainwindow.cpp" line="426"/>
         <source>Continue</source>
         <translation>Continue</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="474"/>
+        <location filename="../mainwindow.cpp" line="552"/>
         <source>You win! 
 You can start a new game with help of appropriate button on the left.</source>
         <translation>You win! You can start a new game with help of appropriate button on the left.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="479"/>
+        <location filename="../mainwindow.cpp" line="557"/>
         <source>You died! 
 You can start a new game with help of appropriate button on the left.</source>
         <translation>You died! You can start a new game with help of appropriate button on the left.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="490"/>
+        <location filename="../mainwindow.cpp" line="568"/>
         <source>Choose map, tank and difficulty</source>
         <translation>Choose map, tank and difficulty</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="493"/>
-        <location filename="../mainwindow.cpp" line="499"/>
+        <location filename="../mainwindow.cpp" line="571"/>
+        <location filename="../mainwindow.cpp" line="577"/>
         <source>Map</source>
         <translation>Map</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="505"/>
-        <location filename="../mainwindow.cpp" line="522"/>
+        <location filename="../mainwindow.cpp" line="583"/>
+        <location filename="../mainwindow.cpp" line="595"/>
         <source>Tank</source>
         <translation>Tank</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="526"/>
+        <location filename="../mainwindow.cpp" line="599"/>
         <source>Difficulty</source>
         <translation>Difficulty</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="564"/>
+        <location filename="../mainwindow.cpp" line="639"/>
         <source>Activate virtual keys</source>
         <translation>Virtual keys</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="568"/>
+        <location filename="../mainwindow.cpp" line="643"/>
         <source>Language</source>
         <translation>Language</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="577"/>
+        <location filename="../mainwindow.cpp" line="652"/>
         <source>Language will be changed
 after application restart</source>
         <translation>Language will be changed
 after application restart</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="571"/>
+        <location filename="../mainwindow.cpp" line="646"/>
         <source>Belarusian</source>
         <translation>Беларуская</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="572"/>
+        <location filename="../mainwindow.cpp" line="647"/>
         <source>English</source>
         <translation>English</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="573"/>
+        <location filename="../mainwindow.cpp" line="648"/>
         <source>Russian</source>
         <translation>Русский</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="581"/>
+        <location filename="../mainwindow.cpp" line="657"/>
         <source>App version</source>
         <translation>App version</translation>
     </message>
     <message>
-        <location filename="../mainwindow.h" line="126"/>
+        <location filename="../mainwindow.h" line="143"/>
         <source>Easy</source>
         <translation>Easy</translation>
     </message>
     <message>
-        <location filename="../mainwindow.h" line="126"/>
+        <location filename="../mainwindow.h" line="143"/>
         <source>Normal</source>
         <translation>Normal</translation>
     </message>
     <message>
-        <location filename="../mainwindow.h" line="127"/>
+        <location filename="../mainwindow.h" line="144"/>
         <source>Hard</source>
         <translation>Hard</translation>
     </message>

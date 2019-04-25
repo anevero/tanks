@@ -22,5 +22,6 @@
     <file>translations/tanks_be_BY.qm</file>
     <file>translations/tanks_en_US.qm</file>
     <file>translations/tanks_ru_RU.qm</file>
+    <file>rules/rules.html</file>
 </qresource>
 </RCC>

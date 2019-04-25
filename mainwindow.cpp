@@ -5,6 +5,7 @@ MainWindow::MainWindow(QWidget *parent)
       new_game_button_(new QPushButton(tr("New game"), this)),
       pause_continue_button_(new QPushButton(tr("Pause"), this)),
       settings_button_(new QPushButton(tr("Settings"), this)),
+      about_button_(new QPushButton(tr("About"), this)),
       virtual_keys_buttons_(
           {new QPushButton("Q", this), new QPushButton("W", this),
            new QPushButton("A", this), new QPushButton("S", this),
@@ -15,6 +16,7 @@ MainWindow::MainWindow(QWidget *parent)
   new_game_button_->setFocusPolicy(Qt::NoFocus);
   pause_continue_button_->setFocusPolicy(Qt::NoFocus);
   settings_button_->setFocusPolicy(Qt::NoFocus);
+  about_button_->setFocusPolicy(Qt::NoFocus);
 
   setMinimumSize(600, 450);
   resize(600, 450);
@@ -23,6 +25,7 @@ MainWindow::MainWindow(QWidget *parent)
   connect(pause_continue_button_, SIGNAL(clicked()), this,
           SLOT(PauseOrContinue()));
   connect(settings_button_, SIGNAL(clicked()), this, SLOT(Settings()));
+  connect(about_button_, SIGNAL(clicked()), this, SLOT(About()));
 
   for (int i = 0; i < virtual_keys_buttons_.size(); ++i) {
     connect(virtual_keys_buttons_[i], &QPushButton::clicked,
@@ -36,6 +39,7 @@ MainWindow::MainWindow(QWidget *parent)
 
   InitializeNewGameDialog();
   InitializeSettingsDialog();
+  InitializeAboutDialog();
 }
 
 void MainWindow::mouseReleaseEvent(QMouseEvent *event) {
@@ -169,7 +173,7 @@ void MainWindow::timerEvent(QTimerEvent *) {
       if (bot->IsMovingStartNeeded(tanks_, obstacles_and_bonuses_)) {
         bot->StartMovement(1, tanks_, objects_copies_, obstacles_and_bonuses_);
       } else if (bot->IsRotationStartNeeded(
-          std::dynamic_pointer_cast<Tank>(tanks_[0]))) {
+                     std::dynamic_pointer_cast<Tank>(tanks_[0]))) {
         bot->StartRotation();
       }
 
@@ -196,8 +200,8 @@ void MainWindow::timerEvent(QTimerEvent *) {
   auto copy = objects_copies_.begin();
   while (copy != objects_copies_.end()) {
     if (copy->first->GetTimeToFinishMovement() <= 0) {
-      std::dynamic_pointer_cast<Tank>(copy->first)->UpdateCoordinates(
-          copy->second.x, copy->second.y);
+      std::dynamic_pointer_cast<Tank>(copy->first)
+          ->UpdateCoordinates(copy->second.x, copy->second.y);
       copy = objects_copies_.erase(copy);
       continue;
     }
@@ -219,10 +223,12 @@ void MainWindow::timerEvent(QTimerEvent *) {
           }
         }
 
-        obstacles_and_bonuses_[static_cast<unsigned>((*it)->GetCellX() - 1)][
-                        static_cast<unsigned>((*it)->GetCellY())] = nullptr;
-        obstacles_and_bonuses_[static_cast<unsigned>((*it)->GetCellX() + 1)][
-                        static_cast<unsigned>((*it)->GetCellY())] = nullptr;
+        obstacles_and_bonuses_[static_cast<unsigned>((*it)->GetCellX() - 1)]
+                              [static_cast<unsigned>((*it)->GetCellY())] =
+                                  nullptr;
+        obstacles_and_bonuses_[static_cast<unsigned>((*it)->GetCellX() + 1)]
+                              [static_cast<unsigned>((*it)->GetCellY())] =
+                                  nullptr;
       }
 
       it = rockets_.erase(it);
@@ -262,6 +268,11 @@ void MainWindow::Settings() {
   virtual_keys_checkbox_->setChecked(virtual_keys_shown_);
 }
 
+void MainWindow::About() {
+  if (!paused_) PauseOrContinue();
+  about_dialog_->exec();
+}
+
 void MainWindow::UpdateIndents() {
   sq_width_ = 4 * std::min(width() / 4, height() / 3);
   sq_height_ = 3 * std::min(width() / 4, height() / 3);
@@ -283,6 +294,10 @@ void MainWindow::RedrawButtons() {
                                 h_indent_ + static_cast<int>(0.17 * sq_height_),
                                 static_cast<int>(0.2 * sq_width_),
                                 static_cast<int>(0.05 * sq_height_));
+  about_button_->setGeometry(w_indent_ + static_cast<int>(0.04 * sq_width_),
+                             h_indent_ + static_cast<int>(0.23 * sq_height_),
+                             static_cast<int>(0.2 * sq_width_),
+                             static_cast<int>(0.05 * sq_height_));
 
   if (virtual_keys_shown_) {
     for (int i = 0; i < number_of_virtual_keys_in_first_row_; ++i) {
@@ -613,6 +628,8 @@ void MainWindow::InitializeNewGameDialog() {
           });
   connect(new_game_dialog_buttons_, SIGNAL(accepted()), new_game_dialog_,
           SLOT(accept()));
+
+  new_game_dialog_->layout()->setSizeConstraint(QLayout::SetFixedSize);
 }
 
 void MainWindow::InitializeSettingsDialog() {
@@ -662,6 +679,31 @@ void MainWindow::InitializeSettingsDialog() {
 
   connect(settings_dialog_buttons_, SIGNAL(accepted()), settings_dialog_,
           SLOT(accept()));
+
+  settings_dialog_->layout()->setSizeConstraint(QLayout::SetFixedSize);
+}
+
+void MainWindow::InitializeAboutDialog() {
+  about_dialog_ = new QDialog(this);
+
+  html_widget_ = new QTextBrowser(this);
+  QFile html_file(":/rules/rules.html");
+  html_file.open(QIODevice::ReadOnly);
+  QTextStream in(&html_file);
+  html_widget_->setHtml(in.readAll());
+  html_file.close();
+
+  about_dialog_buttons_ =
+      new QDialogButtonBox(QDialogButtonBox::Ok, Qt::Horizontal, about_dialog_);
+
+  about_dialog_layout_ = new QFormLayout(about_dialog_);
+  about_dialog_layout_->addRow(html_widget_);
+  about_dialog_layout_->addRow(about_dialog_buttons_);
+
+  connect(about_dialog_buttons_, SIGNAL(accepted()), about_dialog_,
+          SLOT(accept()));
+
+  about_dialog_->layout()->setSizeConstraint(QLayout::SetFixedSize);
 }
 
 void MainWindow::DetermineCurrentLanguageSettings() {
