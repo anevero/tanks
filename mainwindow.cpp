@@ -511,9 +511,6 @@ bool MainWindow::IsRocketByThisTank(
   auto casted_rocket = std::dynamic_pointer_cast<Rocket>(rocket);
   auto casted_tank = std::dynamic_pointer_cast<Tank>(tank);
   if (casted_rocket != nullptr && casted_tank != nullptr) {
-    if (std::dynamic_pointer_cast<Boom>(rocket) != nullptr) {
-      return false;
-    }
     return casted_tank == casted_rocket->GetAttachedTank();
   }
   return false;
