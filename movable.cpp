@@ -72,8 +72,9 @@ void Movable::StartMovement(
       new_cell_x = cells.x;
       new_cell_y = cells.y;
     }
-  } else if (objects[static_cast<unsigned>(new_cell_x)]
-                    [static_cast<unsigned>(new_cell_y)] != nullptr) {
+  }
+  if (objects[static_cast<unsigned>(new_cell_x)]
+             [static_cast<unsigned>(new_cell_y)] != nullptr) {
     if (std::dynamic_pointer_cast<Obstacle>(objects[static_cast<unsigned>(
             new_cell_x)][static_cast<unsigned>(new_cell_y)]) != nullptr) {
       current_speed_ *= 2;
