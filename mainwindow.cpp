@@ -253,11 +253,11 @@ void MainWindow::timerEvent(QTimerEvent *) {
         GetTimerDuration());
   }
 
-  if (time_since_last_medicalkit_ == 20000) {
+  if (time_since_last_medicalkit_ == 1000) {
     RandomBonus(Bonus::TypeMedicalKit);
     time_since_last_medicalkit_ = 0;
   }
-  if (time_since_last_charge_ == 15000) {
+  if (time_since_last_charge_ == 1000) {
     RandomBonus(Bonus::TypeCharge);
     time_since_last_charge_ = 0;
   }
@@ -873,6 +873,7 @@ void MainWindow::RandomBonus(Bonus bonus) {
   }
 
   int temp = 100;
+  bool flag = false;
   while (temp > 0) {
     int x, y;
     x = rand() % (map_->GetNumberOfCellsHorizontally() - 1) + 1;
@@ -882,17 +883,21 @@ void MainWindow::RandomBonus(Bonus bonus) {
                                 [static_cast<unsigned>(y)] == nullptr &&
           object->GetCellX() != x && object->GetCellY() != y &&
           map_->GetField(x, y) != CellType::Wall) {
-        if (bonus == Bonus::TypeMedicalKit) {
-          obstacles_and_bonuses_[static_cast<unsigned>(
-              x)][static_cast<unsigned>(y)] =
-              std::shared_ptr<MedicalKit>(new MedicalKit(map_, x, y));
-        } else if (bonus == Bonus::TypeCharge) {
-          obstacles_and_bonuses_[static_cast<unsigned>(
-              x)][static_cast<unsigned>(y)] =
-              std::shared_ptr<Charge>(new Charge(map_, x, y));
-        }
-        return;
+        flag = true;
+      } else {
+        temp = false;
+        break;
       }
+    }
+    if (flag == true) {
+      if (bonus == Bonus::TypeMedicalKit) {
+        obstacles_and_bonuses_[static_cast<unsigned>(x)][static_cast<unsigned>(
+            y)] = std::shared_ptr<MedicalKit>(new MedicalKit(map_, x, y));
+      } else if (bonus == Bonus::TypeCharge) {
+        obstacles_and_bonuses_[static_cast<unsigned>(x)][static_cast<unsigned>(
+            y)] = std::shared_ptr<Charge>(new Charge(map_, x, y));
+      }
+      return;
     }
     temp--;
   }
