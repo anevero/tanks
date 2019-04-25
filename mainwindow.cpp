@@ -215,7 +215,7 @@ void MainWindow::timerEvent(QTimerEvent *) {
       if (std::dynamic_pointer_cast<Boom>(*it) != nullptr) {
         for (const auto &tank : tanks_) {
           if (HaveObjectsCollided(*it, tank)) {
-            std::dynamic_pointer_cast<Tank>(tank)->MinusHealth(20);
+            std::dynamic_pointer_cast<Tank>(tank)->MinusHealth(25);
           }
         }
 
