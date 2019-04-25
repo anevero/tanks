@@ -537,6 +537,7 @@ void MainWindow::PressVirtualKey(Qt::Key key) {
 
 void MainWindow::ChangeChargeButton(int type) {
   std::dynamic_pointer_cast<Tank>(tanks_[0])->ChangeTypeOfCharge(type);
+  RedrawButtons();
 }
 
 void MainWindow::FindInteractingObjects() {
