@@ -1,4 +1,4 @@
-#ifndef BOT_H
+﻿#ifndef BOT_H
 #define BOT_H
 
 #include <QDebug>
@@ -22,16 +22,21 @@ struct BotQualities {
 class Bot : public Tank {
  public:
   Bot(const std::shared_ptr<Map>& map, const BotQualities& qualities);
+  virtual ~Bot() override = default;
   virtual void LoadImage() override;
 
   virtual bool IsTurnNeeded() const;
   virtual bool IsMoveNeeded() const;
   virtual bool IsRotationStartNeeded(const std::shared_ptr<Tank>&);
-  virtual bool IsMovingStartNeeded(const QList<std::shared_ptr<Movable>>&,
-                                   const std::vector<std::vector<
-                                   std::shared_ptr<ObjectOnMap>>>&);
+  virtual bool IsMovingStartNeeded(
+      const QList<std::shared_ptr<Movable>>&,
+      const std::vector<std::vector<std::shared_ptr<ObjectOnMap>>>&);
   virtual bool IsShotNeeded(const std::shared_ptr<Map>&,
                             const std::shared_ptr<Tank>&);
+  int GetCurrentCharge() const = delete;
+  int GetMaxCharge() const = delete;
+  void MinusCharge(int charge = 1) = delete;
+  void PlusCharge(int charge = 10) = delete;
 
  protected:
   int number_of_cells_to_move_ = 0;

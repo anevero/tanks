@@ -2,24 +2,43 @@
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent),
+      main_buttons_layout_(new QVBoxLayout()),
       new_game_button_(new QPushButton(tr("New game"), this)),
       pause_continue_button_(new QPushButton(tr("Pause"), this)),
       settings_button_(new QPushButton(tr("Settings"), this)),
       about_button_(new QPushButton(tr("About"), this)),
+      charge_buttons_layout_(new QHBoxLayout()),
+      charge_buttons_({new QPushButton(this), new QPushButton(this),
+                       new QPushButton(this)}),
+      virtual_buttons_layout_(new QGridLayout()),
       virtual_keys_buttons_(
           {new QPushButton("Q", this), new QPushButton("W", this),
            new QPushButton("A", this), new QPushButton("S", this),
            new QPushButton("D", this)}),
       virtual_keys_encodings_(
           {Qt::Key_Q, Qt::Key_W, Qt::Key_A, Qt::Key_S, Qt::Key_D}),
-      map_(new Map(1)) {
+      map_(new Map(1)),
+      types_of_rockets_({{7, 100, true}, {15, 200, true}, {30, 300, false}}) {
+  setMouseTracking(true);
+
+  new_game_button_->setSizePolicy(
+      QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
+  pause_continue_button_->setSizePolicy(
+      QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
+  settings_button_->setSizePolicy(
+      QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
+  about_button_->setSizePolicy(
+      QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
+
   new_game_button_->setFocusPolicy(Qt::NoFocus);
   pause_continue_button_->setFocusPolicy(Qt::NoFocus);
   settings_button_->setFocusPolicy(Qt::NoFocus);
   about_button_->setFocusPolicy(Qt::NoFocus);
 
-  setMinimumSize(600, 450);
-  resize(600, 450);
+  main_buttons_layout_->addWidget(new_game_button_);
+  main_buttons_layout_->addWidget(pause_continue_button_);
+  main_buttons_layout_->addWidget(settings_button_);
+  main_buttons_layout_->addWidget(about_button_);
 
   connect(new_game_button_, SIGNAL(clicked()), this, SLOT(NewGame()));
   connect(pause_continue_button_, SIGNAL(clicked()), this,
@@ -27,10 +46,42 @@ MainWindow::MainWindow(QWidget *parent)
   connect(settings_button_, SIGNAL(clicked()), this, SLOT(Settings()));
   connect(about_button_, SIGNAL(clicked()), this, SLOT(About()));
 
+  for (int i = 0; i < charge_buttons_.size(); ++i) {
+    charge_buttons_[i]->setSizePolicy(
+        QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
+    charge_buttons_[i]->setFocusPolicy(Qt::NoFocus);
+    charge_buttons_layout_->addWidget(charge_buttons_[i]);
+    charge_buttons_[i]->hide();
+    connect(charge_buttons_[i], &QPushButton::clicked,
+            [this, i]() { ChangeChargeButton(i); });
+  }
+
+  standart_palette_ = charge_buttons_[0]->palette();
+  selected_palette_ = standart_palette_;
+  selected_palette_.setColor(QPalette::Button, Qt::yellow);
+
+  charge_buttons_[0]->setToolTip(
+      tr("Hight speed, low charge, can destroy obstacles"));
+  charge_buttons_[1]->setToolTip(
+      tr("Medium speed, medium charge, can destroy obstacles"));
+  charge_buttons_[2]->setToolTip(
+      tr("Low speed, hight charge, can't destroy obstacles"));
+
   for (int i = 0; i < virtual_keys_buttons_.size(); ++i) {
     connect(virtual_keys_buttons_[i], &QPushButton::clicked,
             [this, i]() { PressVirtualKey(virtual_keys_encodings_[i]); });
+    virtual_keys_buttons_[i]->setSizePolicy(
+        QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
     virtual_keys_buttons_[i]->setFocusPolicy(Qt::NoFocus);
+  }
+
+  for (int i = 0; i < number_of_virtual_keys_in_first_row_; ++i) {
+    virtual_buttons_layout_->addWidget(virtual_keys_buttons_[i], 0, i);
+  }
+  for (int i = number_of_virtual_keys_in_first_row_;
+       i < virtual_keys_buttons_.size(); ++i) {
+    virtual_buttons_layout_->addWidget(
+        virtual_keys_buttons_[i], 1, i - number_of_virtual_keys_in_first_row_);
   }
 
   if (QTouchDevice::devices().empty()) {
@@ -40,6 +91,9 @@ MainWindow::MainWindow(QWidget *parent)
   InitializeNewGameDialog();
   InitializeSettingsDialog();
   InitializeAboutDialog();
+
+  setMinimumSize(600, 450);
+  resize(600, 450);
 }
 
 void MainWindow::mouseReleaseEvent(QMouseEvent *event) {
@@ -50,7 +104,6 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event) {
   for (const auto &object : tanks_) {
     if (object->GetCellX() == current_cell_x &&
         object->GetCellY() == current_cell_y) {
-      time_since_tooltip_appearing_ = 0;
       QToolTip::showText(
           event->globalPos(),
           tr("Health") + ": " +
@@ -64,8 +117,11 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event) {
 void MainWindow::keyReleaseEvent(QKeyEvent *event) {
   if (timer_id_ == 0 && !paused_) return;
   auto tank = std::dynamic_pointer_cast<Tank>(tanks_[0]);
-  if (tank->IsMovingOrRotating() || (paused_ && event->key() != Qt::Key_Escape))
+  if ((paused_ && event->key() != Qt::Key_1 && event->key() != Qt::Key_2 &&
+       event->key() != Qt::Key_3 && event->key() != Qt::Key_Escape) ||
+      (!paused_ && tank->IsMovingOrRotating())) {
     return;
+  }
 
   switch (event->key()) {
     case Qt::Key_Escape:
@@ -101,6 +157,15 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event) {
         tank->SetZeroTimeFromLastShot();
         ShootRocket(tank);
       }
+      break;
+    case Qt::Key_1:
+      ChangeChargeButton(0);
+      break;
+    case Qt::Key_2:
+      ChangeChargeButton(1);
+      break;
+    case Qt::Key_3:
+      ChangeChargeButton(2);
       break;
   }
 }
@@ -142,6 +207,8 @@ void MainWindow::paintEvent(QPaintEvent *) {
   for (const auto &object : rockets_) {
     object->Draw(p);
   }
+
+  RedrawCharge(p);
   p.end();
 }
 
@@ -151,13 +218,8 @@ void MainWindow::resizeEvent(QResizeEvent *) {
 }
 
 void MainWindow::timerEvent(QTimerEvent *) {
-  time_since_tooltip_appearing_ += timer_duration_;
-  if (time_since_tooltip_appearing_ >= time_for_showing_tooltip_) {
-    QToolTip::hideText();
-    time_since_tooltip_appearing_ = 0;
-  }
-
-  time_since_last_bonus_ += timer_duration_;
+  time_since_last_medicalkit_ += timer_duration_;
+  time_since_last_charge_ += timer_duration_;
 
   for (auto &object : tanks_) {
     if (std::dynamic_pointer_cast<Bot>(object) != nullptr) {
@@ -242,9 +304,13 @@ void MainWindow::timerEvent(QTimerEvent *) {
         GetTimerDuration());
   }
 
-  if (time_since_last_bonus_ == 20000) {
-    RandomMedicalKit();
-    time_since_last_bonus_ = 0;
+  if (time_since_last_medicalkit_ == 20000) {
+    RandomBonus(Bonus::TypeMedicalKit);
+    time_since_last_medicalkit_ = 0;
+  }
+  if (time_since_last_charge_ == 15000) {
+    RandomBonus(Bonus::TypeCharge);
+    time_since_last_charge_ = 0;
   }
 
   FindInteractingObjects();
@@ -282,43 +348,53 @@ void MainWindow::UpdateIndents() {
 }
 
 void MainWindow::RedrawButtons() {
-  new_game_button_->setGeometry(w_indent_ + static_cast<int>(0.04 * sq_width_),
-                                h_indent_ + static_cast<int>(0.05 * sq_height_),
-                                static_cast<int>(0.2 * sq_width_),
-                                static_cast<int>(0.05 * sq_height_));
-  pause_continue_button_->setGeometry(
+  main_buttons_layout_->setSpacing(static_cast<int>(0.01 * sq_height_));
+  main_buttons_layout_->setGeometry(QRect(
       w_indent_ + static_cast<int>(0.04 * sq_width_),
-      h_indent_ + static_cast<int>(0.11 * sq_height_),
-      static_cast<int>(0.2 * sq_width_), static_cast<int>(0.05 * sq_height_));
-  settings_button_->setGeometry(w_indent_ + static_cast<int>(0.04 * sq_width_),
-                                h_indent_ + static_cast<int>(0.17 * sq_height_),
-                                static_cast<int>(0.2 * sq_width_),
-                                static_cast<int>(0.05 * sq_height_));
-  about_button_->setGeometry(w_indent_ + static_cast<int>(0.04 * sq_width_),
-                             h_indent_ + static_cast<int>(0.23 * sq_height_),
-                             static_cast<int>(0.2 * sq_width_),
-                             static_cast<int>(0.05 * sq_height_));
+      h_indent_ + static_cast<int>(0.05 * sq_height_),
+      static_cast<int>(0.2 * sq_width_), static_cast<int>(0.28 * sq_height_)));
 
   if (virtual_keys_shown_) {
-    for (int i = 0; i < number_of_virtual_keys_in_first_row_; ++i) {
-      virtual_keys_buttons_[i]->setGeometry(
-          w_indent_ + static_cast<int>(0.04 * sq_width_) +
-              i * static_cast<int>(0.2 * sq_width_ / 3),
-          height() - static_cast<int>(0.19 * sq_height_),
-          static_cast<int>(0.2 * sq_width_ / 3),
-          static_cast<int>(0.07 * sq_height_));
-    }
-    for (int i = number_of_virtual_keys_in_first_row_;
-         i < virtual_keys_buttons_.size(); ++i) {
-      virtual_keys_buttons_[i]->setGeometry(
-          w_indent_ + static_cast<int>(0.04 * sq_width_) +
-              static_cast<int>((i - number_of_virtual_keys_in_first_row_) *
-                               0.2 * sq_width_ / 3),
-          height() - static_cast<int>(0.12 * sq_height_),
-          static_cast<int>(0.2 * sq_width_ / 3),
-          static_cast<int>(0.07 * sq_height_));
-    }
+    virtual_buttons_layout_->setSpacing(static_cast<int>(0.01 * sq_height_));
+    virtual_buttons_layout_->setGeometry(
+        QRect(w_indent_ + static_cast<int>(0.04 * sq_width_),
+              height() - h_indent_ - static_cast<int>(0.2 * sq_height_),
+              static_cast<int>(0.2 * sq_width_),
+              static_cast<int>(0.15 * sq_height_)));
   }
+}
+
+void MainWindow::RedrawCharge(QPainter &painter) {
+  std::shared_ptr<Tank> tank;
+  if (tanks_.size() == 0) {
+    return;
+  }
+  tank = std::dynamic_pointer_cast<Tank>(tanks_[0]);
+
+  for (int i = 0; i < charge_buttons_.size(); ++i) {
+    if (i == tank->GetTypeOfCharge()) {
+      charge_buttons_[i]->setPalette(selected_palette_);
+    } else {
+      charge_buttons_[i]->setPalette(standart_palette_);
+    }
+    charge_buttons_[i]->setText(QString::number(tank->GetCurrentCharge(i)));
+  }
+
+  charge_buttons_layout_->setSpacing(static_cast<int>(0.01 * sq_height_));
+  charge_buttons_layout_->setGeometry(QRect(
+      w_indent_ + static_cast<int>(0.04 * sq_width_),
+      height() - h_indent_ - static_cast<int>(0.355 * sq_height_),
+      static_cast<int>(0.2 * sq_width_), static_cast<int>(0.1 * sq_height_)));
+
+  painter.save();
+  painter.setBrush(Qt::yellow);
+  painter.drawRect(
+      w_indent_ + static_cast<int>(0.04 * sq_width_),
+      height() - h_indent_ - static_cast<int>(0.25 * sq_height_),
+      static_cast<int>(0.2 * sq_width_ * tank->GetTimeSinceLastShot() /
+                       tank->GetRateOfFire()),
+      sq_height_ / 32);
+  painter.restore();
 }
 
 void MainWindow::RedrawContent() {
@@ -355,6 +431,9 @@ void MainWindow::RedrawContent() {
         1000 - 150 * current_game_options_.difficulty_level_number;
     qualities.tank.speed =
         1000 - 150 * current_game_options_.difficulty_level_number;
+    qualities.tank.max_light_charge = 1;
+    qualities.tank.max_medium_charge = 1;
+    qualities.tank.max_hard_charge = 1;
     qualities.init_cell_x = bots[i].toObject()["initial_cell_x"].toInt();
     qualities.init_cell_y = bots[i].toObject()["initial_cell_y"].toInt();
     qualities.moving_length = bots[i].toObject()["moving_length"].toInt();
@@ -413,6 +492,10 @@ void MainWindow::RedrawContent() {
         std::shared_ptr<Portal>(new Portal(map_, new_x, new_y, curr_x, curr_y));
   }
 
+  for (int i = 0; i < charge_buttons_.size(); ++i) {
+    charge_buttons_[i]->show();
+  }
+
   timer_id_ = startTimer(timer_duration_);
   repaint();
 }
@@ -433,6 +516,11 @@ void MainWindow::PauseOrContinue() {
 void MainWindow::PressVirtualKey(Qt::Key key) {
   QKeyEvent *event = new QKeyEvent(QEvent::KeyRelease, key, Qt::NoModifier);
   QApplication::instance()->sendEvent(this, event);
+}
+
+void MainWindow::ChangeChargeButton(int type) {
+  std::dynamic_pointer_cast<Tank>(tanks_[0])->ChangeTypeOfCharge(type);
+  repaint();
 }
 
 void MainWindow::FindInteractingObjects() {
@@ -509,7 +597,17 @@ void MainWindow::MakeBoom(std::shared_ptr<Movable> &object) {
 }
 
 void MainWindow::ShootRocket(std::shared_ptr<Tank> &tank) {
-  std::shared_ptr<Rocket> rocket(new Rocket(map_, tank, 250, 10));
+  std::shared_ptr<Rocket> rocket;
+  if (std::dynamic_pointer_cast<Bot>(tank) == nullptr) {
+    rocket = std::shared_ptr<Rocket>(new Rocket(
+        map_, tank, types_of_rockets_[tank->GetTypeOfCharge()].speed_,
+        types_of_rockets_[tank->GetTypeOfCharge()].power_,
+        static_cast<TypeOfRocket>(tank->GetTypeOfCharge())));
+  } else {
+    rocket = std::shared_ptr<Rocket>(
+        new Rocket(map_, tank, 250, 10, TypeOfRocket::MediumRocket));
+  }
+
   rockets_.append(rocket);
   if (rocket->GetIntDirection() == 1 || rocket->GetIntDirection() == 3) {
     rocket->StartMovement(map_->GetNumberOfCellsHorizontally(), tanks_,
@@ -517,6 +615,9 @@ void MainWindow::ShootRocket(std::shared_ptr<Tank> &tank) {
   } else {
     rocket->StartMovement(map_->GetNumberOfCellsVertically(), tanks_,
                           objects_copies_, obstacles_and_bonuses_);
+  }
+  if (std::dynamic_pointer_cast<Bot>(tank) == nullptr) {
+    tank->MinusCharge(tank->GetTypeOfCharge());
   }
 }
 
@@ -591,6 +692,11 @@ void MainWindow::InitializeNewGameDialog() {
     qualities.speed = tanks[i].toObject()["speed"].toInt();
     qualities.rate_of_fire = tanks[i].toObject()["rate_of_fire"].toInt();
     qualities.max_health = tanks[i].toObject()["max_health"].toInt();
+    qualities.max_light_charge =
+        tanks[i].toObject()["max_light_charge"].toInt();
+    qualities.max_medium_charge =
+        tanks[i].toObject()["max_medium_charge"].toInt();
+    qualities.max_hard_charge = tanks[i].toObject()["max_hard_charge"].toInt();
     available_tank_types_.push_back(qualities);
     switch_tank_menu_->addItem(tr("Tank") + " " + QString::number(i + 1));
   }
@@ -762,30 +868,46 @@ Direction MainWindow::DetermineDirection(const QString &start_direction) const {
   return Direction::Right;
 }
 
-void MainWindow::RandomMedicalKit() {
+void MainWindow::RandomBonus(Bonus bonus) {
   for (size_t i = 0; i < obstacles_and_bonuses_.size(); i++) {
     for (size_t j = 0; j < obstacles_and_bonuses_[i].size(); j++) {
-      if (std::dynamic_pointer_cast<MedicalKit>(obstacles_and_bonuses_[i][j]) !=
-          nullptr) {
-        obstacles_and_bonuses_[i][j] = nullptr;
+      if (bonus == Bonus::TypeMedicalKit) {
+        if (std::dynamic_pointer_cast<MedicalKit>(
+                obstacles_and_bonuses_[i][j]) != nullptr) {
+          obstacles_and_bonuses_[i][j] = nullptr;
+        }
+      } else if (bonus == Bonus::TypeCharge) {
+        if (std::dynamic_pointer_cast<Charge>(obstacles_and_bonuses_[i][j]) !=
+            nullptr) {
+          obstacles_and_bonuses_[i][j] = nullptr;
+        }
       }
     }
   }
 
   int temp = 100;
+  bool flag = true;
   while (temp > 0) {
     int x, y;
-    x = rand() % (map_->GetNumberOfCellsHorizontally() - 1) + 1;
-    y = rand() % (map_->GetNumberOfCellsVertically() - 1) + 1;
+    x = qrand() % (map_->GetNumberOfCellsHorizontally() - 1);
+    y = qrand() % (map_->GetNumberOfCellsVertically() - 1);
     for (auto &object : tanks_) {
-      if (obstacles_and_bonuses_[static_cast<unsigned>(x)]
-                                [static_cast<unsigned>(y)] == nullptr &&
-          (object->GetCellX() != x || object->GetCellY() != y) &&
-          map_->GetField(x, y) != CellType::Wall) {
+      if (object->GetCellX() == x && object->GetCellY() == y) {
+        flag = false;
+        break;
+      }
+    }
+    if (obstacles_and_bonuses_[static_cast<unsigned>(x)]
+                              [static_cast<unsigned>(y)] == nullptr &&
+        flag && map_->GetField(x, y) != CellType::Wall) {
+      if (bonus == Bonus::TypeMedicalKit) {
         obstacles_and_bonuses_[static_cast<unsigned>(x)][static_cast<unsigned>(
             y)] = std::shared_ptr<MedicalKit>(new MedicalKit(map_, x, y));
-        return;
+      } else if (bonus == Bonus::TypeCharge) {
+        obstacles_and_bonuses_[static_cast<unsigned>(x)][static_cast<unsigned>(
+            y)] = std::shared_ptr<Charge>(new Charge(map_, x, y));
       }
+      return;
     }
     temp--;
   }

@@ -1,4 +1,4 @@
-#include "bot.h"
+﻿#include "bot.h"
 
 Bot::Bot(const std::shared_ptr<Map>& map, const BotQualities& qualities)
     : Tank(map, qualities.init_cell_x, qualities.init_cell_y, qualities.tank),

@@ -1,6 +1,7 @@
 ﻿#ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <QBoxLayout>
 #include <QCheckBox>
 #include <QComboBox>
 #include <QDebug>
@@ -9,12 +10,14 @@
 #include <QEvent>
 #include <QFileInfo>
 #include <QFormLayout>
+#include <QGridLayout>
 #include <QKeyEvent>
 #include <QLabel>
 #include <QList>
 #include <QMainWindow>
 #include <QMessageBox>
 #include <QPainter>
+#include <QPalette>
 #include <QPushButton>
 #include <QSize>
 #include <QString>
@@ -66,9 +69,11 @@ class MainWindow : public QMainWindow {
   void About();
   void UpdateIndents();
   void RedrawButtons();
+  void RedrawCharge(QPainter &painter);
   void RedrawContent();
   void PauseOrContinue();
   void PressVirtualKey(Qt::Key key);
+  void ChangeChargeButton(int type);
 
  private:
   void FindInteractingObjects();
@@ -90,7 +95,7 @@ class MainWindow : public QMainWindow {
   void ChangeCurrentLanguageSettings();
   QJsonObject GetJsonObjectFromFile(const QString &filepath);
   Direction DetermineDirection(const QString &start_direction) const;
-  void RandomMedicalKit();
+  void RandomBonus(Bonus bonus);
 
  private:
   bool paused_ = false;
@@ -124,11 +129,18 @@ class MainWindow : public QMainWindow {
   QFormLayout *about_dialog_layout_;
   QTextBrowser *html_widget_;
 
+  QVBoxLayout *main_buttons_layout_;
   QPushButton *new_game_button_;
   QPushButton *pause_continue_button_;
   QPushButton *settings_button_;
   QPushButton *about_button_;
 
+  QHBoxLayout *charge_buttons_layout_;
+  QVector<QPushButton *> charge_buttons_;
+  QPalette standart_palette_;
+  QPalette selected_palette_;
+
+  QGridLayout *virtual_buttons_layout_;
   QVector<QPushButton *> virtual_keys_buttons_;
   QVector<Qt::Key> virtual_keys_encodings_;
   const int number_of_virtual_keys_in_first_row_ = 2;
@@ -146,16 +158,18 @@ class MainWindow : public QMainWindow {
   QVector<TankQualities> available_tank_types_;
 
   const int timer_duration_ = 10;
+  const QVector<RocketParameters> types_of_rockets_;
+
   int timer_id_ = 0;
-  int time_since_tooltip_appearing_ = 0;
-  const int time_for_showing_tooltip_ = 1200;
   int time_since_last_bonus_ = 0;
+  int time_since_last_medicalkit_ = 0;
+  int time_since_last_charge_ = 0;
   int sq_width_;
   int sq_height_;
   int w_indent_;
   int h_indent_;
 
-  const QString app_version_ = "0.5.0.0";
+  const QString app_version_ = "0.6.0.0";
 };
 
 #endif  // MAINWINDOW_H

@@ -9,6 +9,8 @@
 #include <memory>
 #include "map.h"
 
+enum class Bonus { TypeMedicalKit, TypeCharge };
+
 class ObjectOnMap {
  public:
   ObjectOnMap(const std::shared_ptr<Map>& map, const int x, const int y);
@@ -41,6 +43,12 @@ class Obstacle : public ObjectOnMap {
 class MedicalKit : public ObjectOnMap {
  public:
   MedicalKit(const std::shared_ptr<Map>& map, const int x, const int y);
+  void LoadImage() override;
+};
+
+class Charge : public ObjectOnMap {
+ public:
+  Charge(const std::shared_ptr<Map>& map, int x, int y);
   void LoadImage() override;
 };
 

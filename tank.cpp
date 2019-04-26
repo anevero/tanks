@@ -5,8 +5,13 @@ Tank::Tank(const std::shared_ptr<Map>& map, const int init_cell_x,
     : Movable(map, init_cell_x, init_cell_y, qualities.direction,
               qualities.speed),
       rate_of_fire_(qualities.rate_of_fire),
-      current_health_(qualities.max_health),
-      max_health_(qualities.max_health) {
+      type_of_charge_(0),
+      current_charge_({qualities.max_light_charge, qualities.max_medium_charge,
+                       qualities.max_hard_charge}),
+      max_charge_({qualities.max_light_charge, qualities.max_medium_charge,
+                   qualities.max_hard_charge}),
+      max_health_(qualities.max_health),
+      current_health_(qualities.max_health) {
   LoadImage();
 }
 
@@ -46,11 +51,14 @@ void Tank::DrawHealth(QPainter& painter) {
 }
 
 bool Tank::IsAbleToShoot() const {
-  return time_since_last_shot_ >= rate_of_fire_;
+  return (time_since_last_shot_ >= rate_of_fire_) &&
+         ((type_of_charge_ == 0 && current_charge_[0] > 0) ||
+          (type_of_charge_ == 1 && current_charge_[1] > 0) ||
+          (type_of_charge_ == 2 && current_charge_[2] > 0));
 }
 
 void Tank::IncreaseTimeSinceLastShot(const int delta) {
-  if (time_since_last_shot_ <= rate_of_fire_) {
+  if (time_since_last_shot_ < rate_of_fire_) {
     time_since_last_shot_ += delta;
   }
 }
@@ -60,4 +68,20 @@ int Tank::GetCurrentHealth() const { return current_health_; }
 int Tank::GetMaxHealth() const { return max_health_; }
 void Tank::MinusHealth(const int health) { current_health_ -= health; }
 void Tank::PlusHealth(const int health) { current_health_ += health; }
+void Tank::ChangeTypeOfCharge(int type) { type_of_charge_ = type; }
+int Tank::GetTypeOfCharge() const { return type_of_charge_; }
+int Tank::GetCurrentCharge(int type) const { return current_charge_[type]; }
+int Tank::GetMaxCharge(int type) const { return max_charge_[type]; }
+
+void Tank::MinusCharge(int type, int charge) {
+  current_charge_[type] -= charge;
+}
+void Tank::PlusCharge() {
+  int type = qrand() % 3;
+  current_charge_[type] +=
+      std::min(10 - 2 * type, max_charge_[type] - current_charge_[type]);
+}
+
 bool Tank::IsDead() const { return current_health_ <= 0; }
+int Tank::GetTimeSinceLastShot() const { return time_since_last_shot_; }
+int Tank::GetRateOfFire() const { return rate_of_fire_; }
