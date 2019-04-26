@@ -58,7 +58,7 @@ bool Tank::IsAbleToShoot() const {
 }
 
 void Tank::IncreaseTimeSinceLastShot(const int delta) {
-  if (time_since_last_shot_ <= rate_of_fire_) {
+  if (time_since_last_shot_ < rate_of_fire_) {
     time_since_last_shot_ += delta;
   }
 }

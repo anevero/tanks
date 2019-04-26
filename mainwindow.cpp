@@ -2,12 +2,14 @@
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent),
-      light_charge_button_(new QPushButton(this)),
-      medium_charge_button_(new QPushButton(this)),
-      hard_charge_button_(new QPushButton(this)),
+      main_buttons_layout_(new QVBoxLayout()),
       new_game_button_(new QPushButton(tr("New game"), this)),
       pause_continue_button_(new QPushButton(tr("Pause"), this)),
       settings_button_(new QPushButton(tr("Settings"), this)),
+      charge_buttons_layout_(new QHBoxLayout()),
+      charge_buttons_({new QPushButton(this), new QPushButton(this),
+                       new QPushButton(this)}),
+      virtual_buttons_layout_(new QGridLayout()),
       virtual_keys_buttons_(
           {new QPushButton("Q", this), new QPushButton("W", this),
            new QPushButton("A", this), new QPushButton("S", this),
@@ -17,40 +19,63 @@ MainWindow::MainWindow(QWidget *parent)
       map_(new Map(1)),
       types_of_rockets_({{7, 100, true}, {15, 200, true}, {30, 300, false}}) {
   setMouseTracking(true);
-  light_charge_button_->setToolTip(
-      "Hight speed, low charge, can destroy obstacles");
-  medium_charge_button_->setToolTip(
-      "Medium speed, medium charge, can destroy obstacles");
-  hard_charge_button_->setToolTip(
-      "Low speed, hight charge, can't destroy obstacles");
-  light_charge_button_->hide();
-  medium_charge_button_->hide();
-  hard_charge_button_->hide();
-  light_charge_button_->setFocusPolicy(Qt::NoFocus);
-  medium_charge_button_->setFocusPolicy(Qt::NoFocus);
-  hard_charge_button_->setFocusPolicy(Qt::NoFocus);
+
+  new_game_button_->setSizePolicy(
+      QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
+  pause_continue_button_->setSizePolicy(
+      QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
+  settings_button_->setSizePolicy(
+      QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
 
   new_game_button_->setFocusPolicy(Qt::NoFocus);
   pause_continue_button_->setFocusPolicy(Qt::NoFocus);
   settings_button_->setFocusPolicy(Qt::NoFocus);
 
-  setMinimumSize(600, 450);
-  resize(600, 450);
+  main_buttons_layout_->addWidget(new_game_button_);
+  main_buttons_layout_->addWidget(pause_continue_button_);
+  main_buttons_layout_->addWidget(settings_button_);
 
   connect(new_game_button_, SIGNAL(clicked()), this, SLOT(NewGame()));
   connect(pause_continue_button_, SIGNAL(clicked()), this,
           SLOT(PauseOrContinue()));
   connect(settings_button_, SIGNAL(clicked()), this, SLOT(Settings()));
-  connect(light_charge_button_, &QPushButton::clicked,
-          [&]() { ChangeChargeButton(0); });
-  connect(medium_charge_button_, &QPushButton::clicked,
-          [&]() { ChangeChargeButton(1); });
-  connect(hard_charge_button_, &QPushButton::clicked,
-          [&]() { ChangeChargeButton(2); });
+
+  for (int i = 0; i < charge_buttons_.size(); ++i) {
+    charge_buttons_[i]->setSizePolicy(
+        QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
+    charge_buttons_[i]->setFocusPolicy(Qt::NoFocus);
+    charge_buttons_layout_->addWidget(charge_buttons_[i]);
+    charge_buttons_[i]->hide();
+    connect(charge_buttons_[i], &QPushButton::clicked,
+            [this, i]() { ChangeChargeButton(i); });
+  }
+
+  standart_palette_ = charge_buttons_[0]->palette();
+  selected_palette_ = standart_palette_;
+  selected_palette_.setColor(QPalette::Button, Qt::yellow);
+
+  charge_buttons_[0]->setToolTip(
+      tr("Hight speed, low charge, can destroy obstacles"));
+  charge_buttons_[1]->setToolTip(
+      tr("Medium speed, medium charge, can destroy obstacles"));
+  charge_buttons_[2]->setToolTip(
+      tr("Low speed, hight charge, can't destroy obstacles"));
+
   for (int i = 0; i < virtual_keys_buttons_.size(); ++i) {
     connect(virtual_keys_buttons_[i], &QPushButton::clicked,
             [this, i]() { PressVirtualKey(virtual_keys_encodings_[i]); });
+    virtual_keys_buttons_[i]->setSizePolicy(
+        QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
     virtual_keys_buttons_[i]->setFocusPolicy(Qt::NoFocus);
+  }
+
+  for (int i = 0; i < number_of_virtual_keys_in_first_row_; ++i) {
+    virtual_buttons_layout_->addWidget(virtual_keys_buttons_[i], 0, i);
+  }
+  for (int i = number_of_virtual_keys_in_first_row_;
+       i < virtual_keys_buttons_.size(); ++i) {
+    virtual_buttons_layout_->addWidget(
+        virtual_keys_buttons_[i], 1, i - number_of_virtual_keys_in_first_row_);
   }
 
   if (QTouchDevice::devices().empty()) {
@@ -59,6 +84,9 @@ MainWindow::MainWindow(QWidget *parent)
 
   InitializeNewGameDialog();
   InitializeSettingsDialog();
+
+  setMinimumSize(600, 450);
+  resize(600, 450);
 }
 
 void MainWindow::mouseReleaseEvent(QMouseEvent *event) {
@@ -69,7 +97,6 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event) {
   for (const auto &object : tanks_) {
     if (object->GetCellX() == current_cell_x &&
         object->GetCellY() == current_cell_y) {
-      time_since_tooltip_appearing_ = 0;
       QToolTip::showText(
           event->globalPos(),
           tr("Health") + ": " +
@@ -184,12 +211,6 @@ void MainWindow::resizeEvent(QResizeEvent *) {
 }
 
 void MainWindow::timerEvent(QTimerEvent *) {
-  time_since_tooltip_appearing_ += timer_duration_;
-  if (time_since_tooltip_appearing_ >= time_for_showing_tooltip_) {
-    QToolTip::hideText();
-    time_since_tooltip_appearing_ = 0;
-  }
-
   time_since_last_medicalkit_ += timer_duration_;
   time_since_last_charge_ += timer_duration_;
 
@@ -257,10 +278,12 @@ void MainWindow::timerEvent(QTimerEvent *) {
           }
         }
 
-        obstacles_and_bonuses_[static_cast<unsigned>((*it)->GetCellX() - 1)][
-                        static_cast<unsigned>((*it)->GetCellY())] = nullptr;
-        obstacles_and_bonuses_[static_cast<unsigned>((*it)->GetCellX() + 1)][
-                        static_cast<unsigned>((*it)->GetCellY())] = nullptr;
+        obstacles_and_bonuses_[static_cast<unsigned>((*it)->GetCellX() - 1)]
+                              [static_cast<unsigned>((*it)->GetCellY())] =
+                                  nullptr;
+        obstacles_and_bonuses_[static_cast<unsigned>((*it)->GetCellX() + 1)]
+                              [static_cast<unsigned>((*it)->GetCellY())] =
+                                  nullptr;
       }
 
       it = rockets_.erase(it);
@@ -313,38 +336,19 @@ void MainWindow::UpdateIndents() {
 }
 
 void MainWindow::RedrawButtons() {
-  new_game_button_->setGeometry(w_indent_ + static_cast<int>(0.04 * sq_width_),
-                                h_indent_ + static_cast<int>(0.05 * sq_height_),
-                                static_cast<int>(0.2 * sq_width_),
-                                static_cast<int>(0.05 * sq_height_));
-  pause_continue_button_->setGeometry(
+  main_buttons_layout_->setSpacing(static_cast<int>(0.01 * sq_height_));
+  main_buttons_layout_->setGeometry(QRect(
       w_indent_ + static_cast<int>(0.04 * sq_width_),
-      h_indent_ + static_cast<int>(0.11 * sq_height_),
-      static_cast<int>(0.2 * sq_width_), static_cast<int>(0.05 * sq_height_));
-  settings_button_->setGeometry(w_indent_ + static_cast<int>(0.04 * sq_width_),
-                                h_indent_ + static_cast<int>(0.17 * sq_height_),
-                                static_cast<int>(0.2 * sq_width_),
-                                static_cast<int>(0.05 * sq_height_));
+      h_indent_ + static_cast<int>(0.05 * sq_height_),
+      static_cast<int>(0.2 * sq_width_), static_cast<int>(0.22 * sq_height_)));
 
   if (virtual_keys_shown_) {
-    for (int i = 0; i < number_of_virtual_keys_in_first_row_; ++i) {
-      virtual_keys_buttons_[i]->setGeometry(
-          w_indent_ + static_cast<int>(0.04 * sq_width_) +
-              i * static_cast<int>(0.2 * sq_width_ / 3),
-          height() - static_cast<int>(0.19 * sq_height_),
-          static_cast<int>(0.2 * sq_width_ / 3),
-          static_cast<int>(0.07 * sq_height_));
-    }
-    for (int i = number_of_virtual_keys_in_first_row_;
-         i < virtual_keys_buttons_.size(); ++i) {
-      virtual_keys_buttons_[i]->setGeometry(
-          w_indent_ + static_cast<int>(0.04 * sq_width_) +
-              static_cast<int>((i - number_of_virtual_keys_in_first_row_) *
-                               0.2 * sq_width_ / 3),
-          height() - static_cast<int>(0.12 * sq_height_),
-          static_cast<int>(0.2 * sq_width_ / 3),
-          static_cast<int>(0.07 * sq_height_));
-    }
+    virtual_buttons_layout_->setSpacing(static_cast<int>(0.01 * sq_height_));
+    virtual_buttons_layout_->setGeometry(
+        QRect(w_indent_ + static_cast<int>(0.04 * sq_width_),
+              height() - h_indent_ - static_cast<int>(0.2 * sq_height_),
+              static_cast<int>(0.2 * sq_width_),
+              static_cast<int>(0.15 * sq_height_)));
   }
 }
 
@@ -354,73 +358,29 @@ void MainWindow::RedrawCharge(QPainter &painter) {
     return;
   }
   tank = std::dynamic_pointer_cast<Tank>(tanks_[0]);
-  if (tank->GetTypeOfCharge() == static_cast<int>(TypeOfRocket::MediumRocket)) {
-    light_charge_button_->setGeometry(
-        w_indent_ + static_cast<int>(0.04 * sq_width_),
-        height() - static_cast<int>(0.32 * sq_height_),
-        static_cast<int>(0.05 * sq_width_),
-        static_cast<int>(0.05 * sq_height_));
 
-    medium_charge_button_->setGeometry(
-        w_indent_ + static_cast<int>(0.1 * sq_width_),
-        height() - static_cast<int>(0.355 * sq_height_),
-        static_cast<int>(0.08 * sq_width_),
-        static_cast<int>(0.08 * sq_height_));
-
-    hard_charge_button_->setGeometry(
-        w_indent_ + static_cast<int>(0.19 * sq_width_),
-        height() - static_cast<int>(0.32 * sq_height_),
-        static_cast<int>(0.05 * sq_width_),
-        static_cast<int>(0.05 * sq_height_));
-  } else if (tank->GetTypeOfCharge() ==
-             static_cast<int>(TypeOfRocket::HardRocket)) {
-    light_charge_button_->setGeometry(
-        w_indent_ + static_cast<int>(0.04 * sq_width_),
-        height() - static_cast<int>(0.32 * sq_height_),
-        static_cast<int>(0.05 * sq_width_),
-        static_cast<int>(0.05 * sq_height_));
-
-    medium_charge_button_->setGeometry(
-        w_indent_ + static_cast<int>(0.1 * sq_width_),
-        height() - static_cast<int>(0.32 * sq_height_),
-        static_cast<int>(0.05 * sq_width_),
-        static_cast<int>(0.05 * sq_height_));
-
-    hard_charge_button_->setGeometry(
-        w_indent_ + static_cast<int>(0.16 * sq_width_),
-        height() - static_cast<int>(0.355 * sq_height_),
-        static_cast<int>(0.08 * sq_width_),
-        static_cast<int>(0.08 * sq_height_));
-  } else {
-    light_charge_button_->setGeometry(
-        w_indent_ + static_cast<int>(0.04 * sq_width_),
-        height() - static_cast<int>(0.355 * sq_height_),
-        static_cast<int>(0.08 * sq_width_),
-        static_cast<int>(0.08 * sq_height_));
-
-    medium_charge_button_->setGeometry(
-        w_indent_ + static_cast<int>(0.13 * sq_width_),
-        height() - static_cast<int>(0.32 * sq_height_),
-        static_cast<int>(0.05 * sq_width_),
-        static_cast<int>(0.05 * sq_height_));
-
-    hard_charge_button_->setGeometry(
-        w_indent_ + static_cast<int>(0.19 * sq_width_),
-        height() - static_cast<int>(0.32 * sq_height_),
-        static_cast<int>(0.05 * sq_width_),
-        static_cast<int>(0.05 * sq_height_));
+  for (int i = 0; i < charge_buttons_.size(); ++i) {
+    if (i == tank->GetTypeOfCharge()) {
+      charge_buttons_[i]->setPalette(selected_palette_);
+    } else {
+      charge_buttons_[i]->setPalette(standart_palette_);
+    }
+    charge_buttons_[i]->setText(QString::number(tank->GetCurrentCharge(i)));
   }
-  light_charge_button_->setText(QString::number(tank->GetCurrentCharge(0)));
-  medium_charge_button_->setText(QString::number(tank->GetCurrentCharge(1)));
-  hard_charge_button_->setText(QString::number(tank->GetCurrentCharge(2)));
+
+  charge_buttons_layout_->setSpacing(static_cast<int>(0.01 * sq_height_));
+  charge_buttons_layout_->setGeometry(QRect(
+      w_indent_ + static_cast<int>(0.04 * sq_width_),
+      height() - h_indent_ - static_cast<int>(0.355 * sq_height_),
+      static_cast<int>(0.2 * sq_width_), static_cast<int>(0.1 * sq_height_)));
 
   painter.save();
   painter.setBrush(Qt::yellow);
   painter.drawRect(
       w_indent_ + static_cast<int>(0.04 * sq_width_),
-      height() - static_cast<int>(0.25 * sq_height_),
-      static_cast<int>(0.19 * tank->GetTimeSinceLastShot() * sq_width_) /
-          tank->GetRateOfFire(),
+      height() - h_indent_ - static_cast<int>(0.25 * sq_height_),
+      static_cast<int>(0.2 * sq_width_ * tank->GetTimeSinceLastShot() /
+                       tank->GetRateOfFire()),
       sq_height_ / 32);
   painter.restore();
 }
@@ -520,9 +480,9 @@ void MainWindow::RedrawContent() {
         std::shared_ptr<Portal>(new Portal(map_, new_x, new_y, curr_x, curr_y));
   }
 
-  light_charge_button_->show();
-  medium_charge_button_->show();
-  hard_charge_button_->show();
+  for (int i = 0; i < charge_buttons_.size(); ++i) {
+    charge_buttons_[i]->show();
+  }
 
   timer_id_ = startTimer(timer_duration_);
   repaint();
