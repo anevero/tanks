@@ -125,13 +125,13 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event) {
       }
       break;
     case Qt::Key_1:
-      ChangeChargeButton(static_cast<int>(TypeOfRocket::LightRocket));
+      ChangeChargeButton(0);
       break;
     case Qt::Key_2:
-      ChangeChargeButton(static_cast<int>(TypeOfRocket::MediumRocket));
+      ChangeChargeButton(1);
       break;
     case Qt::Key_3:
-      ChangeChargeButton(static_cast<int>(TypeOfRocket::HardRocket));
+      ChangeChargeButton(2);
       break;
   }
 }
