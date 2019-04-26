@@ -21,8 +21,8 @@
 #include <QToolTip>
 #include <QTouchDevice>
 #include <QTranslator>
-#include <QtGlobal>
 #include <QVector>
+#include <QtGlobal>
 #include <algorithm>
 #include <memory>
 #include <utility>
@@ -62,9 +62,11 @@ class MainWindow : public QMainWindow {
   void Settings();
   void UpdateIndents();
   void RedrawButtons();
+  void RedrawCharge(QPainter &painter);
   void RedrawContent();
   void PauseOrContinue();
   void PressVirtualKey(Qt::Key key);
+  void ChangeChargeButton(int type);
 
  private:
   void FindInteractingObjects();
@@ -85,7 +87,7 @@ class MainWindow : public QMainWindow {
   void ChangeCurrentLanguageSettings();
   QJsonObject GetJsonObjectFromFile(const QString &filepath);
   Direction DetermineDirection(const QString &start_direction) const;
-  void RandomMedicalKit();
+  void RandomBonus(Bonus bonus);
 
  private:
   bool paused_ = false;
@@ -114,6 +116,10 @@ class MainWindow : public QMainWindow {
   QLabel *settings_separator_label_;
   QLabel *version_label_;
 
+  QPushButton *light_charge_button_;
+  QPushButton *medium_charge_button_;
+  QPushButton *hard_charge_button_;
+
   QPushButton *new_game_button_;
   QPushButton *pause_continue_button_;
   QPushButton *settings_button_;
@@ -135,16 +141,20 @@ class MainWindow : public QMainWindow {
   QVector<TankQualities> available_tank_types_;
 
   const int timer_duration_ = 10;
+  const QVector<RocketParameters> types_of_rockets_;
+
   int timer_id_ = 0;
   int time_since_tooltip_appearing_ = 0;
   const int time_for_showing_tooltip_ = 1200;
   int time_since_last_bonus_ = 0;
+  int time_since_last_medicalkit_ = 0;
+  int time_since_last_charge_ = 0;
   int sq_width_;
   int sq_height_;
   int w_indent_;
   int h_indent_;
 
-  const QString app_version_ = "0.5.0.0";
+  const QString app_version_ = "0.6.0.0";
 };
 
 #endif  // MAINWINDOW_H

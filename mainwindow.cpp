@@ -2,6 +2,9 @@
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent),
+      light_charge_button_(new QPushButton(this)),
+      medium_charge_button_(new QPushButton(this)),
+      hard_charge_button_(new QPushButton(this)),
       new_game_button_(new QPushButton(tr("New game"), this)),
       pause_continue_button_(new QPushButton(tr("Pause"), this)),
       settings_button_(new QPushButton(tr("Settings"), this)),
@@ -11,7 +14,22 @@ MainWindow::MainWindow(QWidget *parent)
            new QPushButton("D", this)}),
       virtual_keys_encodings_(
           {Qt::Key_Q, Qt::Key_W, Qt::Key_A, Qt::Key_S, Qt::Key_D}),
-      map_(new Map(1)) {
+      map_(new Map(1)),
+      types_of_rockets_({{7, 100, true}, {15, 200, true}, {30, 300, false}}) {
+  setMouseTracking(true);
+  light_charge_button_->setToolTip(
+      "Hight speed, low charge, can destroy obstacles");
+  medium_charge_button_->setToolTip(
+      "Medium speed, medium charge, can destroy obstacles");
+  hard_charge_button_->setToolTip(
+      "Low speed, hight charge, can't destroy obstacles");
+  light_charge_button_->hide();
+  medium_charge_button_->hide();
+  hard_charge_button_->hide();
+  light_charge_button_->setFocusPolicy(Qt::NoFocus);
+  medium_charge_button_->setFocusPolicy(Qt::NoFocus);
+  hard_charge_button_->setFocusPolicy(Qt::NoFocus);
+
   new_game_button_->setFocusPolicy(Qt::NoFocus);
   pause_continue_button_->setFocusPolicy(Qt::NoFocus);
   settings_button_->setFocusPolicy(Qt::NoFocus);
@@ -23,7 +41,12 @@ MainWindow::MainWindow(QWidget *parent)
   connect(pause_continue_button_, SIGNAL(clicked()), this,
           SLOT(PauseOrContinue()));
   connect(settings_button_, SIGNAL(clicked()), this, SLOT(Settings()));
-
+  connect(light_charge_button_, &QPushButton::clicked,
+          [&]() { ChangeChargeButton(0); });
+  connect(medium_charge_button_, &QPushButton::clicked,
+          [&]() { ChangeChargeButton(1); });
+  connect(hard_charge_button_, &QPushButton::clicked,
+          [&]() { ChangeChargeButton(2); });
   for (int i = 0; i < virtual_keys_buttons_.size(); ++i) {
     connect(virtual_keys_buttons_[i], &QPushButton::clicked,
             [this, i]() { PressVirtualKey(virtual_keys_encodings_[i]); });
@@ -60,8 +83,11 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event) {
 void MainWindow::keyReleaseEvent(QKeyEvent *event) {
   if (timer_id_ == 0 && !paused_) return;
   auto tank = std::dynamic_pointer_cast<Tank>(tanks_[0]);
-  if (tank->IsMovingOrRotating() || (paused_ && event->key() != Qt::Key_Escape))
+  if ((paused_ && event->key() != Qt::Key_1 && event->key() != Qt::Key_2 &&
+       event->key() != Qt::Key_3 && event->key() != Qt::Key_Escape) ||
+      (!paused_ && tank->IsMovingOrRotating())) {
     return;
+  }
 
   switch (event->key()) {
     case Qt::Key_Escape:
@@ -97,6 +123,15 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event) {
         tank->SetZeroTimeFromLastShot();
         ShootRocket(tank);
       }
+      break;
+    case Qt::Key_1:
+      ChangeChargeButton(0);
+      break;
+    case Qt::Key_2:
+      ChangeChargeButton(1);
+      break;
+    case Qt::Key_3:
+      ChangeChargeButton(2);
       break;
   }
 }
@@ -138,6 +173,8 @@ void MainWindow::paintEvent(QPaintEvent *) {
   for (const auto &object : rockets_) {
     object->Draw(p);
   }
+
+  RedrawCharge(p);
   p.end();
 }
 
@@ -153,7 +190,8 @@ void MainWindow::timerEvent(QTimerEvent *) {
     time_since_tooltip_appearing_ = 0;
   }
 
-  time_since_last_bonus_ += timer_duration_;
+  time_since_last_medicalkit_ += timer_duration_;
+  time_since_last_charge_ += timer_duration_;
 
   for (auto &object : tanks_) {
     if (std::dynamic_pointer_cast<Bot>(object) != nullptr) {
@@ -169,7 +207,7 @@ void MainWindow::timerEvent(QTimerEvent *) {
       if (bot->IsMovingStartNeeded(tanks_, obstacles_and_bonuses_)) {
         bot->StartMovement(1, tanks_, objects_copies_, obstacles_and_bonuses_);
       } else if (bot->IsRotationStartNeeded(
-          std::dynamic_pointer_cast<Tank>(tanks_[0]))) {
+                     std::dynamic_pointer_cast<Tank>(tanks_[0]))) {
         bot->StartRotation();
       }
 
@@ -196,8 +234,8 @@ void MainWindow::timerEvent(QTimerEvent *) {
   auto copy = objects_copies_.begin();
   while (copy != objects_copies_.end()) {
     if (copy->first->GetTimeToFinishMovement() <= 0) {
-      std::dynamic_pointer_cast<Tank>(copy->first)->UpdateCoordinates(
-          copy->second.x, copy->second.y);
+      std::dynamic_pointer_cast<Tank>(copy->first)
+          ->UpdateCoordinates(copy->second.x, copy->second.y);
       copy = objects_copies_.erase(copy);
       continue;
     }
@@ -236,9 +274,13 @@ void MainWindow::timerEvent(QTimerEvent *) {
         GetTimerDuration());
   }
 
-  if (time_since_last_bonus_ == 20000) {
-    RandomMedicalKit();
-    time_since_last_bonus_ = 0;
+  if (time_since_last_medicalkit_ == 20000) {
+    RandomBonus(Bonus::TypeMedicalKit);
+    time_since_last_medicalkit_ = 0;
+  }
+  if (time_since_last_charge_ == 15000) {
+    RandomBonus(Bonus::TypeCharge);
+    time_since_last_charge_ = 0;
   }
 
   FindInteractingObjects();
@@ -306,6 +348,83 @@ void MainWindow::RedrawButtons() {
   }
 }
 
+void MainWindow::RedrawCharge(QPainter &painter) {
+  std::shared_ptr<Tank> tank;
+  if (tanks_.size() == 0) {
+    return;
+  }
+  tank = std::dynamic_pointer_cast<Tank>(tanks_[0]);
+  if (tank->GetTypeOfCharge() == static_cast<int>(TypeOfRocket::MediumRocket)) {
+    light_charge_button_->setGeometry(
+        w_indent_ + static_cast<int>(0.04 * sq_width_),
+        height() - static_cast<int>(0.32 * sq_height_),
+        static_cast<int>(0.05 * sq_width_),
+        static_cast<int>(0.05 * sq_height_));
+
+    medium_charge_button_->setGeometry(
+        w_indent_ + static_cast<int>(0.1 * sq_width_),
+        height() - static_cast<int>(0.355 * sq_height_),
+        static_cast<int>(0.08 * sq_width_),
+        static_cast<int>(0.08 * sq_height_));
+
+    hard_charge_button_->setGeometry(
+        w_indent_ + static_cast<int>(0.19 * sq_width_),
+        height() - static_cast<int>(0.32 * sq_height_),
+        static_cast<int>(0.05 * sq_width_),
+        static_cast<int>(0.05 * sq_height_));
+  } else if (tank->GetTypeOfCharge() ==
+             static_cast<int>(TypeOfRocket::HardRocket)) {
+    light_charge_button_->setGeometry(
+        w_indent_ + static_cast<int>(0.04 * sq_width_),
+        height() - static_cast<int>(0.32 * sq_height_),
+        static_cast<int>(0.05 * sq_width_),
+        static_cast<int>(0.05 * sq_height_));
+
+    medium_charge_button_->setGeometry(
+        w_indent_ + static_cast<int>(0.1 * sq_width_),
+        height() - static_cast<int>(0.32 * sq_height_),
+        static_cast<int>(0.05 * sq_width_),
+        static_cast<int>(0.05 * sq_height_));
+
+    hard_charge_button_->setGeometry(
+        w_indent_ + static_cast<int>(0.16 * sq_width_),
+        height() - static_cast<int>(0.355 * sq_height_),
+        static_cast<int>(0.08 * sq_width_),
+        static_cast<int>(0.08 * sq_height_));
+  } else {
+    light_charge_button_->setGeometry(
+        w_indent_ + static_cast<int>(0.04 * sq_width_),
+        height() - static_cast<int>(0.355 * sq_height_),
+        static_cast<int>(0.08 * sq_width_),
+        static_cast<int>(0.08 * sq_height_));
+
+    medium_charge_button_->setGeometry(
+        w_indent_ + static_cast<int>(0.13 * sq_width_),
+        height() - static_cast<int>(0.32 * sq_height_),
+        static_cast<int>(0.05 * sq_width_),
+        static_cast<int>(0.05 * sq_height_));
+
+    hard_charge_button_->setGeometry(
+        w_indent_ + static_cast<int>(0.19 * sq_width_),
+        height() - static_cast<int>(0.32 * sq_height_),
+        static_cast<int>(0.05 * sq_width_),
+        static_cast<int>(0.05 * sq_height_));
+  }
+  light_charge_button_->setText(QString::number(tank->GetCurrentCharge(0)));
+  medium_charge_button_->setText(QString::number(tank->GetCurrentCharge(1)));
+  hard_charge_button_->setText(QString::number(tank->GetCurrentCharge(2)));
+
+  painter.save();
+  painter.setBrush(Qt::yellow);
+  painter.drawRect(
+      w_indent_ + static_cast<int>(0.04 * sq_width_),
+      height() - static_cast<int>(0.25 * sq_height_),
+      static_cast<int>(0.19 * tank->GetTimeSinceLastShot() * sq_width_) /
+          tank->GetRateOfFire(),
+      sq_height_ / 32);
+  painter.restore();
+}
+
 void MainWindow::RedrawContent() {
   killTimer(timer_id_);
   timer_id_ = 0;
@@ -340,6 +459,9 @@ void MainWindow::RedrawContent() {
         1000 - 150 * current_game_options_.difficulty_level_number;
     qualities.tank.speed =
         1000 - 150 * current_game_options_.difficulty_level_number;
+    qualities.tank.max_light_charge = 1;
+    qualities.tank.max_medium_charge = 1;
+    qualities.tank.max_hard_charge = 1;
     qualities.init_cell_x = bots[i].toObject()["initial_cell_x"].toInt();
     qualities.init_cell_y = bots[i].toObject()["initial_cell_y"].toInt();
     qualities.moving_length = bots[i].toObject()["moving_length"].toInt();
@@ -398,6 +520,10 @@ void MainWindow::RedrawContent() {
         std::shared_ptr<Portal>(new Portal(map_, new_x, new_y, curr_x, curr_y));
   }
 
+  light_charge_button_->show();
+  medium_charge_button_->show();
+  hard_charge_button_->show();
+
   timer_id_ = startTimer(timer_duration_);
   repaint();
 }
@@ -418,6 +544,11 @@ void MainWindow::PauseOrContinue() {
 void MainWindow::PressVirtualKey(Qt::Key key) {
   QKeyEvent *event = new QKeyEvent(QEvent::KeyRelease, key, Qt::NoModifier);
   QApplication::instance()->sendEvent(this, event);
+}
+
+void MainWindow::ChangeChargeButton(int type) {
+  std::dynamic_pointer_cast<Tank>(tanks_[0])->ChangeTypeOfCharge(type);
+  repaint();
 }
 
 void MainWindow::FindInteractingObjects() {
@@ -494,7 +625,17 @@ void MainWindow::MakeBoom(std::shared_ptr<Movable> &object) {
 }
 
 void MainWindow::ShootRocket(std::shared_ptr<Tank> &tank) {
-  std::shared_ptr<Rocket> rocket(new Rocket(map_, tank, 250, 10));
+  std::shared_ptr<Rocket> rocket;
+  if (std::dynamic_pointer_cast<Bot>(tank) == nullptr) {
+    rocket = std::shared_ptr<Rocket>(new Rocket(
+        map_, tank, types_of_rockets_[tank->GetTypeOfCharge()].speed_,
+        types_of_rockets_[tank->GetTypeOfCharge()].power_,
+        static_cast<TypeOfRocket>(tank->GetTypeOfCharge())));
+  } else {
+    rocket = std::shared_ptr<Rocket>(
+        new Rocket(map_, tank, 250, 10, TypeOfRocket::MediumRocket));
+  }
+
   rockets_.append(rocket);
   if (rocket->GetIntDirection() == 1 || rocket->GetIntDirection() == 3) {
     rocket->StartMovement(map_->GetNumberOfCellsHorizontally(), tanks_,
@@ -502,6 +643,9 @@ void MainWindow::ShootRocket(std::shared_ptr<Tank> &tank) {
   } else {
     rocket->StartMovement(map_->GetNumberOfCellsVertically(), tanks_,
                           objects_copies_, obstacles_and_bonuses_);
+  }
+  if (std::dynamic_pointer_cast<Bot>(tank) == nullptr) {
+    tank->MinusCharge(tank->GetTypeOfCharge());
   }
 }
 
@@ -576,6 +720,11 @@ void MainWindow::InitializeNewGameDialog() {
     qualities.speed = tanks[i].toObject()["speed"].toInt();
     qualities.rate_of_fire = tanks[i].toObject()["rate_of_fire"].toInt();
     qualities.max_health = tanks[i].toObject()["max_health"].toInt();
+    qualities.max_light_charge =
+        tanks[i].toObject()["max_light_charge"].toInt();
+    qualities.max_medium_charge =
+        tanks[i].toObject()["max_medium_charge"].toInt();
+    qualities.max_hard_charge = tanks[i].toObject()["max_hard_charge"].toInt();
     available_tank_types_.push_back(qualities);
     switch_tank_menu_->addItem(tr("Tank") + " " + QString::number(i + 1));
   }
@@ -725,30 +874,46 @@ Direction MainWindow::DetermineDirection(const QString &start_direction) const {
   return Direction::Right;
 }
 
-void MainWindow::RandomMedicalKit() {
+void MainWindow::RandomBonus(Bonus bonus) {
   for (size_t i = 0; i < obstacles_and_bonuses_.size(); i++) {
     for (size_t j = 0; j < obstacles_and_bonuses_[i].size(); j++) {
-      if (std::dynamic_pointer_cast<MedicalKit>(obstacles_and_bonuses_[i][j]) !=
-          nullptr) {
-        obstacles_and_bonuses_[i][j] = nullptr;
+      if (bonus == Bonus::TypeMedicalKit) {
+        if (std::dynamic_pointer_cast<MedicalKit>(
+                obstacles_and_bonuses_[i][j]) != nullptr) {
+          obstacles_and_bonuses_[i][j] = nullptr;
+        }
+      } else if (bonus == Bonus::TypeCharge) {
+        if (std::dynamic_pointer_cast<Charge>(obstacles_and_bonuses_[i][j]) !=
+            nullptr) {
+          obstacles_and_bonuses_[i][j] = nullptr;
+        }
       }
     }
   }
 
   int temp = 100;
+  bool flag = true;
   while (temp > 0) {
     int x, y;
-    x = rand() % (map_->GetNumberOfCellsHorizontally() - 1) + 1;
-    y = rand() % (map_->GetNumberOfCellsVertically() - 1) + 1;
+    x = qrand() % (map_->GetNumberOfCellsHorizontally() - 1);
+    y = qrand() % (map_->GetNumberOfCellsVertically() - 1);
     for (auto &object : tanks_) {
-      if (obstacles_and_bonuses_[static_cast<unsigned>(x)]
-                                [static_cast<unsigned>(y)] == nullptr &&
-          (object->GetCellX() != x || object->GetCellY() != y) &&
-          map_->GetField(x, y) != CellType::Wall) {
+      if (object->GetCellX() == x && object->GetCellY() == y) {
+        flag = false;
+        break;
+      }
+    }
+    if (obstacles_and_bonuses_[static_cast<unsigned>(x)]
+                              [static_cast<unsigned>(y)] == nullptr &&
+        flag && map_->GetField(x, y) != CellType::Wall) {
+      if (bonus == Bonus::TypeMedicalKit) {
         obstacles_and_bonuses_[static_cast<unsigned>(x)][static_cast<unsigned>(
             y)] = std::shared_ptr<MedicalKit>(new MedicalKit(map_, x, y));
-        return;
+      } else if (bonus == Bonus::TypeCharge) {
+        obstacles_and_bonuses_[static_cast<unsigned>(x)][static_cast<unsigned>(
+            y)] = std::shared_ptr<Charge>(new Charge(map_, x, y));
       }
+      return;
     }
     temp--;
   }

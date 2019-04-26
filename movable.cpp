@@ -52,14 +52,15 @@ void Movable::StartMovement(
           new_cell_x)][static_cast<unsigned>(new_cell_y)]) != nullptr) {
     if (dynamic_cast<Rocket*>(this) == nullptr) {
       std::shared_ptr<Portal> portal = std::dynamic_pointer_cast<Portal>(
-              objects[static_cast<unsigned>(new_cell_x)]
-              [static_cast<unsigned>(new_cell_y)]);
+          objects[static_cast<unsigned>(new_cell_x)]
+                 [static_cast<unsigned>(new_cell_y)]);
 
-      Coordinates cells = GetNewPortalCells(portal->GetNewCellX(),
-                                            portal->GetNewCellY(),
-                                            new_cell_x, new_cell_y);
+      Coordinates cells = GetNewPortalCells(
+          portal->GetNewCellX(), portal->GetNewCellY(), new_cell_x, new_cell_y);
 
-      if (map_->GetField(cells.x, cells.y) == CellType::Wall) { return; }
+      if (map_->GetField(cells.x, cells.y) == CellType::Wall) {
+        return;
+      }
       for (const auto& object : tanks) {
         if (object->GetCellX() == cells.x && object->GetCellY() == cells.y) {
           return;
@@ -72,35 +73,37 @@ void Movable::StartMovement(
       new_cell_y = cells.y;
     }
   }
-
   if (objects[static_cast<unsigned>(new_cell_x)]
-             [static_cast<unsigned>(new_cell_y)] != nullptr) {
+             [static_cast<unsigned>(new_cell_y)] != nullptr &&
+      std::dynamic_pointer_cast<Portal>(objects[static_cast<unsigned>(
+          new_cell_x)][static_cast<unsigned>(new_cell_y)]) == nullptr) {
     if (std::dynamic_pointer_cast<Obstacle>(objects[static_cast<unsigned>(
             new_cell_x)][static_cast<unsigned>(new_cell_y)]) != nullptr) {
-      objects[static_cast<unsigned>(new_cell_x)]
-             [static_cast<unsigned>(new_cell_y)] = nullptr;
-      if (dynamic_cast<Rocket*>(this) != nullptr) {
-        cells_to_finish_movement_ = 0;
-        return;
-      }
       current_speed_ *= 2;
-    } else if (std::dynamic_pointer_cast<MedicalKit>(
-                   objects[static_cast<unsigned>(new_cell_x)]
-                          [static_cast<unsigned>(new_cell_y)]) != nullptr) {
-      objects[static_cast<unsigned>(new_cell_x)]
-             [static_cast<unsigned>(new_cell_y)] = nullptr;
-      if (dynamic_cast<Tank*>(this) != nullptr) {
-        Tank* tank = dynamic_cast<Tank*>(this);
-        if (tank->GetMaxHealth() - tank->GetCurrentHealth() > 35) {
-          tank->PlusHealth(35);
-        } else {
-          tank->PlusHealth(tank->GetMaxHealth() - tank->GetCurrentHealth());
-        }
-      } else {
-        cells_to_finish_movement_ = 0;
-        return;
+    }
+    if (dynamic_cast<Tank*>(this) != nullptr) {
+      Tank* tank = dynamic_cast<Tank*>(this);
+      if (std::dynamic_pointer_cast<MedicalKit>(objects[static_cast<unsigned>(
+              new_cell_x)][static_cast<unsigned>(new_cell_y)]) != nullptr) {
+        tank->PlusHealth(
+            std::min(35, tank->GetMaxHealth() - tank->GetCurrentHealth()));
+      } else if (std::dynamic_pointer_cast<Charge>(
+                     objects[static_cast<unsigned>(new_cell_x)]
+                            [static_cast<unsigned>(new_cell_y)]) != nullptr) {
+        tank->PlusCharge();
       }
     }
+    if (dynamic_cast<Rocket*>(this) != nullptr) {
+      Rocket* rocket = dynamic_cast<Rocket*>(this);
+      cells_to_finish_movement_ = 0;
+      if (rocket->GetTypeOfRocket() != TypeOfRocket::HardRocket) {
+        objects[static_cast<unsigned>(new_cell_x)]
+               [static_cast<unsigned>(new_cell_y)] = nullptr;
+      }
+      return;
+    }
+    objects[static_cast<unsigned>(new_cell_x)]
+           [static_cast<unsigned>(new_cell_y)] = nullptr;
   }
 
   new_cell_x = old_cell_x;
@@ -140,7 +143,7 @@ void Movable::TurnRotationReverseOff() { rotate_reverse_ = 1; }
 
 void Movable::UpdateCoordinates(const int cell_x, const int cell_y) {
   if ((cell_x_ != cell_x || cell_y_ != cell_y) &&
-       GetTimeToFinishMovement() == 0) {
+      GetTimeToFinishMovement() == 0) {
     cell_x_ = cell_x;
     cell_y_ = cell_y;
     copy_existence_ = false;
@@ -238,12 +241,17 @@ int Movable::GetCellX() const { return cell_x_; }
 int Movable::GetCellY() const { return cell_y_; }
 
 Coordinates Movable::GetNewPortalCells(int portal_cell_x, int portal_cell_y,
-                              int new_cell_x, int new_cell_y) {
+                                       int new_cell_x, int new_cell_y) {
   Coordinates cells = {portal_cell_x, portal_cell_y};
-  if (new_cell_y - cell_y_ == -1) { cells.y--; }
-  else if (new_cell_y - cell_y_ == 1) { cells.y++; }
-  else if (new_cell_x - cell_x_ == -1) { cells.x--; }
-  else { cells.x++; }
+  if (new_cell_y - cell_y_ == -1) {
+    cells.y--;
+  } else if (new_cell_y - cell_y_ == 1) {
+    cells.y++;
+  } else if (new_cell_x - cell_x_ == -1) {
+    cells.x--;
+  } else {
+    cells.x++;
+  }
   return cells;
 }
 

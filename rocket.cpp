@@ -1,12 +1,13 @@
-#include "rocket.h"
+﻿#include "rocket.h"
 
 Rocket::Rocket(const std::shared_ptr<Map>& map,
                const std::shared_ptr<Tank>& tank, const int speed,
-               const int power)
+               const int power, const TypeOfRocket& type)
     : Movable(map, tank->GetCellX(), tank->GetCellY(), tank->GetDirection(),
               speed),
       tank_(tank),
-      power_(power) {
+      power_(power),
+      type_(type) {
   LoadImage();
 }
 
@@ -28,3 +29,4 @@ void Rocket::Draw(QPainter& painter) {
 std::shared_ptr<Tank> Rocket::GetAttachedTank() const { return tank_; }
 
 int Rocket::GetPower() const { return power_; }
+TypeOfRocket Rocket::GetTypeOfRocket() const { return type_; }

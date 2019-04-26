@@ -60,3 +60,12 @@ void Obstacle::LoadImage() {
   image_.load(":/textures/log.png");
   scaled_image_ = image_;
 }
+Charge::Charge(const std::shared_ptr<Map>& map, int x, int y)
+    : ObjectOnMap(map, x, y) {
+  LoadImage();
+}
+
+void Charge::LoadImage() {
+  image_.load(":/textures/charge.png");
+  scaled_image_ = image_;
+}
