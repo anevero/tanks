@@ -74,7 +74,9 @@ void Movable::StartMovement(
     }
   }
   if (objects[static_cast<unsigned>(new_cell_x)]
-             [static_cast<unsigned>(new_cell_y)] != nullptr) {
+             [static_cast<unsigned>(new_cell_y)] != nullptr &&
+      std::dynamic_pointer_cast<Portal>(objects[static_cast<unsigned>(
+          new_cell_x)][static_cast<unsigned>(new_cell_y)]) == nullptr) {
     if (std::dynamic_pointer_cast<Obstacle>(objects[static_cast<unsigned>(
             new_cell_x)][static_cast<unsigned>(new_cell_y)]) != nullptr) {
       current_speed_ *= 2;
@@ -91,7 +93,9 @@ void Movable::StartMovement(
         tank->PlusCharge();
       }
     }
-    if (dynamic_cast<Rocket*>(this) != nullptr) {
+    if (dynamic_cast<Rocket*>(this) != nullptr &&
+        std::dynamic_pointer_cast<Portal>(objects[static_cast<unsigned>(
+            new_cell_x)][static_cast<unsigned>(new_cell_y)]) == nullptr) {
       Rocket* rocket = dynamic_cast<Rocket*>(this);
       cells_to_finish_movement_ = 0;
       if (rocket->GetTypeOfRocket() != TypeOfRocket::HardRocket) {
