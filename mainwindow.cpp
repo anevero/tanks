@@ -50,6 +50,10 @@ MainWindow::MainWindow(QWidget *parent)
             [this, i]() { ChangeChargeButton(i); });
   }
 
+  standart_palette_ = charge_buttons_[0]->palette();
+  selected_palette_ = standart_palette_;
+  selected_palette_.setColor(QPalette::Button, Qt::yellow);
+
   charge_buttons_[0]->setToolTip(
       tr("Hight speed, low charge, can destroy obstacles"));
   charge_buttons_[1]->setToolTip(
@@ -342,7 +346,7 @@ void MainWindow::RedrawButtons() {
     virtual_buttons_layout_->setSpacing(static_cast<int>(0.01 * sq_height_));
     virtual_buttons_layout_->setGeometry(
         QRect(w_indent_ + static_cast<int>(0.04 * sq_width_),
-              height() - h_indent_ - static_cast<int>(0.19 * sq_height_),
+              height() - h_indent_ - static_cast<int>(0.2 * sq_height_),
               static_cast<int>(0.2 * sq_width_),
               static_cast<int>(0.15 * sq_height_)));
   }
@@ -354,26 +358,29 @@ void MainWindow::RedrawCharge(QPainter &painter) {
     return;
   }
   tank = std::dynamic_pointer_cast<Tank>(tanks_[0]);
-  qDebug() << tank->GetTypeOfCharge();
 
-  charge_buttons_layout_->setStretch(tank->GetTypeOfCharge(), 2);
+  for (int i = 0; i < charge_buttons_.size(); ++i) {
+    if (i == tank->GetTypeOfCharge()) {
+      charge_buttons_[i]->setPalette(selected_palette_);
+    } else {
+      charge_buttons_[i]->setPalette(standart_palette_);
+    }
+    charge_buttons_[i]->setText(QString::number(tank->GetCurrentCharge(i)));
+  }
+
   charge_buttons_layout_->setSpacing(static_cast<int>(0.01 * sq_height_));
   charge_buttons_layout_->setGeometry(QRect(
       w_indent_ + static_cast<int>(0.04 * sq_width_),
       height() - h_indent_ - static_cast<int>(0.355 * sq_height_),
       static_cast<int>(0.2 * sq_width_), static_cast<int>(0.1 * sq_height_)));
 
-  for (int i = 0; i < charge_buttons_.size(); ++i) {
-    charge_buttons_[i]->setText(QString::number(tank->GetCurrentCharge(i)));
-  }
-
   painter.save();
   painter.setBrush(Qt::yellow);
   painter.drawRect(
       w_indent_ + static_cast<int>(0.04 * sq_width_),
       height() - h_indent_ - static_cast<int>(0.25 * sq_height_),
-      static_cast<int>(0.19 * tank->GetTimeSinceLastShot() * sq_width_) /
-          tank->GetRateOfFire(),
+      static_cast<int>(0.2 * sq_width_ * tank->GetTimeSinceLastShot() /
+                       tank->GetRateOfFire()),
       sq_height_ / 32);
   painter.restore();
 }

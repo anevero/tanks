@@ -17,6 +17,7 @@
 #include <QMainWindow>
 #include <QMessageBox>
 #include <QPainter>
+#include <QPalette>
 #include <QPushButton>
 #include <QString>
 #include <QTimer>
@@ -125,6 +126,8 @@ class MainWindow : public QMainWindow {
 
   QHBoxLayout *charge_buttons_layout_;
   QVector<QPushButton *> charge_buttons_;
+  QPalette standart_palette_;
+  QPalette selected_palette_;
 
   QGridLayout *virtual_buttons_layout_;
   QVector<QPushButton *> virtual_keys_buttons_;
