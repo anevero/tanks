@@ -83,10 +83,11 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event) {
 void MainWindow::keyReleaseEvent(QKeyEvent *event) {
   if (timer_id_ == 0 && !paused_) return;
   auto tank = std::dynamic_pointer_cast<Tank>(tanks_[0]);
-  if ((event->key() != Qt::Key_1 && event->key() != Qt::Key_2 &&
-       event->key() != Qt::Key_3 && tank->IsMovingOrRotating()) ||
-      ((paused_ && event->key() != Qt::Key_Escape)))
+  if ((paused_ && event->key() != Qt::Key_1 && event->key() != Qt::Key_2 &&
+       event->key() != Qt::Key_3 && event->key() != Qt::Key_Escape) ||
+      (!paused_ && tank->IsMovingOrRotating())) {
     return;
+  }
 
   switch (event->key()) {
     case Qt::Key_Escape:
@@ -124,13 +125,13 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event) {
       }
       break;
     case Qt::Key_1:
-      tank->ChangeTypeOfCharge(static_cast<int>(TypeOfRocket::LightRocket));
+      ChangeChargeButton(static_cast<int>(TypeOfRocket::LightRocket));
       break;
     case Qt::Key_2:
-      tank->ChangeTypeOfCharge(static_cast<int>(TypeOfRocket::MediumRocket));
+      ChangeChargeButton(static_cast<int>(TypeOfRocket::MediumRocket));
       break;
     case Qt::Key_3:
-      tank->ChangeTypeOfCharge(static_cast<int>(TypeOfRocket::HardRocket));
+      ChangeChargeButton(static_cast<int>(TypeOfRocket::HardRocket));
       break;
   }
 }
@@ -336,82 +337,79 @@ void MainWindow::RedrawButtons() {
 
 void MainWindow::RedrawCharge(QPainter &painter) {
   std::shared_ptr<Tank> tank;
-  if (tanks_.size() != 0) {
-    tank = std::dynamic_pointer_cast<Tank>(tanks_[0]);
-    if (tank->GetTypeOfCharge() ==
-        static_cast<int>(TypeOfRocket::MediumRocket)) {
-      light_charge_button_->setGeometry(
-          w_indent_ + static_cast<int>(0.04 * sq_width_),
-          height() - static_cast<int>(0.32 * sq_height_),
-          static_cast<int>(0.05 * sq_width_),
-          static_cast<int>(0.05 * sq_height_));
-
-      medium_charge_button_->setGeometry(
-          w_indent_ + static_cast<int>(0.1 * sq_width_),
-          height() - static_cast<int>(0.355 * sq_height_),
-          static_cast<int>(0.08 * sq_width_),
-          static_cast<int>(0.08 * sq_height_));
-
-      hard_charge_button_->setGeometry(
-          w_indent_ + static_cast<int>(0.19 * sq_width_),
-          height() - static_cast<int>(0.32 * sq_height_),
-          static_cast<int>(0.05 * sq_width_),
-          static_cast<int>(0.05 * sq_height_));
-    } else if (tank->GetTypeOfCharge() ==
-               static_cast<int>(TypeOfRocket::HardRocket)) {
-      light_charge_button_->setGeometry(
-          w_indent_ + static_cast<int>(0.04 * sq_width_),
-          height() - static_cast<int>(0.32 * sq_height_),
-          static_cast<int>(0.05 * sq_width_),
-          static_cast<int>(0.05 * sq_height_));
-
-      medium_charge_button_->setGeometry(
-          w_indent_ + static_cast<int>(0.1 * sq_width_),
-          height() - static_cast<int>(0.32 * sq_height_),
-          static_cast<int>(0.05 * sq_width_),
-          static_cast<int>(0.05 * sq_height_));
-
-      hard_charge_button_->setGeometry(
-          w_indent_ + static_cast<int>(0.16 * sq_width_),
-          height() - static_cast<int>(0.355 * sq_height_),
-          static_cast<int>(0.08 * sq_width_),
-          static_cast<int>(0.08 * sq_height_));
-    } else {
-      light_charge_button_->setGeometry(
-          w_indent_ + static_cast<int>(0.04 * sq_width_),
-          height() - static_cast<int>(0.355 * sq_height_),
-          static_cast<int>(0.08 * sq_width_),
-          static_cast<int>(0.08 * sq_height_));
-
-      medium_charge_button_->setGeometry(
-          w_indent_ + static_cast<int>(0.13 * sq_width_),
-          height() - static_cast<int>(0.32 * sq_height_),
-          static_cast<int>(0.05 * sq_width_),
-          static_cast<int>(0.05 * sq_height_));
-
-      hard_charge_button_->setGeometry(
-          w_indent_ + static_cast<int>(0.19 * sq_width_),
-          height() - static_cast<int>(0.32 * sq_height_),
-          static_cast<int>(0.05 * sq_width_),
-          static_cast<int>(0.05 * sq_height_));
-    }
-    light_charge_button_->setText(QString::number(
-        tank->GetCurrentCharge(static_cast<int>(TypeOfRocket::LightRocket))));
-    medium_charge_button_->setText(QString::number(
-        tank->GetCurrentCharge(static_cast<int>(TypeOfRocket::MediumRocket))));
-    hard_charge_button_->setText(QString::number(
-        tank->GetCurrentCharge(static_cast<int>(TypeOfRocket::HardRocket))));
-
-    painter.save();
-    painter.setBrush(Qt::yellow);
-    painter.drawRect(
-        w_indent_ + static_cast<int>(0.04 * sq_width_),
-        height() - static_cast<int>(0.25 * sq_height_),
-        static_cast<int>(0.19 * tank->GetTimeSinceLastShot() * sq_width_) /
-            tank->GetRateOfFire(),
-        sq_height_ / 32);
-    painter.restore();
+  if (tanks_.size() == 0) {
+    return;
   }
+  tank = std::dynamic_pointer_cast<Tank>(tanks_[0]);
+  if (tank->GetTypeOfCharge() == static_cast<int>(TypeOfRocket::MediumRocket)) {
+    light_charge_button_->setGeometry(
+        w_indent_ + static_cast<int>(0.04 * sq_width_),
+        height() - static_cast<int>(0.32 * sq_height_),
+        static_cast<int>(0.05 * sq_width_),
+        static_cast<int>(0.05 * sq_height_));
+
+    medium_charge_button_->setGeometry(
+        w_indent_ + static_cast<int>(0.1 * sq_width_),
+        height() - static_cast<int>(0.355 * sq_height_),
+        static_cast<int>(0.08 * sq_width_),
+        static_cast<int>(0.08 * sq_height_));
+
+    hard_charge_button_->setGeometry(
+        w_indent_ + static_cast<int>(0.19 * sq_width_),
+        height() - static_cast<int>(0.32 * sq_height_),
+        static_cast<int>(0.05 * sq_width_),
+        static_cast<int>(0.05 * sq_height_));
+  } else if (tank->GetTypeOfCharge() ==
+             static_cast<int>(TypeOfRocket::HardRocket)) {
+    light_charge_button_->setGeometry(
+        w_indent_ + static_cast<int>(0.04 * sq_width_),
+        height() - static_cast<int>(0.32 * sq_height_),
+        static_cast<int>(0.05 * sq_width_),
+        static_cast<int>(0.05 * sq_height_));
+
+    medium_charge_button_->setGeometry(
+        w_indent_ + static_cast<int>(0.1 * sq_width_),
+        height() - static_cast<int>(0.32 * sq_height_),
+        static_cast<int>(0.05 * sq_width_),
+        static_cast<int>(0.05 * sq_height_));
+
+    hard_charge_button_->setGeometry(
+        w_indent_ + static_cast<int>(0.16 * sq_width_),
+        height() - static_cast<int>(0.355 * sq_height_),
+        static_cast<int>(0.08 * sq_width_),
+        static_cast<int>(0.08 * sq_height_));
+  } else {
+    light_charge_button_->setGeometry(
+        w_indent_ + static_cast<int>(0.04 * sq_width_),
+        height() - static_cast<int>(0.355 * sq_height_),
+        static_cast<int>(0.08 * sq_width_),
+        static_cast<int>(0.08 * sq_height_));
+
+    medium_charge_button_->setGeometry(
+        w_indent_ + static_cast<int>(0.13 * sq_width_),
+        height() - static_cast<int>(0.32 * sq_height_),
+        static_cast<int>(0.05 * sq_width_),
+        static_cast<int>(0.05 * sq_height_));
+
+    hard_charge_button_->setGeometry(
+        w_indent_ + static_cast<int>(0.19 * sq_width_),
+        height() - static_cast<int>(0.32 * sq_height_),
+        static_cast<int>(0.05 * sq_width_),
+        static_cast<int>(0.05 * sq_height_));
+  }
+  light_charge_button_->setText(QString::number(tank->GetCurrentCharge(0)));
+  medium_charge_button_->setText(QString::number(tank->GetCurrentCharge(1)));
+  hard_charge_button_->setText(QString::number(tank->GetCurrentCharge(2)));
+
+  painter.save();
+  painter.setBrush(Qt::yellow);
+  painter.drawRect(
+      w_indent_ + static_cast<int>(0.04 * sq_width_),
+      height() - static_cast<int>(0.25 * sq_height_),
+      static_cast<int>(0.19 * tank->GetTimeSinceLastShot() * sq_width_) /
+          tank->GetRateOfFire(),
+      sq_height_ / 32);
+  painter.restore();
 }
 
 void MainWindow::RedrawContent() {
@@ -537,7 +535,7 @@ void MainWindow::PressVirtualKey(Qt::Key key) {
 
 void MainWindow::ChangeChargeButton(int type) {
   std::dynamic_pointer_cast<Tank>(tanks_[0])->ChangeTypeOfCharge(type);
-  RedrawButtons();
+  repaint();
 }
 
 void MainWindow::FindInteractingObjects() {
