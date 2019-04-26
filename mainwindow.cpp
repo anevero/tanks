@@ -18,11 +18,11 @@ MainWindow::MainWindow(QWidget *parent)
       types_of_rockets_({{7, 100, true}, {15, 200, true}, {30, 300, false}}) {
   setMouseTracking(true);
   light_charge_button_->setToolTip(
-      "Hight speed, low charge, can destroy obstacles");
+      tr("Hight speed, low charge, can destroy obstacles"));
   medium_charge_button_->setToolTip(
-      "Medium speed, medium charge, can destroy obstacles");
+      tr("Medium speed, medium charge, can destroy obstacles"));
   hard_charge_button_->setToolTip(
-      "Low speed, hight charge, can't destroy obstacles");
+      tr("Low speed, hight charge, can't destroy obstacles"));
   light_charge_button_->hide();
   medium_charge_button_->hide();
   hard_charge_button_->hide();
@@ -257,10 +257,12 @@ void MainWindow::timerEvent(QTimerEvent *) {
           }
         }
 
-        obstacles_and_bonuses_[static_cast<unsigned>((*it)->GetCellX() - 1)][
-                        static_cast<unsigned>((*it)->GetCellY())] = nullptr;
-        obstacles_and_bonuses_[static_cast<unsigned>((*it)->GetCellX() + 1)][
-                        static_cast<unsigned>((*it)->GetCellY())] = nullptr;
+        obstacles_and_bonuses_[static_cast<unsigned>((*it)->GetCellX() - 1)]
+                              [static_cast<unsigned>((*it)->GetCellY())] =
+                                  nullptr;
+        obstacles_and_bonuses_[static_cast<unsigned>((*it)->GetCellX() + 1)]
+                              [static_cast<unsigned>((*it)->GetCellY())] =
+                                  nullptr;
       }
 
       it = rockets_.erase(it);
