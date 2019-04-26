@@ -685,13 +685,8 @@ void MainWindow::InitializeSettingsDialog() {
 
 void MainWindow::InitializeAboutDialog() {
   about_dialog_ = new QDialog(this);
-
   html_widget_ = new QTextBrowser(this);
-  QFile html_file(":/rules/rules.html");
-  html_file.open(QIODevice::ReadOnly);
-  QTextStream in(&html_file);
-  html_widget_->setHtml(in.readAll());
-  html_file.close();
+  html_widget_->setSource(QUrl("qrc:/rules/rules.html"));
 
   about_dialog_buttons_ =
       new QDialogButtonBox(QDialogButtonBox::Ok, Qt::Horizontal, about_dialog_);

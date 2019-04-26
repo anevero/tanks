@@ -23,6 +23,7 @@
 #include <QToolTip>
 #include <QTouchDevice>
 #include <QTranslator>
+#include <QUrl>
 #include <QVector>
 #include <QtGlobal>
 #include <algorithm>
