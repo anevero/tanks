@@ -1,6 +1,7 @@
 ﻿#ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <QBoxLayout>
 #include <QCheckBox>
 #include <QComboBox>
 #include <QDebug>
@@ -9,6 +10,7 @@
 #include <QEvent>
 #include <QFileInfo>
 #include <QFormLayout>
+#include <QGridLayout>
 #include <QKeyEvent>
 #include <QLabel>
 #include <QList>
@@ -116,14 +118,15 @@ class MainWindow : public QMainWindow {
   QLabel *settings_separator_label_;
   QLabel *version_label_;
 
-  QPushButton *light_charge_button_;
-  QPushButton *medium_charge_button_;
-  QPushButton *hard_charge_button_;
-
+  QVBoxLayout *main_buttons_layout_;
   QPushButton *new_game_button_;
   QPushButton *pause_continue_button_;
   QPushButton *settings_button_;
 
+  QHBoxLayout *charge_buttons_layout_;
+  QVector<QPushButton *> charge_buttons_;
+
+  QGridLayout *virtual_buttons_layout_;
   QVector<QPushButton *> virtual_keys_buttons_;
   QVector<Qt::Key> virtual_keys_encodings_;
   const int number_of_virtual_keys_in_first_row_ = 2;
@@ -144,8 +147,6 @@ class MainWindow : public QMainWindow {
   const QVector<RocketParameters> types_of_rockets_;
 
   int timer_id_ = 0;
-  int time_since_tooltip_appearing_ = 0;
-  const int time_for_showing_tooltip_ = 1200;
   int time_since_last_bonus_ = 0;
   int time_since_last_medicalkit_ = 0;
   int time_since_last_charge_ = 0;
