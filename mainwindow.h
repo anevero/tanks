@@ -88,17 +88,21 @@ class MainWindow : public QMainWindow {
 
   int GetTimerDuration() const;
   void ToggleVirtualKeys();
+  void ChangeFPSOption(const int new_option, bool start_timer = false);
   void GameOver();
   void InitializeNewGameDialog();
   void InitializeSettingsDialog();
-  void DetermineCurrentLanguageSettings();
-  void ChangeCurrentLanguageSettings();
+  void DetermineCurrentSettings();
+  void ChangeCurrentSettings();
   QJsonObject GetJsonObjectFromFile(const QString &filepath);
   Direction DetermineDirection(const QString &start_direction) const;
 
  private:
   bool paused_ = false;
   bool virtual_keys_shown_ = true;
+  bool charge_line_shown_;
+  int fps_option_;
+  int timer_duration_;
 
   GameOptions current_game_options_{0, 0, 0};
 
@@ -117,7 +121,10 @@ class MainWindow : public QMainWindow {
   QDialogButtonBox *settings_dialog_buttons_;
   QFormLayout *settings_dialog_layout_;
   QCheckBox *virtual_keys_checkbox_;
+  QCheckBox *charge_line_checkbox_;
+  QComboBox *fps_menu_;
   QComboBox *language_menu_;
+  QLabel *fps_menu_label_;
   QLabel *language_menu_label_;
   QLabel *language_menu_restart_label_;
   QLabel *settings_separator_label_;
@@ -148,9 +155,9 @@ class MainWindow : public QMainWindow {
   const int number_of_player_tanks_ = 1;
   const QVector<QString> difficulty_levels_names_ = {tr("Easy"), tr("Normal"),
                                                      tr("Hard")};
+  const QVector<QPair<QString, int>> available_fps_options_ = {
+      {"240", 4}, {"120", 8}, {"90", 11}, {"60", 17}, {"50", 20}, {"40", 25}};
   QVector<TankQualities> available_tank_types_;
-
-  const int timer_duration_ = 10;
   const QVector<RocketParameters> types_of_rockets_;
 
   int timer_id_ = 0;
@@ -162,7 +169,7 @@ class MainWindow : public QMainWindow {
   int w_indent_;
   int h_indent_;
 
-  const QString app_version_ = "0.6.0.0";
+  const QString app_version_ = "0.6.1.0";
 };
 
 #endif  // MAINWINDOW_H

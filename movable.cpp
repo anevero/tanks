@@ -210,8 +210,8 @@ int Movable::GetTimeToFinishRotation() const {
   return time_to_finish_rotation_;
 }
 bool Movable::IsMovingOrRotating() const {
-  return (GetTimeToFinishMovement() > 0 || GetTimeToFinishRotation() != 0 ||
-          GetCellsToFinishMovement() != 0);
+  return (GetTimeToFinishMovement() > 0 || GetTimeToFinishRotation() > 0 ||
+          GetCellsToFinishMovement() > 0);
 }
 int Movable::GetReverseState() const { return reverse_; }
 int Movable::GetRotationReverseState() const { return rotate_reverse_; }
