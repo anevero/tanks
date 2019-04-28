@@ -290,12 +290,22 @@ void MainWindow::timerEvent(QTimerEvent *) {
           }
         }
 
-        obstacles_and_bonuses_[static_cast<unsigned>((*it)->GetCellX() - 1)]
-                              [static_cast<unsigned>((*it)->GetCellY())] =
-                                  nullptr;
-        obstacles_and_bonuses_[static_cast<unsigned>((*it)->GetCellX() + 1)]
-                              [static_cast<unsigned>((*it)->GetCellY())] =
-                                  nullptr;
+        if (std::dynamic_pointer_cast<Portal>(
+                obstacles_and_bonuses_[static_cast<unsigned>(
+                    (*it)->GetCellX() -
+                    1)][static_cast<unsigned>((*it)->GetCellY())]) == nullptr) {
+          obstacles_and_bonuses_[static_cast<unsigned>((*it)->GetCellX() - 1)]
+                                [static_cast<unsigned>((*it)->GetCellY())] =
+                                    nullptr;
+        }
+        if (std::dynamic_pointer_cast<Portal>(
+                obstacles_and_bonuses_[static_cast<unsigned>(
+                    (*it)->GetCellX() +
+                    1)][static_cast<unsigned>((*it)->GetCellY())]) == nullptr) {
+          obstacles_and_bonuses_[static_cast<unsigned>((*it)->GetCellX() + 1)]
+                                [static_cast<unsigned>((*it)->GetCellY())] =
+                                    nullptr;
+        }
       }
 
       it = rockets_.erase(it);

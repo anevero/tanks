@@ -110,13 +110,13 @@ void Movable::StartMovement(
   new_cell_y = old_cell_y;
   cell_x_ = new_cell_x;
   cell_y_ = new_cell_y;
-  time_to_finish_movement_ += current_speed_;
+  time_to_finish_movement_ = current_speed_;
   cells_to_finish_movement_ = number_of_cells - 1;
 }
 
 void Movable::Move(const int milliseconds_passed) {
-  time_to_finish_movement_ -= milliseconds_passed;
-  time_to_finish_movement_ = std::max(time_to_finish_movement_, 0);
+  time_to_finish_movement_ =
+      std::max(time_to_finish_movement_ - milliseconds_passed, 0);
 }
 
 void Movable::TurnReverseOn() { reverse_ = -1; }
