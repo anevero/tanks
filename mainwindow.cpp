@@ -201,13 +201,23 @@ void MainWindow::paintEvent(QPaintEvent *) {
     object->Draw(p);
   }
 
-  RedrawCharge(p);
+  if (tanks_.size() != 0) {
+    auto tank = std::dynamic_pointer_cast<Tank>(tanks_[0]);
+    p.setBrush(Qt::yellow);
+    p.drawRect(w_indent_ + static_cast<int>(0.04 * sq_width_),
+               height() - h_indent_ - static_cast<int>(0.25 * sq_height_),
+               static_cast<int>(0.2 * sq_width_ * tank->GetTimeSinceLastShot() /
+                                tank->GetRateOfFire()),
+               sq_height_ / 32);
+  }
+
   p.end();
 }
 
 void MainWindow::resizeEvent(QResizeEvent *) {
   UpdateIndents();
   RedrawButtons();
+  RedrawChargeButtons();
 }
 
 void MainWindow::timerEvent(QTimerEvent *) {
@@ -352,12 +362,11 @@ void MainWindow::RedrawButtons() {
   }
 }
 
-void MainWindow::RedrawCharge(QPainter &painter) {
-  std::shared_ptr<Tank> tank;
+void MainWindow::RedrawChargeButtons() {
   if (tanks_.size() == 0) {
     return;
   }
-  tank = std::dynamic_pointer_cast<Tank>(tanks_[0]);
+  auto tank = std::dynamic_pointer_cast<Tank>(tanks_[0]);
 
   for (int i = 0; i < charge_buttons_.size(); ++i) {
     if (i == tank->GetTypeOfCharge()) {
@@ -373,16 +382,6 @@ void MainWindow::RedrawCharge(QPainter &painter) {
       w_indent_ + static_cast<int>(0.04 * sq_width_),
       height() - h_indent_ - static_cast<int>(0.355 * sq_height_),
       static_cast<int>(0.2 * sq_width_), static_cast<int>(0.1 * sq_height_)));
-
-  painter.save();
-  painter.setBrush(Qt::yellow);
-  painter.drawRect(
-      w_indent_ + static_cast<int>(0.04 * sq_width_),
-      height() - h_indent_ - static_cast<int>(0.25 * sq_height_),
-      static_cast<int>(0.2 * sq_width_ * tank->GetTimeSinceLastShot() /
-                       tank->GetRateOfFire()),
-      sq_height_ / 32);
-  painter.restore();
 }
 
 void MainWindow::RedrawContent() {
@@ -485,6 +484,7 @@ void MainWindow::RedrawContent() {
   }
 
   timer_id_ = startTimer(timer_duration_);
+  RedrawChargeButtons();
   repaint();
 }
 
@@ -508,7 +508,7 @@ void MainWindow::PressVirtualKey(Qt::Key key) {
 
 void MainWindow::ChangeChargeButton(int type) {
   std::dynamic_pointer_cast<Tank>(tanks_[0])->ChangeTypeOfCharge(type);
-  repaint();
+  RedrawChargeButtons();
 }
 
 void MainWindow::FindInteractingObjects() {
@@ -591,6 +591,8 @@ void MainWindow::ShootRocket(std::shared_ptr<Tank> &tank) {
         map_, tank, types_of_rockets_[tank->GetTypeOfCharge()].speed_,
         types_of_rockets_[tank->GetTypeOfCharge()].power_,
         static_cast<TypeOfRocket>(tank->GetTypeOfCharge())));
+    tank->MinusCharge(tank->GetTypeOfCharge());
+    RedrawChargeButtons();
   } else {
     rocket = std::shared_ptr<Rocket>(
         new Rocket(map_, tank, 250, 10, TypeOfRocket::MediumRocket));
@@ -603,9 +605,6 @@ void MainWindow::ShootRocket(std::shared_ptr<Tank> &tank) {
   } else {
     rocket->StartMovement(map_->GetNumberOfCellsVertically(), tanks_,
                           objects_copies_, obstacles_and_bonuses_);
-  }
-  if (std::dynamic_pointer_cast<Bot>(tank) == nullptr) {
-    tank->MinusCharge(tank->GetTypeOfCharge());
   }
 }
 

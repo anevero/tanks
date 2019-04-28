@@ -62,25 +62,30 @@ class MainWindow : public QMainWindow {
 
  private slots:
   void NewGame();
-  void Settings();
-  void UpdateIndents();
-  void RedrawButtons();
-  void RedrawCharge(QPainter &painter);
-  void RedrawContent();
   void PauseOrContinue();
+  void Settings();
+
   void PressVirtualKey(Qt::Key key);
   void ChangeChargeButton(int type);
 
  private:
+  void RedrawContent();
+  void UpdateIndents();
+  void RedrawButtons();
+  void RedrawChargeButtons();
+  void FormObjectsOnMapImage();
+
   void FindInteractingObjects();
   bool HaveObjectsCollided(const std::shared_ptr<Movable> &obj1,
                            const std::shared_ptr<Movable> &obj2) const;
-  void CheckDeadObjects();
-  void FormObjectsOnMapImage();
-  void ShootRocket(std::shared_ptr<Tank> &tank);
-  void MakeBoom(std::shared_ptr<Movable> &object);
   bool IsRocketByThisTank(const std::shared_ptr<Movable> &rocket,
                           const std::shared_ptr<Movable> &tank) const;
+  void CheckDeadObjects();
+
+  void ShootRocket(std::shared_ptr<Tank> &tank);
+  void MakeBoom(std::shared_ptr<Movable> &object);
+  void RandomBonus(Bonus bonus);
+
   int GetTimerDuration() const;
   void ToggleVirtualKeys();
   void GameOver();
@@ -90,7 +95,6 @@ class MainWindow : public QMainWindow {
   void ChangeCurrentLanguageSettings();
   QJsonObject GetJsonObjectFromFile(const QString &filepath);
   Direction DetermineDirection(const QString &start_direction) const;
-  void RandomBonus(Bonus bonus);
 
  private:
   bool paused_ = false;
