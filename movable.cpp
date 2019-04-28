@@ -116,6 +116,7 @@ void Movable::StartMovement(
 
 void Movable::Move(const int milliseconds_passed) {
   time_to_finish_movement_ -= milliseconds_passed;
+  time_to_finish_movement_ = std::max(time_to_finish_movement_, 0);
 }
 
 void Movable::TurnReverseOn() { reverse_ = -1; }
@@ -135,6 +136,7 @@ void Movable::StartRotation() {
 
 void Movable::Rotate(const int milliseconds_passed) {
   time_to_finish_rotation_ -= milliseconds_passed;
+  time_to_finish_rotation_ = std::max(time_to_finish_rotation_, 0);
 }
 
 void Movable::TurnRotationReverseOn() { rotate_reverse_ = -1; }
