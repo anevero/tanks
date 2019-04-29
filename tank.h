@@ -18,6 +18,8 @@ struct TankQualities {
   Direction direction;
 };
 
+enum class ChargeState { Empty = 0, LessThanHalf = 1, MoreThanHalf = 2 };
+
 class Tank : public Movable {
  public:
   Tank(const std::shared_ptr<Map>& map, const int init_cell_x,
@@ -34,15 +36,18 @@ class Tank : public Movable {
   virtual int GetMaxHealth() const;
   virtual void MinusHealth(const int health = 10);
   virtual void PlusHealth(const int health = 10);
-  void ChangeTypeOfCharge(int type);
-  int GetTypeOfCharge() const;
-  int GetCurrentCharge(int type) const;
-  int GetMaxCharge(int type) const;
-  void MinusCharge(int type, int charge = 1);
-  void PlusCharge();
   virtual bool IsDead() const;
   virtual int GetTimeSinceLastShot() const;
   virtual int GetRateOfFire() const;
+
+  void ChangeTypeOfCharge(int type);
+  void MinusCharge(int type, int charge = 1);
+  void PlusCharge();
+
+  int GetTypeOfCharge() const;
+  int GetCurrentCharge(int type) const;
+  int GetMaxCharge(int type) const;
+  ChargeState GetChargeState() const;
 
  protected:
   int rate_of_fire_;

@@ -138,8 +138,9 @@ class MainWindow : public QMainWindow {
 
   QHBoxLayout *charge_buttons_layout_;
   QVector<QPushButton *> charge_buttons_;
-  QPalette standart_palette_;
-  QPalette selected_palette_;
+  QPalette standart_button_palette_;
+  QVector<Qt::GlobalColor> charge_colors_{Qt::red, Qt::yellow, Qt::green};
+  QVector<QPalette> charge_palettes_;
 
   QGridLayout *virtual_buttons_layout_;
   QVector<QPushButton *> virtual_keys_buttons_;

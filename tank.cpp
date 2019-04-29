@@ -67,10 +67,12 @@ int Tank::GetCurrentHealth() const { return current_health_; }
 int Tank::GetMaxHealth() const { return max_health_; }
 void Tank::MinusHealth(const int health) { current_health_ -= health; }
 void Tank::PlusHealth(const int health) { current_health_ += health; }
+
+bool Tank::IsDead() const { return current_health_ <= 0; }
+int Tank::GetTimeSinceLastShot() const { return time_since_last_shot_; }
+int Tank::GetRateOfFire() const { return rate_of_fire_; }
+
 void Tank::ChangeTypeOfCharge(int type) { type_of_charge_ = type; }
-int Tank::GetTypeOfCharge() const { return type_of_charge_; }
-int Tank::GetCurrentCharge(int type) const { return current_charge_[type]; }
-int Tank::GetMaxCharge(int type) const { return max_charge_[type]; }
 
 void Tank::MinusCharge(int type, int charge) {
   current_charge_[type] -= charge;
@@ -81,6 +83,16 @@ void Tank::PlusCharge() {
       std::min(10 - 2 * type, max_charge_[type] - current_charge_[type]);
 }
 
-bool Tank::IsDead() const { return current_health_ <= 0; }
-int Tank::GetTimeSinceLastShot() const { return time_since_last_shot_; }
-int Tank::GetRateOfFire() const { return rate_of_fire_; }
+int Tank::GetTypeOfCharge() const { return type_of_charge_; }
+int Tank::GetCurrentCharge(int type) const { return current_charge_[type]; }
+int Tank::GetMaxCharge(int type) const { return max_charge_[type]; }
+
+ChargeState Tank::GetChargeState() const {
+  if (current_charge_[type_of_charge_] == 0) {
+    return ChargeState::Empty;
+  } else if (current_charge_[type_of_charge_] <=
+             max_charge_[type_of_charge_] / 2) {
+    return ChargeState::LessThanHalf;
+  }
+  return ChargeState::MoreThanHalf;
+}

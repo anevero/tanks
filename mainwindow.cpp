@@ -50,9 +50,12 @@ MainWindow::MainWindow(QWidget *parent)
             [this, i]() { ChangeChargeButton(i); });
   }
 
-  standart_palette_ = charge_buttons_[0]->palette();
-  selected_palette_ = standart_palette_;
-  selected_palette_.setColor(QPalette::Button, Qt::yellow);
+  standart_button_palette_ = charge_buttons_[0]->palette();
+  charge_palettes_.resize(charge_colors_.size());
+  for (int i = 0; i < charge_palettes_.size(); ++i) {
+    charge_palettes_[i] = standart_button_palette_;
+    charge_palettes_[i].setColor(QPalette::Button, charge_colors_[i]);
+  }
 
   charge_buttons_[0]->setToolTip(
       tr("Hight speed, low charge, can destroy obstacles"));
@@ -205,7 +208,7 @@ void MainWindow::paintEvent(QPaintEvent *) {
 
   if (tanks_.size() != 0 && charge_line_shown_) {
     auto tank = std::dynamic_pointer_cast<Tank>(tanks_[0]);
-    p.setBrush(Qt::yellow);
+    p.setBrush(charge_colors_[static_cast<int>(tank->GetChargeState())]);
     p.drawRect(w_indent_ + static_cast<int>(0.04 * sq_width_),
                height() - h_indent_ - static_cast<int>(0.25 * sq_height_),
                static_cast<int>(0.2 * sq_width_ * tank->GetTimeSinceLastShot() /
@@ -326,6 +329,7 @@ void MainWindow::timerEvent(QTimerEvent *) {
   FindInteractingObjects();
   CheckDeadObjects();
 
+  RedrawChargeButtons();
   repaint();
 }
 
@@ -376,9 +380,10 @@ void MainWindow::RedrawChargeButtons() {
 
   for (int i = 0; i < charge_buttons_.size(); ++i) {
     if (i == tank->GetTypeOfCharge()) {
-      charge_buttons_[i]->setPalette(selected_palette_);
+      charge_buttons_[i]->setPalette(
+          charge_palettes_[static_cast<int>(tank->GetChargeState())]);
     } else {
-      charge_buttons_[i]->setPalette(standart_palette_);
+      charge_buttons_[i]->setPalette(standart_button_palette_);
     }
     charge_buttons_[i]->setText(QString::number(tank->GetCurrentCharge(i)));
   }
