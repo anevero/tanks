@@ -856,6 +856,8 @@ void MainWindow::ChangeCurrentSettings() {
   settings_file.open(QIODevice::WriteOnly);
   settings_file.write(new_json_string.toUtf8());
   settings_file.close();
+
+  repaint();
 }
 
 QJsonObject MainWindow::GetJsonObjectFromFile(const QString &filepath) {
