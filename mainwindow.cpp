@@ -290,21 +290,16 @@ void MainWindow::timerEvent(QTimerEvent *) {
           }
         }
 
+        auto cell_x = static_cast<unsigned>((*it)->GetCellX());
+        auto cell_y = static_cast<unsigned>((*it)->GetCellY());
+
         if (std::dynamic_pointer_cast<Portal>(
-                obstacles_and_bonuses_[static_cast<unsigned>(
-                    (*it)->GetCellX() -
-                    1)][static_cast<unsigned>((*it)->GetCellY())]) == nullptr) {
-          obstacles_and_bonuses_[static_cast<unsigned>((*it)->GetCellX() - 1)]
-                                [static_cast<unsigned>((*it)->GetCellY())] =
-                                    nullptr;
+                obstacles_and_bonuses_[cell_x - 1][cell_y]) == nullptr) {
+          obstacles_and_bonuses_[cell_x - 1][cell_y] = nullptr;
         }
         if (std::dynamic_pointer_cast<Portal>(
-                obstacles_and_bonuses_[static_cast<unsigned>(
-                    (*it)->GetCellX() +
-                    1)][static_cast<unsigned>((*it)->GetCellY())]) == nullptr) {
-          obstacles_and_bonuses_[static_cast<unsigned>((*it)->GetCellX() + 1)]
-                                [static_cast<unsigned>((*it)->GetCellY())] =
-                                    nullptr;
+                obstacles_and_bonuses_[cell_x + 1][cell_y]) == nullptr) {
+          obstacles_and_bonuses_[cell_x + 1][cell_y] = nullptr;
         }
       }
 
