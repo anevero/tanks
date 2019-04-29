@@ -314,11 +314,11 @@ void MainWindow::timerEvent(QTimerEvent *) {
         GetTimerDuration());
   }
 
-  if (time_since_last_medicalkit_ == 20000) {
+  if (time_since_last_medicalkit_ >= 20000) {
     RandomBonus(Bonus::TypeMedicalKit);
     time_since_last_medicalkit_ = 0;
   }
-  if (time_since_last_charge_ == 15000) {
+  if (time_since_last_charge_ >= 15000) {
     RandomBonus(Bonus::TypeCharge);
     time_since_last_charge_ = 0;
   }
