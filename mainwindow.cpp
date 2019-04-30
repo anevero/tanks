@@ -33,6 +33,12 @@ MainWindow::MainWindow(QWidget *parent)
   settings_button_->setFocusPolicy(Qt::NoFocus);
 
   screen_timer_->setSegmentStyle(QLCDNumber::Flat);
+  screen_timer_->setToolTip(tr("You have") + " " +
+                            QString::number(minutes_per_round_) + " " +
+                            tr("minutes per round"));
+  standart_lcdnumber_palette_ = screen_timer_->palette();
+  red_lcdnumber_palette_ = standart_lcdnumber_palette_;
+  red_lcdnumber_palette_.setColor(QPalette::WindowText, QColor(255, 0, 0));
   UpdateScreenTimer();
 
   main_buttons_layout_->addWidget(new_game_button_);
@@ -373,10 +379,6 @@ void MainWindow::RedrawButtons() {
       h_indent_ + static_cast<int>(0.05 * sq_height_),
       static_cast<int>(0.2 * sq_width_), static_cast<int>(0.31 * sq_height_)));
 
-  //  screen_timer_->setGeometry(screen_timer_->x(), screen_timer_->y(),
-  //                             screen_timer_->width(),
-  //                             1.5 * screen_timer_->height());
-
   if (virtual_keys_shown_) {
     virtual_buttons_layout_->setSpacing(static_cast<int>(0.01 * sq_height_));
     virtual_buttons_layout_->setGeometry(
@@ -415,7 +417,16 @@ void MainWindow::UpdateScreenTimer() {
   screen_timer_min_ += screen_timer_sec_ / 60;
   screen_timer_ms_ %= 1000;
   screen_timer_sec_ %= 60;
-  screen_timer_min_ %= 60;
+
+  if (screen_timer_min_ >= minutes_per_round_) {
+    GameOver(false);
+  } else if (screen_timer_min_ >= minutes_per_round_ - 2) {
+    if (screen_timer_sec_ % 2 == 0) {
+      screen_timer_->setPalette(red_lcdnumber_palette_);
+    } else {
+      screen_timer_->setPalette(standart_lcdnumber_palette_);
+    }
+  }
 
   QString time{};
   if (screen_timer_min_ < 10) {
@@ -437,6 +448,7 @@ void MainWindow::RedrawContent() {
   screen_timer_ms_ = 0;
   screen_timer_sec_ = 0;
   screen_timer_min_ = 0;
+  screen_timer_->setPalette(standart_lcdnumber_palette_);
 
   map_.reset(new Map(current_game_options_.map_number + 1));
   tanks_.clear();
@@ -601,7 +613,7 @@ void MainWindow::CheckDeadObjects() {
   auto object = tanks_.begin();
   for (int i = 0; i < number_of_player_tanks_; ++i) {
     if (std::dynamic_pointer_cast<Tank>(tanks_[i])->IsDead()) {
-      GameOver();
+      GameOver(false);
       return;
     }
     object = std::next(object);
@@ -625,7 +637,7 @@ void MainWindow::CheckDeadObjects() {
     copy++;
   }
   if (tanks_.size() == number_of_player_tanks_) {
-    GameOver();
+    GameOver(true);
   }
 }
 
@@ -692,13 +704,13 @@ void MainWindow::ChangeFPSOption(const int new_option, bool start_timer) {
   }
 }
 
-void MainWindow::GameOver() {
+void MainWindow::GameOver(bool win) {
   killTimer(timer_id_);
   timer_id_ = 0;
 
   QMessageBox message;
   message.setIcon(QMessageBox::Information);
-  if (tanks_.size() == number_of_player_tanks_) {
+  if (win) {
     message.setText(
         tr("You win! \n"
            "You can start a new game with help of appropriate button "
