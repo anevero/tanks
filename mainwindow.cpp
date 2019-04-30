@@ -46,7 +46,7 @@ MainWindow::MainWindow(QWidget *parent)
   main_buttons_layout_->addWidget(settings_button_);
   main_buttons_layout_->addWidget(screen_timer_);
 
-  for (int i = 0; i < 4; ++i) {
+  for (int i = 0; i < main_buttons_layout_->count(); ++i) {
     main_buttons_layout_->setStretch(i, 1);
   }
 

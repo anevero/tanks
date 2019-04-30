@@ -182,7 +182,7 @@ class MainWindow : public QMainWindow {
   int w_indent_;
   int h_indent_;
 
-  const QString app_version_ = "0.6.1.0";
+  const QString app_version_ = "0.6.2.0";
 };
 
 #endif  // MAINWINDOW_H
