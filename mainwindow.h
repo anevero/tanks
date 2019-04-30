@@ -82,6 +82,7 @@ class MainWindow : public QMainWindow {
   bool IsRocketByThisTank(const std::shared_ptr<Movable> &rocket,
                           const std::shared_ptr<Movable> &tank) const;
   void CheckDeadObjects();
+  void GameOver();
 
   void ShootRocket(std::shared_ptr<Tank> &tank);
   void MakeBoom(std::shared_ptr<Movable> &object);
@@ -90,7 +91,6 @@ class MainWindow : public QMainWindow {
   int GetTimerDuration() const;
   void ToggleVirtualKeys();
   void ChangeFPSOption(const int new_option, bool start_timer = false);
-  void GameOver();
   void InitializeNewGameDialog();
   void InitializeSettingsDialog();
   void DetermineCurrentSettings();
