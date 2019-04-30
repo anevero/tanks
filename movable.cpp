@@ -110,12 +110,13 @@ void Movable::StartMovement(
   new_cell_y = old_cell_y;
   cell_x_ = new_cell_x;
   cell_y_ = new_cell_y;
-  time_to_finish_movement_ += current_speed_;
+  time_to_finish_movement_ = current_speed_;
   cells_to_finish_movement_ = number_of_cells - 1;
 }
 
 void Movable::Move(const int milliseconds_passed) {
-  time_to_finish_movement_ -= milliseconds_passed;
+  time_to_finish_movement_ =
+      std::max(time_to_finish_movement_ - milliseconds_passed, 0);
 }
 
 void Movable::TurnReverseOn() { reverse_ = -1; }
@@ -135,6 +136,7 @@ void Movable::StartRotation() {
 
 void Movable::Rotate(const int milliseconds_passed) {
   time_to_finish_rotation_ -= milliseconds_passed;
+  time_to_finish_rotation_ = std::max(time_to_finish_rotation_, 0);
 }
 
 void Movable::TurnRotationReverseOn() { rotate_reverse_ = -1; }
@@ -210,8 +212,8 @@ int Movable::GetTimeToFinishRotation() const {
   return time_to_finish_rotation_;
 }
 bool Movable::IsMovingOrRotating() const {
-  return (GetTimeToFinishMovement() > 0 || GetTimeToFinishRotation() != 0 ||
-          GetCellsToFinishMovement() != 0);
+  return (GetTimeToFinishMovement() > 0 || GetTimeToFinishRotation() > 0 ||
+          GetCellsToFinishMovement() > 0);
 }
 int Movable::GetReverseState() const { return reverse_; }
 int Movable::GetRotationReverseState() const { return rotate_reverse_; }

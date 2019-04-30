@@ -11,6 +11,8 @@ int main(int argc, char *argv[]) {
   a.setStyle(QStyleFactory::create("Fusion"));
 
   QString language{};
+  bool charge_line = true;
+  int fps_option = 1;
 
   QFile settings_file("settings.json");
   if (settings_file.exists()) {
@@ -20,6 +22,8 @@ int main(int argc, char *argv[]) {
     QJsonDocument json_document(QJsonDocument::fromJson(text.toUtf8()));
     QJsonObject json = json_document.object();
     language = json["language"].toString();
+    charge_line = json["charge_line"].toBool();
+    fps_option = json["fps"].toInt();
   }
 
   QTranslator translator;
@@ -36,6 +40,8 @@ int main(int argc, char *argv[]) {
 
   QJsonObject new_json_obj;
   new_json_obj["language"] = language;
+  new_json_obj["charge_line"] = charge_line;
+  new_json_obj["fps"] = fps_option;
   QJsonDocument new_json_document(new_json_obj);
   QString new_json_string = new_json_document.toJson();
 
