@@ -12,6 +12,7 @@
 #include <QFormLayout>
 #include <QGridLayout>
 #include <QKeyEvent>
+#include <QLCDNumber>
 #include <QLabel>
 #include <QList>
 #include <QMainWindow>
@@ -75,6 +76,7 @@ class MainWindow : public QMainWindow {
   void RedrawButtons();
   void RedrawChargeButtons();
   void FormObjectsOnMapImage();
+  void UpdateScreenTimer();
 
   void FindInteractingObjects();
   bool HaveObjectsCollided(const std::shared_ptr<Movable> &obj1,
@@ -106,6 +108,11 @@ class MainWindow : public QMainWindow {
   int timer_duration_;
 
   GameOptions current_game_options_{0, 0, 0};
+
+  QLCDNumber *screen_timer_;
+  int screen_timer_ms_ = 0;
+  int screen_timer_sec_ = 0;
+  int screen_timer_min_ = 0;
 
   QDialog *new_game_dialog_;
   QDialogButtonBox *new_game_dialog_buttons_;

@@ -2,6 +2,7 @@
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent),
+      screen_timer_(new QLCDNumber(this)),
       main_buttons_layout_(new QVBoxLayout()),
       new_game_button_(new QPushButton(tr("New game"), this)),
       pause_continue_button_(new QPushButton(tr("Pause"), this)),
@@ -31,9 +32,17 @@ MainWindow::MainWindow(QWidget *parent)
   pause_continue_button_->setFocusPolicy(Qt::NoFocus);
   settings_button_->setFocusPolicy(Qt::NoFocus);
 
+  screen_timer_->setSegmentStyle(QLCDNumber::Flat);
+  UpdateScreenTimer();
+
   main_buttons_layout_->addWidget(new_game_button_);
   main_buttons_layout_->addWidget(pause_continue_button_);
   main_buttons_layout_->addWidget(settings_button_);
+  main_buttons_layout_->addWidget(screen_timer_);
+
+  for (int i = 0; i < 4; ++i) {
+    main_buttons_layout_->setStretch(i, 1);
+  }
 
   connect(new_game_button_, SIGNAL(clicked()), this, SLOT(NewGame()));
   connect(pause_continue_button_, SIGNAL(clicked()), this,
@@ -228,6 +237,8 @@ void MainWindow::resizeEvent(QResizeEvent *) {
 void MainWindow::timerEvent(QTimerEvent *) {
   time_since_last_medicalkit_ += timer_duration_;
   time_since_last_charge_ += timer_duration_;
+  screen_timer_ms_ += timer_duration_;
+  UpdateScreenTimer();
 
   for (auto &object : tanks_) {
     if (std::dynamic_pointer_cast<Bot>(object) != nullptr) {
@@ -360,7 +371,11 @@ void MainWindow::RedrawButtons() {
   main_buttons_layout_->setGeometry(QRect(
       w_indent_ + static_cast<int>(0.04 * sq_width_),
       h_indent_ + static_cast<int>(0.05 * sq_height_),
-      static_cast<int>(0.2 * sq_width_), static_cast<int>(0.22 * sq_height_)));
+      static_cast<int>(0.2 * sq_width_), static_cast<int>(0.31 * sq_height_)));
+
+  //  screen_timer_->setGeometry(screen_timer_->x(), screen_timer_->y(),
+  //                             screen_timer_->width(),
+  //                             1.5 * screen_timer_->height());
 
   if (virtual_keys_shown_) {
     virtual_buttons_layout_->setSpacing(static_cast<int>(0.01 * sq_height_));
@@ -395,9 +410,34 @@ void MainWindow::RedrawChargeButtons() {
       static_cast<int>(0.2 * sq_width_), static_cast<int>(0.1 * sq_height_)));
 }
 
+void MainWindow::UpdateScreenTimer() {
+  screen_timer_sec_ += screen_timer_ms_ / 1000;
+  screen_timer_min_ += screen_timer_sec_ / 60;
+  screen_timer_ms_ %= 1000;
+  screen_timer_sec_ %= 60;
+  screen_timer_min_ %= 60;
+
+  QString time{};
+  if (screen_timer_min_ < 10) {
+    time += "0";
+  }
+  time += QString::number(screen_timer_min_) + ":";
+  if (screen_timer_sec_ < 10) {
+    time += "0";
+  }
+  time += QString::number(screen_timer_sec_);
+
+  screen_timer_->display(time);
+}
+
 void MainWindow::RedrawContent() {
   killTimer(timer_id_);
   timer_id_ = 0;
+
+  screen_timer_ms_ = 0;
+  screen_timer_sec_ = 0;
+  screen_timer_min_ = 0;
+
   map_.reset(new Map(current_game_options_.map_number + 1));
   tanks_.clear();
   rockets_.clear();
