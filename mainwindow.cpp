@@ -362,6 +362,7 @@ void MainWindow::NewGame() {
 void MainWindow::Settings() {
   if (!paused_) PauseOrContinue();
   settings_dialog_->exec();
+  DetermineCurrentSettings();
 }
 
 void MainWindow::UpdateIndents() {
@@ -863,6 +864,8 @@ void MainWindow::InitializeSettingsDialog() {
 
 void MainWindow::DetermineCurrentSettings() {
   QJsonObject json = GetJsonObjectFromFile("settings.json");
+
+  virtual_keys_checkbox_->setChecked(virtual_keys_shown_);
 
   QString language = json["language"].toString();
   if (language == "be_BY") {
