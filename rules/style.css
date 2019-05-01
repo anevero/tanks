@@ -23,14 +23,15 @@ body {
 .menu a {
 	font-size: 2pt;
 	color: #7C5043;
+        font-weight: 200;
 	text-decoration: none;
 	margin: 0pt;
 }
 h1 {
 	color: #663300;
-	font-family: century gothic;
+        font-family: karumbi, papyrus;
 	text-align: center;
-	margin: 0pt;
+        margin: -2pt;
 }
 h2 {
 	color: #FFCCCC;

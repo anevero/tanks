@@ -2,6 +2,7 @@
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent),
+      screen_timer_(new QLCDNumber(this)),
       main_buttons_layout_(new QVBoxLayout()),
       new_game_button_(new QPushButton(tr("New game"), this)),
       pause_continue_button_(new QPushButton(tr("Pause"), this)),
@@ -35,10 +36,24 @@ MainWindow::MainWindow(QWidget *parent)
   settings_button_->setFocusPolicy(Qt::NoFocus);
   about_button_->setFocusPolicy(Qt::NoFocus);
 
+  screen_timer_->setSegmentStyle(QLCDNumber::Flat);
+  screen_timer_->setToolTip(tr("You have") + " " +
+                            QString::number(minutes_per_round_) + " " +
+                            tr("minutes per round"));
+  standart_lcdnumber_palette_ = screen_timer_->palette();
+  red_lcdnumber_palette_ = standart_lcdnumber_palette_;
+  red_lcdnumber_palette_.setColor(QPalette::WindowText, QColor(255, 0, 0));
+  UpdateScreenTimer();
+
   main_buttons_layout_->addWidget(new_game_button_);
   main_buttons_layout_->addWidget(pause_continue_button_);
   main_buttons_layout_->addWidget(settings_button_);
   main_buttons_layout_->addWidget(about_button_);
+  main_buttons_layout_->addWidget(screen_timer_);
+
+  for (int i = 0; i < main_buttons_layout_->count(); ++i) {
+    main_buttons_layout_->setStretch(i, 1);
+  }
 
   connect(new_game_button_, SIGNAL(clicked()), this, SLOT(NewGame()));
   connect(pause_continue_button_, SIGNAL(clicked()), this,
@@ -56,9 +71,12 @@ MainWindow::MainWindow(QWidget *parent)
             [this, i]() { ChangeChargeButton(i); });
   }
 
-  standart_palette_ = charge_buttons_[0]->palette();
-  selected_palette_ = standart_palette_;
-  selected_palette_.setColor(QPalette::Button, Qt::yellow);
+  standart_button_palette_ = charge_buttons_[0]->palette();
+  charge_palettes_.resize(charge_colors_.size());
+  for (int i = 0; i < charge_palettes_.size(); ++i) {
+    charge_palettes_[i] = standart_button_palette_;
+    charge_palettes_[i].setColor(QPalette::Button, charge_colors_[i]);
+  }
 
   charge_buttons_[0]->setToolTip(
       tr("Hight speed, low charge, can destroy obstacles"));
@@ -91,6 +109,8 @@ MainWindow::MainWindow(QWidget *parent)
   InitializeNewGameDialog();
   InitializeSettingsDialog();
   InitializeAboutDialog();
+
+  timer_duration_ = available_fps_options_[fps_option_].second;
 
   setMinimumSize(600, 450);
   resize(600, 450);
@@ -208,18 +228,30 @@ void MainWindow::paintEvent(QPaintEvent *) {
     object->Draw(p);
   }
 
-  RedrawCharge(p);
+  if (tanks_.size() != 0 && charge_line_shown_) {
+    auto tank = std::dynamic_pointer_cast<Tank>(tanks_[0]);
+    p.setBrush(charge_colors_[static_cast<int>(tank->GetChargeState())]);
+    p.drawRect(w_indent_ + static_cast<int>(0.04 * sq_width_),
+               height() - h_indent_ - static_cast<int>(0.25 * sq_height_),
+               static_cast<int>(0.2 * sq_width_ * tank->GetTimeSinceLastShot() /
+                                tank->GetRateOfFire()),
+               sq_height_ / 32);
+  }
+
   p.end();
 }
 
 void MainWindow::resizeEvent(QResizeEvent *) {
   UpdateIndents();
   RedrawButtons();
+  RedrawChargeButtons();
 }
 
 void MainWindow::timerEvent(QTimerEvent *) {
   time_since_last_medicalkit_ += timer_duration_;
   time_since_last_charge_ += timer_duration_;
+  screen_timer_ms_ += timer_duration_;
+  UpdateScreenTimer();
 
   for (auto &object : tanks_) {
     if (std::dynamic_pointer_cast<Bot>(object) != nullptr) {
@@ -248,7 +280,7 @@ void MainWindow::timerEvent(QTimerEvent *) {
   for (const auto &object : tanks_) {
     if (object->GetTimeToFinishMovement() > 0) {
       object->Move(timer_duration_);
-    } else if (object->GetTimeToFinishRotation() != 0) {
+    } else if (object->GetTimeToFinishRotation() > 0) {
       object->Rotate(timer_duration_);
     }
   }
@@ -273,7 +305,7 @@ void MainWindow::timerEvent(QTimerEvent *) {
   auto it = rockets_.begin();
   while (it != rockets_.end()) {
     if ((*it)->GetTimeToFinishMovement() <= 0 &&
-        (*it)->GetCellsToFinishMovement() != 0) {
+        (*it)->GetCellsToFinishMovement() > 0) {
       (*it)->StartMovement(((*it)->GetCellsToFinishMovement()), tanks_,
                            objects_copies_, obstacles_and_bonuses_);
     }
@@ -285,12 +317,17 @@ void MainWindow::timerEvent(QTimerEvent *) {
           }
         }
 
-        obstacles_and_bonuses_[static_cast<unsigned>((*it)->GetCellX() - 1)]
-                              [static_cast<unsigned>((*it)->GetCellY())] =
-                                  nullptr;
-        obstacles_and_bonuses_[static_cast<unsigned>((*it)->GetCellX() + 1)]
-                              [static_cast<unsigned>((*it)->GetCellY())] =
-                                  nullptr;
+        auto cell_x = static_cast<unsigned>((*it)->GetCellX());
+        auto cell_y = static_cast<unsigned>((*it)->GetCellY());
+
+        if (std::dynamic_pointer_cast<Portal>(
+                obstacles_and_bonuses_[cell_x - 1][cell_y]) == nullptr) {
+          obstacles_and_bonuses_[cell_x - 1][cell_y] = nullptr;
+        }
+        if (std::dynamic_pointer_cast<Portal>(
+                obstacles_and_bonuses_[cell_x + 1][cell_y]) == nullptr) {
+          obstacles_and_bonuses_[cell_x + 1][cell_y] = nullptr;
+        }
       }
 
       it = rockets_.erase(it);
@@ -304,11 +341,11 @@ void MainWindow::timerEvent(QTimerEvent *) {
         GetTimerDuration());
   }
 
-  if (time_since_last_medicalkit_ == 20000) {
+  if (time_since_last_medicalkit_ >= 20000) {
     RandomBonus(Bonus::TypeMedicalKit);
     time_since_last_medicalkit_ = 0;
   }
-  if (time_since_last_charge_ == 15000) {
+  if (time_since_last_charge_ >= 15000) {
     RandomBonus(Bonus::TypeCharge);
     time_since_last_charge_ = 0;
   }
@@ -316,6 +353,7 @@ void MainWindow::timerEvent(QTimerEvent *) {
   FindInteractingObjects();
   CheckDeadObjects();
 
+  RedrawChargeButtons();
   repaint();
 }
 
@@ -331,7 +369,7 @@ void MainWindow::NewGame() {
 void MainWindow::Settings() {
   if (!paused_) PauseOrContinue();
   settings_dialog_->exec();
-  virtual_keys_checkbox_->setChecked(virtual_keys_shown_);
+  DetermineCurrentSettings();
 }
 
 void MainWindow::About() {
@@ -352,7 +390,7 @@ void MainWindow::RedrawButtons() {
   main_buttons_layout_->setGeometry(QRect(
       w_indent_ + static_cast<int>(0.04 * sq_width_),
       h_indent_ + static_cast<int>(0.05 * sq_height_),
-      static_cast<int>(0.2 * sq_width_), static_cast<int>(0.28 * sq_height_)));
+      static_cast<int>(0.2 * sq_width_), static_cast<int>(0.35 * sq_height_)));
 
   if (virtual_keys_shown_) {
     virtual_buttons_layout_->setSpacing(static_cast<int>(0.01 * sq_height_));
@@ -364,18 +402,18 @@ void MainWindow::RedrawButtons() {
   }
 }
 
-void MainWindow::RedrawCharge(QPainter &painter) {
-  std::shared_ptr<Tank> tank;
+void MainWindow::RedrawChargeButtons() {
   if (tanks_.size() == 0) {
     return;
   }
-  tank = std::dynamic_pointer_cast<Tank>(tanks_[0]);
+  auto tank = std::dynamic_pointer_cast<Tank>(tanks_[0]);
 
   for (int i = 0; i < charge_buttons_.size(); ++i) {
     if (i == tank->GetTypeOfCharge()) {
-      charge_buttons_[i]->setPalette(selected_palette_);
+      charge_buttons_[i]->setPalette(
+          charge_palettes_[static_cast<int>(tank->GetChargeState())]);
     } else {
-      charge_buttons_[i]->setPalette(standart_palette_);
+      charge_buttons_[i]->setPalette(standart_button_palette_);
     }
     charge_buttons_[i]->setText(QString::number(tank->GetCurrentCharge(i)));
   }
@@ -385,21 +423,46 @@ void MainWindow::RedrawCharge(QPainter &painter) {
       w_indent_ + static_cast<int>(0.04 * sq_width_),
       height() - h_indent_ - static_cast<int>(0.355 * sq_height_),
       static_cast<int>(0.2 * sq_width_), static_cast<int>(0.1 * sq_height_)));
+}
 
-  painter.save();
-  painter.setBrush(Qt::yellow);
-  painter.drawRect(
-      w_indent_ + static_cast<int>(0.04 * sq_width_),
-      height() - h_indent_ - static_cast<int>(0.25 * sq_height_),
-      static_cast<int>(0.2 * sq_width_ * tank->GetTimeSinceLastShot() /
-                       tank->GetRateOfFire()),
-      sq_height_ / 32);
-  painter.restore();
+void MainWindow::UpdateScreenTimer() {
+  screen_timer_sec_ += screen_timer_ms_ / 1000;
+  screen_timer_min_ += screen_timer_sec_ / 60;
+  screen_timer_ms_ %= 1000;
+  screen_timer_sec_ %= 60;
+
+  if (screen_timer_min_ >= minutes_per_round_) {
+    GameOver(false);
+  } else if (screen_timer_min_ >= minutes_per_round_ - 2) {
+    if (screen_timer_sec_ % 2 == 0) {
+      screen_timer_->setPalette(red_lcdnumber_palette_);
+    } else {
+      screen_timer_->setPalette(standart_lcdnumber_palette_);
+    }
+  }
+
+  QString time{};
+  if (screen_timer_min_ < 10) {
+    time += "0";
+  }
+  time += QString::number(screen_timer_min_) + ":";
+  if (screen_timer_sec_ < 10) {
+    time += "0";
+  }
+  time += QString::number(screen_timer_sec_);
+
+  screen_timer_->display(time);
 }
 
 void MainWindow::RedrawContent() {
   killTimer(timer_id_);
   timer_id_ = 0;
+
+  screen_timer_ms_ = 0;
+  screen_timer_sec_ = 0;
+  screen_timer_min_ = 0;
+  screen_timer_->setPalette(standart_lcdnumber_palette_);
+
   map_.reset(new Map(current_game_options_.map_number + 1));
   tanks_.clear();
   rockets_.clear();
@@ -497,6 +560,7 @@ void MainWindow::RedrawContent() {
   }
 
   timer_id_ = startTimer(timer_duration_);
+  RedrawChargeButtons();
   repaint();
 }
 
@@ -520,7 +584,7 @@ void MainWindow::PressVirtualKey(Qt::Key key) {
 
 void MainWindow::ChangeChargeButton(int type) {
   std::dynamic_pointer_cast<Tank>(tanks_[0])->ChangeTypeOfCharge(type);
-  repaint();
+  RedrawChargeButtons();
 }
 
 void MainWindow::FindInteractingObjects() {
@@ -562,7 +626,7 @@ void MainWindow::CheckDeadObjects() {
   auto object = tanks_.begin();
   for (int i = 0; i < number_of_player_tanks_; ++i) {
     if (std::dynamic_pointer_cast<Tank>(tanks_[i])->IsDead()) {
-      GameOver();
+      GameOver(false);
       return;
     }
     object = std::next(object);
@@ -586,7 +650,7 @@ void MainWindow::CheckDeadObjects() {
     copy++;
   }
   if (tanks_.size() == number_of_player_tanks_) {
-    GameOver();
+    GameOver(true);
   }
 }
 
@@ -603,6 +667,8 @@ void MainWindow::ShootRocket(std::shared_ptr<Tank> &tank) {
         map_, tank, types_of_rockets_[tank->GetTypeOfCharge()].speed_,
         types_of_rockets_[tank->GetTypeOfCharge()].power_,
         static_cast<TypeOfRocket>(tank->GetTypeOfCharge())));
+    tank->MinusCharge(tank->GetTypeOfCharge());
+    RedrawChargeButtons();
   } else {
     rocket = std::shared_ptr<Rocket>(
         new Rocket(map_, tank, 250, 10, TypeOfRocket::MediumRocket));
@@ -615,9 +681,6 @@ void MainWindow::ShootRocket(std::shared_ptr<Tank> &tank) {
   } else {
     rocket->StartMovement(map_->GetNumberOfCellsVertically(), tanks_,
                           objects_copies_, obstacles_and_bonuses_);
-  }
-  if (std::dynamic_pointer_cast<Bot>(tank) == nullptr) {
-    tank->MinusCharge(tank->GetTypeOfCharge());
   }
 }
 
@@ -642,13 +705,25 @@ void MainWindow::ToggleVirtualKeys() {
   RedrawButtons();
 }
 
-void MainWindow::GameOver() {
+void MainWindow::ChangeFPSOption(const int new_option, bool start_timer) {
+  fps_option_ = new_option;
+  timer_duration_ = available_fps_options_[new_option].second;
+  fps_menu_->setCurrentIndex(new_option);
+  if (timer_id_ != 0) {
+    killTimer(timer_id_);
+  }
+  if (start_timer) {
+    timer_id_ = startTimer(timer_duration_);
+  }
+}
+
+void MainWindow::GameOver(bool win) {
   killTimer(timer_id_);
   timer_id_ = 0;
 
   QMessageBox message;
   message.setIcon(QMessageBox::Information);
-  if (tanks_.size() == number_of_player_tanks_) {
+  if (win) {
     message.setText(
         tr("You win! \n"
            "You can start a new game with help of appropriate button "
@@ -745,6 +820,18 @@ void MainWindow::InitializeSettingsDialog() {
       new QCheckBox(tr("Activate virtual keys"), settings_dialog_);
   virtual_keys_checkbox_->setChecked(virtual_keys_shown_);
 
+  charge_line_checkbox_ =
+      new QCheckBox(tr("Activate charge line"), settings_dialog_);
+
+  fps_menu_label_ =
+      new QLabel(QString(tr("Performance")) + QString(":"), settings_dialog_);
+
+  fps_menu_ = new QComboBox(settings_dialog_);
+  for (const auto &option : available_fps_options_) {
+    fps_menu_->addItem(option.first + QString(" ") +
+                       QString(tr("frames per second")));
+  }
+
   language_menu_label_ =
       new QLabel(QString(tr("Language")) + QString(":"), settings_dialog_);
 
@@ -752,7 +839,6 @@ void MainWindow::InitializeSettingsDialog() {
   language_menu_->addItem(tr("Belarusian"));
   language_menu_->addItem(tr("English"));
   language_menu_->addItem(tr("Russian"));
-  DetermineCurrentLanguageSettings();
 
   language_menu_restart_label_ =
       new QLabel(QString(tr("Language will be changed\n"
@@ -762,8 +848,13 @@ void MainWindow::InitializeSettingsDialog() {
   version_label_ =
       new QLabel(QString(tr("App version")) + QString(": ") + app_version_);
 
+  DetermineCurrentSettings();
+
   settings_dialog_layout_ = new QFormLayout(settings_dialog_);
   settings_dialog_layout_->addRow(virtual_keys_checkbox_);
+  settings_dialog_layout_->addRow(charge_line_checkbox_);
+  settings_dialog_layout_->addRow(fps_menu_label_);
+  settings_dialog_layout_->addRow(fps_menu_);
   settings_dialog_layout_->addRow(language_menu_label_);
   settings_dialog_layout_->addRow(language_menu_);
   settings_dialog_layout_->addRow(language_menu_restart_label_);
@@ -777,10 +868,8 @@ void MainWindow::InitializeSettingsDialog() {
 
   connect(settings_dialog_buttons_->button(QDialogButtonBox::Ok),
           &QPushButton::clicked, [&]() {
-            if (virtual_keys_shown_ != virtual_keys_checkbox_->isChecked()) {
-              ToggleVirtualKeys();
-            }
-            ChangeCurrentLanguageSettings();
+            ChangeCurrentSettings();
+            DetermineCurrentSettings();
           });
 
   connect(settings_dialog_buttons_, SIGNAL(accepted()), settings_dialog_,
@@ -809,11 +898,12 @@ void MainWindow::InitializeAboutDialog() {
   // about_dialog_->layout()->setSizeConstraint(QLayout::SetFixedSize);
 }
 
-void MainWindow::DetermineCurrentLanguageSettings() {
-  QString language;
+void MainWindow::DetermineCurrentSettings() {
   QJsonObject json = GetJsonObjectFromFile("settings.json");
-  language = json["language"].toString();
 
+  virtual_keys_checkbox_->setChecked(virtual_keys_shown_);
+
+  QString language = json["language"].toString();
   if (language == "be_BY") {
     language_menu_->setCurrentIndex(0);
   } else if (language == "en_US") {
@@ -821,9 +911,21 @@ void MainWindow::DetermineCurrentLanguageSettings() {
   } else if (language == "ru_RU") {
     language_menu_->setCurrentIndex(2);
   }
+
+  charge_line_shown_ = json["charge_line"].toBool();
+  charge_line_checkbox_->setChecked(charge_line_shown_);
+
+  fps_option_ = json["fps"].toInt();
+  fps_menu_->setCurrentIndex(fps_option_);
 }
 
-void MainWindow::ChangeCurrentLanguageSettings() {
+void MainWindow::ChangeCurrentSettings() {
+  if (virtual_keys_shown_ != virtual_keys_checkbox_->isChecked()) {
+    ToggleVirtualKeys();
+  }
+  charge_line_shown_ = charge_line_checkbox_->isChecked();
+  ChangeFPSOption(fps_menu_->currentIndex());
+
   QString language;
   switch (language_menu_->currentIndex()) {
     case 0:
@@ -839,13 +941,19 @@ void MainWindow::ChangeCurrentLanguageSettings() {
 
   QFile settings_file("settings.json");
   QJsonObject new_json_obj;
+
   new_json_obj["language"] = language;
+  new_json_obj["charge_line"] = charge_line_shown_;
+  new_json_obj["fps"] = fps_option_;
+
   QJsonDocument new_json_document(new_json_obj);
   QString new_json_string = new_json_document.toJson();
 
   settings_file.open(QIODevice::WriteOnly);
   settings_file.write(new_json_string.toUtf8());
   settings_file.close();
+
+  repaint();
 }
 
 QJsonObject MainWindow::GetJsonObjectFromFile(const QString &filepath) {

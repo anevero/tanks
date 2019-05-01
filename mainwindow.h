@@ -12,6 +12,7 @@
 #include <QFormLayout>
 #include <QGridLayout>
 #include <QKeyEvent>
+#include <QLCDNumber>
 #include <QLabel>
 #include <QList>
 #include <QMainWindow>
@@ -30,7 +31,9 @@
 #include <QVector>
 #include <QtGlobal>
 #include <algorithm>
+#include <cstdint>
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 #include "boom.h"
@@ -65,43 +68,60 @@ class MainWindow : public QMainWindow {
 
  private slots:
   void NewGame();
+  void PauseOrContinue();
   void Settings();
   void About();
-  void UpdateIndents();
-  void RedrawButtons();
-  void RedrawCharge(QPainter &painter);
-  void RedrawContent();
-  void PauseOrContinue();
+
   void PressVirtualKey(Qt::Key key);
   void ChangeChargeButton(int type);
 
  private:
+  void RedrawContent();
+  void UpdateIndents();
+  void RedrawButtons();
+  void RedrawChargeButtons();
+  void FormObjectsOnMapImage();
+  void UpdateScreenTimer();
+
   void FindInteractingObjects();
   bool HaveObjectsCollided(const std::shared_ptr<Movable> &obj1,
                            const std::shared_ptr<Movable> &obj2) const;
-  void CheckDeadObjects();
-  void FormObjectsOnMapImage();
-  void ShootRocket(std::shared_ptr<Tank> &tank);
-  void MakeBoom(std::shared_ptr<Movable> &object);
   bool IsRocketByThisTank(const std::shared_ptr<Movable> &rocket,
                           const std::shared_ptr<Movable> &tank) const;
+  void CheckDeadObjects();
+  void GameOver(bool win);
+
+  void ShootRocket(std::shared_ptr<Tank> &tank);
+  void MakeBoom(std::shared_ptr<Movable> &object);
+  void RandomBonus(Bonus bonus);
+
   int GetTimerDuration() const;
   void ToggleVirtualKeys();
-  void GameOver();
+  void ChangeFPSOption(const int new_option, bool start_timer = false);
   void InitializeNewGameDialog();
   void InitializeSettingsDialog();
   void InitializeAboutDialog();
-  void DetermineCurrentLanguageSettings();
-  void ChangeCurrentLanguageSettings();
+  void DetermineCurrentSettings();
+  void ChangeCurrentSettings();
   QJsonObject GetJsonObjectFromFile(const QString &filepath);
   Direction DetermineDirection(const QString &start_direction) const;
-  void RandomBonus(Bonus bonus);
 
  private:
   bool paused_ = false;
   bool virtual_keys_shown_ = true;
+  bool charge_line_shown_;
+  int fps_option_;
+  int timer_duration_;
 
   GameOptions current_game_options_{0, 0, 0};
+  const int minutes_per_round_ = 10;
+
+  QLCDNumber *screen_timer_;
+  QPalette standart_lcdnumber_palette_;
+  QPalette red_lcdnumber_palette_;
+  int screen_timer_ms_ = 0;
+  int screen_timer_sec_ = 0;
+  int screen_timer_min_ = 0;
 
   QDialog *new_game_dialog_;
   QDialogButtonBox *new_game_dialog_buttons_;
@@ -118,7 +138,10 @@ class MainWindow : public QMainWindow {
   QDialogButtonBox *settings_dialog_buttons_;
   QFormLayout *settings_dialog_layout_;
   QCheckBox *virtual_keys_checkbox_;
+  QCheckBox *charge_line_checkbox_;
+  QComboBox *fps_menu_;
   QComboBox *language_menu_;
+  QLabel *fps_menu_label_;
   QLabel *language_menu_label_;
   QLabel *language_menu_restart_label_;
   QLabel *settings_separator_label_;
@@ -137,8 +160,9 @@ class MainWindow : public QMainWindow {
 
   QHBoxLayout *charge_buttons_layout_;
   QVector<QPushButton *> charge_buttons_;
-  QPalette standart_palette_;
-  QPalette selected_palette_;
+  QPalette standart_button_palette_;
+  QVector<Qt::GlobalColor> charge_colors_{Qt::red, Qt::yellow, Qt::green};
+  QVector<QPalette> charge_palettes_;
 
   QGridLayout *virtual_buttons_layout_;
   QVector<QPushButton *> virtual_keys_buttons_;
@@ -155,9 +179,9 @@ class MainWindow : public QMainWindow {
   const int number_of_player_tanks_ = 1;
   const QVector<QString> difficulty_levels_names_ = {tr("Easy"), tr("Normal"),
                                                      tr("Hard")};
+  const QVector<QPair<QString, int>> available_fps_options_ = {
+      {"240", 4}, {"120", 8}, {"90", 11}, {"60", 17}, {"50", 20}, {"40", 25}};
   QVector<TankQualities> available_tank_types_;
-
-  const int timer_duration_ = 10;
   const QVector<RocketParameters> types_of_rockets_;
 
   int timer_id_ = 0;
@@ -169,7 +193,7 @@ class MainWindow : public QMainWindow {
   int w_indent_;
   int h_indent_;
 
-  const QString app_version_ = "0.6.0.0";
+  const QString app_version_ = "0.6.2.0";
 };
 
 #endif  // MAINWINDOW_H

@@ -33,10 +33,15 @@ class Bot : public Tank {
       const std::vector<std::vector<std::shared_ptr<ObjectOnMap>>>&);
   virtual bool IsShotNeeded(const std::shared_ptr<Map>&,
                             const std::shared_ptr<Tank>&);
-  int GetCurrentCharge() const = delete;
-  int GetMaxCharge() const = delete;
-  void MinusCharge(int charge = 1) = delete;
-  void PlusCharge(int charge = 10) = delete;
+
+  void ChangeTypeOfCharge(int type) = delete;
+  void MinusCharge(int type, int charge = 1) = delete;
+  void PlusCharge() = delete;
+
+  int GetTypeOfCharge() const = delete;
+  int GetCurrentCharge(int type) const = delete;
+  int GetMaxCharge(int type) const = delete;
+  ChargeState GetChargeState() const = delete;
 
  protected:
   int number_of_cells_to_move_ = 0;
