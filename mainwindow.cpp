@@ -804,7 +804,9 @@ void MainWindow::InitializeAboutDialog() {
   connect(about_dialog_buttons_, SIGNAL(accepted()), about_dialog_,
           SLOT(accept()));
 
-  about_dialog_->layout()->setSizeConstraint(QLayout::SetFixedSize);
+  about_dialog_->setFixedSize(500, 500);
+  html_widget_->setFixedSize(465, 430);
+  // about_dialog_->layout()->setSizeConstraint(QLayout::SetFixedSize);
 }
 
 void MainWindow::DetermineCurrentLanguageSettings() {

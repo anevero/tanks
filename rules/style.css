@@ -1,0 +1,95 @@
+body {
+	background-color: #FFE5CC;
+	margin: 0pt;
+}
+.menu {
+	margin: 0pt;
+}
+.menu tr {
+	border-color: #000000;
+	border: 0;
+}
+.menu h1 {
+	color: #663300;
+	font-family: century gothic;
+	text-align: center;
+	margin: 0pt;
+}
+.menu h2 {
+	text-align: left;
+	margin: 0pt;
+}
+.menu a {
+	font-size: 2pt;
+	color: #7C5043;
+	text-decoration: none;
+	margin: 0pt;
+}
+h1 {
+	color: #663300;
+	font-family: Papyrus;
+	font-size: 12pt;
+	font-weight: 500;
+	text-align: center;
+	margin: 0pt;
+}
+h2 {
+	color: #FFCCCC;
+	font-family: comic sans;
+	font-size: 70%;
+	font-weight: 100;
+	text-align: center;
+	margin: 0pt;
+}
+h3 {
+	color: #000000;
+	font-family: comic sans;
+	font-weight: 200;
+	text-align: center;
+	margin-bottom: -4pt;
+}
+h4  {
+	color: #442200;
+	font-family: century gothic;
+	text-align: right;
+	margin-right: 20pt;
+}
+p {
+	font-family: comic sans;
+	color: #000000;
+	font-size: 8pt;
+	text-align: justify;
+	margin: 0pt;
+}
+.info {
+	color: #000000;
+	text-align: justify;
+	border-width: 2pt;
+	border: 2;
+	border-style: solid;
+	border-color: #000000;
+	font-size: 8pt;
+	font-family: comic sans;
+}
+.info h2 {
+	color: #663300;
+	font-family: comic sans;
+	font-size: 100%;
+	font-weight: 100;
+	text-align: center;
+	margin: 0pt;
+}
+.info h3 {
+  font-family: comic sans;
+  color: #442200;
+  font-weight: 200;
+  text-align: left;
+  margin: 0pt;
+}
+.info a {
+  font-family: comic sans;
+  color: #774400;
+  text-align: left;
+  text-decoration: none;
+  margin: 0pt;
+}
