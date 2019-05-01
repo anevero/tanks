@@ -2,6 +2,7 @@
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent),
+      screen_timer_(new QLCDNumber(this)),
       main_buttons_layout_(new QVBoxLayout()),
       new_game_button_(new QPushButton(tr("New game"), this)),
       pause_continue_button_(new QPushButton(tr("Pause"), this)),
@@ -31,9 +32,23 @@ MainWindow::MainWindow(QWidget *parent)
   pause_continue_button_->setFocusPolicy(Qt::NoFocus);
   settings_button_->setFocusPolicy(Qt::NoFocus);
 
+  screen_timer_->setSegmentStyle(QLCDNumber::Flat);
+  screen_timer_->setToolTip(tr("You have") + " " +
+                            QString::number(minutes_per_round_) + " " +
+                            tr("minutes per round"));
+  standart_lcdnumber_palette_ = screen_timer_->palette();
+  red_lcdnumber_palette_ = standart_lcdnumber_palette_;
+  red_lcdnumber_palette_.setColor(QPalette::WindowText, QColor(255, 0, 0));
+  UpdateScreenTimer();
+
   main_buttons_layout_->addWidget(new_game_button_);
   main_buttons_layout_->addWidget(pause_continue_button_);
   main_buttons_layout_->addWidget(settings_button_);
+  main_buttons_layout_->addWidget(screen_timer_);
+
+  for (int i = 0; i < main_buttons_layout_->count(); ++i) {
+    main_buttons_layout_->setStretch(i, 1);
+  }
 
   connect(new_game_button_, SIGNAL(clicked()), this, SLOT(NewGame()));
   connect(pause_continue_button_, SIGNAL(clicked()), this,
@@ -228,6 +243,8 @@ void MainWindow::resizeEvent(QResizeEvent *) {
 void MainWindow::timerEvent(QTimerEvent *) {
   time_since_last_medicalkit_ += timer_duration_;
   time_since_last_charge_ += timer_duration_;
+  screen_timer_ms_ += timer_duration_;
+  UpdateScreenTimer();
 
   for (auto &object : tanks_) {
     if (std::dynamic_pointer_cast<Bot>(object) != nullptr) {
@@ -345,6 +362,7 @@ void MainWindow::NewGame() {
 void MainWindow::Settings() {
   if (!paused_) PauseOrContinue();
   settings_dialog_->exec();
+  DetermineCurrentSettings();
 }
 
 void MainWindow::UpdateIndents() {
@@ -360,7 +378,7 @@ void MainWindow::RedrawButtons() {
   main_buttons_layout_->setGeometry(QRect(
       w_indent_ + static_cast<int>(0.04 * sq_width_),
       h_indent_ + static_cast<int>(0.05 * sq_height_),
-      static_cast<int>(0.2 * sq_width_), static_cast<int>(0.22 * sq_height_)));
+      static_cast<int>(0.2 * sq_width_), static_cast<int>(0.31 * sq_height_)));
 
   if (virtual_keys_shown_) {
     virtual_buttons_layout_->setSpacing(static_cast<int>(0.01 * sq_height_));
@@ -395,9 +413,44 @@ void MainWindow::RedrawChargeButtons() {
       static_cast<int>(0.2 * sq_width_), static_cast<int>(0.1 * sq_height_)));
 }
 
+void MainWindow::UpdateScreenTimer() {
+  screen_timer_sec_ += screen_timer_ms_ / 1000;
+  screen_timer_min_ += screen_timer_sec_ / 60;
+  screen_timer_ms_ %= 1000;
+  screen_timer_sec_ %= 60;
+
+  if (screen_timer_min_ >= minutes_per_round_) {
+    GameOver(false);
+  } else if (screen_timer_min_ >= minutes_per_round_ - 2) {
+    if (screen_timer_sec_ % 2 == 0) {
+      screen_timer_->setPalette(red_lcdnumber_palette_);
+    } else {
+      screen_timer_->setPalette(standart_lcdnumber_palette_);
+    }
+  }
+
+  QString time{};
+  if (screen_timer_min_ < 10) {
+    time += "0";
+  }
+  time += QString::number(screen_timer_min_) + ":";
+  if (screen_timer_sec_ < 10) {
+    time += "0";
+  }
+  time += QString::number(screen_timer_sec_);
+
+  screen_timer_->display(time);
+}
+
 void MainWindow::RedrawContent() {
   killTimer(timer_id_);
   timer_id_ = 0;
+
+  screen_timer_ms_ = 0;
+  screen_timer_sec_ = 0;
+  screen_timer_min_ = 0;
+  screen_timer_->setPalette(standart_lcdnumber_palette_);
+
   map_.reset(new Map(current_game_options_.map_number + 1));
   tanks_.clear();
   rockets_.clear();
@@ -561,7 +614,7 @@ void MainWindow::CheckDeadObjects() {
   auto object = tanks_.begin();
   for (int i = 0; i < number_of_player_tanks_; ++i) {
     if (std::dynamic_pointer_cast<Tank>(tanks_[i])->IsDead()) {
-      GameOver();
+      GameOver(false);
       return;
     }
     object = std::next(object);
@@ -585,7 +638,7 @@ void MainWindow::CheckDeadObjects() {
     copy++;
   }
   if (tanks_.size() == number_of_player_tanks_) {
-    GameOver();
+    GameOver(true);
   }
 }
 
@@ -652,13 +705,13 @@ void MainWindow::ChangeFPSOption(const int new_option, bool start_timer) {
   }
 }
 
-void MainWindow::GameOver() {
+void MainWindow::GameOver(bool win) {
   killTimer(timer_id_);
   timer_id_ = 0;
 
   QMessageBox message;
   message.setIcon(QMessageBox::Information);
-  if (tanks_.size() == number_of_player_tanks_) {
+  if (win) {
     message.setText(
         tr("You win! \n"
            "You can start a new game with help of appropriate button "
@@ -811,6 +864,8 @@ void MainWindow::InitializeSettingsDialog() {
 
 void MainWindow::DetermineCurrentSettings() {
   QJsonObject json = GetJsonObjectFromFile("settings.json");
+
+  virtual_keys_checkbox_->setChecked(virtual_keys_shown_);
 
   QString language = json["language"].toString();
   if (language == "be_BY") {

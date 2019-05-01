@@ -12,6 +12,7 @@
 #include <QFormLayout>
 #include <QGridLayout>
 #include <QKeyEvent>
+#include <QLCDNumber>
 #include <QLabel>
 #include <QList>
 #include <QMainWindow>
@@ -29,6 +30,7 @@
 #include <algorithm>
 #include <cstdint>
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 #include "boom.h"
@@ -75,6 +77,7 @@ class MainWindow : public QMainWindow {
   void RedrawButtons();
   void RedrawChargeButtons();
   void FormObjectsOnMapImage();
+  void UpdateScreenTimer();
 
   void FindInteractingObjects();
   bool HaveObjectsCollided(const std::shared_ptr<Movable> &obj1,
@@ -82,7 +85,7 @@ class MainWindow : public QMainWindow {
   bool IsRocketByThisTank(const std::shared_ptr<Movable> &rocket,
                           const std::shared_ptr<Movable> &tank) const;
   void CheckDeadObjects();
-  void GameOver();
+  void GameOver(bool win);
 
   void ShootRocket(std::shared_ptr<Tank> &tank);
   void MakeBoom(std::shared_ptr<Movable> &object);
@@ -106,6 +109,14 @@ class MainWindow : public QMainWindow {
   int timer_duration_;
 
   GameOptions current_game_options_{0, 0, 0};
+  const int minutes_per_round_ = 10;
+
+  QLCDNumber *screen_timer_;
+  QPalette standart_lcdnumber_palette_;
+  QPalette red_lcdnumber_palette_;
+  int screen_timer_ms_ = 0;
+  int screen_timer_sec_ = 0;
+  int screen_timer_min_ = 0;
 
   QDialog *new_game_dialog_;
   QDialogButtonBox *new_game_dialog_buttons_;
@@ -171,7 +182,7 @@ class MainWindow : public QMainWindow {
   int w_indent_;
   int h_indent_;
 
-  const QString app_version_ = "0.6.1.0";
+  const QString app_version_ = "0.6.2.0";
 };
 
 #endif  // MAINWINDOW_H
