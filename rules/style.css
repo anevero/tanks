@@ -12,6 +12,7 @@ body {
 .menu h1 {
 	color: #663300;
 	font-family: century gothic;
+	font-weight: 400;
 	text-align: center;
 	margin: 0pt;
 }
@@ -27,9 +28,7 @@ body {
 }
 h1 {
 	color: #663300;
-	font-family: Papyrus;
-	font-size: 12pt;
-	font-weight: 500;
+	font-family: century gothic;
 	text-align: center;
 	margin: 0pt;
 }
