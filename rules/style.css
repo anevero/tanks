@@ -1,5 +1,6 @@
 body {
     background-color: #FFE5CC;
+    font-family: roboto, open sans, comic sans, bitstream charter;
     margin: 0pt;
 }
 
@@ -13,8 +14,7 @@ body {
 }
 
 .menu h1 {
-    color: #663300;
-    font-family: comic sans;
+    color: #663300;   
     font-weight: 400;
     text-align: center;
     margin: 0pt;
@@ -22,15 +22,12 @@ body {
 
 .menu h2 {
     text-align: left;
-    font-family: comic sans;
     font-weight: medium;
     margin: 0pt;
 }
 
 .menu a {
     color: #7C5043;
-    font-family: roboto, comic sans;
-    font-size: 2pt;
     font-weight: 100;
     text-decoration: none;
     margin: 0pt;
@@ -38,15 +35,12 @@ body {
 
 h1 {
     color: #663300;
-    font-family: roboto, comic sans;
     text-align: center;
     margin: -2pt;
 }
 
 h2 {
     color: #FFCCCC;
-    font-family: roboto, comic sans;
-    font-size: 70%;
     font-weight: 100;
     text-align: center;
     margin: 0pt;
@@ -54,7 +48,6 @@ h2 {
 
 h3 {
     color: #000000;
-    font-family: roboto, comic sans;
     font-weight: 100;
     text-align: center;
     margin-bottom: -4pt;
@@ -62,24 +55,19 @@ h3 {
 
 h4 {
     color: #442200;
-    font-family: roboto, comic sans;
     text-align: right;
     margin-right: 20pt;
 }
 
 p {
     color: #000000;
-    font-family: roboto, comic sans;
     font-weight: 100;
-    font-size: 8pt;
     text-align: justify;
     margin: 0pt;
 }
 
 .info {
     color: #000000;
-    font-family: roboto, comic sans;
-    font-size: 8pt;
     text-align: justify;
     border-style: solid;
     border-color: #000000;
@@ -89,7 +77,6 @@ p {
 
 .info h2 {
     color: #663300;
-    font-family: roboto, comic sans;
     font-weight: 100;
     text-align: center;
     margin: 0pt;
@@ -97,7 +84,6 @@ p {
 
 .info h3 {
     color: #442200;
-    font-family: roboto, comic sans;
     font-weight: 100;
     text-align: left;
     margin: 0pt;
@@ -105,7 +91,6 @@ p {
 
 .info a {
     color: #774400;
-    font-family: roboto, comic sans;
     font-weight: 100;
     text-align: left;
     text-decoration: none;

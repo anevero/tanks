@@ -583,8 +583,10 @@ void MainWindow::PressVirtualKey(Qt::Key key) {
 }
 
 void MainWindow::ChangeChargeButton(int type) {
+  if (timer_id_ == 0 && !paused_) return;
   std::dynamic_pointer_cast<Tank>(tanks_[0])->ChangeTypeOfCharge(type);
   RedrawChargeButtons();
+  repaint();
 }
 
 void MainWindow::FindInteractingObjects() {

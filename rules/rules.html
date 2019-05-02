@@ -42,11 +42,79 @@
     </div>
     <br>
     <a name="Buttons"></a>
-    <ul>
+       <ul>
         <li>Тип 1: здоровье - 200, скорость - 2 кл/с</li>
         <li>Тип 2: здоровье - 150, скорость - 2.85 кл/с</li>
         <li>Тип 3: здоровье - 250, скорость - 4 кл/с</li>
     </ul>
+    <div class="info">
+        <table align="center" cellpadding="4" cellspacing="8" border="4">
+            <tr align="center" valign="middle">
+                <td colspan="2">
+                    <h2><b>Buttons</b></h2>
+                </td>
+            </tr>
+            <tr valign="middle">
+                <td align="center">
+                    <img src=":/rules/new_game.png" title="new_game" width=100 height=140>
+                </td>
+                <td>
+                    <h3> <b> New game </b> <br>
+                    	TBD
+                    </h3>
+                </td>
+            </tr>
+            <tr valign="middle">
+                <td align="center">
+                    <img src=":/rules/pause.png" title="pause" width=100
+                        height=140>
+                </td>
+                <td>
+                    <h3> <b> Pause </b> <br>
+                        TBD
+                    </h3>
+                </td>
+            </tr>
+            <tr valign="middle">
+                <td align="center">
+                    <img src=":/rules/settings.png" title="settings"
+                        width=100 height=140>
+                </td>
+                <td>
+                    <h3> <b> Settings </b> <br>
+                    	blaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+                    </h3>
+                </td>
+            </tr>
+            <tr valign="middle">
+                <td align="center">
+                    <img src=":/rules/about.png" title="about" width=100
+                        height=140>
+                </td>
+                <td>
+                    <h3> <b> About </b> <br>
+                    	TBD    
+                    </h3>
+                </td>
+            </tr>
+            <tr valign="middle">
+                <td align="center">
+                    <img src=":/rules/timer.png" title="timer" width=100
+                        height=140>
+                </td>
+                <td>
+                    <h3> <b> Timer </b> <br>
+                    	TBD
+                    </h3>
+                </td>
+            </tr>
+            <tr align="center" valign="middle">
+                <td colspan="2">
+                    <h2><a href="#Start page">Start page</a></h2>
+                </td>
+            </tr>
+        </table>
+    </div>
     <br>
     <a name="Textures"></a>
     <div class="info">
@@ -162,9 +230,7 @@
                 </td>
                 <td>
                     <h3> <b> Green tank or improved bot </b> <br>
-                        The second modification of the robot.<br>
-                        If the player's tank stands on the same line
-                        with it, then robot turn and shoots in it.
+                        The second modification of the robot. If the player's tank stands on the same line with it, then robot turn and shoots in it.
                     </h3>
                 </td>
             </tr>
@@ -177,8 +243,7 @@
                     <h3> <b> Blue tank or clever bot </b> <br>
                         The third modification of the robot.
                         Looks for the player's tank on the map,
-                        builds the shortest way and moves to it.<br>
-                        When the player's tank is in the <a href="#Forest">forest</a> behaves like <a href="#Tanks and robots"> simple robot</a>.
+                        builds the shortest way and moves to it. When the player's tank is in the <a href="#Forest">forest</a> behaves like <a href="#Tanks and robots"> simple robot</a>.
                     </h3>
                 </td>
             </tr>
@@ -204,8 +269,10 @@
                         width=50 height=50>
                 </td>
                 <td>
+                	<a name="Rocket"></a>
                     <h3> <b> Rocket </b> <br>
-                        TBD </h3>
+                    	Tanks can launch rockets into other objects. Rockets take away tank's health and destroys <a href="#Log">logs</a>, <a href="#Medical kit">medical kits</a>, <a href="#Charge">charges</a>.
+                    </h3>
                 </td>
             </tr>
             <tr valign="middle">
@@ -214,7 +281,9 @@
                         height=50>
                 </td>
                 <td>
-                    <h3> <b> Boom </b> <br> TBD
+                	<a name="Explosion"></a>
+                    <h3> <b> Boom </b> <br>
+                    	TBD
                     </h3>
                 </td>
             </tr>
@@ -224,7 +293,10 @@
                         width=70 height=70>
                 </td>
                 <td>
-                    <h3> <b> Medicalkit </b> <br> TBD </h3>
+                	<a name="Medical kit"></a>
+                    <h3> <b> Medical kit </b> <br>
+                    	Adds health to tanks and robots, but no more than initial health. Destroyed when meets up a <a href="#Rocket">rocket</a>.
+                	</h3>
                 </td>
             </tr>
             <tr valign="middle">
@@ -233,6 +305,7 @@
                         width=70 height=70>
                 </td>
                 <td>
+                	<a name="Charge"></a>
                     <h3> <b> Charge </b> <br>
                         TBD
                     </h3>
@@ -244,8 +317,9 @@
                         height=70>
                 </td>
                 <td>
+                	<a name="Log"></a>
                     <h3> <b> Log </b> <br>
-                        TBD
+                        Obstacle which you can break down or destroy by <a href="#Explosion">explosion</a> or <a href="#Rocket">rocket</a>. If the tank runs into an obstacle, it slows down.
                     </h3>
                 </td>
             </tr>
@@ -256,7 +330,7 @@
                 </td>
                 <td>
                     <h3> <b> Portal </b> <br>
-                        TBD
+                        Portals on the map are paired. Player's tank and robots (but not <a href="#Rocket">rockets</a>) can teleport from one cell, connected with one of two related portals, to another cell, where the second portal is situated.
                     </h3>
                 </td>
             </tr>
