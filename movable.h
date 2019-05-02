@@ -72,6 +72,8 @@ class Movable : public std::enable_shared_from_this<Movable> {
 
   int cell_x_;
   int cell_y_;
+  int prev_cell_x_;
+  int prev_cell_y_;
 
   int cur_upper_left_x_{};
   int cur_upper_left_y_{};

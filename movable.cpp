@@ -6,6 +6,8 @@ Movable::Movable(const std::shared_ptr<Map>& map, const int cell_x,
                  const int cell_y, const Direction direction, const int speed)
     : cell_x_(cell_x),
       cell_y_(cell_y),
+      prev_cell_x_(cell_x),
+      prev_cell_y_(cell_y_),
       map_(map),
       current_speed_(speed),
       basic_speed_(speed),
@@ -108,6 +110,8 @@ void Movable::StartMovement(
 
   new_cell_x = old_cell_x;
   new_cell_y = old_cell_y;
+  prev_cell_x_ = cell_x_;
+  prev_cell_y_ = cell_y_;
   cell_x_ = new_cell_x;
   cell_y_ = new_cell_y;
   time_to_finish_movement_ = current_speed_;
@@ -180,6 +184,10 @@ void Movable::UpdateCoordinates(const int cell_x, const int cell_y) {
   if (map_->GetField(cell_x_, cell_y_) == CellType::Forest) {
     if (movement_proportion <= 0.5) {
       opacity_ = 0.5;
+    }
+  } else if (map_->GetField(prev_cell_x_, prev_cell_y_) == CellType::Forest) {
+    if (movement_proportion <= 0.5) {
+      opacity_ = 1;
     }
   } else if (!copy_existence_) {
     opacity_ = 1;
