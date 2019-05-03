@@ -4,6 +4,7 @@
 #include <QQueue>
 #include <QVector>
 #include <memory>
+#include <vector>
 #include "improvedbot.h"
 #include "portal.h"
 

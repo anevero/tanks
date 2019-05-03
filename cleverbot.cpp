@@ -142,7 +142,8 @@ void CleverBot::Bfs(const QList<std::shared_ptr<Movable>>& objects,
       std::shared_ptr<Portal> portal = std::dynamic_pointer_cast<Portal>(
               portals[static_cast<unsigned>(cell_x)]
               [static_cast<unsigned>(cell_y)]);
-      distance_[portal->GetNewCellX()][portal->GetNewCellY()] = current_distance - 1;
+      distance_[portal->GetNewCellX()][portal->GetNewCellY()] =
+              current_distance - 1;
       int portal_cell_x = portal->GetNewCellX();
       int portal_cell_y = portal->GetNewCellY();
       if (cell_x - prev_cell_x == 1) {

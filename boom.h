@@ -17,8 +17,8 @@ class Boom : public Movable {
   void UpdateCoordinates(int cell_x, int cell_y) override;
   void StartMovement(
       const int number_of_cells, const QList<std::shared_ptr<Movable>>&,
-      QList<QPair<std::shared_ptr<Movable>, Coordinates>>&,
-      std::vector<std::vector<std::shared_ptr<ObjectOnMap>>>&) override;
+      QList<QPair<std::shared_ptr<Movable>, Coordinates>>*,
+      std::vector<std::vector<std::shared_ptr<ObjectOnMap>>>*) override;
 };
 
 #endif  // BOOM_H

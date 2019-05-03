@@ -90,8 +90,8 @@ class MainWindow : public QMainWindow {
   void CheckDeadObjects();
   void GameOver(bool win);
 
-  void ShootRocket(std::shared_ptr<Tank> &tank);
-  void MakeBoom(std::shared_ptr<Movable> &object);
+  void ShootRocket(const std::shared_ptr<Tank> &tank);
+  void MakeBoom(const std::shared_ptr<Movable> &object);
   void RandomBonus(Bonus bonus);
 
   int GetTimerDuration() const;

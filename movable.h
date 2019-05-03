@@ -29,8 +29,8 @@ class Movable : public std::enable_shared_from_this<Movable> {
 
   virtual void StartMovement(
       const int number_of_cells, const QList<std::shared_ptr<Movable>>& tanks,
-      QList<QPair<std::shared_ptr<Movable>, Coordinates>>& objects_copies_,
-      std::vector<std::vector<std::shared_ptr<ObjectOnMap>>>& objects);
+      QList<QPair<std::shared_ptr<Movable>, Coordinates>>* objects_copies_,
+      std::vector<std::vector<std::shared_ptr<ObjectOnMap>>>* objects);
   virtual void Move(const int milliseconds_passed);
   virtual void TurnReverseOn();
   virtual void TurnReverseOff();

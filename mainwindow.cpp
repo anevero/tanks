@@ -151,13 +151,13 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event) {
     case Qt::Key_Up:
     case Qt::Key_W:
       tank->TurnReverseOff();
-      tank->StartMovement(1, tanks_, objects_copies_, obstacles_and_bonuses_);
+      tank->StartMovement(1, tanks_, &objects_copies_, &obstacles_and_bonuses_);
       break;
     case 1067:
     case Qt::Key_Down:
     case Qt::Key_S:
       tank->TurnReverseOn();
-      tank->StartMovement(1, tanks_, objects_copies_, obstacles_and_bonuses_);
+      tank->StartMovement(1, tanks_, &objects_copies_, &obstacles_and_bonuses_);
       break;
     case 1060:
     case Qt::Key_Left:
@@ -265,7 +265,7 @@ void MainWindow::timerEvent(QTimerEvent *) {
       }
 
       if (bot->IsMovingStartNeeded(tanks_, obstacles_and_bonuses_)) {
-        bot->StartMovement(1, tanks_, objects_copies_, obstacles_and_bonuses_);
+        bot->StartMovement(1, tanks_, &objects_copies_, &obstacles_and_bonuses_);
       } else if (bot->IsRotationStartNeeded(
                      std::dynamic_pointer_cast<Tank>(tanks_[0]))) {
         bot->StartRotation();
@@ -307,7 +307,7 @@ void MainWindow::timerEvent(QTimerEvent *) {
     if ((*it)->GetTimeToFinishMovement() <= 0 &&
         (*it)->GetCellsToFinishMovement() > 0) {
       (*it)->StartMovement(((*it)->GetCellsToFinishMovement()), tanks_,
-                           objects_copies_, obstacles_and_bonuses_);
+                           &objects_copies_, &obstacles_and_bonuses_);
     }
     if (!(*it)->IsMovingOrRotating()) {
       if (std::dynamic_pointer_cast<Boom>(*it) != nullptr) {
@@ -656,13 +656,13 @@ void MainWindow::CheckDeadObjects() {
   }
 }
 
-void MainWindow::MakeBoom(std::shared_ptr<Movable> &object) {
+void MainWindow::MakeBoom(const std::shared_ptr<Movable> &object) {
   std::shared_ptr<Boom> boom(new Boom(map_, object, 500));
   rockets_.append(boom);
-  boom->StartMovement(1, tanks_, objects_copies_, obstacles_and_bonuses_);
+  boom->StartMovement(1, tanks_, &objects_copies_, &obstacles_and_bonuses_);
 }
 
-void MainWindow::ShootRocket(std::shared_ptr<Tank> &tank) {
+void MainWindow::ShootRocket(const std::shared_ptr<Tank> &tank) {
   std::shared_ptr<Rocket> rocket;
   if (std::dynamic_pointer_cast<Bot>(tank) == nullptr) {
     rocket = std::shared_ptr<Rocket>(new Rocket(
@@ -679,10 +679,10 @@ void MainWindow::ShootRocket(std::shared_ptr<Tank> &tank) {
   rockets_.append(rocket);
   if (rocket->GetIntDirection() == 1 || rocket->GetIntDirection() == 3) {
     rocket->StartMovement(map_->GetNumberOfCellsHorizontally(), tanks_,
-                          objects_copies_, obstacles_and_bonuses_);
+                          &objects_copies_, &obstacles_and_bonuses_);
   } else {
     rocket->StartMovement(map_->GetNumberOfCellsVertically(), tanks_,
-                          objects_copies_, obstacles_and_bonuses_);
+                          &objects_copies_, &obstacles_and_bonuses_);
   }
 }
 
