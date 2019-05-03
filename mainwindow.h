@@ -97,6 +97,7 @@ class MainWindow : public QMainWindow {
 
   int GetTimerDuration() const;
   void ToggleVirtualKeys();
+  void SwitchVirtualButtonsLayout();
   void ChangeFPSOption(const int new_option, bool start_timer = false);
   void InitializeNewGameDialog();
   void InitializeSettingsDialog();
@@ -109,6 +110,7 @@ class MainWindow : public QMainWindow {
  private:
   bool paused_ = false;
   bool virtual_keys_shown_ = true;
+  bool new_virtual_keys_enabled_ = false;
   bool charge_line_shown_;
   int fps_option_;
   int timer_duration_;
@@ -138,6 +140,7 @@ class MainWindow : public QMainWindow {
   QDialogButtonBox *settings_dialog_buttons_;
   QVBoxLayout *settings_dialog_layout_;
   QCheckBox *virtual_keys_checkbox_;
+  QCheckBox *new_virtual_keys_checkbox_;
   QCheckBox *charge_line_checkbox_;
   QComboBox *fps_menu_;
   QComboBox *language_menu_;
@@ -167,6 +170,9 @@ class MainWindow : public QMainWindow {
   QVector<Qt::Key> virtual_keys_encodings_;
   const int number_of_virtual_keys_in_first_row_ = 2;
   const int number_of_virtual_keys_in_second_row_ = 3;
+
+  QVBoxLayout *new_virtual_buttons_layout_left_;
+  QVBoxLayout *new_virtual_buttons_layout_right_;
 
   std::shared_ptr<Map> map_;
   QList<std::shared_ptr<Movable>> tanks_;
