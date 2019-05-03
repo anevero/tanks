@@ -96,6 +96,10 @@ MainWindow::MainWindow(QWidget *parent)
     virtual_keys_buttons_[i]->setFocusPolicy(Qt::NoFocus);
   }
 
+#ifdef Q_OS_ANDROID
+  new_virtual_keys_enabled_ = false;
+#endif
+
   SwitchVirtualButtonsLayout();
 
   if (QTouchDevice::devices().empty()) {
@@ -939,6 +943,8 @@ void MainWindow::InitializeSettingsDialog() {
 
 #ifndef Q_OS_ANDROID
   new_virtual_keys_checkbox_->setDisabled(true);
+#else
+  language_menu_->setDisabled(true);
 #endif
 
   settings_dialog_buttons_ = new QDialogButtonBox(
