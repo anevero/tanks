@@ -14,6 +14,10 @@ int main(int argc, char *argv[]) {
   bool charge_line = true;
   int fps_option = 1;
 
+#if defined(Q_OS_ANDROID)
+  fps_option = 3;
+#endif
+
   QFile settings_file("settings.json");
   if (settings_file.exists()) {
     settings_file.open(QIODevice::ReadOnly);

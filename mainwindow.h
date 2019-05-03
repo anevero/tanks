@@ -81,6 +81,7 @@ class MainWindow : public QMainWindow {
   void RedrawChargeButtons();
   void FormObjectsOnMapImage();
   void UpdateScreenTimer();
+  void AdjustFont(QWidget *widget);
 
   void FindInteractingObjects();
   bool HaveObjectsCollided(const std::shared_ptr<Movable> &obj1,

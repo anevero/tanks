@@ -7,6 +7,8 @@ TEMPLATE = app
 CONFIG += c++11
 DEFINES += QT_DEPRECATED_WARNINGS
 
+ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android-sources
+
 SOURCES += \
     main.cpp \
     mainwindow.cpp \
@@ -44,4 +46,7 @@ TRANSLATIONS += \
 
 RC_ICONS = app_icon.ico
 
-VERSION = 0.6.2.0
+VERSION = 0.6.3.0
+
+DISTFILES += \
+ android-sources/AndroidManifest.xml

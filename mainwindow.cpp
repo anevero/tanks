@@ -265,7 +265,8 @@ void MainWindow::timerEvent(QTimerEvent *) {
       }
 
       if (bot->IsMovingStartNeeded(tanks_, obstacles_and_bonuses_)) {
-        bot->StartMovement(1, tanks_, &objects_copies_, &obstacles_and_bonuses_);
+        bot->StartMovement(1, tanks_, &objects_copies_,
+                           &obstacles_and_bonuses_);
       } else if (bot->IsRotationStartNeeded(
                      std::dynamic_pointer_cast<Tank>(tanks_[0]))) {
         bot->StartRotation();
@@ -392,6 +393,13 @@ void MainWindow::RedrawButtons() {
       h_indent_ + static_cast<int>(0.05 * sq_height_),
       static_cast<int>(0.2 * sq_width_), static_cast<int>(0.4 * sq_height_)));
 
+#if defined(Q_OS_ANDROID)
+  AdjustFont(new_game_button_);
+  AdjustFont(pause_continue_button_);
+  AdjustFont(settings_button_);
+  AdjustFont(about_button_);
+#endif
+
   if (virtual_keys_shown_) {
     virtual_buttons_layout_->setSpacing(static_cast<int>(0.01 * sq_height_));
     virtual_buttons_layout_->setGeometry(
@@ -452,6 +460,13 @@ void MainWindow::UpdateScreenTimer() {
   time += QString::number(screen_timer_sec_);
 
   screen_timer_->display(time);
+}
+
+void MainWindow::AdjustFont(QWidget *widget) {
+  int button_margin = widget->style()->pixelMetric(QStyle::PM_ButtonMargin);
+  QFont adjusted_font = widget->font();
+  adjusted_font.setPixelSize(widget->height() - button_margin * 2);
+  widget->setFont(adjusted_font);
 }
 
 void MainWindow::RedrawContent() {
