@@ -3,11 +3,10 @@
     android:versionName="0.6.3" android:versionCode="2"
     android:installLocation="auto">
     <uses-sdk android:minSdkVersion="21" android:targetSdkVersion="24" />
-    <supports-screens android:largeScreens="true"
-        android:normalScreens="true" android:anyDensity="true"
-        android:smallScreens="true" />
-    <application android:hardwareAccelerated="true" android:name="org.qtproject.qt5.android.bindings.QtApplication"
-        android:label="Tanks" android:icon="@drawable/icon">
+    <supports-screens android:xlargeScreens="true" />
+    <application android:name="org.qtproject.qt5.android.bindings.QtApplication"
+        android:label="Tanks" android:icon="@drawable/icon"
+        android:isGame="true" android:hardwareAccelerated="true">
         <activity android:name="org.qtproject.qt5.android.bindings.QtActivity"
             android:alwaysRetainTaskState="true"
             android:resizeableActivity="false"

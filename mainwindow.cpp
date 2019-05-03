@@ -86,7 +86,8 @@ MainWindow::MainWindow(QWidget *parent)
       tr("Low speed, hight charge, can't destroy obstacles"));
 
   for (int i = 0; i < virtual_keys_buttons_.size(); ++i) {
-    connect(virtual_keys_buttons_[i], &QPushButton::clicked,
+    virtual_keys_buttons_[i]->setAutoRepeat(true);
+    connect(virtual_keys_buttons_[i], &QPushButton::released,
             [this, i]() { PressVirtualKey(virtual_keys_encodings_[i]); });
     virtual_keys_buttons_[i]->setSizePolicy(
         QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
@@ -360,6 +361,11 @@ void MainWindow::timerEvent(QTimerEvent *) {
 
 void MainWindow::NewGame() {
   if (!paused_) PauseOrContinue();
+
+#ifdef Q_OS_ANDROID
+  new_game_dialog_->showMaximized();
+#endif
+
   new_game_dialog_->exec();
   switch_map_menu_->setCurrentIndex(current_game_options_.map_number);
   switch_tank_menu_->setCurrentIndex(current_game_options_.tank_number);
@@ -369,12 +375,22 @@ void MainWindow::NewGame() {
 
 void MainWindow::Settings() {
   if (!paused_) PauseOrContinue();
+
+#ifdef Q_OS_ANDROID
+  settings_dialog_->showMaximized();
+#endif
+
   settings_dialog_->exec();
   DetermineCurrentSettings();
 }
 
 void MainWindow::About() {
   if (!paused_) PauseOrContinue();
+
+#ifdef Q_OS_ANDROID
+  about_dialog_->showMaximized();
+#endif
+
   about_dialog_->exec();
 }
 
@@ -393,7 +409,7 @@ void MainWindow::RedrawButtons() {
       h_indent_ + static_cast<int>(0.05 * sq_height_),
       static_cast<int>(0.2 * sq_width_), static_cast<int>(0.4 * sq_height_)));
 
-#if defined(Q_OS_ANDROID)
+#ifdef Q_OS_ANDROID
   AdjustFont(new_game_button_);
   AdjustFont(pause_continue_button_);
   AdjustFont(settings_button_);
@@ -429,8 +445,8 @@ void MainWindow::RedrawChargeButtons() {
   charge_buttons_layout_->setSpacing(static_cast<int>(0.01 * sq_height_));
   charge_buttons_layout_->setGeometry(QRect(
       w_indent_ + static_cast<int>(0.04 * sq_width_),
-      height() - h_indent_ - static_cast<int>(0.355 * sq_height_),
-      static_cast<int>(0.2 * sq_width_), static_cast<int>(0.1 * sq_height_)));
+      height() - h_indent_ - static_cast<int>(0.385 * sq_height_),
+      static_cast<int>(0.2 * sq_width_), static_cast<int>(0.13 * sq_height_)));
 }
 
 void MainWindow::UpdateScreenTimer() {
