@@ -110,7 +110,7 @@ class MainWindow : public QMainWindow {
  private:
   bool paused_ = false;
   bool virtual_keys_shown_ = true;
-  bool new_virtual_keys_enabled_ = false;
+  bool new_virtual_keys_enabled_ = true;
   bool charge_line_shown_;
   int fps_option_;
   int timer_duration_;

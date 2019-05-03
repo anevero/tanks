@@ -96,14 +96,7 @@ MainWindow::MainWindow(QWidget *parent)
     virtual_keys_buttons_[i]->setFocusPolicy(Qt::NoFocus);
   }
 
-  for (int i = 0; i < number_of_virtual_keys_in_first_row_; ++i) {
-    virtual_buttons_layout_->addWidget(virtual_keys_buttons_[i], 0, i);
-  }
-  for (int i = number_of_virtual_keys_in_first_row_;
-       i < virtual_keys_buttons_.size(); ++i) {
-    virtual_buttons_layout_->addWidget(
-        virtual_keys_buttons_[i], 1, i - number_of_virtual_keys_in_first_row_);
-  }
+  SwitchVirtualButtonsLayout();
 
   if (QTouchDevice::devices().empty()) {
     ToggleVirtualKeys();
@@ -936,17 +929,17 @@ void MainWindow::InitializeSettingsDialog() {
 
   settings_dialog_layout_ = new QVBoxLayout(settings_dialog_);
   settings_dialog_layout_->addWidget(virtual_keys_checkbox_);
-
-#ifdef Q_OS_ANDROID
   settings_dialog_layout_->addWidget(new_virtual_keys_checkbox_);
-#endif
-
   settings_dialog_layout_->addWidget(charge_line_checkbox_);
   settings_dialog_layout_->addWidget(fps_menu_label_);
   settings_dialog_layout_->addWidget(fps_menu_);
   settings_dialog_layout_->addWidget(language_menu_label_);
   settings_dialog_layout_->addWidget(language_menu_);
   settings_dialog_layout_->addWidget(language_menu_restart_label_);
+
+#ifndef Q_OS_ANDROID
+  new_virtual_keys_checkbox_->setDisabled(true);
+#endif
 
   settings_dialog_buttons_ = new QDialogButtonBox(
       QDialogButtonBox::Ok, Qt::Horizontal, settings_dialog_);
