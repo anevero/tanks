@@ -172,7 +172,7 @@ class MainWindow : public QMainWindow {
   const int number_of_virtual_keys_in_second_row_ = 3;
 
   QVBoxLayout *new_virtual_buttons_layout_left_;
-  QVBoxLayout *new_virtual_buttons_layout_right_;
+  QHBoxLayout *new_virtual_buttons_layout_right_;
 
   std::shared_ptr<Map> map_;
   QList<std::shared_ptr<Movable>> tanks_;

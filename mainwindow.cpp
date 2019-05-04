@@ -19,7 +19,7 @@ MainWindow::MainWindow(QWidget *parent)
       virtual_keys_encodings_(
           {Qt::Key_Q, Qt::Key_W, Qt::Key_A, Qt::Key_S, Qt::Key_D}),
       new_virtual_buttons_layout_left_(new QVBoxLayout),
-      new_virtual_buttons_layout_right_(new QVBoxLayout),
+      new_virtual_buttons_layout_right_(new QHBoxLayout),
       map_(new Map(1)),
       types_of_rockets_({{7, 100, true}, {15, 200, true}, {30, 300, false}}) {
   setMouseTracking(true);
@@ -775,10 +775,10 @@ void MainWindow::SwitchVirtualButtonsLayout() {
     for (int i = 0; i < virtual_keys_buttons_.size(); ++i) {
       virtual_buttons_layout_->removeWidget(virtual_keys_buttons_[i]);
     }
-    new_virtual_buttons_layout_left_->addWidget(virtual_keys_buttons_[4]);
-    new_virtual_buttons_layout_left_->addWidget(virtual_keys_buttons_[2]);
-    new_virtual_buttons_layout_right_->addWidget(virtual_keys_buttons_[1]);
-    new_virtual_buttons_layout_right_->addWidget(virtual_keys_buttons_[3]);
+    new_virtual_buttons_layout_left_->addWidget(virtual_keys_buttons_[1]);
+    new_virtual_buttons_layout_left_->addWidget(virtual_keys_buttons_[3]);
+    new_virtual_buttons_layout_right_->addWidget(virtual_keys_buttons_[2]);
+    new_virtual_buttons_layout_right_->addWidget(virtual_keys_buttons_[4]);
     new_virtual_keys_enabled_ = true;
   }
   RedrawButtons();
