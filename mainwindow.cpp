@@ -98,6 +98,10 @@ MainWindow::MainWindow(QWidget *parent)
 
 #ifdef Q_OS_ANDROID
   new_virtual_keys_enabled_ = false;
+  AdjustFont(new_game_button_);
+  AdjustFont(pause_continue_button_);
+  AdjustFont(settings_button_);
+  AdjustFont(about_button_);
 #endif
 
   SwitchVirtualButtonsLayout();
@@ -408,13 +412,6 @@ void MainWindow::RedrawButtons() {
       h_indent_ + static_cast<int>(0.05 * sq_height_),
       static_cast<int>(0.2 * sq_width_), static_cast<int>(0.4 * sq_height_)));
 
-#ifdef Q_OS_ANDROID
-  AdjustFont(new_game_button_);
-  AdjustFont(pause_continue_button_);
-  AdjustFont(settings_button_);
-  AdjustFont(about_button_);
-#endif
-
   if (virtual_keys_shown_ && !new_virtual_keys_enabled_) {
     virtual_buttons_layout_->setSpacing(static_cast<int>(0.01 * sq_height_));
     virtual_buttons_layout_->setGeometry(
@@ -498,9 +495,8 @@ void MainWindow::UpdateScreenTimer() {
 }
 
 void MainWindow::AdjustFont(QWidget *widget) {
-  int button_margin = widget->style()->pixelMetric(QStyle::PM_ButtonMargin);
   QFont adjusted_font = widget->font();
-  adjusted_font.setPixelSize(widget->height() - button_margin * 2);
+  adjusted_font.setPixelSize(widget->height());
   widget->setFont(adjusted_font);
 }
 
@@ -760,8 +756,8 @@ void MainWindow::ToggleVirtualKeys() {
 void MainWindow::SwitchVirtualButtonsLayout() {
   if (new_virtual_keys_enabled_) {
     new_virtual_buttons_layout_left_->removeWidget(virtual_keys_buttons_[1]);
-    new_virtual_buttons_layout_left_->removeWidget(virtual_keys_buttons_[3]);
-    new_virtual_buttons_layout_right_->removeWidget(virtual_keys_buttons_[2]);
+    new_virtual_buttons_layout_left_->removeWidget(virtual_keys_buttons_[2]);
+    new_virtual_buttons_layout_right_->removeWidget(virtual_keys_buttons_[3]);
     new_virtual_buttons_layout_right_->removeWidget(virtual_keys_buttons_[4]);
 
     for (int i = 0; i < number_of_virtual_keys_in_first_row_; ++i) {
@@ -778,10 +774,10 @@ void MainWindow::SwitchVirtualButtonsLayout() {
     for (int i = 0; i < virtual_keys_buttons_.size(); ++i) {
       virtual_buttons_layout_->removeWidget(virtual_keys_buttons_[i]);
     }
-    new_virtual_buttons_layout_left_->addWidget(virtual_keys_buttons_[1]);
-    new_virtual_buttons_layout_left_->addWidget(virtual_keys_buttons_[3]);
-    new_virtual_buttons_layout_right_->addWidget(virtual_keys_buttons_[4]);
-    new_virtual_buttons_layout_right_->addWidget(virtual_keys_buttons_[2]);
+    new_virtual_buttons_layout_left_->addWidget(virtual_keys_buttons_[4]);
+    new_virtual_buttons_layout_left_->addWidget(virtual_keys_buttons_[2]);
+    new_virtual_buttons_layout_right_->addWidget(virtual_keys_buttons_[1]);
+    new_virtual_buttons_layout_right_->addWidget(virtual_keys_buttons_[3]);
     new_virtual_keys_enabled_ = true;
   }
   RedrawButtons();
@@ -943,8 +939,6 @@ void MainWindow::InitializeSettingsDialog() {
 
 #ifndef Q_OS_ANDROID
   new_virtual_keys_checkbox_->setDisabled(true);
-#else
-  language_menu_->setDisabled(true);
 #endif
 
   settings_dialog_buttons_ = new QDialogButtonBox(

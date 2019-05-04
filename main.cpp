@@ -35,10 +35,6 @@ int main(int argc, char *argv[]) {
 
   QTranslator translator;
 
-#ifdef Q_OS_ANDROID
-  language = "en_US";
-#endif
-
   if (language.isEmpty()) {
     language = QLocale::system().name();
   }
