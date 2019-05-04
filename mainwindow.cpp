@@ -102,6 +102,12 @@ MainWindow::MainWindow(QWidget *parent)
   AdjustFont(pause_continue_button_);
   AdjustFont(settings_button_);
   AdjustFont(about_button_);
+  for (int i = 0; i < virtual_keys_buttons_.size(); ++i) {
+    AdjustFont(virtual_keys_buttons_[i]);
+  }
+  for (int i = 0; i < charge_buttons_.size(); ++i) {
+    AdjustFont(charge_buttons_[i]);
+  }
 #endif
 
   SwitchVirtualButtonsLayout();
@@ -426,19 +432,14 @@ void MainWindow::RedrawButtons() {
         static_cast<int>(0.01 * sq_height_));
     new_virtual_buttons_layout_left_->setGeometry(
         QRect(std::max(0, w_indent_ - static_cast<int>(0.2 * sq_width_)),
-              height() - h_indent_ - static_cast<int>(0.385 * sq_height_),
+              height() - h_indent_ - static_cast<int>(0.5575 * sq_height_),
               std::min(w_indent_, static_cast<int>(0.2 * sq_width_)),
-              static_cast<int>(0.335 * sq_height_)));
+              static_cast<int>(0.5075 * sq_height_)));
     new_virtual_buttons_layout_right_->setGeometry(
         QRect(width() - w_indent_,
-              height() - h_indent_ - static_cast<int>(0.385 * sq_height_),
+              height() - h_indent_ - static_cast<int>(0.5575 * sq_height_),
               std::min(w_indent_, static_cast<int>(0.2 * sq_width_)),
-              static_cast<int>(0.335 * sq_height_)));
-    virtual_keys_buttons_[0]->setGeometry(
-        QRect(w_indent_ + static_cast<int>(0.04 * sq_width_),
-              height() - h_indent_ - static_cast<int>(0.2 * sq_height_),
-              static_cast<int>(0.2 * sq_width_),
-              static_cast<int>(0.15 * sq_height_)));
+              static_cast<int>(0.5075 * sq_height_)));
   }
 }
 
@@ -756,10 +757,15 @@ void MainWindow::ToggleVirtualKeys() {
 
 void MainWindow::SwitchVirtualButtonsLayout() {
   if (new_virtual_keys_enabled_) {
-    new_virtual_buttons_layout_left_->removeWidget(virtual_keys_buttons_[1]);
-    new_virtual_buttons_layout_left_->removeWidget(virtual_keys_buttons_[2]);
-    new_virtual_buttons_layout_right_->removeWidget(virtual_keys_buttons_[3]);
-    new_virtual_buttons_layout_right_->removeWidget(virtual_keys_buttons_[4]);
+    for (int i = 0; i < virtual_keys_buttons_.size(); ++i) {
+      if (i == 0 || i == 1 || i == 3) {
+        new_virtual_buttons_layout_left_->removeWidget(
+            virtual_keys_buttons_[i]);
+      } else {
+        new_virtual_buttons_layout_right_->removeWidget(
+            virtual_keys_buttons_[i]);
+      }
+    }
 
     for (int i = 0; i < number_of_virtual_keys_in_first_row_; ++i) {
       virtual_buttons_layout_->addWidget(virtual_keys_buttons_[i], 0, i);
@@ -775,10 +781,13 @@ void MainWindow::SwitchVirtualButtonsLayout() {
     for (int i = 0; i < virtual_keys_buttons_.size(); ++i) {
       virtual_buttons_layout_->removeWidget(virtual_keys_buttons_[i]);
     }
-    new_virtual_buttons_layout_left_->addWidget(virtual_keys_buttons_[1]);
-    new_virtual_buttons_layout_left_->addWidget(virtual_keys_buttons_[3]);
-    new_virtual_buttons_layout_right_->addWidget(virtual_keys_buttons_[2]);
-    new_virtual_buttons_layout_right_->addWidget(virtual_keys_buttons_[4]);
+    for (int i = 0; i < virtual_keys_buttons_.size(); ++i) {
+      if (i == 0 || i == 1 || i == 3) {
+        new_virtual_buttons_layout_left_->addWidget(virtual_keys_buttons_[i]);
+      } else {
+        new_virtual_buttons_layout_right_->addWidget(virtual_keys_buttons_[i]);
+      }
+    }
     new_virtual_keys_enabled_ = true;
   }
   RedrawButtons();
@@ -898,8 +907,8 @@ void MainWindow::InitializeSettingsDialog() {
   virtual_keys_checkbox_ = new QCheckBox(tr("Virtual keys"), settings_dialog_);
   virtual_keys_checkbox_->setChecked(virtual_keys_shown_);
 
-  new_virtual_keys_checkbox_ =
-      new QCheckBox(tr("Experimental virtual keys"), settings_dialog_);
+  new_virtual_keys_checkbox_ = new QCheckBox(
+      tr("Experimental layout of virtual keys"), settings_dialog_);
   new_virtual_keys_checkbox_->setChecked(new_virtual_keys_enabled_);
 
   charge_line_checkbox_ =
@@ -964,10 +973,23 @@ void MainWindow::InitializeAboutDialog() {
   html_widget_ = new QTextBrowser(this);
   html_widget_->setSource(QUrl("qrc:/rules/rules.html"));
 
+#ifdef Q_OS_ANDROID
+  AdjustFont(html_widget_);
+  html_widget_->setTextInteractionFlags(Qt::NoTextInteraction);
+
+  how_to_scroll_label_ =
+      new QLabel(tr("Tip: you can use two fingers to scroll the reference"));
+#endif
+
   about_dialog_buttons_ =
       new QDialogButtonBox(QDialogButtonBox::Ok, Qt::Horizontal, about_dialog_);
 
   about_dialog_layout_ = new QVBoxLayout(about_dialog_);
+
+#ifdef Q_OS_ANDROID
+  about_dialog_layout_->addWidget(how_to_scroll_label_);
+#endif
+
   about_dialog_layout_->addWidget(html_widget_);
   about_dialog_layout_->addWidget(about_dialog_buttons_);
 
@@ -1047,7 +1069,7 @@ QJsonObject MainWindow::GetJsonObjectFromFile(const QString &filepath) {
   QString text = file.readAll();
   file.close();
   QJsonDocument json_document(QJsonDocument::fromJson(text.toUtf8()));
-  return std::move(json_document.object());
+  return json_document.object();
 }
 
 Direction MainWindow::DetermineDirection(const QString &start_direction) const {

@@ -152,6 +152,7 @@ class MainWindow : public QMainWindow {
   QDialogButtonBox *about_dialog_buttons_;
   QVBoxLayout *about_dialog_layout_;
   QTextBrowser *html_widget_;
+  QLabel *how_to_scroll_label_;
 
   QVBoxLayout *main_buttons_layout_;
   QPushButton *new_game_button_;
