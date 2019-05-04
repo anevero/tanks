@@ -10,7 +10,7 @@
         <activity android:name="org.qtproject.qt5.android.bindings.QtActivity"
             android:alwaysRetainTaskState="true"
             android:resizeableActivity="false"
-            android:screenOrientation="userLandscape" android:label="">
+            android:screenOrientation="userLandscape" android:label="Tanks">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
