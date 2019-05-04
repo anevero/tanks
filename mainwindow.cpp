@@ -512,6 +512,7 @@ void MainWindow::RedrawContent() {
   map_.reset(new Map(current_game_options_.map_number + 1));
   tanks_.clear();
   rockets_.clear();
+  objects_copies_.clear();
 
   pause_continue_button_->setText(tr("Pause"));
   paused_ = false;
