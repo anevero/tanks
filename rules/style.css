@@ -1,11 +1,54 @@
 body {
     background-color: #FFE5CC;
     font-family: roboto, open sans, comic sans, bitstream charter;
-    margin: 0pt;
+    margin: 0px;
+}
+
+h1 {
+    color: #663300;
+    text-align: center;
+    margin: -2px;
+}
+
+h2 {
+    color: #FFCCCC;
+    font-weight: 100;
+    text-align: center;
+    margin: 0px;
+}
+
+h3 {
+    color: #000000;
+    font-weight: 100;
+    text-align: center;
+    margin-bottom: -4px;
+}
+
+h4 {
+    color: #442200;
+    text-align: right;
+    margin-right: 20px;
+    margin-top: 4px;
+    margin-bottom: 0px;
+}
+
+p {
+    color: #000000;
+    font-weight: 100;
+    text-align: justify;
+    margin: 0px;
+}
+
+a {
+	color: #663300;
+    font-weight: 400;
+    text-align: center;
+    text-decoration: none;
+    margin-bottom: -4px;
 }
 
 .menu {
-    margin: 0pt;
+    margin: 0px;
 }
 
 .menu tr {
@@ -17,53 +60,24 @@ body {
     color: #663300;   
     font-weight: 400;
     text-align: center;
-    margin: 0pt;
+    margin: 0px;
 }
 
 .menu h2 {
     text-align: left;
     font-weight: medium;
-    margin: 0pt;
+    margin: 0px;
 }
 
 .menu a {
     color: #7C5043;
     font-weight: 100;
     text-decoration: none;
-    margin: 0pt;
+    margin: 0px;
 }
 
-h1 {
-    color: #663300;
-    text-align: center;
-    margin: -2pt;
-}
-
-h2 {
-    color: #FFCCCC;
-    font-weight: 100;
-    text-align: center;
-    margin: 0pt;
-}
-
-h3 {
-    color: #000000;
-    font-weight: 100;
-    text-align: center;
-    margin-bottom: -4pt;
-}
-
-h4 {
-    color: #442200;
-    text-align: right;
-    margin-right: 20pt;
-}
-
-p {
-    color: #000000;
-    font-weight: 100;
-    text-align: justify;
-    margin: 0pt;
+.menu ul {
+	margin: 0px;
 }
 
 .info {
@@ -71,7 +85,7 @@ p {
     text-align: justify;
     border-style: solid;
     border-color: #000000;
-    border-width: 2pt;
+    border-width: 2px;
     border: 2;
 }
 
@@ -79,14 +93,14 @@ p {
     color: #663300;
     font-weight: 100;
     text-align: center;
-    margin: 0pt;
+    margin: 0px;
 }
 
 .info h3 {
     color: #442200;
     font-weight: 100;
     text-align: left;
-    margin: 0pt;
+    margin: 0px;
 }
 
 .info a {
@@ -94,5 +108,10 @@ p {
     font-weight: 100;
     text-align: left;
     text-decoration: none;
-    margin: 0pt;
+    margin: 0px;
+}
+
+.info ul {
+	margin: 0px;
+	text-align: left;
 }

@@ -891,6 +891,7 @@ void MainWindow::InitializeAboutDialog() {
 
   about_dialog_->setFixedSize(500, 500);
   html_widget_->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+  html_widget_->setOpenExternalLinks(true);
 }
 
 void MainWindow::DetermineCurrentSettings() {

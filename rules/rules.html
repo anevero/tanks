@@ -10,19 +10,25 @@
 <body>
     <a name="Start page"></a>
     <h1><b>
-            The&nbsp;rules&nbsp;of&nbsp;the&nbsp;game&nbsp;tanks
+            The rules of the game <a href="https://github.com/anevero/tanks">
+                <b> tanks </b> </a>
         </b></h1>
     <h3>
         In this section you can get to know about the rules of the
         game, learn about management features and clarify information
         about objects on the map.
     </h3>
+    <h4>Version 6.3.0</h4>
     <h3>
-        This project was developed by Alesia Taraikovich, Aliaksandra
-        Harmaza, Andrew Nevero.<br>
+        This project was developed by <a href="https://github.com/Lessyless">
+            Alesia Taraikovich </a>, <a href="https://github.com/sashhrmz">
+            Aliaksandra Harmaza </a>, <a href="https://github.com/anevero">
+            Andrew Nevero </a>.<br>
         BSU FAMCS 2019
     </h3>
-    <h4>© Tanks</h4>
+    <a href="https://github.com/anevero/tanks">
+        <h4> © Tanks </h4>
+    </a>
     <div class="menu">
         <h1>Menu</h1>
         <ul>
@@ -78,9 +84,20 @@
                         width=105 height=150>
                 </td>
                 <td>
-                    <h3> <b> Settings </b> <br>
-                        Click this button to select the language of
-                        the game and TBD
+                    <h3> <b> Settings </b>
+                        <ul>
+                            <li> Virtual keys - ability to manage
+                                tank using buttons on the screen.
+                            </li>
+                            <li> Activate charge line - ability to
+                                see recharge time. </li>
+                            <li>
+                                Performance - ability to change image
+                                refresh rate.
+                            </li>
+                            <li> Language - ability to select a
+                                language of the game. </li>
+                        </ul>
                     </h3>
                 </td>
             </tr>
@@ -104,9 +121,8 @@
                 <td>
                     <h3> <b> Timer </b> <br>
                         Time that has passed since the beginning of
-                        the game. Starts blinking red after 8 minutes
-                        of the beginning of the game. After 10 minuts
-                        the game ends.
+                        the game. Starts blinking red after 8
+                        minutes. You have 10 minutes per round.
                     </h3>
                 </td>
             </tr>
@@ -133,7 +149,7 @@
                 </td>
                 <td>
                     <h3> <b> Wall </b> <br>
-                        Main type of coating. The continuous block
+                        Main type of coating. A continuous block
                         through which it is impossible to pass. </h3>
                 </td>
             </tr>
@@ -156,8 +172,8 @@
                 </td>
                 <td>
                     <h3> <b> Quicksand </b> <br>
-                        One of the types of
-                        coating. Slows down objects. </h3>
+                        One of the types of coating. Slows objects
+                        down. </h3>
                 </td>
             </tr>
             <tr valign="middle">
@@ -167,8 +183,8 @@
                 </td>
                 <td>
                     <h3> <b> Water </b> <br>
-                        One of the types of coating. Slows down
-                        objects more than quicksand. </h3>
+                        One of the types of coating. Slows objects
+                        down more than quicksand. </h3>
                 </td>
             </tr>
             <tr valign="middle">
@@ -179,10 +195,10 @@
                 <td>
                     <a name="Forest"></a>
                     <h3> <b> Forest </b> <br>
-                        One of the types of coating. Slows down
-                        objects very much. Hides <a href="#Tanks and robots">player's
-                            tank </a> from robots, even if they are
-                        collided in the forest. </h3>
+                        One of the types of coating. Slows objects
+                        down very much. Hides <a href="#Tanks and robots">player's
+                            tank </a> from robots, even if they
+                        collide in the forest. </h3>
                 </td>
             </tr>
             <tr align="center" valign="middle">
@@ -210,9 +226,8 @@
                     <h3> <b> Yellow tank </b> <br>
                         Player's tank, which is controlled by you.
                         This is the most powerful tank on the map: it
-                        has a lot of
-                        health and the possibility to change types of
-                        rockets.
+                        has a lot of health and a possibility to
+                        change types of rockets.
                         <table align="center" cellpadding="4"
                             cellspacing="2" border="1">
                             <tr>
@@ -250,7 +265,7 @@
                             </tr>
                             <tr>
                                 <td>
-                                    <h3>1</h3>
+                                    <h3>3</h3>
                                 </td>
                                 <td>
                                     <h3>250</h3>
@@ -270,9 +285,8 @@
                 <td>
                     <h3> <b> Pink tank or simple bot </b> <br>
                         The first and the simplest modification of
-                        the robot. Shooting player's tank only if
-                        sees it in
-                        front of itself.
+                        a robot. Shoots player's tank only if
+                        sees it in front of itself.
                     </h3>
                 </td>
             </tr>
@@ -283,9 +297,9 @@
                 </td>
                 <td>
                     <h3> <b> Green tank or improved bot </b> <br>
-                        The second modification of the robot. If the
-                        player's tank stands on the same line with
-                        it, then robot turn and shoots in it.
+                        The second modification of a robot. It
+                        turns and shots player tank if it stands on
+                        the same line.
                     </h3>
                 </td>
             </tr>
@@ -296,9 +310,9 @@
                 </td>
                 <td>
                     <h3> <b> Blue tank or clever bot </b> <br>
-                        The third modification of the robot.
+                        The third modification of a robot.
                         Looks for the player's tank on the map,
-                        builds the shortest way and moves to it. When
+                        builds the shortest way and follows it. When
                         the player's tank is in the <a href="#Forest">forest</a>
                         behaves like <a href="#Tanks and robots">
                             simple robot</a>.
@@ -329,10 +343,11 @@
                 <td>
                     <a name="Rocket"></a>
                     <h3> <b> Rocket </b> <br>
-                        Tanks can launch rockets into other objects.
-                        Rockets take away tank's health and destroys
-                        <a href="#Log">logs</a>, <a href="#Medical kit">medical
-                            kits</a>, <a href="#Charge">charges</a>.
+                        Tanks can launch rockets, which interacting
+                        with other objects. Rockets reduce tank's
+                        health and destroy <a href="#Log">logs</a>,
+                        <a href="#Medical kit">medical kits</a>, <a
+                            href="#Charge">charges</a>.
                     </h3>
                 </td>
             </tr>
@@ -344,8 +359,8 @@
                 <td>
                     <a name="Explosion"></a>
                     <h3> <b> Boom </b> <br>
-                        When robots die, they explode and release the
-                        explosion, which takes away objects's health
+                        When robots die, they explode and release an
+                        explosion, which reduces objects's health
                         and destroys <a href="#Log">logs</a>, <a href="#Medical kit">medical
                             kits</a>, <a href="#Charge">charges</a>.
                     </h3>
@@ -360,9 +375,9 @@
                     <a name="Medical kit"></a>
                     <h3> <b> Medical kit </b> <br>
                         Periodically appears on the map and
-                        disappears after a while. Adds health to
-                        tanks and robots, but no more than initial
-                        health. Destroyed when meets up a <a href="#Rocket">rocket</a>.
+                        disappears after a while. Increases tanks'
+                        health, but no more than initial health.
+                        Destroyed when meets up a <a href="#Rocket">rocket</a>.
                     </h3>
                 </td>
             </tr>
@@ -375,13 +390,12 @@
                     <a name="Charge"></a>
                     <h3> <b> Charge </b> <br>
                         Periodically appears on the map and
-                        disappears after a while. Adds projectiles to
+                        disappears after a while. Adds rockets to
                         random type of charge.
                         <table align="center" cellpadding="4"
                             cellspacing="2" border="1">
                             <tr>
                                 <td>
-                                    <h3>Ty<br>pe</h3>
                                 </td>
                                 <td>
                                     <h3>Damage</h3>
