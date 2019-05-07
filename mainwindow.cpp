@@ -430,14 +430,14 @@ void MainWindow::RedrawButtons() {
         static_cast<int>(0.01 * sq_height_));
     new_virtual_buttons_layout_left_->setGeometry(
         QRect(std::max(0, w_indent_ - static_cast<int>(0.2 * sq_width_)),
-              height() - h_indent_ - static_cast<int>(0.5575 * sq_height_),
+              height() - h_indent_ - static_cast<int>(0.5 * sq_height_),
               std::min(w_indent_, static_cast<int>(0.2 * sq_width_)),
-              static_cast<int>(0.5075 * sq_height_)));
+              static_cast<int>(0.45 * sq_height_)));
     new_virtual_buttons_layout_right_->setGeometry(
         QRect(width() - w_indent_,
-              height() - h_indent_ - static_cast<int>(0.5575 * sq_height_),
+              height() - h_indent_ - static_cast<int>(0.5 * sq_height_),
               std::min(w_indent_, static_cast<int>(0.2 * sq_width_)),
-              static_cast<int>(0.5075 * sq_height_)));
+              static_cast<int>(0.45 * sq_height_)));
   }
 }
 
@@ -755,15 +755,11 @@ void MainWindow::ToggleVirtualKeys() {
 
 void MainWindow::SwitchVirtualButtonsLayout() {
   if (new_virtual_keys_enabled_) {
-    for (int i = 0; i < virtual_keys_buttons_.size(); ++i) {
-      if (i == 0 || i == 1 || i == 3) {
-        new_virtual_buttons_layout_left_->removeWidget(
-            virtual_keys_buttons_[i]);
-      } else {
-        new_virtual_buttons_layout_right_->removeWidget(
-            virtual_keys_buttons_[i]);
-      }
-    }
+    new_virtual_buttons_layout_left_->removeWidget(virtual_keys_buttons_[1]);
+    new_virtual_buttons_layout_left_->removeWidget(virtual_keys_buttons_[0]);
+    new_virtual_buttons_layout_left_->removeWidget(virtual_keys_buttons_[3]);
+    new_virtual_buttons_layout_right_->removeWidget(virtual_keys_buttons_[2]);
+    new_virtual_buttons_layout_right_->removeWidget(virtual_keys_buttons_[4]);
 
     for (int i = 0; i < number_of_virtual_keys_in_first_row_; ++i) {
       virtual_buttons_layout_->addWidget(virtual_keys_buttons_[i], 0, i);
@@ -779,13 +775,12 @@ void MainWindow::SwitchVirtualButtonsLayout() {
     for (int i = 0; i < virtual_keys_buttons_.size(); ++i) {
       virtual_buttons_layout_->removeWidget(virtual_keys_buttons_[i]);
     }
-    for (int i = 0; i < virtual_keys_buttons_.size(); ++i) {
-      if (i == 0 || i == 1 || i == 3) {
-        new_virtual_buttons_layout_left_->addWidget(virtual_keys_buttons_[i]);
-      } else {
-        new_virtual_buttons_layout_right_->addWidget(virtual_keys_buttons_[i]);
-      }
-    }
+
+    new_virtual_buttons_layout_left_->addWidget(virtual_keys_buttons_[1]);
+    new_virtual_buttons_layout_left_->addWidget(virtual_keys_buttons_[0]);
+    new_virtual_buttons_layout_left_->addWidget(virtual_keys_buttons_[3]);
+    new_virtual_buttons_layout_right_->addWidget(virtual_keys_buttons_[2]);
+    new_virtual_buttons_layout_right_->addWidget(virtual_keys_buttons_[4]);
     new_virtual_keys_enabled_ = true;
   }
   RedrawButtons();
