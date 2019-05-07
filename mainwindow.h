@@ -9,7 +9,6 @@
 #include <QDialogButtonBox>
 #include <QEvent>
 #include <QFileInfo>
-#include <QFormLayout>
 #include <QGridLayout>
 #include <QKeyEvent>
 #include <QLCDNumber>
@@ -20,11 +19,14 @@
 #include <QPainter>
 #include <QPalette>
 #include <QPushButton>
+#include <QSize>
 #include <QString>
+#include <QTextBrowser>
 #include <QTimer>
 #include <QToolTip>
 #include <QTouchDevice>
 #include <QTranslator>
+#include <QUrl>
 #include <QVector>
 #include <QtGlobal>
 #include <algorithm>
@@ -67,6 +69,7 @@ class MainWindow : public QMainWindow {
   void NewGame();
   void PauseOrContinue();
   void Settings();
+  void About();
 
   void PressVirtualKey(Qt::Key key);
   void ChangeChargeButton(int type);
@@ -87,8 +90,8 @@ class MainWindow : public QMainWindow {
   void CheckDeadObjects();
   void GameOver(bool win);
 
-  void ShootRocket(std::shared_ptr<Tank> &tank);
-  void MakeBoom(std::shared_ptr<Movable> &object);
+  void ShootRocket(const std::shared_ptr<Tank> &tank);
+  void MakeBoom(const std::shared_ptr<Movable> &object);
   void RandomBonus(Bonus bonus);
 
   int GetTimerDuration() const;
@@ -96,6 +99,7 @@ class MainWindow : public QMainWindow {
   void ChangeFPSOption(const int new_option, bool start_timer = false);
   void InitializeNewGameDialog();
   void InitializeSettingsDialog();
+  void InitializeAboutDialog();
   void DetermineCurrentSettings();
   void ChangeCurrentSettings();
   QJsonObject GetJsonObjectFromFile(const QString &filepath);
@@ -120,7 +124,7 @@ class MainWindow : public QMainWindow {
 
   QDialog *new_game_dialog_;
   QDialogButtonBox *new_game_dialog_buttons_;
-  QFormLayout *new_game_dialog_layout_;
+  QVBoxLayout *new_game_dialog_layout_;
   QComboBox *switch_map_menu_;
   QComboBox *switch_tank_menu_;
   QComboBox *switch_difficulty_menu_;
@@ -131,7 +135,7 @@ class MainWindow : public QMainWindow {
 
   QDialog *settings_dialog_;
   QDialogButtonBox *settings_dialog_buttons_;
-  QFormLayout *settings_dialog_layout_;
+  QVBoxLayout *settings_dialog_layout_;
   QCheckBox *virtual_keys_checkbox_;
   QCheckBox *charge_line_checkbox_;
   QComboBox *fps_menu_;
@@ -139,13 +143,17 @@ class MainWindow : public QMainWindow {
   QLabel *fps_menu_label_;
   QLabel *language_menu_label_;
   QLabel *language_menu_restart_label_;
-  QLabel *settings_separator_label_;
-  QLabel *version_label_;
+
+  QDialog *about_dialog_;
+  QDialogButtonBox *about_dialog_buttons_;
+  QVBoxLayout *about_dialog_layout_;
+  QTextBrowser *html_widget_;
 
   QVBoxLayout *main_buttons_layout_;
   QPushButton *new_game_button_;
   QPushButton *pause_continue_button_;
   QPushButton *settings_button_;
+  QPushButton *about_button_;
 
   QHBoxLayout *charge_buttons_layout_;
   QVector<QPushButton *> charge_buttons_;
@@ -181,8 +189,6 @@ class MainWindow : public QMainWindow {
   int sq_height_;
   int w_indent_;
   int h_indent_;
-
-  const QString app_version_ = "0.6.2.0";
 };
 
 #endif  // MAINWINDOW_H

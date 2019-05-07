@@ -6,6 +6,8 @@ Movable::Movable(const std::shared_ptr<Map>& map, const int cell_x,
                  const int cell_y, const Direction direction, const int speed)
     : cell_x_(cell_x),
       cell_y_(cell_y),
+      prev_cell_x_(cell_x),
+      prev_cell_y_(cell_y_),
       map_(map),
       current_speed_(speed),
       basic_speed_(speed),
@@ -15,8 +17,8 @@ Movable::Movable(const std::shared_ptr<Map>& map, const int cell_x,
 
 void Movable::StartMovement(
     const int number_of_cells, const QList<std::shared_ptr<Movable>>& tanks,
-    QList<QPair<std::shared_ptr<Movable>, Coordinates>>& objects_copies_,
-    std::vector<std::vector<std::shared_ptr<ObjectOnMap>>>& objects) {
+    QList<QPair<std::shared_ptr<Movable>, Coordinates>>* objects_copies_,
+    std::vector<std::vector<std::shared_ptr<ObjectOnMap>>>* objects) {
   int new_cell_x = cell_x_ + reverse_ * (directions_[1] - directions_[3]);
   int new_cell_y = cell_y_ + reverse_ * (directions_[2] - directions_[0]);
   int old_cell_x = new_cell_x;
@@ -35,7 +37,7 @@ void Movable::StartMovement(
         return;
       }
     }
-    for (const auto& object : objects_copies_) {
+    for (const auto& object : *objects_copies_) {
       if (object.second.x == new_cell_x && object.second.y == new_cell_y) {
         cells_to_finish_movement_ = 0;
         object.first->cells_to_finish_movement_ = 0;
@@ -48,11 +50,11 @@ void Movable::StartMovement(
             basic_speed_);
   }
 
-  if (std::dynamic_pointer_cast<Portal>(objects[static_cast<unsigned>(
+  if (std::dynamic_pointer_cast<Portal>((*objects)[static_cast<unsigned>(
           new_cell_x)][static_cast<unsigned>(new_cell_y)]) != nullptr) {
     if (dynamic_cast<Rocket*>(this) == nullptr) {
       std::shared_ptr<Portal> portal = std::dynamic_pointer_cast<Portal>(
-          objects[static_cast<unsigned>(new_cell_x)]
+          (*objects)[static_cast<unsigned>(new_cell_x)]
                  [static_cast<unsigned>(new_cell_y)]);
 
       Coordinates cells = GetNewPortalCells(
@@ -66,29 +68,29 @@ void Movable::StartMovement(
           return;
         }
       }
-      objects_copies_.append({shared_from_this(), {cells.x, cells.y}});
+      (*objects_copies_).append({shared_from_this(), {cells.x, cells.y}});
       copy_existence_ = true;
 
       new_cell_x = cells.x;
       new_cell_y = cells.y;
     }
   }
-  if (objects[static_cast<unsigned>(new_cell_x)]
+  if ((*objects)[static_cast<unsigned>(new_cell_x)]
              [static_cast<unsigned>(new_cell_y)] != nullptr &&
-      std::dynamic_pointer_cast<Portal>(objects[static_cast<unsigned>(
+      std::dynamic_pointer_cast<Portal>((*objects)[static_cast<unsigned>(
           new_cell_x)][static_cast<unsigned>(new_cell_y)]) == nullptr) {
-    if (std::dynamic_pointer_cast<Obstacle>(objects[static_cast<unsigned>(
+    if (std::dynamic_pointer_cast<Obstacle>((*objects)[static_cast<unsigned>(
             new_cell_x)][static_cast<unsigned>(new_cell_y)]) != nullptr) {
       current_speed_ *= 2;
     }
     if (dynamic_cast<Tank*>(this) != nullptr) {
       Tank* tank = dynamic_cast<Tank*>(this);
-      if (std::dynamic_pointer_cast<MedicalKit>(objects[static_cast<unsigned>(
+      if (std::dynamic_pointer_cast<MedicalKit>((*objects)[static_cast<unsigned>(
               new_cell_x)][static_cast<unsigned>(new_cell_y)]) != nullptr) {
         tank->PlusHealth(
             std::min(35, tank->GetMaxHealth() - tank->GetCurrentHealth()));
       } else if (std::dynamic_pointer_cast<Charge>(
-                     objects[static_cast<unsigned>(new_cell_x)]
+                     (*objects)[static_cast<unsigned>(new_cell_x)]
                             [static_cast<unsigned>(new_cell_y)]) != nullptr) {
         tank->PlusCharge();
       }
@@ -97,17 +99,19 @@ void Movable::StartMovement(
       Rocket* rocket = dynamic_cast<Rocket*>(this);
       cells_to_finish_movement_ = 0;
       if (rocket->GetTypeOfRocket() != TypeOfRocket::HardRocket) {
-        objects[static_cast<unsigned>(new_cell_x)]
+        (*objects)[static_cast<unsigned>(new_cell_x)]
                [static_cast<unsigned>(new_cell_y)] = nullptr;
       }
       return;
     }
-    objects[static_cast<unsigned>(new_cell_x)]
+    (*objects)[static_cast<unsigned>(new_cell_x)]
            [static_cast<unsigned>(new_cell_y)] = nullptr;
   }
 
   new_cell_x = old_cell_x;
   new_cell_y = old_cell_y;
+  prev_cell_x_ = cell_x_;
+  prev_cell_y_ = cell_y_;
   cell_x_ = new_cell_x;
   cell_y_ = new_cell_y;
   time_to_finish_movement_ = current_speed_;
@@ -180,6 +184,10 @@ void Movable::UpdateCoordinates(const int cell_x, const int cell_y) {
   if (map_->GetField(cell_x_, cell_y_) == CellType::Forest) {
     if (movement_proportion <= 0.5) {
       opacity_ = 0.5;
+    }
+  } else if (map_->GetField(prev_cell_x_, prev_cell_y_) == CellType::Forest) {
+    if (movement_proportion <= 0.5) {
+      opacity_ = 1;
     }
   } else if (!copy_existence_) {
     opacity_ = 1;

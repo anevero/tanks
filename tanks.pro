@@ -44,4 +44,4 @@ TRANSLATIONS += \
 
 RC_ICONS = app_icon.ico
 
-VERSION = 0.6.2.0
+VERSION = 0.6.3.0

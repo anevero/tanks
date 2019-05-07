@@ -7,6 +7,7 @@ MainWindow::MainWindow(QWidget *parent)
       new_game_button_(new QPushButton(tr("New game"), this)),
       pause_continue_button_(new QPushButton(tr("Pause"), this)),
       settings_button_(new QPushButton(tr("Settings"), this)),
+      about_button_(new QPushButton(tr("About"), this)),
       charge_buttons_layout_(new QHBoxLayout()),
       charge_buttons_({new QPushButton(this), new QPushButton(this),
                        new QPushButton(this)}),
@@ -27,10 +28,13 @@ MainWindow::MainWindow(QWidget *parent)
       QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
   settings_button_->setSizePolicy(
       QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
+  about_button_->setSizePolicy(
+      QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
 
   new_game_button_->setFocusPolicy(Qt::NoFocus);
   pause_continue_button_->setFocusPolicy(Qt::NoFocus);
   settings_button_->setFocusPolicy(Qt::NoFocus);
+  about_button_->setFocusPolicy(Qt::NoFocus);
 
   screen_timer_->setSegmentStyle(QLCDNumber::Flat);
   screen_timer_->setToolTip(tr("You have") + " " +
@@ -44,6 +48,7 @@ MainWindow::MainWindow(QWidget *parent)
   main_buttons_layout_->addWidget(new_game_button_);
   main_buttons_layout_->addWidget(pause_continue_button_);
   main_buttons_layout_->addWidget(settings_button_);
+  main_buttons_layout_->addWidget(about_button_);
   main_buttons_layout_->addWidget(screen_timer_);
 
   for (int i = 0; i < main_buttons_layout_->count(); ++i) {
@@ -54,6 +59,7 @@ MainWindow::MainWindow(QWidget *parent)
   connect(pause_continue_button_, SIGNAL(clicked()), this,
           SLOT(PauseOrContinue()));
   connect(settings_button_, SIGNAL(clicked()), this, SLOT(Settings()));
+  connect(about_button_, SIGNAL(clicked()), this, SLOT(About()));
 
   for (int i = 0; i < charge_buttons_.size(); ++i) {
     charge_buttons_[i]->setSizePolicy(
@@ -102,6 +108,7 @@ MainWindow::MainWindow(QWidget *parent)
 
   InitializeNewGameDialog();
   InitializeSettingsDialog();
+  InitializeAboutDialog();
 
   timer_duration_ = available_fps_options_[fps_option_].second;
 
@@ -144,13 +151,13 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event) {
     case Qt::Key_Up:
     case Qt::Key_W:
       tank->TurnReverseOff();
-      tank->StartMovement(1, tanks_, objects_copies_, obstacles_and_bonuses_);
+      tank->StartMovement(1, tanks_, &objects_copies_, &obstacles_and_bonuses_);
       break;
     case 1067:
     case Qt::Key_Down:
     case Qt::Key_S:
       tank->TurnReverseOn();
-      tank->StartMovement(1, tanks_, objects_copies_, obstacles_and_bonuses_);
+      tank->StartMovement(1, tanks_, &objects_copies_, &obstacles_and_bonuses_);
       break;
     case 1060:
     case Qt::Key_Left:
@@ -258,7 +265,7 @@ void MainWindow::timerEvent(QTimerEvent *) {
       }
 
       if (bot->IsMovingStartNeeded(tanks_, obstacles_and_bonuses_)) {
-        bot->StartMovement(1, tanks_, objects_copies_, obstacles_and_bonuses_);
+        bot->StartMovement(1, tanks_, &objects_copies_, &obstacles_and_bonuses_);
       } else if (bot->IsRotationStartNeeded(
                      std::dynamic_pointer_cast<Tank>(tanks_[0]))) {
         bot->StartRotation();
@@ -300,7 +307,7 @@ void MainWindow::timerEvent(QTimerEvent *) {
     if ((*it)->GetTimeToFinishMovement() <= 0 &&
         (*it)->GetCellsToFinishMovement() > 0) {
       (*it)->StartMovement(((*it)->GetCellsToFinishMovement()), tanks_,
-                           objects_copies_, obstacles_and_bonuses_);
+                           &objects_copies_, &obstacles_and_bonuses_);
     }
     if (!(*it)->IsMovingOrRotating()) {
       if (std::dynamic_pointer_cast<Boom>(*it) != nullptr) {
@@ -365,6 +372,11 @@ void MainWindow::Settings() {
   DetermineCurrentSettings();
 }
 
+void MainWindow::About() {
+  if (!paused_) PauseOrContinue();
+  about_dialog_->exec();
+}
+
 void MainWindow::UpdateIndents() {
   sq_width_ = 4 * std::min(width() / 4, height() / 3);
   sq_height_ = 3 * std::min(width() / 4, height() / 3);
@@ -378,7 +390,7 @@ void MainWindow::RedrawButtons() {
   main_buttons_layout_->setGeometry(QRect(
       w_indent_ + static_cast<int>(0.04 * sq_width_),
       h_indent_ + static_cast<int>(0.05 * sq_height_),
-      static_cast<int>(0.2 * sq_width_), static_cast<int>(0.31 * sq_height_)));
+      static_cast<int>(0.2 * sq_width_), static_cast<int>(0.4 * sq_height_)));
 
   if (virtual_keys_shown_) {
     virtual_buttons_layout_->setSpacing(static_cast<int>(0.01 * sq_height_));
@@ -571,8 +583,10 @@ void MainWindow::PressVirtualKey(Qt::Key key) {
 }
 
 void MainWindow::ChangeChargeButton(int type) {
+  if (timer_id_ == 0 && !paused_) return;
   std::dynamic_pointer_cast<Tank>(tanks_[0])->ChangeTypeOfCharge(type);
   RedrawChargeButtons();
+  repaint();
 }
 
 void MainWindow::FindInteractingObjects() {
@@ -642,13 +656,13 @@ void MainWindow::CheckDeadObjects() {
   }
 }
 
-void MainWindow::MakeBoom(std::shared_ptr<Movable> &object) {
+void MainWindow::MakeBoom(const std::shared_ptr<Movable> &object) {
   std::shared_ptr<Boom> boom(new Boom(map_, object, 500));
   rockets_.append(boom);
-  boom->StartMovement(1, tanks_, objects_copies_, obstacles_and_bonuses_);
+  boom->StartMovement(1, tanks_, &objects_copies_, &obstacles_and_bonuses_);
 }
 
-void MainWindow::ShootRocket(std::shared_ptr<Tank> &tank) {
+void MainWindow::ShootRocket(const std::shared_ptr<Tank> &tank) {
   std::shared_ptr<Rocket> rocket;
   if (std::dynamic_pointer_cast<Bot>(tank) == nullptr) {
     rocket = std::shared_ptr<Rocket>(new Rocket(
@@ -665,10 +679,10 @@ void MainWindow::ShootRocket(std::shared_ptr<Tank> &tank) {
   rockets_.append(rocket);
   if (rocket->GetIntDirection() == 1 || rocket->GetIntDirection() == 3) {
     rocket->StartMovement(map_->GetNumberOfCellsHorizontally(), tanks_,
-                          objects_copies_, obstacles_and_bonuses_);
+                          &objects_copies_, &obstacles_and_bonuses_);
   } else {
     rocket->StartMovement(map_->GetNumberOfCellsVertically(), tanks_,
-                          objects_copies_, obstacles_and_bonuses_);
+                          &objects_copies_, &obstacles_and_bonuses_);
   }
 }
 
@@ -772,19 +786,19 @@ void MainWindow::InitializeNewGameDialog() {
     switch_difficulty_menu_->addItem(difficulty_levels_names_[i]);
   }
 
-  new_game_dialog_layout_ = new QFormLayout(new_game_dialog_);
-  new_game_dialog_layout_->addRow(new_game_info_label_);
-  new_game_dialog_layout_->addRow(switch_map_label_);
-  new_game_dialog_layout_->addRow(switch_map_menu_);
-  new_game_dialog_layout_->addRow(switch_tank_label_);
-  new_game_dialog_layout_->addRow(switch_tank_menu_);
-  new_game_dialog_layout_->addRow(switch_difficulty_label_);
-  new_game_dialog_layout_->addRow(switch_difficulty_menu_);
+  new_game_dialog_layout_ = new QVBoxLayout(new_game_dialog_);
+  new_game_dialog_layout_->addWidget(new_game_info_label_);
+  new_game_dialog_layout_->addWidget(switch_map_label_);
+  new_game_dialog_layout_->addWidget(switch_map_menu_);
+  new_game_dialog_layout_->addWidget(switch_tank_label_);
+  new_game_dialog_layout_->addWidget(switch_tank_menu_);
+  new_game_dialog_layout_->addWidget(switch_difficulty_label_);
+  new_game_dialog_layout_->addWidget(switch_difficulty_menu_);
 
   new_game_dialog_buttons_ = new QDialogButtonBox(
       QDialogButtonBox::Ok, Qt::Horizontal, new_game_dialog_);
 
-  new_game_dialog_layout_->addRow(new_game_dialog_buttons_);
+  new_game_dialog_layout_->addWidget(new_game_dialog_buttons_);
 
   connect(new_game_dialog_buttons_->button(QDialogButtonBox::Ok),
           &QPushButton::clicked, [&]() {
@@ -797,6 +811,8 @@ void MainWindow::InitializeNewGameDialog() {
           });
   connect(new_game_dialog_buttons_, SIGNAL(accepted()), new_game_dialog_,
           SLOT(accept()));
+
+  new_game_dialog_->layout()->setSizeConstraint(QLayout::SetFixedSize);
 }
 
 void MainWindow::InitializeSettingsDialog() {
@@ -826,31 +842,25 @@ void MainWindow::InitializeSettingsDialog() {
   language_menu_->addItem(tr("English"));
   language_menu_->addItem(tr("Russian"));
 
-  language_menu_restart_label_ =
-      new QLabel(QString(tr("Language will be changed\n"
-                            "after application restart")));
-
-  settings_separator_label_ = new QLabel(this);
-  version_label_ =
-      new QLabel(QString(tr("App version")) + QString(": ") + app_version_);
+  language_menu_restart_label_ = new QLabel(
+      QString(tr("Language will be changed after application restart")));
+  language_menu_restart_label_->setWordWrap(true);
 
   DetermineCurrentSettings();
 
-  settings_dialog_layout_ = new QFormLayout(settings_dialog_);
-  settings_dialog_layout_->addRow(virtual_keys_checkbox_);
-  settings_dialog_layout_->addRow(charge_line_checkbox_);
-  settings_dialog_layout_->addRow(fps_menu_label_);
-  settings_dialog_layout_->addRow(fps_menu_);
-  settings_dialog_layout_->addRow(language_menu_label_);
-  settings_dialog_layout_->addRow(language_menu_);
-  settings_dialog_layout_->addRow(language_menu_restart_label_);
-  settings_dialog_layout_->addRow(settings_separator_label_);
-  settings_dialog_layout_->addRow(version_label_);
+  settings_dialog_layout_ = new QVBoxLayout(settings_dialog_);
+  settings_dialog_layout_->addWidget(virtual_keys_checkbox_);
+  settings_dialog_layout_->addWidget(charge_line_checkbox_);
+  settings_dialog_layout_->addWidget(fps_menu_label_);
+  settings_dialog_layout_->addWidget(fps_menu_);
+  settings_dialog_layout_->addWidget(language_menu_label_);
+  settings_dialog_layout_->addWidget(language_menu_);
+  settings_dialog_layout_->addWidget(language_menu_restart_label_);
 
   settings_dialog_buttons_ = new QDialogButtonBox(
       QDialogButtonBox::Ok, Qt::Horizontal, settings_dialog_);
 
-  settings_dialog_layout_->addRow(settings_dialog_buttons_);
+  settings_dialog_layout_->addWidget(settings_dialog_buttons_);
 
   connect(settings_dialog_buttons_->button(QDialogButtonBox::Ok),
           &QPushButton::clicked, [&]() {
@@ -860,6 +870,28 @@ void MainWindow::InitializeSettingsDialog() {
 
   connect(settings_dialog_buttons_, SIGNAL(accepted()), settings_dialog_,
           SLOT(accept()));
+
+  settings_dialog_->layout()->setSizeConstraint(QLayout::SetFixedSize);
+}
+
+void MainWindow::InitializeAboutDialog() {
+  about_dialog_ = new QDialog(this);
+  html_widget_ = new QTextBrowser(this);
+  html_widget_->setSource(QUrl("qrc:/rules/rules.html"));
+
+  about_dialog_buttons_ =
+      new QDialogButtonBox(QDialogButtonBox::Ok, Qt::Horizontal, about_dialog_);
+
+  about_dialog_layout_ = new QVBoxLayout(about_dialog_);
+  about_dialog_layout_->addWidget(html_widget_);
+  about_dialog_layout_->addWidget(about_dialog_buttons_);
+
+  connect(about_dialog_buttons_, SIGNAL(accepted()), about_dialog_,
+          SLOT(accept()));
+
+  about_dialog_->setFixedSize(500, 500);
+  html_widget_->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+  html_widget_->setOpenExternalLinks(true);
 }
 
 void MainWindow::DetermineCurrentSettings() {
