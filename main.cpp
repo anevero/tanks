@@ -12,7 +12,14 @@ int main(int argc, char *argv[]) {
 
   QString language{};
   bool charge_line = true;
-  int fps_option = 1;
+  int fps_option;
+
+#ifdef Q_OS_ANDROID
+  qputenv("QT_QPA_NO_TEXT_HANDLES", "1");
+  fps_option = 3;
+#else
+  fps_option = 1;
+#endif
 
   QFile settings_file("settings.json");
   if (settings_file.exists()) {

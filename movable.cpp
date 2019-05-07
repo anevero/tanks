@@ -55,7 +55,7 @@ void Movable::StartMovement(
     if (dynamic_cast<Rocket*>(this) == nullptr) {
       std::shared_ptr<Portal> portal = std::dynamic_pointer_cast<Portal>(
           (*objects)[static_cast<unsigned>(new_cell_x)]
-                 [static_cast<unsigned>(new_cell_y)]);
+                    [static_cast<unsigned>(new_cell_y)]);
 
       Coordinates cells = GetNewPortalCells(
           portal->GetNewCellX(), portal->GetNewCellY(), new_cell_x, new_cell_y);
@@ -76,7 +76,7 @@ void Movable::StartMovement(
     }
   }
   if ((*objects)[static_cast<unsigned>(new_cell_x)]
-             [static_cast<unsigned>(new_cell_y)] != nullptr &&
+                [static_cast<unsigned>(new_cell_y)] != nullptr &&
       std::dynamic_pointer_cast<Portal>((*objects)[static_cast<unsigned>(
           new_cell_x)][static_cast<unsigned>(new_cell_y)]) == nullptr) {
     if (std::dynamic_pointer_cast<Obstacle>((*objects)[static_cast<unsigned>(
@@ -85,13 +85,14 @@ void Movable::StartMovement(
     }
     if (dynamic_cast<Tank*>(this) != nullptr) {
       Tank* tank = dynamic_cast<Tank*>(this);
-      if (std::dynamic_pointer_cast<MedicalKit>((*objects)[static_cast<unsigned>(
-              new_cell_x)][static_cast<unsigned>(new_cell_y)]) != nullptr) {
+      if (std::dynamic_pointer_cast<MedicalKit>(
+              (*objects)[static_cast<unsigned>(new_cell_x)]
+                        [static_cast<unsigned>(new_cell_y)]) != nullptr) {
         tank->PlusHealth(
             std::min(35, tank->GetMaxHealth() - tank->GetCurrentHealth()));
-      } else if (std::dynamic_pointer_cast<Charge>(
-                     (*objects)[static_cast<unsigned>(new_cell_x)]
-                            [static_cast<unsigned>(new_cell_y)]) != nullptr) {
+      } else if (std::dynamic_pointer_cast<Charge>((
+                     *objects)[static_cast<unsigned>(new_cell_x)]
+                              [static_cast<unsigned>(new_cell_y)]) != nullptr) {
         tank->PlusCharge();
       }
     }
@@ -100,12 +101,12 @@ void Movable::StartMovement(
       cells_to_finish_movement_ = 0;
       if (rocket->GetTypeOfRocket() != TypeOfRocket::HardRocket) {
         (*objects)[static_cast<unsigned>(new_cell_x)]
-               [static_cast<unsigned>(new_cell_y)] = nullptr;
+                  [static_cast<unsigned>(new_cell_y)] = nullptr;
       }
       return;
     }
     (*objects)[static_cast<unsigned>(new_cell_x)]
-           [static_cast<unsigned>(new_cell_y)] = nullptr;
+              [static_cast<unsigned>(new_cell_y)] = nullptr;
   }
 
   new_cell_x = old_cell_x;

@@ -18,6 +18,8 @@ MainWindow::MainWindow(QWidget *parent)
            new QPushButton("D", this)}),
       virtual_keys_encodings_(
           {Qt::Key_Q, Qt::Key_W, Qt::Key_A, Qt::Key_S, Qt::Key_D}),
+      new_virtual_buttons_layout_left_(new QVBoxLayout),
+      new_virtual_buttons_layout_right_(new QHBoxLayout),
       map_(new Map(1)),
       types_of_rockets_({{7, 100, true}, {15, 200, true}, {30, 300, false}}) {
   setMouseTracking(true);
@@ -86,21 +88,29 @@ MainWindow::MainWindow(QWidget *parent)
       tr("Low speed, hight charge, can't destroy obstacles"));
 
   for (int i = 0; i < virtual_keys_buttons_.size(); ++i) {
-    connect(virtual_keys_buttons_[i], &QPushButton::clicked,
+    virtual_keys_buttons_[i]->setAutoRepeat(true);
+    connect(virtual_keys_buttons_[i], &QPushButton::released,
             [this, i]() { PressVirtualKey(virtual_keys_encodings_[i]); });
     virtual_keys_buttons_[i]->setSizePolicy(
         QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
     virtual_keys_buttons_[i]->setFocusPolicy(Qt::NoFocus);
   }
 
-  for (int i = 0; i < number_of_virtual_keys_in_first_row_; ++i) {
-    virtual_buttons_layout_->addWidget(virtual_keys_buttons_[i], 0, i);
+#ifdef Q_OS_ANDROID
+  new_virtual_keys_enabled_ = false;
+  AdjustFont(new_game_button_);
+  AdjustFont(pause_continue_button_);
+  AdjustFont(settings_button_);
+  AdjustFont(about_button_);
+  for (int i = 0; i < virtual_keys_buttons_.size(); ++i) {
+    AdjustFont(virtual_keys_buttons_[i]);
   }
-  for (int i = number_of_virtual_keys_in_first_row_;
-       i < virtual_keys_buttons_.size(); ++i) {
-    virtual_buttons_layout_->addWidget(
-        virtual_keys_buttons_[i], 1, i - number_of_virtual_keys_in_first_row_);
+  for (int i = 0; i < charge_buttons_.size(); ++i) {
+    AdjustFont(charge_buttons_[i]);
   }
+#endif
+
+  SwitchVirtualButtonsLayout();
 
   if (QTouchDevice::devices().empty()) {
     ToggleVirtualKeys();
@@ -265,7 +275,8 @@ void MainWindow::timerEvent(QTimerEvent *) {
       }
 
       if (bot->IsMovingStartNeeded(tanks_, obstacles_and_bonuses_)) {
-        bot->StartMovement(1, tanks_, &objects_copies_, &obstacles_and_bonuses_);
+        bot->StartMovement(1, tanks_, &objects_copies_,
+                           &obstacles_and_bonuses_);
       } else if (bot->IsRotationStartNeeded(
                      std::dynamic_pointer_cast<Tank>(tanks_[0]))) {
         bot->StartRotation();
@@ -359,6 +370,11 @@ void MainWindow::timerEvent(QTimerEvent *) {
 
 void MainWindow::NewGame() {
   if (!paused_) PauseOrContinue();
+
+#ifdef Q_OS_ANDROID
+  new_game_dialog_->showMaximized();
+#endif
+
   new_game_dialog_->exec();
   switch_map_menu_->setCurrentIndex(current_game_options_.map_number);
   switch_tank_menu_->setCurrentIndex(current_game_options_.tank_number);
@@ -368,12 +384,20 @@ void MainWindow::NewGame() {
 
 void MainWindow::Settings() {
   if (!paused_) PauseOrContinue();
+
+#ifdef Q_OS_ANDROID
+  settings_dialog_->showMaximized();
+#endif
+
   settings_dialog_->exec();
   DetermineCurrentSettings();
 }
 
 void MainWindow::About() {
   if (!paused_) PauseOrContinue();
+#ifdef Q_OS_ANDROID
+  about_dialog_->showMaximized();
+#endif
   about_dialog_->exec();
 }
 
@@ -392,13 +416,28 @@ void MainWindow::RedrawButtons() {
       h_indent_ + static_cast<int>(0.05 * sq_height_),
       static_cast<int>(0.2 * sq_width_), static_cast<int>(0.4 * sq_height_)));
 
-  if (virtual_keys_shown_) {
+  if (virtual_keys_shown_ && !new_virtual_keys_enabled_) {
     virtual_buttons_layout_->setSpacing(static_cast<int>(0.01 * sq_height_));
     virtual_buttons_layout_->setGeometry(
         QRect(w_indent_ + static_cast<int>(0.04 * sq_width_),
               height() - h_indent_ - static_cast<int>(0.2 * sq_height_),
               static_cast<int>(0.2 * sq_width_),
               static_cast<int>(0.15 * sq_height_)));
+  } else if (virtual_keys_shown_ && new_virtual_keys_enabled_) {
+    new_virtual_buttons_layout_left_->setSpacing(
+        static_cast<int>(0.01 * sq_height_));
+    new_virtual_buttons_layout_right_->setSpacing(
+        static_cast<int>(0.01 * sq_height_));
+    new_virtual_buttons_layout_left_->setGeometry(
+        QRect(std::max(0, w_indent_ - static_cast<int>(0.2 * sq_width_)),
+              height() - h_indent_ - static_cast<int>(0.5 * sq_height_),
+              std::min(w_indent_, static_cast<int>(0.2 * sq_width_)),
+              static_cast<int>(0.45 * sq_height_)));
+    new_virtual_buttons_layout_right_->setGeometry(
+        QRect(width() - w_indent_,
+              height() - h_indent_ - static_cast<int>(0.5 * sq_height_),
+              std::min(w_indent_, static_cast<int>(0.2 * sq_width_)),
+              static_cast<int>(0.45 * sq_height_)));
   }
 }
 
@@ -421,8 +460,8 @@ void MainWindow::RedrawChargeButtons() {
   charge_buttons_layout_->setSpacing(static_cast<int>(0.01 * sq_height_));
   charge_buttons_layout_->setGeometry(QRect(
       w_indent_ + static_cast<int>(0.04 * sq_width_),
-      height() - h_indent_ - static_cast<int>(0.355 * sq_height_),
-      static_cast<int>(0.2 * sq_width_), static_cast<int>(0.1 * sq_height_)));
+      height() - h_indent_ - static_cast<int>(0.385 * sq_height_),
+      static_cast<int>(0.2 * sq_width_), static_cast<int>(0.13 * sq_height_)));
 }
 
 void MainWindow::UpdateScreenTimer() {
@@ -454,6 +493,12 @@ void MainWindow::UpdateScreenTimer() {
   screen_timer_->display(time);
 }
 
+void MainWindow::AdjustFont(QWidget *widget) {
+  QFont adjusted_font = widget->font();
+  adjusted_font.setPixelSize(widget->height());
+  widget->setFont(adjusted_font);
+}
+
 void MainWindow::RedrawContent() {
   killTimer(timer_id_);
   timer_id_ = 0;
@@ -466,6 +511,7 @@ void MainWindow::RedrawContent() {
   map_.reset(new Map(current_game_options_.map_number + 1));
   tanks_.clear();
   rockets_.clear();
+  objects_copies_.clear();
 
   pause_continue_button_->setText(tr("Pause"));
   paused_ = false;
@@ -707,6 +753,39 @@ void MainWindow::ToggleVirtualKeys() {
   RedrawButtons();
 }
 
+void MainWindow::SwitchVirtualButtonsLayout() {
+  if (new_virtual_keys_enabled_) {
+    new_virtual_buttons_layout_left_->removeWidget(virtual_keys_buttons_[1]);
+    new_virtual_buttons_layout_left_->removeWidget(virtual_keys_buttons_[0]);
+    new_virtual_buttons_layout_left_->removeWidget(virtual_keys_buttons_[3]);
+    new_virtual_buttons_layout_right_->removeWidget(virtual_keys_buttons_[2]);
+    new_virtual_buttons_layout_right_->removeWidget(virtual_keys_buttons_[4]);
+
+    for (int i = 0; i < number_of_virtual_keys_in_first_row_; ++i) {
+      virtual_buttons_layout_->addWidget(virtual_keys_buttons_[i], 0, i);
+    }
+    for (int i = number_of_virtual_keys_in_first_row_;
+         i < virtual_keys_buttons_.size(); ++i) {
+      virtual_buttons_layout_->addWidget(
+          virtual_keys_buttons_[i], 1,
+          i - number_of_virtual_keys_in_first_row_);
+    }
+    new_virtual_keys_enabled_ = false;
+  } else {
+    for (int i = 0; i < virtual_keys_buttons_.size(); ++i) {
+      virtual_buttons_layout_->removeWidget(virtual_keys_buttons_[i]);
+    }
+
+    new_virtual_buttons_layout_left_->addWidget(virtual_keys_buttons_[1]);
+    new_virtual_buttons_layout_left_->addWidget(virtual_keys_buttons_[0]);
+    new_virtual_buttons_layout_left_->addWidget(virtual_keys_buttons_[3]);
+    new_virtual_buttons_layout_right_->addWidget(virtual_keys_buttons_[2]);
+    new_virtual_buttons_layout_right_->addWidget(virtual_keys_buttons_[4]);
+    new_virtual_keys_enabled_ = true;
+  }
+  RedrawButtons();
+}
+
 void MainWindow::ChangeFPSOption(const int new_option, bool start_timer) {
   fps_option_ = new_option;
   timer_duration_ = available_fps_options_[new_option].second;
@@ -818,9 +897,12 @@ void MainWindow::InitializeNewGameDialog() {
 void MainWindow::InitializeSettingsDialog() {
   settings_dialog_ = new QDialog(this);
 
-  virtual_keys_checkbox_ =
-      new QCheckBox(tr("Activate virtual keys"), settings_dialog_);
+  virtual_keys_checkbox_ = new QCheckBox(tr("Virtual keys"), settings_dialog_);
   virtual_keys_checkbox_->setChecked(virtual_keys_shown_);
+
+  new_virtual_keys_checkbox_ = new QCheckBox(
+      tr("Experimental layout of virtual keys"), settings_dialog_);
+  new_virtual_keys_checkbox_->setChecked(new_virtual_keys_enabled_);
 
   charge_line_checkbox_ =
       new QCheckBox(tr("Activate charge line"), settings_dialog_);
@@ -850,12 +932,17 @@ void MainWindow::InitializeSettingsDialog() {
 
   settings_dialog_layout_ = new QVBoxLayout(settings_dialog_);
   settings_dialog_layout_->addWidget(virtual_keys_checkbox_);
+  settings_dialog_layout_->addWidget(new_virtual_keys_checkbox_);
   settings_dialog_layout_->addWidget(charge_line_checkbox_);
   settings_dialog_layout_->addWidget(fps_menu_label_);
   settings_dialog_layout_->addWidget(fps_menu_);
   settings_dialog_layout_->addWidget(language_menu_label_);
   settings_dialog_layout_->addWidget(language_menu_);
   settings_dialog_layout_->addWidget(language_menu_restart_label_);
+
+#ifndef Q_OS_ANDROID
+  new_virtual_keys_checkbox_->setDisabled(true);
+#endif
 
   settings_dialog_buttons_ = new QDialogButtonBox(
       QDialogButtonBox::Ok, Qt::Horizontal, settings_dialog_);
@@ -879,10 +966,22 @@ void MainWindow::InitializeAboutDialog() {
   html_widget_ = new QTextBrowser(this);
   html_widget_->setSource(QUrl("qrc:/rules/rules.html"));
 
+#ifdef Q_OS_ANDROID
+  AdjustFont(html_widget_);
+  html_widget_->setTextInteractionFlags(Qt::NoTextInteraction);
+  how_to_scroll_label_ =
+      new QLabel(tr("Tip: you can use two fingers to scroll the reference"));
+#endif
+
   about_dialog_buttons_ =
       new QDialogButtonBox(QDialogButtonBox::Ok, Qt::Horizontal, about_dialog_);
 
   about_dialog_layout_ = new QVBoxLayout(about_dialog_);
+
+#ifdef Q_OS_ANDROID
+  about_dialog_layout_->addWidget(how_to_scroll_label_);
+#endif
+
   about_dialog_layout_->addWidget(html_widget_);
   about_dialog_layout_->addWidget(about_dialog_buttons_);
 
@@ -898,6 +997,7 @@ void MainWindow::DetermineCurrentSettings() {
   QJsonObject json = GetJsonObjectFromFile("settings.json");
 
   virtual_keys_checkbox_->setChecked(virtual_keys_shown_);
+  new_virtual_keys_checkbox_->setChecked(new_virtual_keys_enabled_);
 
   QString language = json["language"].toString();
   if (language == "be_BY") {
@@ -919,6 +1019,10 @@ void MainWindow::ChangeCurrentSettings() {
   if (virtual_keys_shown_ != virtual_keys_checkbox_->isChecked()) {
     ToggleVirtualKeys();
   }
+  if (new_virtual_keys_enabled_ != new_virtual_keys_checkbox_->isChecked()) {
+    SwitchVirtualButtonsLayout();
+  }
+
   charge_line_shown_ = charge_line_checkbox_->isChecked();
   ChangeFPSOption(fps_menu_->currentIndex());
 
@@ -958,7 +1062,7 @@ QJsonObject MainWindow::GetJsonObjectFromFile(const QString &filepath) {
   QString text = file.readAll();
   file.close();
   QJsonDocument json_document(QJsonDocument::fromJson(text.toUtf8()));
-  return std::move(json_document.object());
+  return json_document.object();
 }
 
 Direction MainWindow::DetermineDirection(const QString &start_direction) const {

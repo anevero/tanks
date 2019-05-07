@@ -25,16 +25,17 @@ bool CleverBot::IsRotationStartNeeded(const std::shared_ptr<Tank>& tank) {
       number_of_turns_--;
       return number_of_turns_ > 0;
     }
-    if (map_->GetField(tank->GetCellX(), tank->GetCellY()) == CellType::Forest) {
+    if (map_->GetField(tank->GetCellX(), tank->GetCellY()) ==
+        CellType::Forest) {
       return Bot::IsRotationStartNeeded(tank);
     }
   }
   return false;
 }
 
-bool CleverBot::IsMovingStartNeeded(const QList<std::shared_ptr<Movable>>& objects,
-                                    const std::vector<std::vector<std::shared_ptr<
-                                    ObjectOnMap>>>& portals) {
+bool CleverBot::IsMovingStartNeeded(
+    const QList<std::shared_ptr<Movable>>& objects,
+    const std::vector<std::vector<std::shared_ptr<ObjectOnMap>>>& portals) {
   auto tank = objects[0];
   if (time_to_finish_movement_ <= 0 && time_to_finish_rotation_ <= 0) {
     Bfs(objects, portals, tank->GetCellX(), tank->GetCellY());
@@ -58,7 +59,7 @@ bool CleverBot::IsMovingStartNeeded(const QList<std::shared_ptr<Movable>>& objec
         CellType::Forest) {
       return Bot::IsMovingStartNeeded(objects, portals);
     } else if (distance_[cell_x - delta_x][cell_y - delta_y] ==
-        distance_[cell_x][cell_y] - 1) {
+               distance_[cell_x][cell_y] - 1) {
       if (distance_[cell_x][cell_y] - 1 ==
           distance_[tank->GetCellX()][tank->GetCellY()]) {
         return false;
@@ -92,9 +93,10 @@ bool CleverBot::IsMovingStartNeeded(const QList<std::shared_ptr<Movable>>& objec
   return false;
 }
 
-void CleverBot::Bfs(const QList<std::shared_ptr<Movable>>& objects,
-                    const std::vector<std::vector<std::shared_ptr<
-                        ObjectOnMap>>>& portals, int cell_x, int cell_y) {
+void CleverBot::Bfs(
+    const QList<std::shared_ptr<Movable>>& objects,
+    const std::vector<std::vector<std::shared_ptr<ObjectOnMap>>>& portals,
+    int cell_x, int cell_y) {
   QQueue<CellInfo> cells;
   cells.push_back({cell_x, cell_y, cell_x, cell_y, 0});
 
@@ -138,12 +140,12 @@ void CleverBot::Bfs(const QList<std::shared_ptr<Movable>>& objects,
     }
 
     if (std::dynamic_pointer_cast<Portal>(portals[static_cast<unsigned>(
-                    cell_x)][static_cast<unsigned>(cell_y)]) != nullptr) {
+            cell_x)][static_cast<unsigned>(cell_y)]) != nullptr) {
       std::shared_ptr<Portal> portal = std::dynamic_pointer_cast<Portal>(
-              portals[static_cast<unsigned>(cell_x)]
-              [static_cast<unsigned>(cell_y)]);
+          portals[static_cast<unsigned>(cell_x)]
+                 [static_cast<unsigned>(cell_y)]);
       distance_[portal->GetNewCellX()][portal->GetNewCellY()] =
-              current_distance - 1;
+          current_distance - 1;
       int portal_cell_x = portal->GetNewCellX();
       int portal_cell_y = portal->GetNewCellY();
       if (cell_x - prev_cell_x == 1) {

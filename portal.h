@@ -20,4 +20,4 @@ class Portal : public ObjectOnMap {
   int new_cell_y_;
 };
 
-#endif // PORTAL_H
+#endif  // PORTAL_H
