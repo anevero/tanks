@@ -395,11 +395,9 @@ void MainWindow::Settings() {
 
 void MainWindow::About() {
   if (!paused_) PauseOrContinue();
-
 #ifdef Q_OS_ANDROID
   about_dialog_->showMaximized();
 #endif
-
   about_dialog_->exec();
 }
 
@@ -976,7 +974,6 @@ void MainWindow::InitializeAboutDialog() {
 #ifdef Q_OS_ANDROID
   AdjustFont(html_widget_);
   html_widget_->setTextInteractionFlags(Qt::NoTextInteraction);
-
   how_to_scroll_label_ =
       new QLabel(tr("Tip: you can use two fingers to scroll the reference"));
 #endif
@@ -998,6 +995,7 @@ void MainWindow::InitializeAboutDialog() {
 
   about_dialog_->setFixedSize(500, 500);
   html_widget_->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+  html_widget_->setOpenExternalLinks(true);
 }
 
 void MainWindow::DetermineCurrentSettings() {
