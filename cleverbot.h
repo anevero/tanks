@@ -17,8 +17,8 @@ class CleverBot : public ImprovedBot {
   bool IsRotationStartNeeded(const std::shared_ptr<Tank>& tank) override;
   bool IsMovingStartNeeded(
       const QList<std::shared_ptr<Movable>>& objects,
-      const std::vector<std::vector<std::shared_ptr<
-      ObjectOnMap>>>& portals) override;
+      const std::vector<std::vector<std::shared_ptr<ObjectOnMap>>>& portals)
+      override;
 
  private:
   struct CellInfo {
@@ -30,9 +30,10 @@ class CleverBot : public ImprovedBot {
   };
   QVector<QVector<int>> distance_;
 
-  void Bfs(const QList<std::shared_ptr<Movable>>& objects,
-           const std::vector<std::vector<std::shared_ptr<
-               ObjectOnMap>>>& portals, int cell_x, int cell_y);
+  void Bfs(
+      const QList<std::shared_ptr<Movable>>& objects,
+      const std::vector<std::vector<std::shared_ptr<ObjectOnMap>>>& portals,
+      int cell_x, int cell_y);
   int height_;
   int width_;
 };
