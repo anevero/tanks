@@ -125,12 +125,12 @@ MainWindow::MainWindow(QWidget *parent)
   setMinimumSize(600, 450);
   resize(600, 450);
 
-  playlist.addMedia(QUrl("qrc:/sounds/backgroundmusic1.mp3"));
-  playlist.addMedia(QUrl("qrc:/sounds/backgroundmusic2.mp3"));
-  playlist.addMedia(QUrl("qrc:/sounds/backgroundmusic3.mp3"));
-  playlist.addMedia(QUrl("qrc:/sounds/backgroundmusic4.mp3"));
-  player.setPlaylist(&playlist);
-  player.setVolume(50);
+  music_playlist_.addMedia(QUrl("qrc:/sounds/backgroundmusic1.mp3"));
+  music_playlist_.addMedia(QUrl("qrc:/sounds/backgroundmusic2.mp3"));
+  music_playlist_.addMedia(QUrl("qrc:/sounds/backgroundmusic3.mp3"));
+  music_playlist_.addMedia(QUrl("qrc:/sounds/backgroundmusic4.mp3"));
+  music_player_.setPlaylist(&music_playlist_);
+  music_player_.setVolume(50);
 }
 
 void MainWindow::mouseReleaseEvent(QMouseEvent *event) {
@@ -510,7 +510,7 @@ void MainWindow::RedrawContent() {
   killTimer(timer_id_);
   timer_id_ = 0;
 
-  player.stop();
+  music_player_.stop();
 
   screen_timer_ms_ = 0;
   screen_timer_sec_ = 0;
@@ -616,9 +616,9 @@ void MainWindow::RedrawContent() {
 
   timer_id_ = startTimer(timer_duration_);
 
-  playlist.setCurrentIndex(current_game_options_.map_number);
-  playlist.setPlaybackMode(QMediaPlaylist::CurrentItemInLoop);
-  player.play();
+  music_playlist_.setCurrentIndex(current_game_options_.map_number);
+  music_playlist_.setPlaybackMode(QMediaPlaylist::CurrentItemInLoop);
+  music_player_.play();
 
   RedrawChargeButtons();
   repaint();
@@ -813,7 +813,7 @@ void MainWindow::ChangeFPSOption(const int new_option, bool start_timer) {
 }
 
 void MainWindow::GameOver(bool win) {
-  player.stop();
+  music_player_.stop();
 
   killTimer(timer_id_);
   timer_id_ = 0;

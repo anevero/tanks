@@ -1,6 +1,5 @@
-QT += core gui multimedia
-
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+greaterThan(QT_MAJOR_VERSION, 4):
+QT += widgets core gui multimedia
 
 TARGET = Tanks
 TEMPLATE = app
@@ -48,4 +47,4 @@ TRANSLATIONS += \
 
 RC_ICONS = app_icon.ico
 
-VERSION = 0.7.0.0
+VERSION = 0.8.0.0
