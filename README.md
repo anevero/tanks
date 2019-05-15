@@ -13,6 +13,8 @@ Tanks - 2D-игра, написанная на C++ с использование
 * Неверо Андрей ([@anevero](https://github.com/anevero))
 * Тарайкович Алеся ([@Lessyless](https://github.com/Lessyless))
 
+В программе используется музыка [David Fesliyan](https://www.fesliyanstudios.com/) и [spinningmerkaba](http://dig.ccmixter.org/people/jlbrock44).
+
 ## Статус разработки
 
 Разработка завершена в мае 2019 года. Последняя версия программы - [0.7](https://github.com/anevero/tanks/tree/0.7). 

@@ -12,6 +12,7 @@ int main(int argc, char *argv[]) {
 
   QString language{};
   bool charge_line = true;
+  bool music_enabled = true;
   int fps_option;
 
 #ifdef Q_OS_ANDROID
@@ -30,6 +31,7 @@ int main(int argc, char *argv[]) {
     QJsonObject json = json_document.object();
     language = json["language"].toString();
     charge_line = json["charge_line"].toBool();
+    music_enabled = json["music_enabled"].toBool();
     fps_option = json["fps"].toInt();
   }
 
@@ -48,6 +50,7 @@ int main(int argc, char *argv[]) {
   QJsonObject new_json_obj;
   new_json_obj["language"] = language;
   new_json_obj["charge_line"] = charge_line;
+  new_json_obj["music_enabled"] = music_enabled;
   new_json_obj["fps"] = fps_option;
   QJsonDocument new_json_document(new_json_obj);
   QString new_json_string = new_json_document.toJson();

@@ -9,7 +9,7 @@ before_install:
   - sudo apt-get update
 
 install:
-  - sudo apt-get install qt510base cppcheck
+  - sudo apt-get install qt510base qt510multimedia cppcheck
   - source /opt/qt5*/bin/qt5*-env.sh
   - /opt/qt5*/bin/qmake PREFIX=/usr
 

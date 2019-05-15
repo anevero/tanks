@@ -15,6 +15,8 @@
 #include <QLabel>
 #include <QList>
 #include <QMainWindow>
+#include <QMediaPlayer>
+#include <QMediaPlaylist>
 #include <QMessageBox>
 #include <QPainter>
 #include <QPalette>
@@ -98,6 +100,7 @@ class MainWindow : public QMainWindow {
   int GetTimerDuration() const;
   void ToggleVirtualKeys();
   void SwitchVirtualButtonsLayout();
+  void ToggleMusic();
   void ChangeFPSOption(const int new_option, bool start_timer = false);
   void InitializeNewGameDialog();
   void InitializeSettingsDialog();
@@ -112,6 +115,7 @@ class MainWindow : public QMainWindow {
   bool virtual_keys_shown_ = true;
   bool new_virtual_keys_enabled_ = true;
   bool charge_line_shown_;
+  bool music_enabled_;
   int fps_option_;
   int timer_duration_;
 
@@ -142,6 +146,7 @@ class MainWindow : public QMainWindow {
   QCheckBox *virtual_keys_checkbox_;
   QCheckBox *new_virtual_keys_checkbox_;
   QCheckBox *charge_line_checkbox_;
+  QCheckBox *music_checkbox_;
   QComboBox *fps_menu_;
   QComboBox *language_menu_;
   QLabel *fps_menu_label_;
@@ -174,6 +179,9 @@ class MainWindow : public QMainWindow {
 
   QVBoxLayout *new_virtual_buttons_layout_left_;
   QHBoxLayout *new_virtual_buttons_layout_right_;
+
+  QMediaPlayer music_player_;
+  QMediaPlaylist music_playlist_;
 
   std::shared_ptr<Map> map_;
   QList<std::shared_ptr<Movable>> tanks_;

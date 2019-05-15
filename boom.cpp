@@ -6,6 +6,9 @@ Boom::Boom(const std::shared_ptr<Map>& map,
               speed) {
   LoadImage();
   opacity_ = 0.85;
+
+  boom_sound_.setMedia(QUrl("qrc:/sounds/boom.mp3"));
+  boom_sound_.play();
 }
 
 void Boom::LoadImage() {
