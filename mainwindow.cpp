@@ -503,9 +503,7 @@ void MainWindow::RedrawContent() {
   killTimer(timer_id_);
   timer_id_ = 0;
 
-  player->stop();
-  delete player;
-  delete playlist;
+  player.stop();
 
   screen_timer_ms_ = 0;
   screen_timer_sec_ = 0;
@@ -611,15 +609,13 @@ void MainWindow::RedrawContent() {
 
   timer_id_ = startTimer(timer_duration_);
 
-  playlist = new QMediaPlaylist();
-  playlist->addMedia(QUrl("qrc:/sounds/backgroundmusic" +
+  playlist.addMedia(QUrl("qrc:/sounds/backgroundmusic" +
                      QString::number(current_game_options_.map_number + 1) +
                      ".mp3"));
-  playlist->setPlaybackMode(QMediaPlaylist::Loop);
-  player = new QMediaPlayer();
-  player->setPlaylist(playlist);
-  player->setVolume(50);
-  player->play();
+  playlist.setPlaybackMode(QMediaPlaylist::Loop);
+  player.setPlaylist(&playlist);
+  player.setVolume(50);
+  player.play();
 
   RedrawChargeButtons();
   repaint();
@@ -718,7 +714,7 @@ void MainWindow::CheckDeadObjects() {
 }
 
 void MainWindow::MakeBoom(const std::shared_ptr<Movable> &object) {
-  std::shared_ptr<Boom> boom(new Boom(map_, object, 500));
+  std::shared_ptr<Boom> boom(new Boom(map_, object, 1000));
   rockets_.append(boom);
   boom->StartMovement(1, tanks_, &objects_copies_, &obstacles_and_bonuses_);
 }
@@ -814,7 +810,7 @@ void MainWindow::ChangeFPSOption(const int new_option, bool start_timer) {
 }
 
 void MainWindow::GameOver(bool win) {
-  player->stop();
+  player.stop();
 
   killTimer(timer_id_);
   timer_id_ = 0;
@@ -909,9 +905,6 @@ void MainWindow::InitializeNewGameDialog() {
           SLOT(accept()));
 
   new_game_dialog_->layout()->setSizeConstraint(QLayout::SetFixedSize);
-
-  player = new QMediaPlayer();
-  playlist = new QMediaPlaylist();
 }
 
 void MainWindow::InitializeSettingsDialog() {

@@ -22,7 +22,7 @@ class Boom : public Movable {
       std::vector<std::vector<std::shared_ptr<ObjectOnMap>>>*) override;
 
  private:
-  QMediaPlayer* boom_sound_;
+  QMediaPlayer boom_sound_;
 };
 
 #endif  // BOOM_H

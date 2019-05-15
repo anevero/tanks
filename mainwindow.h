@@ -177,8 +177,8 @@ class MainWindow : public QMainWindow {
   QVBoxLayout *new_virtual_buttons_layout_left_;
   QHBoxLayout *new_virtual_buttons_layout_right_;
 
-  QMediaPlayer* player;
-  QMediaPlaylist* playlist;
+  QMediaPlayer player;
+  QMediaPlaylist playlist;
 
   std::shared_ptr<Map> map_;
   QList<std::shared_ptr<Movable>> tanks_;
