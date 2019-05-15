@@ -618,7 +618,9 @@ void MainWindow::RedrawContent() {
 
   music_playlist_.setCurrentIndex(current_game_options_.map_number);
   music_playlist_.setPlaybackMode(QMediaPlaylist::CurrentItemInLoop);
-  music_player_.play();
+  if (music_enabled_) {
+    music_player_.play();
+  }
 
   RedrawChargeButtons();
   repaint();
@@ -800,6 +802,15 @@ void MainWindow::SwitchVirtualButtonsLayout() {
   RedrawButtons();
 }
 
+void MainWindow::ToggleMusic() {
+  music_enabled_ = !music_enabled_;
+  if (!music_enabled_) {
+    music_player_.stop();
+  } else if (music_enabled_ && timer_id_ == 0 && paused_) {
+    music_player_.play();
+  }
+}
+
 void MainWindow::ChangeFPSOption(const int new_option, bool start_timer) {
   fps_option_ = new_option;
   timer_duration_ = available_fps_options_[new_option].second;
@@ -923,6 +934,8 @@ void MainWindow::InitializeSettingsDialog() {
   charge_line_checkbox_ =
       new QCheckBox(tr("Activate charge line"), settings_dialog_);
 
+  music_checkbox_ = new QCheckBox(tr("Music"), settings_dialog_);
+
   fps_menu_label_ =
       new QLabel(QString(tr("Performance")) + QString(":"), settings_dialog_);
 
@@ -950,6 +963,7 @@ void MainWindow::InitializeSettingsDialog() {
   settings_dialog_layout_->addWidget(virtual_keys_checkbox_);
   settings_dialog_layout_->addWidget(new_virtual_keys_checkbox_);
   settings_dialog_layout_->addWidget(charge_line_checkbox_);
+  settings_dialog_layout_->addWidget(music_checkbox_);
   settings_dialog_layout_->addWidget(fps_menu_label_);
   settings_dialog_layout_->addWidget(fps_menu_);
   settings_dialog_layout_->addWidget(language_menu_label_);
@@ -1027,6 +1041,9 @@ void MainWindow::DetermineCurrentSettings() {
   charge_line_shown_ = json["charge_line"].toBool();
   charge_line_checkbox_->setChecked(charge_line_shown_);
 
+  music_enabled_ = json["music_enabled"].toBool();
+  music_checkbox_->setChecked(music_enabled_);
+
   fps_option_ = json["fps"].toInt();
   fps_menu_->setCurrentIndex(fps_option_);
 }
@@ -1037,6 +1054,9 @@ void MainWindow::ChangeCurrentSettings() {
   }
   if (new_virtual_keys_enabled_ != new_virtual_keys_checkbox_->isChecked()) {
     SwitchVirtualButtonsLayout();
+  }
+  if (music_enabled_ != music_checkbox_->isChecked()) {
+    ToggleMusic();
   }
 
   charge_line_shown_ = charge_line_checkbox_->isChecked();
@@ -1060,6 +1080,7 @@ void MainWindow::ChangeCurrentSettings() {
 
   new_json_obj["language"] = language;
   new_json_obj["charge_line"] = charge_line_shown_;
+  new_json_obj["music_enabled"] = music_enabled_;
   new_json_obj["fps"] = fps_option_;
 
   QJsonDocument new_json_document(new_json_obj);

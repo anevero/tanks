@@ -10,8 +10,8 @@
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="8"/>
-        <location filename="../mainwindow.cpp" line="516"/>
-        <location filename="../mainwindow.cpp" line="615"/>
+        <location filename="../mainwindow.cpp" line="525"/>
+        <location filename="../mainwindow.cpp" line="631"/>
         <source>Pause</source>
         <translation>Пауза</translation>
     </message>
@@ -51,61 +51,66 @@
         <translation>Низкая скорость, высокий урон, не может разрушать препятствия</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="139"/>
+        <location filename="../mainwindow.cpp" line="146"/>
         <source>Health</source>
         <translation>Здоровье</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="619"/>
+        <location filename="../mainwindow.cpp" line="635"/>
         <source>Continue</source>
         <translation>Продолжить</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="814"/>
+        <location filename="../mainwindow.cpp" line="836"/>
         <source>You win! 
 You can start a new game with help of appropriate button on the left.</source>
         <translation>Вы победили! Вы можете начать новую игру с помощью соответствующей кнопки слева.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="819"/>
+        <location filename="../mainwindow.cpp" line="841"/>
         <source>You died! 
 You can start a new game with help of appropriate button on the left.</source>
         <translation>Вы проиграли! Вы можете начать новую игру с помощью соответствующей кнопки слева.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="830"/>
+        <location filename="../mainwindow.cpp" line="852"/>
         <source>Choose map, tank and difficulty</source>
         <translation>Выберите карту, танк и сложность</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="833"/>
-        <location filename="../mainwindow.cpp" line="839"/>
+        <location filename="../mainwindow.cpp" line="855"/>
+        <location filename="../mainwindow.cpp" line="861"/>
         <source>Map</source>
         <translation>Карта</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="845"/>
-        <location filename="../mainwindow.cpp" line="862"/>
+        <location filename="../mainwindow.cpp" line="867"/>
+        <location filename="../mainwindow.cpp" line="884"/>
         <source>Tank</source>
         <translation>Танк</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="866"/>
+        <location filename="../mainwindow.cpp" line="888"/>
         <source>Difficulty</source>
         <translation>Сложность</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="905"/>
+        <location filename="../mainwindow.cpp" line="927"/>
         <source>Virtual keys</source>
         <translation>Виртуальные клавиши</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="909"/>
+        <location filename="../mainwindow.cpp" line="931"/>
         <source>Experimental layout of virtual keys</source>
         <translation>Мобильная раскладка вирт. клавиш</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="978"/>
+        <location filename="../mainwindow.cpp" line="937"/>
+        <source>Music</source>
+        <translation>Музыка</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="1003"/>
         <source>Tip: you can use two fingers to scroll the reference</source>
         <translation>Подсказка: прокручивайте страницу двумя пальцами</translation>
     </message>
@@ -114,27 +119,27 @@ You can start a new game with help of appropriate button on the left.</source>
         <translation type="vanished">Виртуальные клавиши</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="913"/>
+        <location filename="../mainwindow.cpp" line="935"/>
         <source>Activate charge line</source>
         <translation>Полоса перезарядки</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="916"/>
+        <location filename="../mainwindow.cpp" line="940"/>
         <source>Performance</source>
         <translation>Производительность</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="921"/>
+        <location filename="../mainwindow.cpp" line="945"/>
         <source>frames per second</source>
         <translation>кадров в секунду</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="925"/>
+        <location filename="../mainwindow.cpp" line="949"/>
         <source>Language</source>
         <translation>Язык</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="933"/>
+        <location filename="../mainwindow.cpp" line="957"/>
         <source>Language will be changed after application restart</source>
         <translation>Язык изменится после перезапуска приложения</translation>
     </message>
@@ -145,17 +150,17 @@ after application restart</source>
 перезапуска приложения</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="928"/>
+        <location filename="../mainwindow.cpp" line="952"/>
         <source>Belarusian</source>
         <translation>Беларуская</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="929"/>
+        <location filename="../mainwindow.cpp" line="953"/>
         <source>English</source>
         <translation>English</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="930"/>
+        <location filename="../mainwindow.cpp" line="954"/>
         <source>Russian</source>
         <translation>Русский</translation>
     </message>
@@ -164,17 +169,17 @@ after application restart</source>
         <translation type="vanished">Версия</translation>
     </message>
     <message>
-        <location filename="../mainwindow.h" line="185"/>
+        <location filename="../mainwindow.h" line="193"/>
         <source>Easy</source>
         <translation>Легко</translation>
     </message>
     <message>
-        <location filename="../mainwindow.h" line="185"/>
+        <location filename="../mainwindow.h" line="193"/>
         <source>Normal</source>
         <translation>Нормально</translation>
     </message>
     <message>
-        <location filename="../mainwindow.h" line="186"/>
+        <location filename="../mainwindow.h" line="194"/>
         <source>Hard</source>
         <translation>Тяжело</translation>
     </message>

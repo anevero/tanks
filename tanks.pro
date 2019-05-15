@@ -8,7 +8,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android-sources
 DISTFILES += \
- android-sources/AndroidManifest.xml
+android-sources/AndroidManifest.xml
 
 SOURCES += \
     main.cpp \

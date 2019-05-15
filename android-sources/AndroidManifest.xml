@@ -1,8 +1,10 @@
 <?xml version="1.0"?>
 <manifest package="org.qtproject.tanks" xmlns:android="http://schemas.android.com/apk/res/android"
-    android:versionName="0.7.0" android:versionCode="4"
+    android:versionName="0.8.0" android:versionCode="5"
     android:installLocation="auto">
-    <uses-sdk android:minSdkVersion="21" android:targetSdkVersion="24" />
+    <uses-sdk android:minSdkVersion="21" android:targetSdkVersion="29" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <supports-screens android:xlargeScreens="true" />
     <application android:name="org.qtproject.qt5.android.bindings.QtApplication"
         android:label="Tanks" android:icon="@drawable/icon"
@@ -36,11 +38,11 @@
             <meta-data android:name="android.app.libs_prefix"
                 android:value="/data/local/tmp/qt/" />
             <meta-data android:name="android.app.load_local_libs"
-                android:value="plugins/platforms/android/libqtforandroid.so" />
+                android:value="plugins/bearer/libqandroidbearer.so:plugins/platforms/android/libqtforandroid.so:plugins/mediaservice/libqtmedia_android.so" />
             <meta-data android:name="android.app.load_local_jars"
-                android:value="jar/QtAndroid.jar" />
+                android:value="jar/QtAndroidBearer.jar:jar/QtAndroid.jar:jar/QtMultimedia.jar" />
             <meta-data android:name="android.app.static_init_classes"
-                android:value="" />
+                android:value="org.qtproject.qt5.android.multimedia.QtMultimediaUtils" />
             <meta-data android:value="@string/ministro_not_found_msg"
                 android:name="android.app.ministro_not_found_msg" />
             <meta-data android:value="@string/ministro_needed_msg"
