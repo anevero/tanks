@@ -124,6 +124,13 @@ MainWindow::MainWindow(QWidget *parent)
 
   setMinimumSize(600, 450);
   resize(600, 450);
+
+  playlist.addMedia(QUrl("qrc:/sounds/backgroundmusic1.mp3"));
+  playlist.addMedia(QUrl("qrc:/sounds/backgroundmusic2.mp3"));
+  playlist.addMedia(QUrl("qrc:/sounds/backgroundmusic3.mp3"));
+  playlist.addMedia(QUrl("qrc:/sounds/backgroundmusic4.mp3"));
+  player.setPlaylist(&playlist);
+  player.setVolume(50);
 }
 
 void MainWindow::mouseReleaseEvent(QMouseEvent *event) {
@@ -609,12 +616,8 @@ void MainWindow::RedrawContent() {
 
   timer_id_ = startTimer(timer_duration_);
 
-  playlist.addMedia(QUrl("qrc:/sounds/backgroundmusic" +
-                     QString::number(current_game_options_.map_number + 1) +
-                     ".mp3"));
-  playlist.setPlaybackMode(QMediaPlaylist::Loop);
-  player.setPlaylist(&playlist);
-  player.setVolume(50);
+  playlist.setCurrentIndex(current_game_options_.map_number);
+  playlist.setPlaybackMode(QMediaPlaylist::CurrentItemInLoop);
   player.play();
 
   RedrawChargeButtons();
