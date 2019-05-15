@@ -30,5 +30,10 @@
     <file>rules/settings.png</file>
     <file>rules/about.png</file>
     <file>rules/timer.png</file>
+    <file>sounds/backgroundmusic1.mp3</file>
+    <file>sounds/backgroundmusic2.mp3</file>
+    <file>sounds/backgroundmusic3.mp3</file>
+    <file>sounds/backgroundmusic4.mp3</file>
+    <file>sounds/boom.mp3</file>
 </qresource>
 </RCC>

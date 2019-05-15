@@ -2,6 +2,7 @@
 #define BOOM_H
 
 #include <QDebug>
+#include <QMediaPlayer>
 #include <QPainter>
 #include <memory>
 #include <vector>
@@ -19,6 +20,9 @@ class Boom : public Movable {
       const int number_of_cells, const QList<std::shared_ptr<Movable>>&,
       QList<QPair<std::shared_ptr<Movable>, Coordinates>>*,
       std::vector<std::vector<std::shared_ptr<ObjectOnMap>>>*) override;
+
+ private:
+  QMediaPlayer* boom_sound_;
 };
 
 #endif  // BOOM_H

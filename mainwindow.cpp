@@ -503,6 +503,10 @@ void MainWindow::RedrawContent() {
   killTimer(timer_id_);
   timer_id_ = 0;
 
+  player->stop();
+  delete player;
+  delete playlist;
+
   screen_timer_ms_ = 0;
   screen_timer_sec_ = 0;
   screen_timer_min_ = 0;
@@ -606,6 +610,17 @@ void MainWindow::RedrawContent() {
   }
 
   timer_id_ = startTimer(timer_duration_);
+
+  playlist = new QMediaPlaylist();
+  playlist->addMedia(QUrl("qrc:/sounds/backgroundmusic" +
+                     QString::number(current_game_options_.map_number + 1) +
+                     ".mp3"));
+  playlist->setPlaybackMode(QMediaPlaylist::Loop);
+  player = new QMediaPlayer();
+  player->setPlaylist(playlist);
+  player->setVolume(50);
+  player->play();
+
   RedrawChargeButtons();
   repaint();
 }
@@ -799,6 +814,8 @@ void MainWindow::ChangeFPSOption(const int new_option, bool start_timer) {
 }
 
 void MainWindow::GameOver(bool win) {
+  player->stop();
+
   killTimer(timer_id_);
   timer_id_ = 0;
 
@@ -892,6 +909,9 @@ void MainWindow::InitializeNewGameDialog() {
           SLOT(accept()));
 
   new_game_dialog_->layout()->setSizeConstraint(QLayout::SetFixedSize);
+
+  player = new QMediaPlayer();
+  playlist = new QMediaPlaylist();
 }
 
 void MainWindow::InitializeSettingsDialog() {
