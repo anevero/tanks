@@ -4,17 +4,12 @@ language: cpp
 compiler: g++
 sudo: required
 
-addons:
-  apt:
-    sources:
-      - ppa:beineri/opt-qt-5.12.3-bionic
-    packages:
-    - qt512base
-    - qt512multimedia
+before_install:
+  - sudo add-apt-repository ppa:beineri/opt-qt-5.12.3-bionic
+  - sudo apt-get update
+  - sudo apt-get install qt512base qt512multimedia cppcheck -y
 
 install:
-  - sudo apt-get update
-  - sudo apt-get install cppcheck
   - source /opt/qt5*/bin/qt5*-env.sh
   - /opt/qt5*/bin/qmake PREFIX=/usr
 
