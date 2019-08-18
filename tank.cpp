@@ -52,7 +52,7 @@ void Tank::DrawHealth(QPainter& painter) {
 
 bool Tank::IsAbleToShoot() const {
   return (time_since_last_shot_ >= rate_of_fire_) &&
-         ((type_of_charge_ == 0 && current_charge_[0] > 0) ||
+      ((type_of_charge_ == 0 && current_charge_[0] > 0) ||
           (type_of_charge_ == 1 && current_charge_[1] > 0) ||
           (type_of_charge_ == 2 && current_charge_[2] > 0));
 }
@@ -77,6 +77,7 @@ void Tank::ChangeTypeOfCharge(int type) { type_of_charge_ = type; }
 void Tank::MinusCharge(int type, int charge) {
   current_charge_[type] -= charge;
 }
+
 void Tank::PlusCharge() {
   int type = qrand() % 3;
   current_charge_[type] +=
@@ -91,7 +92,7 @@ ChargeState Tank::GetChargeState() const {
   if (current_charge_[type_of_charge_] == 0) {
     return ChargeState::Empty;
   } else if (current_charge_[type_of_charge_] <=
-             max_charge_[type_of_charge_] / 2) {
+      max_charge_[type_of_charge_] / 2) {
     return ChargeState::LessThanHalf;
   }
   return ChargeState::MoreThanHalf;

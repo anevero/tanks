@@ -1,7 +1,7 @@
 ﻿#include "objectonmap.h"
 
-ObjectOnMap::ObjectOnMap(const std::shared_ptr<Map>& map, const int x,
-                         const int y)
+ObjectOnMap::ObjectOnMap(const std::shared_ptr<Map>& map, const size_t x,
+                         const size_t y)
     : map_(map), x_(x), y_(y) {}
 
 void ObjectOnMap::Draw(QPainter& painter) {
@@ -32,16 +32,17 @@ void ObjectOnMap::UpdateCoordinates() {
       static_cast<int>(map_->GetWidth() / map_->GetNumberOfCellsHorizontally());
   cur_height_ =
       static_cast<int>(map_->GetHeight() / map_->GetNumberOfCellsVertically());
-  cur_upper_left_x_ = map_->GetUpperLeftX() + x_ * cur_width_;
-  cur_upper_left_y_ = map_->GetUpperLeftY() + y_ * cur_height_;
+  cur_upper_left_x_ = map_->GetUpperLeftX() + static_cast<int>(x_) * cur_width_;
+  cur_upper_left_y_ =
+      map_->GetUpperLeftY() + static_cast<int>(y_) * cur_height_;
 }
 
-int ObjectOnMap::GetX() const { return x_; }
+size_t ObjectOnMap::GetX() const { return x_; }
 
-int ObjectOnMap::GetY() const { return y_; }
+size_t ObjectOnMap::GetY() const { return y_; }
 
-MedicalKit::MedicalKit(const std::shared_ptr<Map>& map, const int x,
-                       const int y)
+MedicalKit::MedicalKit(const std::shared_ptr<Map>& map, const size_t x,
+                       const size_t y)
     : ObjectOnMap(map, x, y) {
   LoadImage();
 }
@@ -51,7 +52,8 @@ void MedicalKit::LoadImage() {
   scaled_image_ = image_;
 }
 
-Obstacle::Obstacle(const std::shared_ptr<Map>& map, const int x, const int y)
+Obstacle::Obstacle(const std::shared_ptr<Map>& map, const size_t x,
+                   const size_t y)
     : ObjectOnMap(map, x, y) {
   LoadImage();
 }
@@ -60,7 +62,7 @@ void Obstacle::LoadImage() {
   image_.load(":/textures/log.png");
   scaled_image_ = image_;
 }
-Charge::Charge(const std::shared_ptr<Map>& map, int x, int y)
+Charge::Charge(const std::shared_ptr<Map>& map, size_t x, size_t y)
     : ObjectOnMap(map, x, y) {
   LoadImage();
 }

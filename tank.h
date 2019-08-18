@@ -22,20 +22,20 @@ enum class ChargeState { Empty = 0, LessThanHalf = 1, MoreThanHalf = 2 };
 
 class Tank : public Movable {
  public:
-  Tank(const std::shared_ptr<Map>& map, const int init_cell_x,
-       const int init_cell_y, const TankQualities& qualities);
-  virtual ~Tank() override = default;
-  virtual void LoadImage() override;
+  Tank(const std::shared_ptr<Map>& map, int init_cell_x,
+       int init_cell_y, const TankQualities& qualities);
+  ~Tank() override = default;
+  void LoadImage() override;
   void Draw(QPainter& painter) override;
   virtual void DrawHealth(QPainter& painter);
 
   virtual bool IsAbleToShoot() const;
-  virtual void IncreaseTimeSinceLastShot(const int delta);
+  virtual void IncreaseTimeSinceLastShot(int delta);
   virtual void SetZeroTimeFromLastShot();
   virtual int GetCurrentHealth() const;
   virtual int GetMaxHealth() const;
-  virtual void MinusHealth(const int health = 10);
-  virtual void PlusHealth(const int health = 10);
+  virtual void MinusHealth(int health = 10);
+  virtual void PlusHealth(int health = 10);
   virtual bool IsDead() const;
   virtual int GetTimeSinceLastShot() const;
   virtual int GetRateOfFire() const;
@@ -46,7 +46,7 @@ class Tank : public Movable {
 
   int GetTypeOfCharge() const;
   int GetCurrentCharge(int type) const;
-  int GetMaxCharge(int type) const;
+  [[maybe_unused]] int GetMaxCharge(int type) const;
   ChargeState GetChargeState() const;
 
  protected:

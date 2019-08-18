@@ -18,23 +18,25 @@ enum class CellType { Wall = 0, Grass = 1, Sand = 2, Water = 3, Forest = 4 };
 
 class Map {
  public:
+  // The constructor creates necessary object by reading corresponding to
+  // map_number file.
   explicit Map(int map_number);
-  void UpdateCoordinates(const int upper_left_x, const int upper_left_y,
-                         const int width, const int height);
-  void DrawMap(QPainter &painter);
+  void UpdateCoordinates(int upper_left_x, int upper_left_y,
+                         int width, int height);
+  void DrawMap(QPainter& painter);
 
-  CellType GetField(const int cell_x, const int cell_y) const;
-  int GetWallsPrecalc(const int x, const int y) const;
-  int GetNumberOfCellsHorizontally() const;
-  int GetNumberOfCellsVertically() const;
+  CellType GetField(size_t cell_x, size_t cell_y) const;
+  int GetWallsPrecalc(size_t x, size_t y) const;
+  size_t GetNumberOfCellsHorizontally() const;
+  size_t GetNumberOfCellsVertically() const;
   int GetUpperLeftX() const;
   int GetUpperLeftY() const;
   int GetWidth() const;
   int GetHeight() const;
   int GetCellWidth() const;
   int GetCellHeight() const;
-  int GetTankInitCellX() const;
-  int GetTankInitCellY() const;
+  size_t GetTankInitCellX() const;
+  size_t GetTankInitCellY() const;
   QString GetTankStartDirection() const;
 
  private:
@@ -54,11 +56,11 @@ class Map {
   int cur_height_{};
   int cur_cell_width_{};
   int cur_cell_height_{};
-  int tank_init_cell_x_;
-  int tank_init_cell_y_;
+  size_t tank_init_cell_x_;
+  size_t tank_init_cell_y_;
   QString tank_start_direction_;
 
-  const int number_of_cell_types_ = 5;
+  const uint32_t number_of_cell_types_ = 5;
 };
 
 #endif  // MAP_H

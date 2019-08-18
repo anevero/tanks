@@ -40,8 +40,8 @@ bool CleverBot::IsMovingStartNeeded(
   if (time_to_finish_movement_ <= 0 && time_to_finish_rotation_ <= 0) {
     Bfs(objects, portals, tank->GetCellX(), tank->GetCellY());
     int direction = GetIntDirection();
-    int cell_x = GetCellX();
-    int cell_y = GetCellY();
+    auto cell_x = static_cast<int>(GetCellX());
+    auto cell_y = static_cast<int>(GetCellY());
 
     int delta_x = 0;
     int delta_y = 0;
@@ -59,7 +59,7 @@ bool CleverBot::IsMovingStartNeeded(
         CellType::Forest) {
       return Bot::IsMovingStartNeeded(objects, portals);
     } else if (distance_[cell_x - delta_x][cell_y - delta_y] ==
-               distance_[cell_x][cell_y] - 1) {
+        distance_[cell_x][cell_y] - 1) {
       if (distance_[cell_x][cell_y] - 1 ==
           distance_[tank->GetCellX()][tank->GetCellY()]) {
         return false;
@@ -67,7 +67,7 @@ bool CleverBot::IsMovingStartNeeded(
       number_of_cells_to_move_ = 1;
       return true;
     } else if (distance_[cell_x - delta_y][cell_y - delta_x] ==
-               distance_[cell_x][cell_y] - 1) {
+        distance_[cell_x][cell_y] - 1) {
       if (delta_x == 0) {
         TurnRotationReverseOn();
       } else {
@@ -76,7 +76,7 @@ bool CleverBot::IsMovingStartNeeded(
       number_of_turns_ = 2;
       return false;
     } else if (distance_[cell_x + delta_y][cell_y + delta_x] ==
-               distance_[cell_x][cell_y] - 1) {
+        distance_[cell_x][cell_y] - 1) {
       if (delta_x == 0) {
         TurnRotationReverseOff();
       } else {
@@ -85,7 +85,7 @@ bool CleverBot::IsMovingStartNeeded(
       number_of_turns_ = 2;
       return false;
     } else if (distance_[cell_x + delta_x][cell_y + delta_y] ==
-               distance_[cell_x][cell_y] - 1) {
+        distance_[cell_x][cell_y] - 1) {
       number_of_turns_ = 3;
       return false;
     }
@@ -122,14 +122,16 @@ void CleverBot::Bfs(
     if (distance_[cell_x][cell_y] <= current_distance) {
       continue;
     }
-    if (cell_x == GetCellX() && cell_y == GetCellY()) {
+    if (cell_x == static_cast<int>(GetCellX()) &&
+        cell_y == static_cast<int>(GetCellY())) {
       distance_[cell_x][cell_y] = current_distance;
       break;
     }
 
     bool bad_cell = false;
     for (const auto& object : objects) {
-      if (object->GetCellX() == cell_x && object->GetCellY() == cell_y &&
+      if (cell_x == static_cast<int>(object->GetCellX()) &&
+          cell_y == static_cast<int>(object->GetCellY()) &&
           object != objects[0]) {
         bad_cell = true;
         break;
@@ -139,11 +141,10 @@ void CleverBot::Bfs(
       continue;
     }
 
-    if (std::dynamic_pointer_cast<Portal>(portals[static_cast<unsigned>(
-            cell_x)][static_cast<unsigned>(cell_y)]) != nullptr) {
+    if (std::dynamic_pointer_cast<Portal>(
+        portals[cell_x][cell_y]) != nullptr) {
       std::shared_ptr<Portal> portal = std::dynamic_pointer_cast<Portal>(
-          portals[static_cast<unsigned>(cell_x)]
-                 [static_cast<unsigned>(cell_y)]);
+          portals[cell_x][cell_y]);
       distance_[portal->GetNewCellX()][portal->GetNewCellY()] =
           current_distance - 1;
       int portal_cell_x = portal->GetNewCellX();
@@ -158,8 +159,11 @@ void CleverBot::Bfs(
         portal_cell_y--;
       }
 
-      cells.push_back({portal_cell_x, portal_cell_y, portal->GetX(),
-                       portal->GetY(), current_distance});
+      cells.push_back({portal_cell_x,
+                       portal_cell_y,
+                       static_cast<int>(portal->GetX()),
+                       static_cast<int>(portal->GetY()),
+                       current_distance});
       continue;
     }
 

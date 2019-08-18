@@ -17,7 +17,7 @@ struct RocketParameters {
 class Rocket : public Movable {
  public:
   Rocket(const std::shared_ptr<Map>& map, const std::shared_ptr<Tank>& tank,
-         const int speed, const int power, const TypeOfRocket& type);
+         int speed, int power, const TypeOfRocket& type);
   void LoadImage() override;
   void Draw(QPainter& painter) override;
 

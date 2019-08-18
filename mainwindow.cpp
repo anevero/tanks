@@ -1,6 +1,6 @@
 ﻿#include "mainwindow.h"
 
-MainWindow::MainWindow(QWidget *parent)
+MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent),
       screen_timer_(new QLCDNumber(this)),
       main_buttons_layout_(new QVBoxLayout()),
@@ -40,8 +40,8 @@ MainWindow::MainWindow(QWidget *parent)
 
   screen_timer_->setSegmentStyle(QLCDNumber::Flat);
   screen_timer_->setToolTip(tr("You have") + " " +
-                            QString::number(minutes_per_round_) + " " +
-                            tr("minutes per round"));
+      QString::number(minutes_per_round_) + " " +
+      tr("minutes per round"));
   standart_lcdnumber_palette_ = screen_timer_->palette();
   red_lcdnumber_palette_ = standart_lcdnumber_palette_;
   red_lcdnumber_palette_.setColor(QPalette::WindowText, QColor(255, 0, 0));
@@ -133,12 +133,12 @@ MainWindow::MainWindow(QWidget *parent)
   music_player_.setVolume(50);
 }
 
-void MainWindow::mouseReleaseEvent(QMouseEvent *event) {
-  int current_cell_x = (event->x() - map_->GetUpperLeftX()) *
-                       map_->GetNumberOfCellsHorizontally() / map_->GetWidth();
-  int current_cell_y = (event->y() - map_->GetUpperLeftY()) *
-                       map_->GetNumberOfCellsVertically() / map_->GetHeight();
-  for (const auto &object : tanks_) {
+void MainWindow::mouseReleaseEvent(QMouseEvent* event) {
+  auto current_cell_x = (event->x() - map_->GetUpperLeftX()) *
+      map_->GetNumberOfCellsHorizontally() / map_->GetWidth();
+  auto current_cell_y = (event->y() - map_->GetUpperLeftY()) *
+      map_->GetNumberOfCellsVertically() / map_->GetHeight();
+  for (const auto& object : tanks_) {
     if (object->GetCellX() == current_cell_x &&
         object->GetCellY() == current_cell_y) {
       QToolTip::showText(
@@ -151,132 +151,159 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event) {
   }
 }
 
-void MainWindow::keyReleaseEvent(QKeyEvent *event) {
+void MainWindow::keyReleaseEvent(QKeyEvent* event) {
+  // Returns if the game is not running.
   if (timer_id_ == 0 && !paused_) return;
   auto tank = std::dynamic_pointer_cast<Tank>(tanks_[0]);
-  if ((paused_ && event->key() != Qt::Key_1 && event->key() != Qt::Key_2 &&
-       event->key() != Qt::Key_3 && event->key() != Qt::Key_Escape) ||
-      (!paused_ && tank->IsMovingOrRotating())) {
+
+  // Returns if the game is paused and event key is not Esc / 1 / 2 / 3 (these
+  // keys can be processed while the game is paused).
+  if (paused_ &&
+      event->key() != Qt::Key_1 &&
+      event->key() != Qt::Key_2 &&
+      event->key() != Qt::Key_3 &&
+      event->key() != Qt::Key_Escape) {
+    return;
+  }
+
+  // Returns if the game is not paused, but the tank is moving or rotating,
+  // and event key is not Esc / 1 / 2 / 3 (these keys can be processed while
+  // the tank is moving or rotating).
+  if (!paused_ && tank->IsMovingOrRotating() &&
+      event->key() != Qt::Key_1 &&
+      event->key() != Qt::Key_2 &&
+      event->key() != Qt::Key_3 &&
+      event->key() != Qt::Key_Escape) {
     return;
   }
 
   switch (event->key()) {
-    case Qt::Key_Escape:
+    case Qt::Key_Escape: {
       pause_continue_button_->animateClick();
       break;
-    case 1062:
-    case Qt::Key_Up:
-    case Qt::Key_W:
+    }
+      // Here and on number code is selected key code on cyrillic keyboard
+      // layout.
+    case 1062:[[fallthrough]];
+    case Qt::Key_Up:[[fallthrough]];
+    case Qt::Key_W: {
       tank->TurnReverseOff();
       tank->StartMovement(1, tanks_, &objects_copies_, &obstacles_and_bonuses_);
       break;
-    case 1067:
-    case Qt::Key_Down:
-    case Qt::Key_S:
+    }
+    case 1067:[[fallthrough]];
+    case Qt::Key_Down:[[fallthrough]];
+    case Qt::Key_S: {
       tank->TurnReverseOn();
       tank->StartMovement(1, tanks_, &objects_copies_, &obstacles_and_bonuses_);
       break;
-    case 1060:
-    case Qt::Key_Left:
-    case Qt::Key_A:
+    }
+    case 1060:[[fallthrough]];
+    case Qt::Key_Left:[[fallthrough]];
+    case Qt::Key_A: {
       tank->TurnRotationReverseOn();
       tank->StartRotation();
       break;
-    case 1042:
-    case Qt::Key_Right:
-    case Qt::Key_D:
+    }
+    case 1042:[[fallthrough]];
+    case Qt::Key_Right:[[fallthrough]];
+    case Qt::Key_D: {
       tank->TurnRotationReverseOff();
       tank->StartRotation();
       break;
-    case 1049:
-    case Qt::Key_Q:
+    }
+    case 1049:[[fallthrough]];
+    case Qt::Key_Q: {
       if (tank->IsAbleToShoot()) {
         tank->SetZeroTimeFromLastShot();
         ShootRocket(tank);
       }
       break;
-    case Qt::Key_1:
+    }
+    case Qt::Key_1: {
       ChangeChargeButton(0);
       break;
-    case Qt::Key_2:
+    }
+    case Qt::Key_2: {
       ChangeChargeButton(1);
       break;
-    case Qt::Key_3:
+    }
+    case Qt::Key_3: {
       ChangeChargeButton(2);
       break;
+    }
   }
 }
 
-void MainWindow::paintEvent(QPaintEvent *) {
+void MainWindow::paintEvent(QPaintEvent*) {
   map_->UpdateCoordinates(w_indent_ + static_cast<int>(0.28 * sq_width_),
                           h_indent_ + static_cast<int>(0.05 * sq_height_),
                           static_cast<int>(0.68 * sq_width_),
                           static_cast<int>(0.9 * sq_height_));
-  for (const auto &object : tanks_) {
+  for (const auto& object : tanks_) {
     object->UpdateCoordinates(object->GetCellX(), object->GetCellY());
   }
-  for (const auto &object : rockets_) {
+  for (const auto& object : rockets_) {
     object->UpdateCoordinates(object->GetCellX(), object->GetCellY());
   }
-  for (const auto &object : objects_copies_) {
+  for (const auto& object : objects_copies_) {
     auto tank = std::dynamic_pointer_cast<Tank>(object.first);
     tank->UpdateCoordinates(object.second.x, object.second.y);
   }
 
-  QPainter p;
-  p.begin(this);
+  QPainter p(this);
   map_->DrawMap(p);
-  for (const auto &vector : obstacles_and_bonuses_) {
-    for (const auto &object : vector) {
+  for (const auto& vector : obstacles_and_bonuses_) {
+    for (const auto& object : vector) {
       if (object != nullptr) {
         object->Draw(p);
       }
     }
   }
 
-  for (const auto &object : objects_copies_) {
+  for (const auto& object : objects_copies_) {
     object.first->Draw(p);
     object.first->ReturnToOriginal();
   }
-  for (const auto &object : tanks_) {
+  for (const auto& object : tanks_) {
     object->Draw(p);
   }
-  for (const auto &object : rockets_) {
+  for (const auto& object : rockets_) {
     object->Draw(p);
   }
 
-  if (tanks_.size() != 0 && charge_line_shown_) {
+  if (!tanks_.empty() && charge_line_shown_) {
     auto tank = std::dynamic_pointer_cast<Tank>(tanks_[0]);
     p.setBrush(charge_colors_[static_cast<int>(tank->GetChargeState())]);
     p.drawRect(w_indent_ + static_cast<int>(0.04 * sq_width_),
                height() - h_indent_ - static_cast<int>(0.25 * sq_height_),
                static_cast<int>(0.2 * sq_width_ * tank->GetTimeSinceLastShot() /
-                                tank->GetRateOfFire()),
+                   tank->GetRateOfFire()),
                sq_height_ / 32);
   }
 
   p.end();
 }
 
-void MainWindow::resizeEvent(QResizeEvent *) {
+void MainWindow::resizeEvent(QResizeEvent*) {
   UpdateIndents();
   RedrawButtons();
   RedrawChargeButtons();
 }
 
-void MainWindow::timerEvent(QTimerEvent *) {
+void MainWindow::timerEvent(QTimerEvent*) {
   time_since_last_medicalkit_ += timer_duration_;
   time_since_last_charge_ += timer_duration_;
   screen_timer_ms_ += timer_duration_;
   UpdateScreenTimer();
 
-  for (auto &object : tanks_) {
+  for (auto& object : tanks_) {
     if (std::dynamic_pointer_cast<Bot>(object) != nullptr) {
-      std::shared_ptr<Bot> bot = std::dynamic_pointer_cast<Bot>(object);
+      auto bot = std::dynamic_pointer_cast<Bot>(object);
 
       if (bot->IsShotNeeded(map_, std::dynamic_pointer_cast<Tank>(tanks_[0])) &&
           bot->IsAbleToShoot()) {
-        std::shared_ptr<Tank> tank = std::dynamic_pointer_cast<Tank>(object);
+        auto tank = std::dynamic_pointer_cast<Tank>(object);
         bot->SetZeroTimeFromLastShot();
         ShootRocket(tank);
       }
@@ -285,7 +312,7 @@ void MainWindow::timerEvent(QTimerEvent *) {
         bot->StartMovement(1, tanks_, &objects_copies_,
                            &obstacles_and_bonuses_);
       } else if (bot->IsRotationStartNeeded(
-                     std::dynamic_pointer_cast<Tank>(tanks_[0]))) {
+          std::dynamic_pointer_cast<Tank>(tanks_[0]))) {
         bot->StartRotation();
       }
 
@@ -295,7 +322,7 @@ void MainWindow::timerEvent(QTimerEvent *) {
     }
   }
 
-  for (const auto &object : tanks_) {
+  for (const auto& object : tanks_) {
     if (object->GetTimeToFinishMovement() > 0) {
       object->Move(timer_duration_);
     } else if (object->GetTimeToFinishRotation() > 0) {
@@ -303,7 +330,7 @@ void MainWindow::timerEvent(QTimerEvent *) {
     }
   }
 
-  for (const auto &object : rockets_) {
+  for (const auto& object : rockets_) {
     if (object->GetTimeToFinishMovement() > 0) {
       object->Move(timer_duration_);
     }
@@ -317,7 +344,7 @@ void MainWindow::timerEvent(QTimerEvent *) {
       copy = objects_copies_.erase(copy);
       continue;
     }
-    copy++;
+    ++copy;
   }
 
   auto it = rockets_.begin();
@@ -329,21 +356,21 @@ void MainWindow::timerEvent(QTimerEvent *) {
     }
     if (!(*it)->IsMovingOrRotating()) {
       if (std::dynamic_pointer_cast<Boom>(*it) != nullptr) {
-        for (const auto &tank : tanks_) {
+        for (const auto& tank : tanks_) {
           if (HaveObjectsCollided(*it, tank)) {
             std::dynamic_pointer_cast<Tank>(tank)->MinusHealth(25);
           }
         }
 
-        auto cell_x = static_cast<unsigned>((*it)->GetCellX());
-        auto cell_y = static_cast<unsigned>((*it)->GetCellY());
+        auto cell_x = (*it)->GetCellX();
+        auto cell_y = (*it)->GetCellY();
 
         if (std::dynamic_pointer_cast<Portal>(
-                obstacles_and_bonuses_[cell_x - 1][cell_y]) == nullptr) {
+            obstacles_and_bonuses_[cell_x - 1][cell_y]) == nullptr) {
           obstacles_and_bonuses_[cell_x - 1][cell_y] = nullptr;
         }
         if (std::dynamic_pointer_cast<Portal>(
-                obstacles_and_bonuses_[cell_x + 1][cell_y]) == nullptr) {
+            obstacles_and_bonuses_[cell_x + 1][cell_y]) == nullptr) {
           obstacles_and_bonuses_[cell_x + 1][cell_y] = nullptr;
         }
       }
@@ -351,10 +378,10 @@ void MainWindow::timerEvent(QTimerEvent *) {
       it = rockets_.erase(it);
       continue;
     }
-    it++;
+    ++it;
   }
 
-  for (const auto &object : tanks_) {
+  for (const auto& object : tanks_) {
     std::dynamic_pointer_cast<Tank>(object)->IncreaseTimeSinceLastShot(
         GetTimerDuration());
   }
@@ -402,9 +429,11 @@ void MainWindow::Settings() {
 
 void MainWindow::About() {
   if (!paused_) PauseOrContinue();
+
 #ifdef Q_OS_ANDROID
   about_dialog_->showMaximized();
 #endif
+
   about_dialog_->exec();
 }
 
@@ -449,9 +478,7 @@ void MainWindow::RedrawButtons() {
 }
 
 void MainWindow::RedrawChargeButtons() {
-  if (tanks_.size() == 0) {
-    return;
-  }
+  if (tanks_.empty()) return;
   auto tank = std::dynamic_pointer_cast<Tank>(tanks_[0]);
 
   for (int i = 0; i < charge_buttons_.size(); ++i) {
@@ -489,18 +516,18 @@ void MainWindow::UpdateScreenTimer() {
 
   QString time{};
   if (screen_timer_min_ < 10) {
-    time += "0";
+    time += '0';
   }
-  time += QString::number(screen_timer_min_) + ":";
+  time += QString::number(screen_timer_min_) + ':';
   if (screen_timer_sec_ < 10) {
-    time += "0";
+    time += '0';
   }
   time += QString::number(screen_timer_sec_);
 
   screen_timer_->display(time);
 }
 
-void MainWindow::AdjustFont(QWidget *widget) {
+void MainWindow::AdjustFont(QWidget* widget) {
   QFont adjusted_font = widget->font();
   adjusted_font.setPixelSize(widget->height());
   widget->setFont(adjusted_font);
@@ -527,13 +554,13 @@ void MainWindow::RedrawContent() {
 
   available_tank_types_[current_game_options_.tank_number].direction =
       DetermineDirection(map_->GetTankStartDirection());
-  tanks_.append(std::shared_ptr<Movable>(
-      new Tank(map_, map_->GetTankInitCellX(), map_->GetTankInitCellY(),
-               available_tank_types_[current_game_options_.tank_number])));
+  tanks_.append(std::make_shared<Tank>(
+      map_, map_->GetTankInitCellX(), map_->GetTankInitCellY(),
+      available_tank_types_[current_game_options_.tank_number]));
 
   QJsonObject json = GetJsonObjectFromFile(
       ":/data/map" + QString::number(current_game_options_.map_number + 1) +
-      ".json");
+          ".json");
 
   QJsonArray bots =
       json["difficulty"]
@@ -541,8 +568,8 @@ void MainWindow::RedrawContent() {
           .toObject()["bots"]
           .toArray();
 
-  for (int i = 0; i < bots.size(); ++i) {
-    BotQualities qualities;
+  for (const auto& bot : bots) {
+    BotQualities qualities{};
     qualities.tank.max_health =
         70 + 15 * current_game_options_.difficulty_level_number;
     qualities.tank.rate_of_fire =
@@ -552,29 +579,29 @@ void MainWindow::RedrawContent() {
     qualities.tank.max_light_charge = 1;
     qualities.tank.max_medium_charge = 1;
     qualities.tank.max_hard_charge = 1;
-    qualities.init_cell_x = bots[i].toObject()["initial_cell_x"].toInt();
-    qualities.init_cell_y = bots[i].toObject()["initial_cell_y"].toInt();
-    qualities.moving_length = bots[i].toObject()["moving_length"].toInt();
-    qualities.amount_of_turns = bots[i].toObject()["amount_of_turns"].toInt();
+    qualities.init_cell_x = bot.toObject()["initial_cell_x"].toInt();
+    qualities.init_cell_y = bot.toObject()["initial_cell_y"].toInt();
+    qualities.moving_length = bot.toObject()["moving_length"].toInt();
+    qualities.amount_of_turns = bot.toObject()["amount_of_turns"].toInt();
     qualities.side_rotation_frequency =
-        bots[i].toObject()["side_rotation_frequency"].toInt();
+        bot.toObject()["side_rotation_frequency"].toInt();
     qualities.tank.direction =
-        DetermineDirection(bots[i].toObject()["initial_direction"].toString());
+        DetermineDirection(bot.toObject()["initial_direction"].toString());
 
-    if (bots[i].toObject()["type"].toString() == "standart") {
-      tanks_.append(std::shared_ptr<Movable>(new Bot(map_, qualities)));
-    } else if (bots[i].toObject()["type"].toString() == "improved") {
-      tanks_.append(std::shared_ptr<Movable>(new ImprovedBot(map_, qualities)));
+    if (bot.toObject()["type"].toString() == "standart") {
+      tanks_.append(std::make_shared<Bot>(map_, qualities));
+    } else if (bot.toObject()["type"].toString() == "improved") {
+      tanks_.append(std::make_shared<ImprovedBot>(map_, qualities));
     } else {
-      tanks_.append(std::shared_ptr<Movable>(new CleverBot(map_, qualities)));
+      tanks_.append(std::make_shared<CleverBot>(map_, qualities));
     }
   }
 
   obstacles_and_bonuses_ =
       std::vector<std::vector<std::shared_ptr<ObjectOnMap>>>(
-          static_cast<unsigned>(map_->GetNumberOfCellsVertically()),
+          map_->GetNumberOfCellsVertically(),
           std::vector<std::shared_ptr<ObjectOnMap>>(
-              static_cast<unsigned>(map_->GetNumberOfCellsHorizontally()),
+              map_->GetNumberOfCellsHorizontally(),
               nullptr));
 
   QJsonArray obstacles =
@@ -583,12 +610,10 @@ void MainWindow::RedrawContent() {
           .toObject()["obstacles"]
           .toArray();
 
-  for (int i = 0; i < obstacles.size(); ++i) {
-    int x = obstacles[i].toArray()[0].toInt();
-    int y = obstacles[i].toArray()[1].toInt();
-    obstacles_and_bonuses_[static_cast<unsigned int>(
-        x)][static_cast<unsigned int>(y)] =
-        std::shared_ptr<Obstacle>(new Obstacle(map_, x, y));
+  for (const auto& obstacle : obstacles) {
+    auto x = static_cast<uint32_t>(obstacle.toArray()[0].toInt());
+    auto y = static_cast<uint32_t>(obstacle.toArray()[1].toInt());
+    obstacles_and_bonuses_[x][y] = std::make_shared<Obstacle>(map_, x, y);
   }
 
   QJsonArray portals =
@@ -597,21 +622,19 @@ void MainWindow::RedrawContent() {
           .toObject()["portals"]
           .toArray();
 
-  for (int i = 0; i < portals.size(); ++i) {
-    int curr_x = portals[i].toArray()[0].toInt();
-    int curr_y = portals[i].toArray()[1].toInt();
-    int new_x = portals[i].toArray()[2].toInt();
-    int new_y = portals[i].toArray()[3].toInt();
-    obstacles_and_bonuses_[static_cast<unsigned int>(
-        curr_x)][static_cast<unsigned int>(curr_y)] =
-        std::shared_ptr<Portal>(new Portal(map_, curr_x, curr_y, new_x, new_y));
-    obstacles_and_bonuses_[static_cast<unsigned int>(
-        new_x)][static_cast<unsigned int>(new_y)] =
-        std::shared_ptr<Portal>(new Portal(map_, new_x, new_y, curr_x, curr_y));
+  for (const auto& portal : portals) {
+    auto curr_x = static_cast<uint32_t>(portal.toArray()[0].toInt());
+    auto curr_y = static_cast<uint32_t>(portal.toArray()[1].toInt());
+    auto new_x = static_cast<uint32_t>(portal.toArray()[2].toInt());
+    auto new_y = static_cast<uint32_t>(portal.toArray()[3].toInt());
+    obstacles_and_bonuses_[curr_x][curr_y] =
+        std::make_shared<Portal>(map_, curr_x, curr_y, new_x, new_y);
+    obstacles_and_bonuses_[new_x][new_y] =
+        std::make_shared<Portal>(map_, new_x, new_y, curr_x, curr_y);
   }
 
-  for (int i = 0; i < charge_buttons_.size(); ++i) {
-    charge_buttons_[i]->show();
+  for (auto& charge_button : charge_buttons_) {
+    charge_button->show();
   }
 
   timer_id_ = startTimer(timer_duration_);
@@ -640,7 +663,7 @@ void MainWindow::PauseOrContinue() {
 }
 
 void MainWindow::PressVirtualKey(Qt::Key key) {
-  QKeyEvent *event = new QKeyEvent(QEvent::KeyRelease, key, Qt::NoModifier);
+  auto event = new QKeyEvent(QEvent::KeyRelease, key, Qt::NoModifier);
   QApplication::instance()->sendEvent(this, event);
 }
 
@@ -657,7 +680,7 @@ void MainWindow::FindInteractingObjects() {
     auto rocket = rockets_.begin();
     while (rocket != rockets_.end()) {
       if (std::dynamic_pointer_cast<Rocket>(*rocket) == nullptr) {
-        rocket++;
+        ++rocket;
         continue;
       }
       if (HaveObjectsCollided(*rocket, *tank)) {
@@ -666,24 +689,25 @@ void MainWindow::FindInteractingObjects() {
         rocket = rockets_.erase(rocket);
         continue;
       }
-      rocket++;
+      ++rocket;
     }
-    tank++;
+    ++tank;
   }
 }
 
 bool MainWindow::HaveObjectsCollided(
-    const std::shared_ptr<Movable> &obj1,
-    const std::shared_ptr<Movable> &obj2) const {
+    const std::shared_ptr<Movable>& obj1,
+    const std::shared_ptr<Movable>& obj2) const {
   if (obj1 == obj2 || IsRocketByThisTank(obj1, obj2)) {
     return false;
   }
 
   return !(
       (obj1->GetUpperLeftX() >= obj2->GetUpperLeftX() + obj2->GetWidth()) ||
-      (obj1->GetUpperLeftX() + obj1->GetWidth() <= obj2->GetUpperLeftX()) ||
-      (obj1->GetUpperLeftY() >= obj2->GetUpperLeftY() + obj2->GetHeight()) ||
-      (obj1->GetUpperLeftY() + obj1->GetHeight() <= obj2->GetUpperLeftY()));
+          (obj1->GetUpperLeftX() + obj1->GetWidth() <= obj2->GetUpperLeftX()) ||
+          (obj1->GetUpperLeftY() >=
+            obj2->GetUpperLeftY() + obj2->GetHeight()) ||
+          (obj1->GetUpperLeftY() + obj1->GetHeight() <= obj2->GetUpperLeftY()));
 }
 
 void MainWindow::CheckDeadObjects() {
@@ -701,7 +725,7 @@ void MainWindow::CheckDeadObjects() {
       object = tanks_.erase(object);
       continue;
     }
-    object++;
+    ++object;
   }
 
   auto copy = objects_copies_.begin();
@@ -711,31 +735,31 @@ void MainWindow::CheckDeadObjects() {
       copy = objects_copies_.erase(copy);
       continue;
     }
-    copy++;
+    ++copy;
   }
   if (tanks_.size() == number_of_player_tanks_) {
     GameOver(true);
   }
 }
 
-void MainWindow::MakeBoom(const std::shared_ptr<Movable> &object) {
-  std::shared_ptr<Boom> boom(new Boom(map_, object, 1000));
+void MainWindow::MakeBoom(const std::shared_ptr<Movable>& object) {
+  auto boom = std::make_shared<Boom>(map_, object, 1000);
   rockets_.append(boom);
   boom->StartMovement(1, tanks_, &objects_copies_, &obstacles_and_bonuses_);
 }
 
-void MainWindow::ShootRocket(const std::shared_ptr<Tank> &tank) {
+void MainWindow::ShootRocket(const std::shared_ptr<Tank>& tank) {
   std::shared_ptr<Rocket> rocket;
   if (std::dynamic_pointer_cast<Bot>(tank) == nullptr) {
-    rocket = std::shared_ptr<Rocket>(new Rocket(
+    rocket = std::make_shared<Rocket>(
         map_, tank, types_of_rockets_[tank->GetTypeOfCharge()].speed_,
         types_of_rockets_[tank->GetTypeOfCharge()].power_,
-        static_cast<TypeOfRocket>(tank->GetTypeOfCharge())));
+        static_cast<TypeOfRocket>(tank->GetTypeOfCharge()));
     tank->MinusCharge(tank->GetTypeOfCharge());
     RedrawChargeButtons();
   } else {
-    rocket = std::shared_ptr<Rocket>(
-        new Rocket(map_, tank, 250, 10, TypeOfRocket::MediumRocket));
+    rocket = std::make_shared<Rocket>(map_, tank, 250, 10,
+                                      TypeOfRocket::MediumRocket);
   }
 
   rockets_.append(rocket);
@@ -749,8 +773,8 @@ void MainWindow::ShootRocket(const std::shared_ptr<Tank> &tank) {
 }
 
 bool MainWindow::IsRocketByThisTank(
-    const std::shared_ptr<Movable> &rocket,
-    const std::shared_ptr<Movable> &tank) const {
+    const std::shared_ptr<Movable>& rocket,
+    const std::shared_ptr<Movable>& tank) const {
   auto casted_rocket = std::dynamic_pointer_cast<Rocket>(rocket);
   auto casted_tank = std::dynamic_pointer_cast<Tank>(tank);
   if (casted_rocket != nullptr && casted_tank != nullptr) {
@@ -763,8 +787,8 @@ int MainWindow::GetTimerDuration() const { return timer_duration_; }
 
 void MainWindow::ToggleVirtualKeys() {
   virtual_keys_shown_ = !virtual_keys_shown_;
-  for (int i = 0; i < virtual_keys_buttons_.size(); ++i) {
-    virtual_keys_buttons_[i]->setVisible(virtual_keys_shown_);
+  for (auto& button : virtual_keys_buttons_) {
+    button->setVisible(virtual_keys_shown_);
   }
   RedrawButtons();
 }
@@ -788,8 +812,8 @@ void MainWindow::SwitchVirtualButtonsLayout() {
     }
     new_virtual_keys_enabled_ = false;
   } else {
-    for (int i = 0; i < virtual_keys_buttons_.size(); ++i) {
-      virtual_buttons_layout_->removeWidget(virtual_keys_buttons_[i]);
+    for (auto& button : virtual_keys_buttons_) {
+      virtual_buttons_layout_->removeWidget(button);
     }
 
     new_virtual_buttons_layout_left_->addWidget(virtual_keys_buttons_[1]);
@@ -871,7 +895,7 @@ void MainWindow::InitializeNewGameDialog() {
   QJsonArray tanks = json["tanks"].toArray();
 
   for (int i = 0; i < tanks.size(); ++i) {
-    TankQualities qualities;
+    TankQualities qualities{};
     qualities.speed = tanks[i].toObject()["speed"].toInt();
     qualities.rate_of_fire = tanks[i].toObject()["rate_of_fire"].toInt();
     qualities.max_health = tanks[i].toObject()["max_health"].toInt();
@@ -888,8 +912,8 @@ void MainWindow::InitializeNewGameDialog() {
       new QLabel(QString(tr("Difficulty")) + QString(":"), new_game_dialog_);
   switch_difficulty_menu_ = new QComboBox(new_game_dialog_);
 
-  for (int i = 0; i < difficulty_levels_names_.size(); ++i) {
-    switch_difficulty_menu_->addItem(difficulty_levels_names_[i]);
+  for (const auto& name : difficulty_levels_names_) {
+    switch_difficulty_menu_->addItem(name);
   }
 
   new_game_dialog_layout_ = new QVBoxLayout(new_game_dialog_);
@@ -908,13 +932,13 @@ void MainWindow::InitializeNewGameDialog() {
 
   connect(new_game_dialog_buttons_->button(QDialogButtonBox::Ok),
           &QPushButton::clicked, [&]() {
-            current_game_options_.map_number = switch_map_menu_->currentIndex();
-            current_game_options_.tank_number =
-                switch_tank_menu_->currentIndex();
-            current_game_options_.difficulty_level_number =
-                switch_difficulty_menu_->currentIndex();
-            RedrawContent();
-          });
+        current_game_options_.map_number = switch_map_menu_->currentIndex();
+        current_game_options_.tank_number =
+            switch_tank_menu_->currentIndex();
+        current_game_options_.difficulty_level_number =
+            switch_difficulty_menu_->currentIndex();
+        RedrawContent();
+      });
   connect(new_game_dialog_buttons_, SIGNAL(accepted()), new_game_dialog_,
           SLOT(accept()));
 
@@ -940,9 +964,9 @@ void MainWindow::InitializeSettingsDialog() {
       new QLabel(QString(tr("Performance")) + QString(":"), settings_dialog_);
 
   fps_menu_ = new QComboBox(settings_dialog_);
-  for (const auto &option : available_fps_options_) {
+  for (const auto& option : available_fps_options_) {
     fps_menu_->addItem(option.first + QString(" ") +
-                       QString(tr("frames per second")));
+        QString(tr("frames per second")));
   }
 
   language_menu_label_ =
@@ -981,9 +1005,9 @@ void MainWindow::InitializeSettingsDialog() {
 
   connect(settings_dialog_buttons_->button(QDialogButtonBox::Ok),
           &QPushButton::clicked, [&]() {
-            ChangeCurrentSettings();
-            DetermineCurrentSettings();
-          });
+        ChangeCurrentSettings();
+        DetermineCurrentSettings();
+      });
 
   connect(settings_dialog_buttons_, SIGNAL(accepted()), settings_dialog_,
           SLOT(accept()));
@@ -1064,14 +1088,11 @@ void MainWindow::ChangeCurrentSettings() {
 
   QString language;
   switch (language_menu_->currentIndex()) {
-    case 0:
-      language = "be_BY";
+    case 0:language = "be_BY";
       break;
-    case 1:
-      language = "en_US";
+    case 1:language = "en_US";
       break;
-    case 2:
-      language = "ru_RU";
+    case 2:language = "ru_RU";
       break;
   }
 
@@ -1093,7 +1114,7 @@ void MainWindow::ChangeCurrentSettings() {
   repaint();
 }
 
-QJsonObject MainWindow::GetJsonObjectFromFile(const QString &filepath) {
+QJsonObject MainWindow::GetJsonObjectFromFile(const QString& filepath) {
   QFile file(filepath);
   file.open(QIODevice::ReadOnly);
   QString text = file.readAll();
@@ -1102,7 +1123,7 @@ QJsonObject MainWindow::GetJsonObjectFromFile(const QString &filepath) {
   return json_document.object();
 }
 
-Direction MainWindow::DetermineDirection(const QString &start_direction) const {
+Direction MainWindow::DetermineDirection(const QString& start_direction) const {
   if (start_direction == "up") {
     return Direction::Up;
   }
@@ -1120,7 +1141,7 @@ void MainWindow::RandomBonus(Bonus bonus) {
     for (size_t j = 0; j < obstacles_and_bonuses_[i].size(); j++) {
       if (bonus == Bonus::TypeMedicalKit) {
         if (std::dynamic_pointer_cast<MedicalKit>(
-                obstacles_and_bonuses_[i][j]) != nullptr) {
+            obstacles_and_bonuses_[i][j]) != nullptr) {
           obstacles_and_bonuses_[i][j] = nullptr;
         }
       } else if (bonus == Bonus::TypeCharge) {
@@ -1135,27 +1156,25 @@ void MainWindow::RandomBonus(Bonus bonus) {
   int temp = 100;
   bool flag = true;
   while (temp > 0) {
-    int x, y;
-    x = qrand() % (map_->GetNumberOfCellsHorizontally() - 1);
-    y = qrand() % (map_->GetNumberOfCellsVertically() - 1);
-    for (auto &object : tanks_) {
+    auto x = qrand() % (map_->GetNumberOfCellsHorizontally() - 1);
+    auto y = qrand() % (map_->GetNumberOfCellsVertically() - 1);
+    for (auto& object : tanks_) {
       if (object->GetCellX() == x && object->GetCellY() == y) {
         flag = false;
         break;
       }
     }
-    if (obstacles_and_bonuses_[static_cast<unsigned>(x)]
-                              [static_cast<unsigned>(y)] == nullptr &&
+    if (obstacles_and_bonuses_[x][y] == nullptr &&
         flag && map_->GetField(x, y) != CellType::Wall) {
       if (bonus == Bonus::TypeMedicalKit) {
-        obstacles_and_bonuses_[static_cast<unsigned>(x)][static_cast<unsigned>(
-            y)] = std::shared_ptr<MedicalKit>(new MedicalKit(map_, x, y));
+        obstacles_and_bonuses_[x][y] =
+            std::make_shared<MedicalKit>(map_, x, y);
       } else if (bonus == Bonus::TypeCharge) {
-        obstacles_and_bonuses_[static_cast<unsigned>(x)][static_cast<unsigned>(
-            y)] = std::shared_ptr<Charge>(new Charge(map_, x, y));
+        obstacles_and_bonuses_[x][y] =
+            std::make_shared<Charge>(map_, x, y);
       }
       return;
     }
-    temp--;
+    --temp;
   }
 }

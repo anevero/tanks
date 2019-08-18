@@ -16,43 +16,58 @@
 enum class Direction { Up = 0, Right = 1, Down = 2, Left = 3 };
 
 struct Coordinates {
-  int x;
-  int y;
+  size_t x;
+  size_t y;
 };
 
 class Movable : public std::enable_shared_from_this<Movable> {
  public:
-  Movable(const std::shared_ptr<Map>& map, const int cell_x, const int cell_y,
-          const Direction direction, const int speed);
+  Movable(const std::shared_ptr<Map>& map, size_t cell_x, size_t cell_y,
+          Direction direction, int speed);
   virtual ~Movable() = default;
   virtual void LoadImage() = 0;
 
+  // Defines current move characteristics by initializing some variables.
   virtual void StartMovement(
-      const int number_of_cells, const QList<std::shared_ptr<Movable>>& tanks,
+      int number_of_cells, const QList<std::shared_ptr<Movable>>& tanks,
       QList<QPair<std::shared_ptr<Movable>, Coordinates>>* objects_copies_,
       std::vector<std::vector<std::shared_ptr<ObjectOnMap>>>* objects);
-  virtual void Move(const int milliseconds_passed);
+  // Updates state of current move by updating some variables.
+  virtual void Move(int milliseconds_passed);
+  // Change current move direction to the reverse.
   virtual void TurnReverseOn();
+  // Change current move direction from the reverse to normal.
   virtual void TurnReverseOff();
 
+  // Defines current rotation characteristics by initializing some variables.
   virtual void StartRotation();
-  virtual void Rotate(const int milliseconds_passed);
+  // Updates state of current rotation by updating some variables.
+  virtual void Rotate(int milliseconds_passed);
+  // Change current rotation direction to the reverse.
   virtual void TurnRotationReverseOn();
+  // Change current rotation direction from the reverse to normal.
   virtual void TurnRotationReverseOff();
 
-  virtual void UpdateCoordinates(const int cell_x, const int cell_y);
+  // Updates object's coordinates on the map according to the cell numbers and
+  // the state of movement or rotation.
+  virtual void UpdateCoordinates(size_t cell_x, size_t cell_y);
   virtual void Draw(QPainter& painter) = 0;
+  // Changes object's coordinates from current to previous. It's used in
+  // portals implementation. To draw one tank in two places at the same time
+  // we firstly draw it in the first place, then change its coordinates to copy
+  // coordinates and draw it once again in the second place, then return to
+  // original coordinates.
   virtual void ReturnToOriginal();
 
-  virtual int GetSpeed() const;
+  [[maybe_unused]] virtual int GetSpeed() const;
 
   virtual int GetTimeToFinishMovement() const;
   virtual int GetCellsToFinishMovement() const;
   virtual int GetTimeToFinishRotation() const;
   virtual bool IsMovingOrRotating() const;
 
-  virtual int GetReverseState() const;
-  virtual int GetRotationReverseState() const;
+  [[maybe_unused]] virtual int GetReverseState() const;
+  [[maybe_unused]] virtual int GetRotationReverseState() const;
   virtual int GetIntDirection() const;
   virtual Direction GetDirection() const;
 
@@ -60,20 +75,20 @@ class Movable : public std::enable_shared_from_this<Movable> {
   virtual int GetUpperLeftY() const;
   virtual int GetWidth() const;
   virtual int GetHeight() const;
-  virtual int GetCellX() const;
-  virtual int GetCellY() const;
+  virtual size_t GetCellX() const;
+  virtual size_t GetCellY() const;
 
  protected:
   virtual void SwitchToNextDirection();
   virtual void SwitchToPrevDirection();
   virtual void RescaleImage();
-  Coordinates GetNewPortalCells(int portal_cell_x, int portal_cell_y,
-                                int new_cell_x, int new_cell_y);
+  Coordinates GetNewPortalCells(size_t portal_cell_x, size_t portal_cell_y,
+                                size_t new_cell_x, size_t new_cell_y);
 
-  int cell_x_;
-  int cell_y_;
-  int prev_cell_x_;
-  int prev_cell_y_;
+  size_t cell_x_;
+  size_t cell_y_;
+  size_t prev_cell_x_;
+  size_t prev_cell_y_;
 
   int cur_upper_left_x_{};
   int cur_upper_left_y_{};

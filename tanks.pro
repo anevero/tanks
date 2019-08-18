@@ -3,7 +3,8 @@ QT += widgets core gui multimedia
 
 TARGET = Tanks
 TEMPLATE = app
-CONFIG += c++11
+CONFIG += c++17
+QMAKE_CXXFLAGS += -std=c++17
 DEFINES += QT_DEPRECATED_WARNINGS
 
 ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android-sources
@@ -47,4 +48,4 @@ TRANSLATIONS += \
 
 RC_ICONS = app_icon.ico
 
-VERSION = 0.8.0.0
+VERSION = 0.8.1.0
