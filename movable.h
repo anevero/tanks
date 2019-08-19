@@ -34,18 +34,18 @@ class Movable : public std::enable_shared_from_this<Movable> {
       std::vector<std::vector<std::shared_ptr<ObjectOnMap>>>* objects);
   // Updates state of current move by updating some variables.
   virtual void Move(int milliseconds_passed);
-  // Change current move direction to the reverse.
+  // Changes current move direction to the reverse.
   virtual void TurnReverseOn();
-  // Change current move direction from the reverse to normal.
+  // Changes current move direction from the reverse to normal.
   virtual void TurnReverseOff();
 
   // Defines current rotation characteristics by initializing some variables.
   virtual void StartRotation();
   // Updates state of current rotation by updating some variables.
   virtual void Rotate(int milliseconds_passed);
-  // Change current rotation direction to the reverse.
+  // Changes current rotation direction to the reverse.
   virtual void TurnRotationReverseOn();
-  // Change current rotation direction from the reverse to normal.
+  // Changes current rotation direction from the reverse to normal.
   virtual void TurnRotationReverseOff();
 
   // Updates object's coordinates on the map according to the cell numbers and

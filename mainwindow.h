@@ -61,11 +61,11 @@ class MainWindow : public QMainWindow {
   ~MainWindow() override = default;
 
  private:
-  void mouseReleaseEvent(QMouseEvent* event) override;
-  void keyReleaseEvent(QKeyEvent* event) override;
-  void paintEvent(QPaintEvent*) override;
-  void resizeEvent(QResizeEvent*) override;
-  void timerEvent(QTimerEvent*) override;
+  [[maybe_unused]] void mouseReleaseEvent(QMouseEvent* event) override;
+  [[maybe_unused]] void keyReleaseEvent(QKeyEvent* event) override;
+  [[maybe_unused]] void paintEvent(QPaintEvent*) override;
+  [[maybe_unused]] void resizeEvent(QResizeEvent*) override;
+  [[maybe_unused]] void timerEvent(QTimerEvent*) override;
 
  private slots:
   // Runs new game dialog and switches options inside it.
