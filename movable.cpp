@@ -261,7 +261,7 @@ Coordinates Movable::GetNewPortalCells(
     cells.y--;
   } else if (new_cell_y == cell_y_ + 1) {
     cells.y++;
-  } else if (new_cell_x == cell_x_ - -1) {
+  } else if (new_cell_x == cell_x_ - 1) {
     cells.x--;
   } else {
     cells.x++;
