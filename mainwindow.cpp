@@ -24,14 +24,14 @@ MainWindow::MainWindow(QWidget* parent)
       types_of_rockets_({{7, 100, true}, {15, 200, true}, {30, 300, false}}) {
   setMouseTracking(true);
 
-  new_game_button_->setSizePolicy(
-      QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
-  pause_continue_button_->setSizePolicy(
-      QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
-  settings_button_->setSizePolicy(
-      QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
-  about_button_->setSizePolicy(
-      QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
+  new_game_button_->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,
+                                              QSizePolicy::Expanding));
+  pause_continue_button_->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,
+                                                    QSizePolicy::Expanding));
+  settings_button_->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,
+                                              QSizePolicy::Expanding));
+  about_button_->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,
+                                           QSizePolicy::Expanding));
 
   new_game_button_->setFocusPolicy(Qt::NoFocus);
   pause_continue_button_->setFocusPolicy(Qt::NoFocus);
@@ -39,9 +39,9 @@ MainWindow::MainWindow(QWidget* parent)
   about_button_->setFocusPolicy(Qt::NoFocus);
 
   screen_timer_->setSegmentStyle(QLCDNumber::Flat);
-  screen_timer_->setToolTip(tr("You have") + " " +
-      QString::number(minutes_per_round_) + " " +
-      tr("minutes per round"));
+  screen_timer_->setToolTip(
+      tr("You have") + " " + QString::number(minutes_per_round_) + " "
+          + tr("minutes per round"));
   standart_lcdnumber_palette_ = screen_timer_->palette();
   red_lcdnumber_palette_ = standart_lcdnumber_palette_;
   red_lcdnumber_palette_.setColor(QPalette::WindowText, QColor(255, 0, 0));
@@ -58,14 +58,14 @@ MainWindow::MainWindow(QWidget* parent)
   }
 
   connect(new_game_button_, SIGNAL(clicked()), this, SLOT(NewGame()));
-  connect(pause_continue_button_, SIGNAL(clicked()), this,
-          SLOT(PauseOrContinue()));
+  connect(
+      pause_continue_button_, SIGNAL(clicked()), this, SLOT(PauseOrContinue()));
   connect(settings_button_, SIGNAL(clicked()), this, SLOT(Settings()));
   connect(about_button_, SIGNAL(clicked()), this, SLOT(About()));
 
   for (int i = 0; i < charge_buttons_.size(); ++i) {
-    charge_buttons_[i]->setSizePolicy(
-        QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
+    charge_buttons_[i]->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,
+                                                  QSizePolicy::Expanding));
     charge_buttons_[i]->setFocusPolicy(Qt::NoFocus);
     charge_buttons_layout_->addWidget(charge_buttons_[i]);
     charge_buttons_[i]->hide();
@@ -91,8 +91,8 @@ MainWindow::MainWindow(QWidget* parent)
     virtual_keys_buttons_[i]->setAutoRepeat(true);
     connect(virtual_keys_buttons_[i], &QPushButton::released,
             [this, i]() { PressVirtualKey(virtual_keys_encodings_[i]); });
-    virtual_keys_buttons_[i]->setSizePolicy(
-        QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
+    virtual_keys_buttons_[i]->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,
+                                                        QSizePolicy::Expanding));
     virtual_keys_buttons_[i]->setFocusPolicy(Qt::NoFocus);
   }
 
@@ -134,18 +134,17 @@ MainWindow::MainWindow(QWidget* parent)
 }
 
 void MainWindow::mouseReleaseEvent(QMouseEvent* event) {
-  auto current_cell_x = (event->x() - map_->GetUpperLeftX()) *
-      map_->GetNumberOfCellsHorizontally() / map_->GetWidth();
+  auto current_cell_x = (event->x() - map_->GetUpperLeftX())
+      * map_->GetNumberOfCellsHorizontally() / map_->GetWidth();
   auto current_cell_y = (event->y() - map_->GetUpperLeftY()) *
       map_->GetNumberOfCellsVertically() / map_->GetHeight();
   for (const auto& object : tanks_) {
     if (object->GetCellX() == current_cell_x &&
         object->GetCellY() == current_cell_y) {
-      QToolTip::showText(
-          event->globalPos(),
-          tr("Health") + ": " +
-              QString::number(
-                  std::dynamic_pointer_cast<Tank>(object)->GetCurrentHealth()));
+      QToolTip::showText(event->globalPos(),
+                         tr("Health") + ": "
+                             + QString::number(std::dynamic_pointer_cast<Tank>(
+                                 object)->GetCurrentHealth()));
       break;
     }
   }
@@ -450,7 +449,8 @@ void MainWindow::RedrawButtons() {
   main_buttons_layout_->setGeometry(QRect(
       w_indent_ + static_cast<int>(0.04 * sq_width_),
       h_indent_ + static_cast<int>(0.05 * sq_height_),
-      static_cast<int>(0.2 * sq_width_), static_cast<int>(0.4 * sq_height_)));
+      static_cast<int>(0.2 * sq_width_),
+      static_cast<int>(0.4 * sq_height_)));
 
   if (virtual_keys_shown_ && !new_virtual_keys_enabled_) {
     virtual_buttons_layout_->setSpacing(static_cast<int>(0.01 * sq_height_));
@@ -495,7 +495,8 @@ void MainWindow::RedrawChargeButtons() {
   charge_buttons_layout_->setGeometry(QRect(
       w_indent_ + static_cast<int>(0.04 * sq_width_),
       height() - h_indent_ - static_cast<int>(0.385 * sq_height_),
-      static_cast<int>(0.2 * sq_width_), static_cast<int>(0.13 * sq_height_)));
+      static_cast<int>(0.2 * sq_width_),
+      static_cast<int>(0.13 * sq_height_)));
 }
 
 void MainWindow::UpdateScreenTimer() {
@@ -559,8 +560,8 @@ void MainWindow::RedrawContent() {
       available_tank_types_[current_game_options_.tank_number]));
 
   QJsonObject json = GetJsonObjectFromFile(
-      ":/data/map" + QString::number(current_game_options_.map_number + 1) +
-          ".json");
+      ":/data/map" + QString::number(current_game_options_.map_number + 1)
+          + ".json");
 
   QJsonArray bots =
       json["difficulty"]
@@ -601,8 +602,7 @@ void MainWindow::RedrawContent() {
       std::vector<std::vector<std::shared_ptr<ObjectOnMap>>>(
           map_->GetNumberOfCellsVertically(),
           std::vector<std::shared_ptr<ObjectOnMap>>(
-              map_->GetNumberOfCellsHorizontally(),
-              nullptr));
+              map_->GetNumberOfCellsHorizontally(), nullptr));
 
   QJsonArray obstacles =
       json["difficulty"]
@@ -706,7 +706,7 @@ bool MainWindow::HaveObjectsCollided(
       (obj1->GetUpperLeftX() >= obj2->GetUpperLeftX() + obj2->GetWidth()) ||
           (obj1->GetUpperLeftX() + obj1->GetWidth() <= obj2->GetUpperLeftX()) ||
           (obj1->GetUpperLeftY() >=
-            obj2->GetUpperLeftY() + obj2->GetHeight()) ||
+              obj2->GetUpperLeftY() + obj2->GetHeight()) ||
           (obj1->GetUpperLeftY() + obj1->GetHeight() <= obj2->GetUpperLeftY()));
 }
 

@@ -54,9 +54,11 @@ void Map::DrawMap(QPainter& painter) {
 CellType Map::GetField(const size_t cell_x, const size_t cell_y) const {
   return map_[cell_x][cell_y];
 }
+
 int Map::GetWallsPrecalc(const size_t cell_x, const size_t cell_y) const {
   return walls_precalc_[cell_x][cell_y];
 }
+
 size_t Map::GetNumberOfCellsHorizontally() const { return map_[0].size(); }
 size_t Map::GetNumberOfCellsVertically() const { return map_.size(); }
 int Map::GetUpperLeftX() const { return cur_upper_left_x_; }

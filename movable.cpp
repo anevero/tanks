@@ -2,8 +2,11 @@
 #include "rocket.h"
 #include "tank.h"
 
-Movable::Movable(const std::shared_ptr<Map>& map, const size_t cell_x,
-                 const size_t cell_y, const Direction direction, const int speed)
+Movable::Movable(const std::shared_ptr<Map>& map,
+                 const size_t cell_x,
+                 const size_t cell_y,
+                 const Direction direction,
+                 const int speed)
     : cell_x_(cell_x),
       cell_y_(cell_y),
       prev_cell_x_(cell_x),
@@ -166,16 +169,16 @@ void Movable::UpdateCoordinates(const size_t cell_x, const size_t cell_y) {
   prev_upper_left_x_ = cur_upper_left_x_;
   prev_upper_left_y_ = cur_upper_left_y_;
   cur_upper_left_x_ =
-      map_->GetUpperLeftX() + (cur_width_ * static_cast<int>(cell_x)) -
-          reverse_ * static_cast<int>(
-              (directions_[1] * cur_width_ * movement_proportion) -
-                  (directions_[3] * cur_width_ * movement_proportion));
+      map_->GetUpperLeftX() + (cur_width_ * static_cast<int>(cell_x))
+          - reverse_ * static_cast<int>(
+              (directions_[1] * cur_width_ * movement_proportion)
+                  - (directions_[3] * cur_width_ * movement_proportion));
 
   cur_upper_left_y_ =
-      map_->GetUpperLeftY() + (cur_height_ * static_cast<int>(cell_y)) -
-          reverse_ * static_cast<int>(
-              (directions_[2] * cur_height_ * movement_proportion) -
-                  (directions_[0] * cur_height_ * movement_proportion));
+      map_->GetUpperLeftY() + (cur_height_ * static_cast<int>(cell_y))
+          - reverse_ * static_cast<int>(
+              (directions_[2] * cur_height_ * movement_proportion)
+                  - (directions_[0] * cur_height_ * movement_proportion));
 
   if (map_->GetField(cell_x_, cell_y_) == CellType::Forest) {
     if (movement_proportion <= 0.5) {

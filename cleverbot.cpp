@@ -55,19 +55,19 @@ bool CleverBot::IsMovingStartNeeded(
       delta_x = -1;
     }
 
-    if (map_->GetField(tank->GetCellX(), tank->GetCellY()) ==
-        CellType::Forest) {
+    if (map_->GetField(tank->GetCellX(), tank->GetCellY())
+        == CellType::Forest) {
       return Bot::IsMovingStartNeeded(objects, portals);
-    } else if (distance_[cell_x - delta_x][cell_y - delta_y] ==
-        distance_[cell_x][cell_y] - 1) {
-      if (distance_[cell_x][cell_y] - 1 ==
-          distance_[tank->GetCellX()][tank->GetCellY()]) {
+    } else if (distance_[cell_x - delta_x][cell_y - delta_y]
+        == distance_[cell_x][cell_y] - 1) {
+      if (distance_[cell_x][cell_y] - 1
+          == distance_[tank->GetCellX()][tank->GetCellY()]) {
         return false;
       }
       number_of_cells_to_move_ = 1;
       return true;
-    } else if (distance_[cell_x - delta_y][cell_y - delta_x] ==
-        distance_[cell_x][cell_y] - 1) {
+    } else if (distance_[cell_x - delta_y][cell_y - delta_x]
+        == distance_[cell_x][cell_y] - 1) {
       if (delta_x == 0) {
         TurnRotationReverseOn();
       } else {
@@ -75,8 +75,8 @@ bool CleverBot::IsMovingStartNeeded(
       }
       number_of_turns_ = 2;
       return false;
-    } else if (distance_[cell_x + delta_y][cell_y + delta_x] ==
-        distance_[cell_x][cell_y] - 1) {
+    } else if (distance_[cell_x + delta_y][cell_y + delta_x]
+        == distance_[cell_x][cell_y] - 1) {
       if (delta_x == 0) {
         TurnRotationReverseOff();
       } else {
@@ -84,8 +84,8 @@ bool CleverBot::IsMovingStartNeeded(
       }
       number_of_turns_ = 2;
       return false;
-    } else if (distance_[cell_x + delta_x][cell_y + delta_y] ==
-        distance_[cell_x][cell_y] - 1) {
+    } else if (distance_[cell_x + delta_x][cell_y + delta_y]
+        == distance_[cell_x][cell_y] - 1) {
       number_of_turns_ = 3;
       return false;
     }
@@ -141,10 +141,9 @@ void CleverBot::Bfs(
       continue;
     }
 
-    if (std::dynamic_pointer_cast<Portal>(
-        portals[cell_x][cell_y]) != nullptr) {
-      std::shared_ptr<Portal> portal = std::dynamic_pointer_cast<Portal>(
-          portals[cell_x][cell_y]);
+    if (std::dynamic_pointer_cast<Portal>(portals[cell_x][cell_y]) != nullptr) {
+      std::shared_ptr<Portal>
+          portal = std::dynamic_pointer_cast<Portal>(portals[cell_x][cell_y]);
       distance_[portal->GetNewCellX()][portal->GetNewCellY()] =
           current_distance - 1;
       int portal_cell_x = portal->GetNewCellX();
