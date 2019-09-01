@@ -35,8 +35,6 @@ bool Bot::IsRotationStartNeeded(const std::shared_ptr<Tank>&) {
   return false;
 }
 
-bool Bot::IsMoveNeeded() const { return time_to_finish_movement_ > 0; }
-
 bool Bot::IsMovingStartNeeded(
     const QList<std::shared_ptr<Movable>>&,
     const std::vector<std::vector<std::shared_ptr<ObjectOnMap>>>&) {
@@ -93,7 +91,7 @@ bool Bot::IsShotNeeded(const std::shared_ptr<Map>& map,
   return false;
 }
 
-bool Bot::CheckDirection(const int& tank, const int& bot, const int direction) {
+bool Bot::CheckDirection(const int tank, const int bot, const int direction) {
   if (tank > bot) {
     if (direction == 0 || direction == 3) {
       return false;

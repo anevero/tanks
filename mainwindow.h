@@ -142,7 +142,7 @@ class MainWindow : public QMainWindow {
   // Initializes settings dialog with buttons and menus. Runs once (!) in the
   // constructor of main window.
   void InitializeSettingsDialog();
-  // Initializes about dialog with necessary content. Runs once (!) in the
+  // Initializes About dialog with necessary content. Runs once (!) in the
   // constructor of main window.
   void InitializeAboutDialog();
   // Updates variables which store settings state with the information from
@@ -152,8 +152,7 @@ class MainWindow : public QMainWindow {
   // writes new info about settings to the settings file.
   void ChangeCurrentSettings();
   QJsonObject GetJsonObjectFromFile(const QString& filepath);
-  // Returns direction object corresponding to the string. Is's something like
-  // explicit conversion from string to Direction enum.
+  // Returns direction object corresponding to the string.
   Direction DetermineDirection(
       const QString& start_direction) const;
 

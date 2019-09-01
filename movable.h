@@ -27,21 +27,29 @@ class Movable : public std::enable_shared_from_this<Movable> {
   virtual ~Movable() = default;
   virtual void LoadImage() = 0;
 
-  // Defines current move characteristics by initializing some variables.
+  // Defines current move characteristics by initializing several variables,
+  // including current speed, number of cells to finish movement, time to
+  // finish movement, copy cell coordinates in case of moving through portal.
+  // These variables are initialized accordingly to the current state of movable
+  // object, e.g. obstacles or walls in front of him.
   virtual void StartMovement(
       int number_of_cells, const QList<std::shared_ptr<Movable>>& tanks,
       QList<QPair<std::shared_ptr<Movable>, Coordinates>>* objects_copies_,
       std::vector<std::vector<std::shared_ptr<ObjectOnMap>>>* objects);
-  // Updates state of current move by updating some variables.
+  // Updates state of current move by updating time to finish movement variable.
   virtual void Move(int milliseconds_passed);
   // Changes current move direction to the reverse.
   virtual void TurnReverseOn();
   // Changes current move direction from the reverse to normal.
   virtual void TurnReverseOff();
 
-  // Defines current rotation characteristics by initializing some variables.
+  // Defines current rotation characteristics by initializing several variables,
+  // including current rotation speed, time to finish rotation.
+  // These variables are initialized accordingly to the current state of movable
+  // object, e.g. obstacles or walls in front of him.
   virtual void StartRotation();
-  // Updates state of current rotation by updating some variables.
+  // Updates state of current rotation by updating time to finish rotation
+  // variable.
   virtual void Rotate(int milliseconds_passed);
   // Changes current rotation direction to the reverse.
   virtual void TurnRotationReverseOn();
@@ -58,8 +66,6 @@ class Movable : public std::enable_shared_from_this<Movable> {
   // coordinates and draw it once again in the second place, then return to
   // original coordinates.
   virtual void ReturnToOriginal();
-
-  [[maybe_unused]] virtual int GetSpeed() const;
 
   virtual int GetTimeToFinishMovement() const;
   virtual int GetCellsToFinishMovement() const;

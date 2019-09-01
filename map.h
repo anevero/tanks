@@ -60,6 +60,7 @@ class Map {
   size_t tank_init_cell_y_;
   QString tank_start_direction_;
 
+  // Number of types in CellType enum class, defined earlier in this file.
   const uint32_t number_of_cell_types_ = 5;
 };
 

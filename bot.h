@@ -27,7 +27,6 @@ class Bot : public Tank {
   void LoadImage() override;
 
   virtual bool IsTurnNeeded() const;
-  [[maybe_unused]] virtual bool IsMoveNeeded() const;
   virtual bool IsRotationStartNeeded(const std::shared_ptr<Tank>&);
   virtual bool IsMovingStartNeeded(
       const QList<std::shared_ptr<Movable>>&,
@@ -51,7 +50,7 @@ class Bot : public Tank {
   const int amount_of_turns_;
   const int side_rotation_frequency_;
 
-  virtual bool CheckDirection(const int& tank, const int& bot, int direction);
+  virtual bool CheckDirection(const int tank, const int bot, int direction);
   bool IsWallBetweenObjectsX(const std::shared_ptr<Map>& map, size_t tank_x,
                              size_t tank_y, size_t bot_x, size_t bot_y);
   bool IsWallBetweenObjectsY(const std::shared_ptr<Map>& map, size_t tank_x,

@@ -78,6 +78,7 @@ void Movable::StartMovement(
       new_cell_y = cells.y;
     }
   }
+
   if ((*objects)[new_cell_x][new_cell_y] != nullptr &&
       std::dynamic_pointer_cast<Portal>(
           (*objects)[new_cell_x][new_cell_y]) == nullptr) {
@@ -207,8 +208,6 @@ void Movable::ReturnToOriginal() {
   cur_upper_left_y_ = prev_upper_left_y_;
   opacity_ = prev_opacity_;
 }
-
-int Movable::GetSpeed() const { return current_speed_; }
 
 int Movable::GetTimeToFinishMovement() const {
   return time_to_finish_movement_;
