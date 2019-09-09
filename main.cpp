@@ -6,9 +6,9 @@
 #include <QTranslator>
 #include "mainwindow.h"
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
   QApplication a(argc, argv);
-  a.setStyle(QStyleFactory::create("Fusion"));
+  QApplication::setStyle(QStyleFactory::create("Fusion"));
 
   QString language{};
   bool charge_line = true;
@@ -16,13 +16,19 @@ int main(int argc, char *argv[]) {
   int fps_option;
 
 #ifdef Q_OS_ANDROID
+  // Workaround for the bug with random selection controls appearing on
+  // the screen (Android).
   qputenv("QT_QPA_NO_TEXT_HANDLES", "1");
+  // 60 FPS is enough for mobile devices.
   fps_option = 3;
 #else
+  // Desktop devices can deal with more FPS.
   fps_option = 1;
 #endif
 
   QFile settings_file("settings.json");
+  // Checks whether settings file has been already created. If not, it will be
+  // created later.
   if (settings_file.exists()) {
     settings_file.open(QIODevice::ReadOnly);
     QString text = settings_file.readAll();
@@ -41,12 +47,15 @@ int main(int argc, char *argv[]) {
     language = QLocale::system().name();
   }
 
+  // Loads english language if system locale name is different from Qt locale
+  // format (ISO 639  + ISO 3166).
   if (!translator.load(":/translations/tanks_" + language)) {
     translator.load(":/translations/tanks_en_US");
     language = "en_US";
   }
-  a.installTranslator(&translator);
+  QApplication::installTranslator(&translator);
 
+  // Creates new settings file based on current settings.
   QJsonObject new_json_obj;
   new_json_obj["language"] = language;
   new_json_obj["charge_line"] = charge_line;
@@ -63,5 +72,5 @@ int main(int argc, char *argv[]) {
   w.setWindowTitle("Tanks");
   w.show();
 
-  return a.exec();
+  return QApplication::exec();
 }

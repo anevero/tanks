@@ -87,7 +87,7 @@ bool ImprovedBot::IsShotNeeded(const std::shared_ptr<Map>& map,
   return false;
 }
 
-bool ImprovedBot::CheckDirection(const int& tank, const int& bot,
+bool ImprovedBot::CheckDirection(const int tank, const int bot,
                                  const int direction) {
   number_of_cells_to_move_ = 0;
   number_of_turns_ = 1;

@@ -2,8 +2,11 @@
 #include "rocket.h"
 #include "tank.h"
 
-Movable::Movable(const std::shared_ptr<Map>& map, const int cell_x,
-                 const int cell_y, const Direction direction, const int speed)
+Movable::Movable(const std::shared_ptr<Map>& map,
+                 const size_t cell_x,
+                 const size_t cell_y,
+                 const Direction direction,
+                 const int speed)
     : cell_x_(cell_x),
       cell_y_(cell_y),
       prev_cell_x_(cell_x),
@@ -19,10 +22,10 @@ void Movable::StartMovement(
     const int number_of_cells, const QList<std::shared_ptr<Movable>>& tanks,
     QList<QPair<std::shared_ptr<Movable>, Coordinates>>* objects_copies_,
     std::vector<std::vector<std::shared_ptr<ObjectOnMap>>>* objects) {
-  int new_cell_x = cell_x_ + reverse_ * (directions_[1] - directions_[3]);
-  int new_cell_y = cell_y_ + reverse_ * (directions_[2] - directions_[0]);
-  int old_cell_x = new_cell_x;
-  int old_cell_y = new_cell_y;
+  size_t new_cell_x = cell_x_ + reverse_ * (directions_[1] - directions_[3]);
+  size_t new_cell_y = cell_y_ + reverse_ * (directions_[2] - directions_[0]);
+  size_t old_cell_x = new_cell_x;
+  size_t old_cell_y = new_cell_y;
   if (map_->GetField(new_cell_x, new_cell_y) == CellType::Wall) {
     cells_to_finish_movement_ = 0;
     return;
@@ -50,12 +53,11 @@ void Movable::StartMovement(
             basic_speed_);
   }
 
-  if (std::dynamic_pointer_cast<Portal>((*objects)[static_cast<unsigned>(
-          new_cell_x)][static_cast<unsigned>(new_cell_y)]) != nullptr) {
+  if (std::dynamic_pointer_cast<Portal>((*objects)[new_cell_x][new_cell_y])
+      != nullptr) {
     if (dynamic_cast<Rocket*>(this) == nullptr) {
-      std::shared_ptr<Portal> portal = std::dynamic_pointer_cast<Portal>(
-          (*objects)[static_cast<unsigned>(new_cell_x)]
-                    [static_cast<unsigned>(new_cell_y)]);
+      auto portal = std::dynamic_pointer_cast<Portal>(
+          (*objects)[new_cell_x][new_cell_y]);
 
       Coordinates cells = GetNewPortalCells(
           portal->GetNewCellX(), portal->GetNewCellY(), new_cell_x, new_cell_y);
@@ -63,6 +65,7 @@ void Movable::StartMovement(
       if (map_->GetField(cells.x, cells.y) == CellType::Wall) {
         return;
       }
+
       for (const auto& object : tanks) {
         if (object->GetCellX() == cells.x && object->GetCellY() == cells.y) {
           return;
@@ -75,38 +78,34 @@ void Movable::StartMovement(
       new_cell_y = cells.y;
     }
   }
-  if ((*objects)[static_cast<unsigned>(new_cell_x)]
-                [static_cast<unsigned>(new_cell_y)] != nullptr &&
-      std::dynamic_pointer_cast<Portal>((*objects)[static_cast<unsigned>(
-          new_cell_x)][static_cast<unsigned>(new_cell_y)]) == nullptr) {
-    if (std::dynamic_pointer_cast<Obstacle>((*objects)[static_cast<unsigned>(
-            new_cell_x)][static_cast<unsigned>(new_cell_y)]) != nullptr) {
+
+  if ((*objects)[new_cell_x][new_cell_y] != nullptr &&
+      std::dynamic_pointer_cast<Portal>(
+          (*objects)[new_cell_x][new_cell_y]) == nullptr) {
+    if (std::dynamic_pointer_cast<Obstacle>(
+        (*objects)[new_cell_x][new_cell_y]) != nullptr) {
       current_speed_ *= 2;
     }
     if (dynamic_cast<Tank*>(this) != nullptr) {
-      Tank* tank = dynamic_cast<Tank*>(this);
+      auto tank = dynamic_cast<Tank*>(this);
       if (std::dynamic_pointer_cast<MedicalKit>(
-              (*objects)[static_cast<unsigned>(new_cell_x)]
-                        [static_cast<unsigned>(new_cell_y)]) != nullptr) {
+          (*objects)[new_cell_x][new_cell_y]) != nullptr) {
         tank->PlusHealth(
             std::min(35, tank->GetMaxHealth() - tank->GetCurrentHealth()));
-      } else if (std::dynamic_pointer_cast<Charge>((
-                     *objects)[static_cast<unsigned>(new_cell_x)]
-                              [static_cast<unsigned>(new_cell_y)]) != nullptr) {
+      } else if (std::dynamic_pointer_cast<Charge>(
+          (*objects)[new_cell_x][new_cell_y]) != nullptr) {
         tank->PlusCharge();
       }
     }
     if (dynamic_cast<Rocket*>(this) != nullptr) {
-      Rocket* rocket = dynamic_cast<Rocket*>(this);
+      auto rocket = dynamic_cast<Rocket*>(this);
       cells_to_finish_movement_ = 0;
       if (rocket->GetTypeOfRocket() != TypeOfRocket::HardRocket) {
-        (*objects)[static_cast<unsigned>(new_cell_x)]
-                  [static_cast<unsigned>(new_cell_y)] = nullptr;
+        (*objects)[new_cell_x][new_cell_y] = nullptr;
       }
       return;
     }
-    (*objects)[static_cast<unsigned>(new_cell_x)]
-              [static_cast<unsigned>(new_cell_y)] = nullptr;
+    (*objects)[new_cell_x][new_cell_y] = nullptr;
   }
 
   new_cell_x = old_cell_x;
@@ -148,7 +147,7 @@ void Movable::TurnRotationReverseOn() { rotate_reverse_ = -1; }
 
 void Movable::TurnRotationReverseOff() { rotate_reverse_ = 1; }
 
-void Movable::UpdateCoordinates(const int cell_x, const int cell_y) {
+void Movable::UpdateCoordinates(const size_t cell_x, const size_t cell_y) {
   if ((cell_x_ != cell_x || cell_y_ != cell_y) &&
       GetTimeToFinishMovement() == 0) {
     cell_x_ = cell_x;
@@ -171,16 +170,16 @@ void Movable::UpdateCoordinates(const int cell_x, const int cell_y) {
   prev_upper_left_x_ = cur_upper_left_x_;
   prev_upper_left_y_ = cur_upper_left_y_;
   cur_upper_left_x_ =
-      map_->GetUpperLeftX() + (cur_width_ * cell_x) -
-      reverse_ *
-          static_cast<int>((directions_[1] * cur_width_ * movement_proportion) -
-                           (directions_[3] * cur_width_ * movement_proportion));
+      map_->GetUpperLeftX() + (cur_width_ * static_cast<int>(cell_x))
+          - reverse_ * static_cast<int>(
+              (directions_[1] * cur_width_ * movement_proportion)
+                  - (directions_[3] * cur_width_ * movement_proportion));
 
   cur_upper_left_y_ =
-      map_->GetUpperLeftY() + (cur_height_ * cell_y) -
-      reverse_ * static_cast<int>(
-                     (directions_[2] * cur_height_ * movement_proportion) -
-                     (directions_[0] * cur_height_ * movement_proportion));
+      map_->GetUpperLeftY() + (cur_height_ * static_cast<int>(cell_y))
+          - reverse_ * static_cast<int>(
+              (directions_[2] * cur_height_ * movement_proportion)
+                  - (directions_[0] * cur_height_ * movement_proportion));
 
   if (map_->GetField(cell_x_, cell_y_) == CellType::Forest) {
     if (movement_proportion <= 0.5) {
@@ -198,7 +197,7 @@ void Movable::UpdateCoordinates(const int cell_x, const int cell_y) {
       static_cast<double>(time_to_finish_rotation_) / current_speed_;
   current_rotate_degree_ =
       GetIntDirection() * 90 -
-      rotate_reverse_ * static_cast<int>(90 * rotation_proportion);
+          rotate_reverse_ * static_cast<int>(90 * rotation_proportion);
   current_rotate_degree_ %= 360;
 
   RescaleImage();
@@ -210,21 +209,26 @@ void Movable::ReturnToOriginal() {
   opacity_ = prev_opacity_;
 }
 
-int Movable::GetSpeed() const { return current_speed_; }
 int Movable::GetTimeToFinishMovement() const {
   return time_to_finish_movement_;
 }
+
 int Movable::GetCellsToFinishMovement() const {
   return cells_to_finish_movement_;
 }
+
 int Movable::GetTimeToFinishRotation() const {
   return time_to_finish_rotation_;
 }
+
 bool Movable::IsMovingOrRotating() const {
-  return (GetTimeToFinishMovement() > 0 || GetTimeToFinishRotation() > 0 ||
-          GetCellsToFinishMovement() > 0);
+  return (GetTimeToFinishMovement() > 0 ||
+      GetTimeToFinishRotation() > 0 ||
+      GetCellsToFinishMovement() > 0);
 }
+
 int Movable::GetReverseState() const { return reverse_; }
+
 int Movable::GetRotationReverseState() const { return rotate_reverse_; }
 
 int Movable::GetIntDirection() const {
@@ -248,17 +252,18 @@ int Movable::GetUpperLeftX() const { return cur_upper_left_x_; }
 int Movable::GetUpperLeftY() const { return cur_upper_left_y_; }
 int Movable::GetWidth() const { return cur_width_; }
 int Movable::GetHeight() const { return cur_height_; }
-int Movable::GetCellX() const { return cell_x_; }
-int Movable::GetCellY() const { return cell_y_; }
+size_t Movable::GetCellX() const { return cell_x_; }
+size_t Movable::GetCellY() const { return cell_y_; }
 
-Coordinates Movable::GetNewPortalCells(int portal_cell_x, int portal_cell_y,
-                                       int new_cell_x, int new_cell_y) {
+Coordinates Movable::GetNewPortalCells(
+    size_t portal_cell_x, size_t portal_cell_y,
+    size_t new_cell_x, size_t new_cell_y) {
   Coordinates cells = {portal_cell_x, portal_cell_y};
-  if (new_cell_y - cell_y_ == -1) {
+  if (new_cell_y == cell_y_ - 1) {
     cells.y--;
-  } else if (new_cell_y - cell_y_ == 1) {
+  } else if (new_cell_y == cell_y_ + 1) {
     cells.y++;
-  } else if (new_cell_x - cell_x_ == -1) {
+  } else if (new_cell_x == cell_x_ - 1) {
     cells.x--;
   } else {
     cells.x++;

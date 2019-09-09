@@ -1,3 +1,5 @@
 cpplint_light.py
 **/tanks.pro.user*
 .idea/
+cmake-build-debug/
+cmake-build-release/

@@ -8,11 +8,10 @@
 class ImprovedBot : public Bot {
  public:
   ImprovedBot(const std::shared_ptr<Map>& map, const BotQualities& qualities);
-  virtual void LoadImage() override;
+  void LoadImage() override;
 
  protected:
-  bool CheckDirection(const int& tank, const int& bot,
-                      const int direction) override;
+  bool CheckDirection(const int tank, const int bot, int direction) override;
   bool IsRotationStartNeeded(const std::shared_ptr<Tank>& tank) override;
   bool IsShotNeeded(const std::shared_ptr<Map>&,
                     const std::shared_ptr<Tank>&) override;

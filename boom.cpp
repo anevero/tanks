@@ -33,26 +33,27 @@ void Boom::StartMovement(
   cells_to_finish_movement_ = number_of_cells - 1;
 }
 
-void Boom::UpdateCoordinates(int, int) {
+void Boom::UpdateCoordinates(size_t, size_t) {
   int cur_cell_width =
       static_cast<int>(map_->GetWidth() / map_->GetNumberOfCellsHorizontally());
   int cur_cell_height =
       static_cast<int>(map_->GetHeight() / map_->GetNumberOfCellsVertically());
 
-  double movement_proportion =
-      cells_to_finish_movement_ + 1 -
-      static_cast<double>(time_to_finish_movement_) / current_speed_;
+  double movement_proportion = cells_to_finish_movement_ + 1
+      - static_cast<double>(time_to_finish_movement_) / current_speed_;
 
-  cur_width_ = cur_cell_width +
-               2 * static_cast<int>(cur_cell_width * movement_proportion);
-  cur_height_ = cur_cell_height +
-                2 * static_cast<int>(cur_cell_height * movement_proportion);
+  cur_width_ = cur_cell_width
+      + 2 * static_cast<int>(cur_cell_width * movement_proportion);
+  cur_height_ = cur_cell_height
+      + 2 * static_cast<int>(cur_cell_height * movement_proportion);
 
-  cur_upper_left_x_ = map_->GetUpperLeftX() + (cur_cell_width * cell_x_) -
-                      static_cast<int>(cur_cell_width * movement_proportion);
+  cur_upper_left_x_ =
+      map_->GetUpperLeftX() + (cur_cell_width * static_cast<int>(cell_x_)) -
+          static_cast<int>(cur_cell_width * movement_proportion);
 
-  cur_upper_left_y_ = map_->GetUpperLeftY() + (cur_cell_height * cell_y_) -
-                      static_cast<int>(cur_cell_height * movement_proportion);
+  cur_upper_left_y_ =
+      map_->GetUpperLeftY() + (cur_cell_height * static_cast<int>(cell_y_)) -
+          static_cast<int>(cur_cell_height * movement_proportion);
 
   RescaleImage();
 }

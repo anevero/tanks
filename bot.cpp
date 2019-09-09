@@ -35,8 +35,6 @@ bool Bot::IsRotationStartNeeded(const std::shared_ptr<Tank>&) {
   return false;
 }
 
-bool Bot::IsMoveNeeded() const { return time_to_finish_movement_ > 0; }
-
 bool Bot::IsMovingStartNeeded(
     const QList<std::shared_ptr<Movable>>&,
     const std::vector<std::vector<std::shared_ptr<ObjectOnMap>>>&) {
@@ -50,7 +48,7 @@ bool Bot::IsMovingStartNeeded(
     } else {
       number_of_cells_to_move_--;
     }
-    return number_of_cells_to_move_ > 0 ? true : false;
+    return number_of_cells_to_move_ > 0;
   }
   return false;
 }
@@ -59,10 +57,10 @@ bool Bot::IsShotNeeded(const std::shared_ptr<Map>& map,
                        const std::shared_ptr<Tank>& tank) {
   if (time_to_finish_rotation_ == 0 && time_to_finish_movement_ == 0) {
     int direction = GetIntDirection();
-    int tank_x = tank->GetCellX();
-    int tank_y = tank->GetCellY();
-    int bot_x = GetCellX();
-    int bot_y = GetCellY();
+    size_t tank_x = tank->GetCellX();
+    size_t tank_y = tank->GetCellY();
+    size_t bot_x = GetCellX();
+    size_t bot_y = GetCellY();
     if (map_->GetField(tank_x, tank_y) == CellType::Forest) {
       return false;
     }
@@ -93,7 +91,7 @@ bool Bot::IsShotNeeded(const std::shared_ptr<Map>& map,
   return false;
 }
 
-bool Bot::CheckDirection(const int& tank, const int& bot, const int direction) {
+bool Bot::CheckDirection(const int tank, const int bot, const int direction) {
   if (tank > bot) {
     if (direction == 0 || direction == 3) {
       return false;
@@ -105,8 +103,8 @@ bool Bot::CheckDirection(const int& tank, const int& bot, const int direction) {
 }
 
 bool Bot::IsWallBetweenObjectsX(const std::shared_ptr<Map>& map,
-                                const int tank_x, const int tank_y,
-                                const int bot_x, const int bot_y) {
+                                const size_t tank_x, const size_t tank_y,
+                                const size_t bot_x, const size_t bot_y) {
   int walls_count = map->GetWallsPrecalc(bot_x, bot_y);
   walls_count += map->GetWallsPrecalc(tank_x - 1, tank_y - 1);
   walls_count -= map->GetWallsPrecalc(tank_x, tank_y - 1);
@@ -115,8 +113,8 @@ bool Bot::IsWallBetweenObjectsX(const std::shared_ptr<Map>& map,
 }
 
 bool Bot::IsWallBetweenObjectsY(const std::shared_ptr<Map>& map,
-                                const int tank_x, const int tank_y,
-                                const int bot_x, const int bot_y) {
+                                const size_t tank_x, const size_t tank_y,
+                                const size_t bot_x, const size_t bot_y) {
   int walls_count = map->GetWallsPrecalc(bot_x, bot_y);
   walls_count += map->GetWallsPrecalc(tank_x - 1, tank_y - 1);
   walls_count -= map->GetWallsPrecalc(tank_x - 1, tank_y);

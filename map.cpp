@@ -29,7 +29,7 @@ Map::Map(int map_number) {
   tank_init_cell_y_ = player_tank["initial_cell_y"].toInt();
   tank_start_direction_ = player_tank["initial_direction"].toString();
 
-  for (int i = 0; i < number_of_cell_types_; ++i) {
+  for (size_t i = 0; i < number_of_cell_types_; ++i) {
     images_.emplace_back(QImage(":/textures/" + QString::number(i) + ".png"));
   }
   scaled_images_ = images_;
@@ -51,22 +51,24 @@ void Map::DrawMap(QPainter& painter) {
   painter.drawImage(cur_upper_left_x_, cur_upper_left_y_, map_scaled_image_);
 }
 
-CellType Map::GetField(const int cell_x, const int cell_y) const {
+CellType Map::GetField(const size_t cell_x, const size_t cell_y) const {
   return map_[cell_x][cell_y];
 }
-int Map::GetWallsPrecalc(const int cell_x, const int cell_y) const {
+
+int Map::GetWallsPrecalc(const size_t cell_x, const size_t cell_y) const {
   return walls_precalc_[cell_x][cell_y];
 }
-int Map::GetNumberOfCellsHorizontally() const { return map_[0].size(); }
-int Map::GetNumberOfCellsVertically() const { return map_.size(); }
+
+size_t Map::GetNumberOfCellsHorizontally() const { return map_[0].size(); }
+size_t Map::GetNumberOfCellsVertically() const { return map_.size(); }
 int Map::GetUpperLeftX() const { return cur_upper_left_x_; }
 int Map::GetUpperLeftY() const { return cur_upper_left_y_; }
 int Map::GetWidth() const { return cur_width_; }
 int Map::GetHeight() const { return cur_height_; }
 int Map::GetCellWidth() const { return cur_cell_width_; }
 int Map::GetCellHeight() const { return cur_cell_height_; }
-int Map::GetTankInitCellX() const { return tank_init_cell_x_; }
-int Map::GetTankInitCellY() const { return tank_init_cell_y_; }
+size_t Map::GetTankInitCellX() const { return tank_init_cell_x_; }
+size_t Map::GetTankInitCellY() const { return tank_init_cell_y_; }
 QString Map::GetTankStartDirection() const { return tank_start_direction_; }
 
 void Map::RescaleImages() {
@@ -74,7 +76,8 @@ void Map::RescaleImages() {
       scaled_images_[0].height() == cur_cell_height_ + 2) {
     return;
   }
-  for (size_t i = 0; i < static_cast<size_t>(number_of_cell_types_); ++i) {
+
+  for (size_t i = 0; i < number_of_cell_types_; ++i) {
     scaled_images_[i] = images_[i].scaled(
         cur_cell_width_ + 2, cur_cell_height_ + 2, Qt::KeepAspectRatio);
   }
@@ -105,8 +108,8 @@ void Map::WallsPrecalc() {
       walls_precalc_[j].push_back(0);
       if (i > 0 && j > 0) {
         walls_precalc_[j][i] = walls_precalc_[j - 1][i] +
-                               walls_precalc_[j][i - 1] -
-                               walls_precalc_[j - 1][i - 1];
+            walls_precalc_[j][i - 1] -
+            walls_precalc_[j - 1][i - 1];
         if (map_[j][i] == CellType::Wall) {
           walls_precalc_[j][i]++;
         }
