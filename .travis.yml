@@ -1,22 +1,26 @@
 os: linux
 dist: bionic
 language: cpp
-compiler: g++
+compiler: gcc
 sudo: required
 
 before_install:
-  - sudo add-apt-repository ppa:beineri/opt-qt-5.12.3-bionic -y
-  - sudo apt-get update
-  - sudo apt-get install libglu1-mesa-dev libgl1-mesa-dev
+  - sudo add-apt-repository ppa:beineri/opt-qt-5.14.2-bionic -y
+  - sudo apt update
+  - sudo apt install libglu1-mesa-dev libgl1-mesa-dev qt514base qt514multimedia python-pip cppcheck -y
+  - pip install cpplint
 
 install:
-  - sudo apt-get install qt512base qt512multimedia cppcheck -y
   - source /opt/qt5*/bin/qt5*-env.sh
-  - /opt/qt5*/bin/qmake PREFIX=/usr
+  - /opt/qt5*/bin/qmake PREFIX=/usr || cmake CMakeLists.txt
 
 script:
   - make
-  - cppcheck -i qrc_resources.cpp --enable=unusedFunction ./ 2> cppcheck_unused_f.txt
-  - cppcheck -i qrc_resources.cpp --enable=warning,performance,style --error-exitcode=1 ./ 2> cppcheck.txt 
-  - cat cppcheck_unused_f.txt
-  - cat cppcheck.txt
+  - rm ./qrc_* || true
+  - rm ./moc* || true
+  - rm ./ui* || true
+  - cppcheck --enable=unusedFunction --language=c++ $(find -name "*.h" -o -name "*.cpp")
+  - cppcheck --enable=warning,performance --language=c++ $(find -name "*.h" -o -name "*.cpp")
+  - cpplint --filter=-legal/copyright,-build/include_subdir,-build/c++11,-build/include_order $(find -name "*.h" -o -name "*.cpp")
+
+
