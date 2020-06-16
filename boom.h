@@ -1,4 +1,4 @@
-﻿#ifndef BOOM_H_
+#ifndef BOOM_H_
 #define BOOM_H_
 
 #include <QDebug>

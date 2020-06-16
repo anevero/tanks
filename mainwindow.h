@@ -1,4 +1,4 @@
-﻿#ifndef MAINWINDOW_H_
+#ifndef MAINWINDOW_H_
 #define MAINWINDOW_H_
 
 #include <QBoxLayout>

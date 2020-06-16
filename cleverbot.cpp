@@ -1,4 +1,4 @@
-﻿#include "cleverbot.h"
+#include "cleverbot.h"
 
 CleverBot::CleverBot(const std::shared_ptr<Map>& map,
                      const BotQualities& qualities)

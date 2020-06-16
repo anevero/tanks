@@ -1,4 +1,4 @@
-﻿#ifndef OBJECTONMAP_H_
+#ifndef OBJECTONMAP_H_
 #define OBJECTONMAP_H_
 
 #include <QDebug>

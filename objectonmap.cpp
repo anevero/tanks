@@ -1,4 +1,4 @@
-﻿#include "objectonmap.h"
+#include "objectonmap.h"
 
 ObjectOnMap::ObjectOnMap(const std::shared_ptr<Map>& map, const size_t x,
                          const size_t y)

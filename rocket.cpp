@@ -1,4 +1,4 @@
-﻿#include "rocket.h"
+#include "rocket.h"
 
 Rocket::Rocket(const std::shared_ptr<Map>& map,
                const std::shared_ptr<Tank>& tank, const int speed,

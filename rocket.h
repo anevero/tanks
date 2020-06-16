@@ -1,4 +1,4 @@
-﻿#ifndef ROCKET_H_
+#ifndef ROCKET_H_
 #define ROCKET_H_
 
 #include <QDebug>

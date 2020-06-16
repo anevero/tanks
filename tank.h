@@ -1,9 +1,10 @@
-﻿#ifndef TANK_H_
+#ifndef TANK_H_
 #define TANK_H_
 
 #include <QApplication>
 #include <QMessageBox>
 #include <QPainter>
+#include <algorithm>
 #include <memory>
 #include "map.h"
 #include "movable.h"

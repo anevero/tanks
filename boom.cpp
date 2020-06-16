@@ -1,4 +1,4 @@
-﻿#include "boom.h"
+#include "boom.h"
 
 Boom::Boom(const std::shared_ptr<Map>& map,
            const std::shared_ptr<Movable>& tank, const int speed)

@@ -1,4 +1,4 @@
-﻿#ifndef MOVABLE_H_
+#ifndef MOVABLE_H_
 #define MOVABLE_H_
 
 #include <QDebug>

@@ -1,4 +1,4 @@
-﻿#include "map.h"
+#include "map.h"
 
 Map::Map(int map_number) {
   QFile input_file(":/data/map" + QString::number(map_number) + ".json");
