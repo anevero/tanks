@@ -91,8 +91,8 @@ MainWindow::MainWindow(QWidget* parent)
     virtual_keys_buttons_[i]->setAutoRepeat(true);
     connect(virtual_keys_buttons_[i], &QPushButton::released,
             [this, i]() { PressVirtualKey(virtual_keys_encodings_[i]); });
-    virtual_keys_buttons_[i]->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,
-                                                        QSizePolicy::Expanding));
+    virtual_keys_buttons_[i]->setSizePolicy({QSizePolicy::Expanding,
+                                             QSizePolicy::Expanding});
     virtual_keys_buttons_[i]->setFocusPolicy(Qt::NoFocus);
   }
 
