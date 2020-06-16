@@ -1,5 +1,5 @@
-﻿#ifndef MAP_H
-#define MAP_H
+﻿#ifndef MAP_H_
+#define MAP_H_
 
 #include <QDebug>
 #include <QFile>
@@ -64,4 +64,4 @@ class Map {
   const uint32_t number_of_cell_types_ = 5;
 };
 
-#endif  // MAP_H
+#endif  // MAP_H_

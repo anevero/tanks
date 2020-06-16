@@ -1,5 +1,5 @@
-﻿#ifndef ROCKET_H
-#define ROCKET_H
+﻿#ifndef ROCKET_H_
+#define ROCKET_H_
 
 #include <QDebug>
 #include <QPainter>
@@ -31,4 +31,4 @@ class Rocket : public Movable {
   const TypeOfRocket type_;
 };
 
-#endif  // ROCKET_H
+#endif  // ROCKET_H_

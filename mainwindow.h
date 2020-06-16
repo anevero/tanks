@@ -1,5 +1,5 @@
-﻿#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+﻿#ifndef MAINWINDOW_H_
+#define MAINWINDOW_H_
 
 #include <QBoxLayout>
 #include <QCheckBox>
@@ -258,4 +258,4 @@ class MainWindow : public QMainWindow {
   int h_indent_;
 };
 
-#endif  // MAINWINDOW_H
+#endif  // MAINWINDOW_H_

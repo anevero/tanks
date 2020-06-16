@@ -1,5 +1,5 @@
-﻿#ifndef OBJECTONMAP_H
-#define OBJECTONMAP_H
+﻿#ifndef OBJECTONMAP_H_
+#define OBJECTONMAP_H_
 
 #include <QDebug>
 #include <QImage>
@@ -52,4 +52,4 @@ class Charge : public ObjectOnMap {
   void LoadImage() override;
 };
 
-#endif  // OBJECTONMAP_H
+#endif  // OBJECTONMAP_H_

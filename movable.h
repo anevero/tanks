@@ -1,5 +1,5 @@
-﻿#ifndef MOVABLE_H
-#define MOVABLE_H
+﻿#ifndef MOVABLE_H_
+#define MOVABLE_H_
 
 #include <QDebug>
 #include <QImage>
@@ -122,4 +122,4 @@ class Movable : public std::enable_shared_from_this<Movable> {
   QImage scaled_image_;
 };
 
-#endif  // MOVABLE_H
+#endif  // MOVABLE_H_

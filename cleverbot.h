@@ -1,5 +1,5 @@
-#ifndef CLEVERBOT_H
-#define CLEVERBOT_H
+#ifndef CLEVERBOT_H_
+#define CLEVERBOT_H_
 
 #include <QQueue>
 #include <QVector>
@@ -39,4 +39,4 @@ class CleverBot : public ImprovedBot {
   int width_;
 };
 
-#endif  // CLEVERBOT_H
+#endif  // CLEVERBOT_H_
