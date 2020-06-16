@@ -16,7 +16,7 @@ class ObjectOnMap {
   ObjectOnMap(const std::shared_ptr<Map>& map, size_t x, size_t y);
   virtual void LoadImage() = 0;
   virtual ~ObjectOnMap() = default;
-  void Draw(QPainter& painter);
+  void Draw(QPainter* painter);
   void RescaleImage();
   void UpdateCoordinates();
   size_t GetX() const;

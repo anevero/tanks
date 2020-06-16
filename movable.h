@@ -59,7 +59,7 @@ class Movable : public std::enable_shared_from_this<Movable> {
   // Updates object's coordinates on the map according to the cell numbers and
   // the state of movement or rotation.
   virtual void UpdateCoordinates(size_t cell_x, size_t cell_y);
-  virtual void Draw(QPainter& painter) = 0;
+  virtual void Draw(QPainter* painter) = 0;
   // Changes object's coordinates from current to previous. It's used in
   // portals implementation. To draw one tank in two places at the same time
   // we firstly draw it in the first place, then change its coordinates to copy

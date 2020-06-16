@@ -23,7 +23,7 @@ class Map {
   explicit Map(int map_number);
   void UpdateCoordinates(int upper_left_x, int upper_left_y,
                          int width, int height);
-  void DrawMap(QPainter& painter);
+  void DrawMap(QPainter* painter);
 
   CellType GetField(size_t cell_x, size_t cell_y) const;
   int GetWallsPrecalc(size_t x, size_t y) const;

@@ -13,7 +13,7 @@ class Boom : public Movable {
   Boom(const std::shared_ptr<Map>& map, const std::shared_ptr<Movable>& tank,
        int speed);
   void LoadImage() override;
-  void Draw(QPainter& painter) override;
+  void Draw(QPainter* painter) override;
 
   void UpdateCoordinates(size_t cell_x, size_t cell_y) override;
   void StartMovement(
