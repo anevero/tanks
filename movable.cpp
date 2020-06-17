@@ -1,4 +1,4 @@
-﻿#include "movable.h"
+#include "movable.h"
 #include "rocket.h"
 #include "tank.h"
 

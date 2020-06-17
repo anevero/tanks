@@ -1,16 +1,16 @@
-﻿#include "objectonmap.h"
+#include "objectonmap.h"
 
 ObjectOnMap::ObjectOnMap(const std::shared_ptr<Map>& map, const size_t x,
                          const size_t y)
     : map_(map), x_(x), y_(y) {}
 
-void ObjectOnMap::Draw(QPainter& painter) {
+void ObjectOnMap::Draw(QPainter* painter) {
   RescaleImage();
-  painter.save();
-  painter.translate(cur_upper_left_x_ + cur_width_ / 2,
+  painter->save();
+  painter->translate(cur_upper_left_x_ + cur_width_ / 2,
                     cur_upper_left_y_ + cur_height_ / 2);
-  painter.drawImage(-cur_width_ / 2, -cur_height_ / 2, scaled_image_);
-  painter.restore();
+  painter->drawImage(-cur_width_ / 2, -cur_height_ / 2, scaled_image_);
+  painter->restore();
 }
 
 void ObjectOnMap::RescaleImage() {

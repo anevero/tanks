@@ -1,5 +1,5 @@
-﻿#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef MAINWINDOW_H_
+#define MAINWINDOW_H_
 
 #include <QBoxLayout>
 #include <QCheckBox>
@@ -54,7 +54,7 @@ struct GameOptions {
 };
 
 class MainWindow : public QMainWindow {
- Q_OBJECT
+  Q_OBJECT
 
  public:
   explicit MainWindow(QWidget* parent = nullptr);
@@ -67,7 +67,7 @@ class MainWindow : public QMainWindow {
   [[maybe_unused]] void resizeEvent(QResizeEvent*) override;
   [[maybe_unused]] void timerEvent(QTimerEvent*) override;
 
- private slots:
+ private slots:  // NOLINT
   // Runs new game dialog and switches options inside it.
   void NewGame();
   // Pauses or continues the game (depending on its current state).
@@ -258,4 +258,4 @@ class MainWindow : public QMainWindow {
   int h_indent_;
 };
 
-#endif  // MAINWINDOW_H
+#endif  // MAINWINDOW_H_

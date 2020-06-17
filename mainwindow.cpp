@@ -1,4 +1,4 @@
-﻿#include "mainwindow.h"
+#include "mainwindow.h"
 
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent),
@@ -91,8 +91,8 @@ MainWindow::MainWindow(QWidget* parent)
     virtual_keys_buttons_[i]->setAutoRepeat(true);
     connect(virtual_keys_buttons_[i], &QPushButton::released,
             [this, i]() { PressVirtualKey(virtual_keys_encodings_[i]); });
-    virtual_keys_buttons_[i]->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,
-                                                        QSizePolicy::Expanding));
+    virtual_keys_buttons_[i]->setSizePolicy({QSizePolicy::Expanding,
+                                             QSizePolicy::Expanding});
     virtual_keys_buttons_[i]->setFocusPolicy(Qt::NoFocus);
   }
 
@@ -251,24 +251,24 @@ void MainWindow::paintEvent(QPaintEvent*) {
   }
 
   QPainter p(this);
-  map_->DrawMap(p);
+  map_->DrawMap(&p);
   for (const auto& vector : obstacles_and_bonuses_) {
     for (const auto& object : vector) {
       if (object != nullptr) {
-        object->Draw(p);
+        object->Draw(&p);
       }
     }
   }
 
   for (const auto& object : objects_copies_) {
-    object.first->Draw(p);
+    object.first->Draw(&p);
     object.first->ReturnToOriginal();
   }
   for (const auto& object : tanks_) {
-    object->Draw(p);
+    object->Draw(&p);
   }
   for (const auto& object : rockets_) {
-    object->Draw(p);
+    object->Draw(&p);
   }
 
   if (!tanks_.empty() && charge_line_shown_) {

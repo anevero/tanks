@@ -1,5 +1,5 @@
-﻿#ifndef ROCKET_H
-#define ROCKET_H
+#ifndef ROCKET_H_
+#define ROCKET_H_
 
 #include <QDebug>
 #include <QPainter>
@@ -19,7 +19,7 @@ class Rocket : public Movable {
   Rocket(const std::shared_ptr<Map>& map, const std::shared_ptr<Tank>& tank,
          int speed, int power, const TypeOfRocket& type);
   void LoadImage() override;
-  void Draw(QPainter& painter) override;
+  void Draw(QPainter* painter) override;
 
   std::shared_ptr<Tank> GetAttachedTank() const;
   int GetPower() const;
@@ -31,4 +31,4 @@ class Rocket : public Movable {
   const TypeOfRocket type_;
 };
 
-#endif  // ROCKET_H
+#endif  // ROCKET_H_

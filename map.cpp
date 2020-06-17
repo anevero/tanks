@@ -1,4 +1,4 @@
-﻿#include "map.h"
+#include "map.h"
 
 Map::Map(int map_number) {
   QFile input_file(":/data/map" + QString::number(map_number) + ".json");
@@ -47,8 +47,8 @@ void Map::UpdateCoordinates(const int upper_left_x, const int upper_left_y,
   FormMapImage();
 }
 
-void Map::DrawMap(QPainter& painter) {
-  painter.drawImage(cur_upper_left_x_, cur_upper_left_y_, map_scaled_image_);
+void Map::DrawMap(QPainter* painter) {
+  painter->drawImage(cur_upper_left_x_, cur_upper_left_y_, map_scaled_image_);
 }
 
 CellType Map::GetField(const size_t cell_x, const size_t cell_y) const {

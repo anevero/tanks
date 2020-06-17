@@ -1,5 +1,5 @@
-﻿#ifndef BOT_H
-#define BOT_H
+#ifndef BOT_H_
+#define BOT_H_
 
 #include <QDebug>
 #include <QImage>
@@ -57,4 +57,4 @@ class Bot : public Tank {
                              size_t tank_y, size_t bot_x, size_t bot_y);
 };
 
-#endif  // BOT_H
+#endif  // BOT_H_

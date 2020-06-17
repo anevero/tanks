@@ -1,4 +1,4 @@
-﻿#include "boom.h"
+#include "boom.h"
 
 Boom::Boom(const std::shared_ptr<Map>& map,
            const std::shared_ptr<Movable>& tank, const int speed)
@@ -16,13 +16,13 @@ void Boom::LoadImage() {
   scaled_image_ = image_;
 }
 
-void Boom::Draw(QPainter& painter) {
-  painter.save();
-  painter.setOpacity(opacity_);
-  painter.translate(cur_upper_left_x_ + cur_width_ / 2,
+void Boom::Draw(QPainter* painter) {
+  painter->save();
+  painter->setOpacity(opacity_);
+  painter->translate(cur_upper_left_x_ + cur_width_ / 2,
                     cur_upper_left_y_ + cur_height_ / 2);
-  painter.drawImage(-cur_width_ / 2, -cur_height_ / 2, scaled_image_);
-  painter.restore();
+  painter->drawImage(-cur_width_ / 2, -cur_height_ / 2, scaled_image_);
+  painter->restore();
 }
 
 void Boom::StartMovement(

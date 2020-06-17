@@ -16,9 +16,6 @@ int main(int argc, char* argv[]) {
   int fps_option;
 
 #ifdef Q_OS_ANDROID
-  // Workaround for the bug with random selection controls appearing on
-  // the screen (Android).
-  qputenv("QT_QPA_NO_TEXT_HANDLES", "1");
   // 60 FPS is enough for mobile devices.
   fps_option = 3;
 #else

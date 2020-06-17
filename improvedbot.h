@@ -1,5 +1,5 @@
-#ifndef IMPROVEDBOT_H
-#define IMPROVEDBOT_H
+#ifndef IMPROVEDBOT_H_
+#define IMPROVEDBOT_H_
 
 #include <memory>
 #include <utility>
@@ -20,4 +20,4 @@ class ImprovedBot : public Bot {
   bool ChangeDirection();
 };
 
-#endif  // IMPROVEDBOT_H
+#endif  // IMPROVEDBOT_H_

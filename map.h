@@ -1,5 +1,5 @@
-﻿#ifndef MAP_H
-#define MAP_H
+#ifndef MAP_H_
+#define MAP_H_
 
 #include <QDebug>
 #include <QFile>
@@ -23,7 +23,7 @@ class Map {
   explicit Map(int map_number);
   void UpdateCoordinates(int upper_left_x, int upper_left_y,
                          int width, int height);
-  void DrawMap(QPainter& painter);
+  void DrawMap(QPainter* painter);
 
   CellType GetField(size_t cell_x, size_t cell_y) const;
   int GetWallsPrecalc(size_t x, size_t y) const;
@@ -64,4 +64,4 @@ class Map {
   const uint32_t number_of_cell_types_ = 5;
 };
 
-#endif  // MAP_H
+#endif  // MAP_H_

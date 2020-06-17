@@ -1,5 +1,5 @@
-﻿#ifndef BOOM_H
-#define BOOM_H
+#ifndef BOOM_H_
+#define BOOM_H_
 
 #include <QDebug>
 #include <QMediaPlayer>
@@ -13,7 +13,7 @@ class Boom : public Movable {
   Boom(const std::shared_ptr<Map>& map, const std::shared_ptr<Movable>& tank,
        int speed);
   void LoadImage() override;
-  void Draw(QPainter& painter) override;
+  void Draw(QPainter* painter) override;
 
   void UpdateCoordinates(size_t cell_x, size_t cell_y) override;
   void StartMovement(
@@ -25,4 +25,4 @@ class Boom : public Movable {
   QMediaPlayer boom_sound_;
 };
 
-#endif  // BOOM_H
+#endif  // BOOM_H_

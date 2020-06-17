@@ -1,5 +1,5 @@
-﻿#ifndef OBJECTONMAP_H
-#define OBJECTONMAP_H
+#ifndef OBJECTONMAP_H_
+#define OBJECTONMAP_H_
 
 #include <QDebug>
 #include <QImage>
@@ -16,7 +16,7 @@ class ObjectOnMap {
   ObjectOnMap(const std::shared_ptr<Map>& map, size_t x, size_t y);
   virtual void LoadImage() = 0;
   virtual ~ObjectOnMap() = default;
-  void Draw(QPainter& painter);
+  void Draw(QPainter* painter);
   void RescaleImage();
   void UpdateCoordinates();
   size_t GetX() const;
@@ -52,4 +52,4 @@ class Charge : public ObjectOnMap {
   void LoadImage() override;
 };
 
-#endif  // OBJECTONMAP_H
+#endif  // OBJECTONMAP_H_

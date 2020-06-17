@@ -1,9 +1,10 @@
-﻿#ifndef TANK_H
-#define TANK_H
+#ifndef TANK_H_
+#define TANK_H_
 
 #include <QApplication>
 #include <QMessageBox>
 #include <QPainter>
+#include <algorithm>
 #include <memory>
 #include "map.h"
 #include "movable.h"
@@ -26,8 +27,8 @@ class Tank : public Movable {
        int init_cell_y, const TankQualities& qualities);
   ~Tank() override = default;
   void LoadImage() override;
-  void Draw(QPainter& painter) override;
-  virtual void DrawHealth(QPainter& painter);
+  void Draw(QPainter* painter) override;
+  virtual void DrawHealth(QPainter* painter);
 
   virtual bool IsAbleToShoot() const;
   virtual void IncreaseTimeSinceLastShot(int delta);
@@ -59,4 +60,4 @@ class Tank : public Movable {
   int current_health_{};
 };
 
-#endif  // TANK_H
+#endif  // TANK_H_

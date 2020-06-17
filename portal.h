@@ -1,5 +1,5 @@
-#ifndef PORTAL_H
-#define PORTAL_H
+#ifndef PORTAL_H_
+#define PORTAL_H_
 
 #include <QDebug>
 #include <QImage>
@@ -20,4 +20,4 @@ class Portal : public ObjectOnMap {
   size_t new_cell_y_;
 };
 
-#endif  // PORTAL_H
+#endif  // PORTAL_H_
