@@ -4,6 +4,7 @@
 #include <QDebug>
 #include <QImage>
 #include <QList>
+#include <QPixmap>
 #include <QVector>
 #include <algorithm>
 #include <cmath>
@@ -25,7 +26,7 @@ class Movable : public std::enable_shared_from_this<Movable> {
   Movable(const std::shared_ptr<Map>& map, size_t cell_x, size_t cell_y,
           Direction direction, int speed);
   virtual ~Movable() = default;
-  virtual void LoadImage() = 0;
+  void LoadImage(const QString& path);
 
   // Defines current move characteristics by initializing several variables,
   // including current speed, number of cells to finish movement, time to
@@ -119,7 +120,7 @@ class Movable : public std::enable_shared_from_this<Movable> {
   bool copy_existence_ = false;
 
   QImage image_;
-  QImage scaled_image_;
+  QPixmap scaled_pixmap_;
 };
 
 #endif  // MOVABLE_H_

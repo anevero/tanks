@@ -24,7 +24,6 @@ class Bot : public Tank {
  public:
   Bot(const std::shared_ptr<Map>& map, const BotQualities& qualities);
   ~Bot() override = default;
-  void LoadImage() override;
 
   virtual bool IsTurnNeeded() const;
   virtual bool IsRotationStartNeeded(const std::shared_ptr<Tank>&);

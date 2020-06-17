@@ -12,12 +12,7 @@ Tank::Tank(const std::shared_ptr<Map>& map, const int init_cell_x,
                    qualities.max_hard_charge}),
       max_health_(qualities.max_health),
       current_health_(qualities.max_health) {
-  LoadImage();
-}
-
-void Tank::LoadImage() {
-  image_.load(":/textures/tank.png");
-  scaled_image_ = image_;
+  LoadImage(":/textures/tank.png");
 }
 
 void Tank::Draw(QPainter* painter) {
@@ -26,7 +21,7 @@ void Tank::Draw(QPainter* painter) {
                      cur_upper_left_y_ + cur_height_ / 2);
   painter->rotate(current_rotate_degree_);
   painter->setOpacity(opacity_);
-  painter->drawImage(-cur_width_ / 2, -cur_height_ / 2, scaled_image_);
+  painter->drawPixmap(-cur_width_ / 2, -cur_height_ / 2, scaled_pixmap_);
   painter->restore();
   DrawHealth(painter);
 }

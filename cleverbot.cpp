@@ -3,7 +3,7 @@
 CleverBot::CleverBot(const std::shared_ptr<Map>& map,
                      const BotQualities& qualities)
     : ImprovedBot(map, qualities) {
-  LoadImage();
+  LoadImage(":/textures/clever_bot.png");
   height_ = map_->GetNumberOfCellsVertically();
   width_ = map_->GetNumberOfCellsHorizontally();
   distance_.resize(width_);
@@ -12,11 +12,6 @@ CleverBot::CleverBot(const std::shared_ptr<Map>& map,
       distance_[j].push_back(height_ * width_);
     }
   }
-}
-
-void CleverBot::LoadImage() {
-  image_.load(":/textures/clever_bot.png");
-  scaled_image_ = image_;
 }
 
 bool CleverBot::IsRotationStartNeeded(const std::shared_ptr<Tank>& tank) {

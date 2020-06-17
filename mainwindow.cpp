@@ -85,7 +85,7 @@ MainWindow::MainWindow(QWidget* parent)
   charge_buttons_[1]->setToolTip(
       tr("Medium speed, medium charge, can destroy obstacles"));
   charge_buttons_[2]->setToolTip(
-      tr("Low speed, hight charge, can't destroy obstacles"));
+      tr("Low speed, high charge, can't destroy obstacles"));
 
   for (int i = 0; i < virtual_keys_buttons_.size(); ++i) {
     virtual_keys_buttons_[i]->setAutoRepeat(true);
@@ -249,6 +249,13 @@ void MainWindow::paintEvent(QPaintEvent*) {
     auto tank = std::dynamic_pointer_cast<Tank>(object.first);
     tank->UpdateCoordinates(object.second.x, object.second.y);
   }
+  for (const auto& vector : obstacles_and_bonuses_) {
+    for (const auto& object : vector) {
+      if (object != nullptr) {
+        object->UpdateCoordinates();
+      }
+    }
+  }
 
   QPainter p(this);
   map_->DrawMap(&p);
@@ -259,7 +266,6 @@ void MainWindow::paintEvent(QPaintEvent*) {
       }
     }
   }
-
   for (const auto& object : objects_copies_) {
     object.first->Draw(&p);
     object.first->ReturnToOriginal();
