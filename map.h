@@ -12,6 +12,7 @@
 #include <QString>
 #include <QTextStream>
 #include <QVector>
+#include <utility>
 #include <vector>
 
 enum class CellType { Wall = 0, Grass = 1, Sand = 2, Water = 3, Forest = 4 };
