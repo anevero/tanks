@@ -11,7 +11,6 @@
 class CleverBot : public ImprovedBot {
  public:
   CleverBot(const std::shared_ptr<Map>& map, const BotQualities& qualities);
-  void LoadImage() override;
 
  protected:
   bool IsRotationStartNeeded(const std::shared_ptr<Tank>& tank) override;

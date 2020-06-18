@@ -3,12 +3,7 @@
 ImprovedBot::ImprovedBot(const std::shared_ptr<Map>& map,
                          const BotQualities& qualities)
     : Bot(map, qualities) {
-  LoadImage();
-}
-
-void ImprovedBot::LoadImage() {
-  image_.load(":/textures/improved_bot.png");
-  scaled_image_ = image_;
+  LoadImage(":/textures/improved_bot.png");
 }
 
 bool ImprovedBot::IsRotationStartNeeded(const std::shared_ptr<Tank>& tank) {

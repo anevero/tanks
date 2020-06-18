@@ -12,6 +12,7 @@
 #include <QString>
 #include <QTextStream>
 #include <QVector>
+#include <utility>
 #include <vector>
 
 enum class CellType { Wall = 0, Grass = 1, Sand = 2, Water = 3, Forest = 4 };
@@ -47,8 +48,8 @@ class Map {
   QVector<QVector<CellType>> map_;
   QVector<QVector<int>> walls_precalc_;
   std::vector<QImage> images_;
-  std::vector<QImage> scaled_images_;
-  QImage map_scaled_image_;
+  std::vector<QPixmap> scaled_pixmaps_;
+  QPixmap map_scaled_pixmap_;
 
   int cur_upper_left_x_{};
   int cur_upper_left_y_{};

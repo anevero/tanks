@@ -11,7 +11,6 @@ class Portal : public ObjectOnMap {
   Portal(const std::shared_ptr<Map>& map, size_t cell_x, size_t cell_y,
          size_t new_cell_x, size_t new_cell_y);
 
-  void LoadImage() override;
   size_t GetNewCellX() const;
   size_t GetNewCellY() const;
 

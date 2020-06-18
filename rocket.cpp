@@ -8,21 +8,16 @@ Rocket::Rocket(const std::shared_ptr<Map>& map,
       tank_(tank),
       power_(power),
       type_(type) {
-  LoadImage();
-}
-
-void Rocket::LoadImage() {
-  image_.load(":/textures/rocket.png");
-  scaled_image_ = image_;
+  LoadImage(":/textures/rocket.png");
 }
 
 void Rocket::Draw(QPainter* painter) {
   painter->save();
   painter->translate(cur_upper_left_x_ + cur_width_ / 2,
-                    cur_upper_left_y_ + cur_height_ / 2);
+                     cur_upper_left_y_ + cur_height_ / 2);
   painter->setOpacity(opacity_);
   painter->rotate(current_rotate_degree_);
-  painter->drawImage(-cur_width_ / 2, -cur_height_ / 2, scaled_image_);
+  painter->drawPixmap(-cur_width_ / 2, -cur_height_ / 2, scaled_pixmap_);
   painter->restore();
 }
 

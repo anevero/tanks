@@ -18,6 +18,11 @@ Movable::Movable(const std::shared_ptr<Map>& map,
   directions_[static_cast<int>(direction)] = 1;
 }
 
+void Movable::LoadImage(const QString& path) {
+  image_.load(path);
+  scaled_pixmap_ = QPixmap::fromImage(image_);
+}
+
 void Movable::StartMovement(
     const int number_of_cells, const QList<std::shared_ptr<Movable>>& tanks,
     QList<QPair<std::shared_ptr<Movable>, Coordinates>>* objects_copies_,
@@ -284,9 +289,10 @@ void Movable::SwitchToPrevDirection() {
 }
 
 void Movable::RescaleImage() {
-  if (scaled_image_.width() == cur_width_ &&
-      scaled_image_.height() == cur_height_) {
+  if (scaled_pixmap_.width() == cur_width_ &&
+      scaled_pixmap_.height() == cur_height_) {
     return;
   }
-  scaled_image_ = image_.scaled(cur_width_, cur_height_, Qt::KeepAspectRatio);
+  scaled_pixmap_ = QPixmap::fromImage(
+      image_.scaled(cur_width_, cur_height_, Qt::KeepAspectRatio));
 }

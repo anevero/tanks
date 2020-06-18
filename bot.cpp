@@ -5,12 +5,7 @@ Bot::Bot(const std::shared_ptr<Map>& map, const BotQualities& qualities)
       moving_length_(qualities.moving_length),
       amount_of_turns_(qualities.amount_of_turns),
       side_rotation_frequency_(qualities.side_rotation_frequency) {
-  LoadImage();
-}
-
-void Bot::LoadImage() {
-  image_.load(":/textures/bot.png");
-  scaled_image_ = image_;
+  LoadImage(":/textures/bot.png");
 }
 
 bool Bot::IsTurnNeeded() const { return time_to_finish_rotation_ > 0; }
