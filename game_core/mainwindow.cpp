@@ -897,7 +897,7 @@ void MainWindow::InitializeNewGameDialog() {
       new QLabel(QString(tr("Tank")) + QString(":"), new_game_dialog_);
   switch_tank_menu_ = new QComboBox(new_game_dialog_);
 
-  QJsonObject json = GetJsonObjectFromFile(":/maps/tanks.json");
+  QJsonObject json = GetJsonObjectFromFile(":/tanks/tanks.json");
   QJsonArray tanks = json["tanks"].toArray();
 
   for (int i = 0; i < tanks.size(); ++i) {

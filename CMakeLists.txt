@@ -23,8 +23,8 @@ set(SOURCES main.cpp
         movables/tank.cpp
         map_objects/objectonmap.cpp map_objects/portal.cpp)
 
-qt5_add_big_resources(SOURCES resources/resources.qrc)
-add_executable(Tanks ${SOURCES})
+qt5_add_big_resources(RESOURCES resources/resources.qrc)
+add_executable(Tanks ${SOURCES} ${RESOURCES})
 
 target_link_libraries(Tanks Qt5::Core)
 target_link_libraries(Tanks Qt5::Widgets)
