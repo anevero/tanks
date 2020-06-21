@@ -85,7 +85,7 @@ class MainWindow : public QMainWindow {
   void ChangeChargeButton(int type);
 
  private:
-  // Clears all the maps connected with the current round and initializes
+  // Clears all the data connected with the current round and initializes
   // objects with values necessary to start the new round. After that repaints
   // everything on the screen.
   void RedrawContent();

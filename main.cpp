@@ -47,7 +47,7 @@ int main(int argc, char* argv[]) {
     language = QLocale::system().name();
   }
 
-  // Loads english language if game_core locale name is different from Qt locale
+  // Loads english language if system locale name is different from Qt locale
   // format (ISO 639  + ISO 3166).
   if (!translator.load(":/translations/tanks_" + language)) {
     translator.load(":/translations/tanks_en_US");
