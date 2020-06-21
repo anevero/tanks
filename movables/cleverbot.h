@@ -1,12 +1,12 @@
-#ifndef CLEVERBOT_H_
-#define CLEVERBOT_H_
+#ifndef MOVABLES_CLEVERBOT_H_
+#define MOVABLES_CLEVERBOT_H_
 
 #include <QQueue>
 #include <QVector>
 #include <memory>
 #include <vector>
 #include "improvedbot.h"
-#include "portal.h"
+#include "../map_objects/portal.h"
 
 class CleverBot : public ImprovedBot {
  public:
@@ -38,4 +38,4 @@ class CleverBot : public ImprovedBot {
   int width_;
 };
 
-#endif  // CLEVERBOT_H_
+#endif  // MOVABLES_CLEVERBOT_H_

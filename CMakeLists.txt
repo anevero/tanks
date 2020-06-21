@@ -16,12 +16,14 @@ find_package(Qt5Core REQUIRED)
 find_package(Qt5Widgets REQUIRED)
 find_package(Qt5Multimedia REQUIRED)
 
-set(SOURCES main.cpp mainwindow.cpp mainwindow.h boom.cpp boom.h
-        bot.cpp bot.h cleverbot.cpp cleverbot.h improvedbot.cpp improvedbot.h
-        map.cpp map.h movable.cpp movable.h objectonmap.cpp objectonmap.h
-        portal.cpp portal.h rocket.cpp rocket.h tank.cpp tank.h)
+set(SOURCES main.cpp
+        game_core/mainwindow.cpp game_core/map.cpp
+        movables/boom.cpp movables/bot.cpp movables/cleverbot.cpp
+        movables/improvedbot.cpp movables/movable.cpp movables/rocket.cpp
+        movables/tank.cpp
+        map_objects/objectonmap.cpp map_objects/portal.cpp)
 
-qt5_add_big_resources(SOURCES resources.qrc)
+qt5_add_big_resources(SOURCES resources/resources.qrc)
 add_executable(Tanks ${SOURCES})
 
 target_link_libraries(Tanks Qt5::Core)

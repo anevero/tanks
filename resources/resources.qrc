@@ -1,10 +1,10 @@
 <RCC>
 <qresource>
-    <file>data/map1.json</file>
-    <file>data/map2.json</file>
-    <file>data/map3.json</file>
-    <file>data/map4.json</file>
-    <file>data/tanks.json</file>
+    <file>maps/map1.json</file>
+    <file>maps/map2.json</file>
+    <file>maps/map3.json</file>
+    <file>maps/map4.json</file>
+    <file>maps/tanks.json</file>
     <file>textures/0.png</file>
     <file>textures/1.png</file>
     <file>textures/2.png</file>

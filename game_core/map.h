@@ -1,5 +1,5 @@
-#ifndef MAP_H_
-#define MAP_H_
+#ifndef GAME_CORE_MAP_H_
+#define GAME_CORE_MAP_H_
 
 #include <QDebug>
 #include <QFile>
@@ -65,4 +65,4 @@ class Map {
   const uint32_t number_of_cell_types_ = 5;
 };
 
-#endif  // MAP_H_
+#endif  // GAME_CORE_MAP_H_

@@ -566,7 +566,7 @@ void MainWindow::RedrawContent() {
       available_tank_types_[current_game_options_.tank_number]));
 
   QJsonObject json = GetJsonObjectFromFile(
-      ":/data/map" + QString::number(current_game_options_.map_number + 1)
+      ":/maps/map" + QString::number(current_game_options_.map_number + 1)
           + ".json");
 
   QJsonArray bots =
@@ -886,18 +886,18 @@ void MainWindow::InitializeNewGameDialog() {
   switch_map_menu_ = new QComboBox(new_game_dialog_);
 
   int map_number = 1;
-  QFileInfo map_file(":/data/map" + QString::number(map_number) + ".json");
+  QFileInfo map_file(":/maps/map" + QString::number(map_number) + ".json");
   while (map_file.exists() && map_file.isFile()) {
     switch_map_menu_->addItem(tr("Map") + " " + QString::number(map_number));
     map_number++;
-    map_file = QFileInfo(":/data/map" + QString::number(map_number) + ".json");
+    map_file = QFileInfo(":/maps/map" + QString::number(map_number) + ".json");
   }
 
   switch_tank_label_ =
       new QLabel(QString(tr("Tank")) + QString(":"), new_game_dialog_);
   switch_tank_menu_ = new QComboBox(new_game_dialog_);
 
-  QJsonObject json = GetJsonObjectFromFile(":/data/tanks.json");
+  QJsonObject json = GetJsonObjectFromFile(":/maps/tanks.json");
   QJsonArray tanks = json["tanks"].toArray();
 
   for (int i = 0; i < tanks.size(); ++i) {

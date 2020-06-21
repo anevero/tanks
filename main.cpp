@@ -4,7 +4,7 @@
 #include <QJsonObject>
 #include <QStyleFactory>
 #include <QTranslator>
-#include "mainwindow.h"
+#include "game_core/mainwindow.h"
 
 int main(int argc, char* argv[]) {
   QApplication a(argc, argv);
@@ -47,7 +47,7 @@ int main(int argc, char* argv[]) {
     language = QLocale::system().name();
   }
 
-  // Loads english language if system locale name is different from Qt locale
+  // Loads english language if game_core locale name is different from Qt locale
   // format (ISO 639  + ISO 3166).
   if (!translator.load(":/translations/tanks_" + language)) {
     translator.load(":/translations/tanks_en_US");

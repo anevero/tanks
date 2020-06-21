@@ -25,38 +25,38 @@ DISTFILES += \
 
 SOURCES += \
     main.cpp \
-    mainwindow.cpp \
-    map.cpp \
-    tank.cpp \
-    movable.cpp \
-    rocket.cpp \
-    bot.cpp \
-    improvedbot.cpp \
-    cleverbot.cpp \
-    objectonmap.cpp \
-    boom.cpp \
-    portal.cpp
+    game_core/mainwindow.cpp \
+    game_core/map.cpp \
+    map_objects/objectonmap.cpp \
+    map_objects/portal.cpp \
+    movables/boom.cpp \
+    movables/bot.cpp \
+    movables/cleverbot.cpp \
+    movables/improvedbot.cpp \
+    movables/movable.cpp \
+    movables/rocket.cpp \
+    movables/tank.cpp
 
 HEADERS += \
-    mainwindow.h \
-    map.h \
-    tank.h \
-    movable.h \
-    rocket.h \
-    bot.h \
-    improvedbot.h \
-    cleverbot.h \
-    objectonmap.h \
-    boom.h \
-    portal.h
+    game_core/mainwindow.h \
+    game_core/map.h \
+    map_objects/objectonmap.h \
+    map_objects/portal.h \
+    movables/boom.h \
+    movables/bot.h \
+    movables/cleverbot.h \
+    movables/improvedbot.h \
+    movables/movable.h \
+    movables/rocket.h \
+    movables/tank.h
 
-RESOURCES += resources.qrc
+RESOURCES += resources/resources.qrc
 CONFIG += resources_big
 
 TRANSLATIONS += \
-    translations/tanks_be_BY.ts \
-    translations/tanks_en_US.ts \
-    translations/tanks_ru_RU.ts
+    resources/translations/tanks_be_BY.ts \
+    resources/translations/tanks_en_US.ts \
+    resources/translations/tanks_ru_RU.ts
 
 RC_ICONS = app_icon.ico
 

@@ -1,5 +1,5 @@
-#ifndef MAINWINDOW_H_
-#define MAINWINDOW_H_
+#ifndef GAME_CORE_MAINWINDOW_H_
+#define GAME_CORE_MAINWINDOW_H_
 
 #include <QBoxLayout>
 #include <QCheckBox>
@@ -37,15 +37,16 @@
 #include <string>
 #include <utility>
 #include <vector>
-#include "boom.h"
-#include "bot.h"
-#include "cleverbot.h"
-#include "improvedbot.h"
-#include "map.h"
-#include "objectonmap.h"
-#include "portal.h"
-#include "rocket.h"
-#include "tank.h"
+
+#include "game_core/map.h"
+#include "map_objects/objectonmap.h"
+#include "map_objects/portal.h"
+#include "movables/boom.h"
+#include "movables/bot.h"
+#include "movables/cleverbot.h"
+#include "movables/improvedbot.h"
+#include "movables/rocket.h"
+#include "movables/tank.h"
 
 struct GameOptions {
   int map_number;
@@ -84,7 +85,7 @@ class MainWindow : public QMainWindow {
   void ChangeChargeButton(int type);
 
  private:
-  // Clears all the data connected with the current round and initializes
+  // Clears all the maps connected with the current round and initializes
   // objects with values necessary to start the new round. After that repaints
   // everything on the screen.
   void RedrawContent();
@@ -258,4 +259,4 @@ class MainWindow : public QMainWindow {
   int h_indent_;
 };
 
-#endif  // MAINWINDOW_H_
+#endif  // GAME_CORE_MAINWINDOW_H_

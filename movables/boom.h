@@ -1,5 +1,5 @@
-#ifndef BOOM_H_
-#define BOOM_H_
+#ifndef MOVABLES_BOOM_H_
+#define MOVABLES_BOOM_H_
 
 #include <QDebug>
 #include <QMediaPlayer>
@@ -24,4 +24,4 @@ class Boom : public Movable {
   QMediaPlayer boom_sound_;
 };
 
-#endif  // BOOM_H_
+#endif  // MOVABLES_BOOM_H_

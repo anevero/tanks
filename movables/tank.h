@@ -1,12 +1,12 @@
-#ifndef TANK_H_
-#define TANK_H_
+#ifndef MOVABLES_TANK_H_
+#define MOVABLES_TANK_H_
 
 #include <QApplication>
 #include <QMessageBox>
 #include <QPainter>
 #include <algorithm>
 #include <memory>
-#include "map.h"
+#include ".//game_core/map.h"
 #include "movable.h"
 
 struct TankQualities {
@@ -59,4 +59,4 @@ class Tank : public Movable {
   int current_health_{};
 };
 
-#endif  // TANK_H_
+#endif  // MOVABLES_TANK_H_

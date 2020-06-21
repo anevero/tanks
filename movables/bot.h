@@ -1,5 +1,5 @@
-#ifndef BOT_H_
-#define BOT_H_
+#ifndef MOVABLES_BOT_H_
+#define MOVABLES_BOT_H_
 
 #include <QDebug>
 #include <QImage>
@@ -8,7 +8,7 @@
 #include <memory>
 #include <utility>
 #include <vector>
-#include "map.h"
+#include "../game_core/map.h"
 #include "tank.h"
 
 struct BotQualities {
@@ -56,4 +56,4 @@ class Bot : public Tank {
                              size_t tank_y, size_t bot_x, size_t bot_y);
 };
 
-#endif  // BOT_H_
+#endif  // MOVABLES_BOT_H_

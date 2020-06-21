@@ -1,5 +1,5 @@
-#ifndef MOVABLE_H_
-#define MOVABLE_H_
+#ifndef MOVABLES_MOVABLE_H_
+#define MOVABLES_MOVABLE_H_
 
 #include <QDebug>
 #include <QImage>
@@ -10,9 +10,9 @@
 #include <cmath>
 #include <memory>
 #include <vector>
-#include "map.h"
-#include "objectonmap.h"
-#include "portal.h"
+#include "../game_core/map.h"
+#include "../map_objects/objectonmap.h"
+#include "../map_objects/portal.h"
 
 enum class Direction { Up = 0, Right = 1, Down = 2, Left = 3 };
 
@@ -31,7 +31,7 @@ class Movable : public std::enable_shared_from_this<Movable> {
   // Defines current move characteristics by initializing several variables,
   // including current speed, number of cells to finish movement, time to
   // finish movement, copy cell coordinates in case of moving through portal.
-  // These variables are initialized accordingly to the current state of movable
+  // These variables are initialized accordingly to the current state of the
   // object, e.g. obstacles or walls in front of him.
   virtual void StartMovement(
       int number_of_cells, const QList<std::shared_ptr<Movable>>& tanks,
@@ -46,7 +46,7 @@ class Movable : public std::enable_shared_from_this<Movable> {
 
   // Defines current rotation characteristics by initializing several variables,
   // including current rotation speed, time to finish rotation.
-  // These variables are initialized accordingly to the current state of movable
+  // These variables are initialized accordingly to the current state of the
   // object, e.g. obstacles or walls in front of him.
   virtual void StartRotation();
   // Updates state of current rotation by updating time to finish rotation
@@ -123,4 +123,4 @@ class Movable : public std::enable_shared_from_this<Movable> {
   QPixmap scaled_pixmap_;
 };
 
-#endif  // MOVABLE_H_
+#endif  // MOVABLES_MOVABLE_H_
