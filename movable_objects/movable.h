@@ -1,5 +1,5 @@
-#ifndef MOVABLES_MOVABLE_H_
-#define MOVABLES_MOVABLE_H_
+#ifndef MOVABLE_OBJECTS_MOVABLE_H_
+#define MOVABLE_OBJECTS_MOVABLE_H_
 
 #include <QDebug>
 #include <QImage>
@@ -11,8 +11,8 @@
 #include <memory>
 #include <vector>
 #include "../game_core/map.h"
-#include "../map_objects/objectonmap.h"
-#include "../map_objects/portal.h"
+#include "../static_objects/objectonmap.h"
+#include "../static_objects/portal.h"
 
 enum class Direction { Up = 0, Right = 1, Down = 2, Left = 3 };
 
@@ -123,4 +123,4 @@ class Movable : public std::enable_shared_from_this<Movable> {
   QPixmap scaled_pixmap_;
 };
 
-#endif  // MOVABLES_MOVABLE_H_
+#endif  // MOVABLE_OBJECTS_MOVABLE_H_

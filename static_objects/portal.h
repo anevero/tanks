@@ -1,5 +1,5 @@
-#ifndef MAP_OBJECTS_PORTAL_H_
-#define MAP_OBJECTS_PORTAL_H_
+#ifndef STATIC_OBJECTS_PORTAL_H_
+#define STATIC_OBJECTS_PORTAL_H_
 
 #include <QDebug>
 #include <QImage>
@@ -19,4 +19,4 @@ class Portal : public ObjectOnMap {
   size_t new_cell_y_;
 };
 
-#endif  // MAP_OBJECTS_PORTAL_H_
+#endif  // STATIC_OBJECTS_PORTAL_H_

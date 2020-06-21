@@ -1,5 +1,5 @@
-#ifndef MOVABLES_BOT_H_
-#define MOVABLES_BOT_H_
+#ifndef MOVABLE_OBJECTS_BOT_H_
+#define MOVABLE_OBJECTS_BOT_H_
 
 #include <QDebug>
 #include <QImage>
@@ -56,4 +56,4 @@ class Bot : public Tank {
                              size_t tank_y, size_t bot_x, size_t bot_y);
 };
 
-#endif  // MOVABLES_BOT_H_
+#endif  // MOVABLE_OBJECTS_BOT_H_

@@ -1,5 +1,5 @@
-#ifndef MOVABLES_TANK_H_
-#define MOVABLES_TANK_H_
+#ifndef MOVABLE_OBJECTS_TANK_H_
+#define MOVABLE_OBJECTS_TANK_H_
 
 #include <QApplication>
 #include <QMessageBox>
@@ -59,4 +59,4 @@ class Tank : public Movable {
   int current_health_{};
 };
 
-#endif  // MOVABLES_TANK_H_
+#endif  // MOVABLE_OBJECTS_TANK_H_

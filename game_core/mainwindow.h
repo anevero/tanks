@@ -39,14 +39,14 @@
 #include <vector>
 
 #include "game_core/map.h"
-#include "map_objects/objectonmap.h"
-#include "map_objects/portal.h"
-#include "movables/boom.h"
-#include "movables/bot.h"
-#include "movables/cleverbot.h"
-#include "movables/improvedbot.h"
-#include "movables/rocket.h"
-#include "movables/tank.h"
+#include "static_objects/objectonmap.h"
+#include "static_objects/portal.h"
+#include "movable_objects/boom.h"
+#include "movable_objects/bot.h"
+#include "movable_objects/cleverbot.h"
+#include "movable_objects/improvedbot.h"
+#include "movable_objects/rocket.h"
+#include "movable_objects/tank.h"
 
 struct GameOptions {
   int map_number;
