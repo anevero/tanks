@@ -14,7 +14,6 @@ QMAKE_CXXFLAGS += -std=c++17
 QMAKE_CXXFLAGS_RELEASE -= -O2
 QMAKE_CXXFLAGS_RELEASE += -O3
 
-
 ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
 DISTFILES += \
     android/AndroidManifest.xml \
@@ -27,28 +26,28 @@ SOURCES += \
     main.cpp \
     game_core/mainwindow.cpp \
     game_core/map.cpp \
-    map_objects/objectonmap.cpp \
-    map_objects/portal.cpp \
-    movables/boom.cpp \
-    movables/bot.cpp \
-    movables/cleverbot.cpp \
-    movables/improvedbot.cpp \
-    movables/movable.cpp \
-    movables/rocket.cpp \
-    movables/tank.cpp
+    static_objects/objectonmap.cpp \
+    static_objects/portal.cpp \
+    movable_objects/boom.cpp \
+    movable_objects/bot.cpp \
+    movable_objects/cleverbot.cpp \
+    movable_objects/improvedbot.cpp \
+    movable_objects/movable.cpp \
+    movable_objects/rocket.cpp \
+    movable_objects/tank.cpp
 
 HEADERS += \
     game_core/mainwindow.h \
     game_core/map.h \
-    map_objects/objectonmap.h \
-    map_objects/portal.h \
-    movables/boom.h \
-    movables/bot.h \
-    movables/cleverbot.h \
-    movables/improvedbot.h \
-    movables/movable.h \
-    movables/rocket.h \
-    movables/tank.h
+    static_objects/objectonmap.h \
+    static_objects/portal.h \
+    movable_objects/boom.h \
+    movable_objects/bot.h \
+    movable_objects/cleverbot.h \
+    movable_objects/improvedbot.h \
+    movable_objects/movable.h \
+    movable_objects/rocket.h \
+    movable_objects/tank.h
 
 RESOURCES += resources/resources.qrc
 CONFIG += resources_big

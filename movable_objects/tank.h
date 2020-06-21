@@ -6,7 +6,7 @@
 #include <QPainter>
 #include <algorithm>
 #include <memory>
-#include ".//game_core/map.h"
+#include "../game_core/map.h"
 #include "movable.h"
 
 struct TankQualities {
