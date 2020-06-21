@@ -4,7 +4,7 @@
     <file>maps/map2.json</file>
     <file>maps/map3.json</file>
     <file>maps/map4.json</file>
-    <file>maps/tanks.json</file>
+    <file>tanks/tanks.json</file>
     <file>textures/0.png</file>
     <file>textures/1.png</file>
     <file>textures/2.png</file>
