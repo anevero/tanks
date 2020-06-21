@@ -1,5 +1,5 @@
-#ifndef OBJECTONMAP_H_
-#define OBJECTONMAP_H_
+#ifndef STATIC_OBJECTS_OBJECTONMAP_H_
+#define STATIC_OBJECTS_OBJECTONMAP_H_
 
 #include <QDebug>
 #include <QImage>
@@ -8,7 +8,7 @@
 #include <QPixmap>
 #include <QVector>
 #include <memory>
-#include "map.h"
+#include "../game_core/map.h"
 
 enum class Bonus { TypeMedicalKit, TypeCharge };
 
@@ -51,4 +51,4 @@ class Charge : public ObjectOnMap {
   Charge(const std::shared_ptr<Map>& map, size_t x, size_t y);
 };
 
-#endif  // OBJECTONMAP_H_
+#endif  // STATIC_OBJECTS_OBJECTONMAP_H_

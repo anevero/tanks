@@ -1,5 +1,5 @@
-#ifndef MAINWINDOW_H_
-#define MAINWINDOW_H_
+#ifndef GAME_CORE_MAINWINDOW_H_
+#define GAME_CORE_MAINWINDOW_H_
 
 #include <QBoxLayout>
 #include <QCheckBox>
@@ -37,15 +37,16 @@
 #include <string>
 #include <utility>
 #include <vector>
-#include "boom.h"
-#include "bot.h"
-#include "cleverbot.h"
-#include "improvedbot.h"
-#include "map.h"
-#include "objectonmap.h"
-#include "portal.h"
-#include "rocket.h"
-#include "tank.h"
+
+#include "game_core/map.h"
+#include "static_objects/objectonmap.h"
+#include "static_objects/portal.h"
+#include "movable_objects/boom.h"
+#include "movable_objects/bot.h"
+#include "movable_objects/cleverbot.h"
+#include "movable_objects/improvedbot.h"
+#include "movable_objects/rocket.h"
+#include "movable_objects/tank.h"
 
 struct GameOptions {
   int map_number;
@@ -258,4 +259,4 @@ class MainWindow : public QMainWindow {
   int h_indent_;
 };
 
-#endif  // MAINWINDOW_H_
+#endif  // GAME_CORE_MAINWINDOW_H_

@@ -1,5 +1,5 @@
-#ifndef IMPROVEDBOT_H_
-#define IMPROVEDBOT_H_
+#ifndef MOVABLE_OBJECTS_IMPROVEDBOT_H_
+#define MOVABLE_OBJECTS_IMPROVEDBOT_H_
 
 #include <memory>
 #include <utility>
@@ -19,4 +19,4 @@ class ImprovedBot : public Bot {
   bool ChangeDirection();
 };
 
-#endif  // IMPROVEDBOT_H_
+#endif  // MOVABLE_OBJECTS_IMPROVEDBOT_H_

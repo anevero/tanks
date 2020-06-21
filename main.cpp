@@ -4,7 +4,7 @@
 #include <QJsonObject>
 #include <QStyleFactory>
 #include <QTranslator>
-#include "mainwindow.h"
+#include "game_core/mainwindow.h"
 
 int main(int argc, char* argv[]) {
   QApplication a(argc, argv);
