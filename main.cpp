@@ -68,9 +68,14 @@ int main(int argc, char* argv[]) {
   settings_file.write(new_json_string.toUtf8());
   settings_file.close();
 
-  MainWindow w;
-  w.setWindowTitle("Tanks");
-  w.show();
+  MainWindow main_window;
+  main_window.setWindowTitle("Tanks");
+
+#ifdef Q_OS_ANDROID
+  main_window.showFullScreen();
+#else
+  main_window.show();
+#endif
 
   return QApplication::exec();
 }

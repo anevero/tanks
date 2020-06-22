@@ -24,6 +24,7 @@ DISTFILES += \
 
 SOURCES += \
     main.cpp \
+    game_core/about_dialog.cpp \
     game_core/mainwindow.cpp \
     game_core/map.cpp \
     static_objects/objectonmap.cpp \
@@ -37,6 +38,7 @@ SOURCES += \
     movable_objects/tank.cpp
 
 HEADERS += \
+    game_core/about_dialog.h \
     game_core/mainwindow.h \
     game_core/map.h \
     static_objects/objectonmap.h \

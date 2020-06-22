@@ -38,6 +38,7 @@
 #include <utility>
 #include <vector>
 
+#include "game_core/about_dialog.h"
 #include "game_core/map.h"
 #include "static_objects/objectonmap.h"
 #include "static_objects/portal.h"
@@ -75,8 +76,7 @@ class MainWindow : public QMainWindow {
   void PauseOrContinue();
   // Runs settings dialog and switches options inside it.
   void Settings();
-  // Runs about dialog.
-  void About();
+  void ExecAboutDialog();
 
   // Creates KeyEvent with specified key. It's used for virtual keys buttons.
   void PressVirtualKey(Qt::Key key);
@@ -145,9 +145,6 @@ class MainWindow : public QMainWindow {
   void InitializeSettingsDialog();
   // Initializes About dialog with necessary content. Runs once (!) in the
   // constructor of main window.
-  void InitializeAboutDialog();
-  // Updates variables which store settings state with the information from
-  // settings file.
   void DetermineCurrentSettings();
   // Calls functions to change game settings according to variables state and
   // writes new info about settings to the settings file.
@@ -200,11 +197,7 @@ class MainWindow : public QMainWindow {
   QLabel* language_menu_label_;
   QLabel* language_menu_restart_label_;
 
-  QDialog* about_dialog_;
-  QDialogButtonBox* about_dialog_buttons_;
-  QVBoxLayout* about_dialog_layout_;
-  QTextBrowser* html_widget_;
-  QLabel* how_to_scroll_label_;
+  AboutDialog* about_dialog_;
 
   QVBoxLayout* main_buttons_layout_;
   QPushButton* new_game_button_;
