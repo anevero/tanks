@@ -3,6 +3,7 @@
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent),
       screen_timer_(new QLCDNumber(this)),
+      about_dialog_(new AboutDialog(this)),
       main_buttons_layout_(new QVBoxLayout()),
       new_game_button_(new QPushButton(tr("New game"), this)),
       pause_continue_button_(new QPushButton(tr("Pause"), this)),
@@ -61,7 +62,7 @@ MainWindow::MainWindow(QWidget* parent)
   connect(
       pause_continue_button_, SIGNAL(clicked()), this, SLOT(PauseOrContinue()));
   connect(settings_button_, SIGNAL(clicked()), this, SLOT(Settings()));
-  connect(about_button_, SIGNAL(clicked()), this, SLOT(About()));
+  connect(about_button_, SIGNAL(clicked()), this, SLOT(ExecAboutDialog()));
 
   for (int i = 0; i < charge_buttons_.size(); ++i) {
     charge_buttons_[i]->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,
@@ -118,7 +119,6 @@ MainWindow::MainWindow(QWidget* parent)
 
   InitializeNewGameDialog();
   InitializeSettingsDialog();
-  InitializeAboutDialog();
 
   timer_duration_ = available_fps_options_[fps_option_].second;
 
@@ -432,11 +432,14 @@ void MainWindow::Settings() {
   DetermineCurrentSettings();
 }
 
-void MainWindow::About() {
+void MainWindow::ExecAboutDialog() {
   if (!paused_) PauseOrContinue();
 
 #ifdef Q_OS_ANDROID
-  about_dialog_->showMaximized();
+  about_dialog_->showFullScreen();
+#else
+  about_dialog_->resize(500, 500);
+  about_dialog_->show();
 #endif
 
   about_dialog_->exec();
@@ -1019,38 +1022,6 @@ void MainWindow::InitializeSettingsDialog() {
           SLOT(accept()));
 
   settings_dialog_->layout()->setSizeConstraint(QLayout::SetFixedSize);
-}
-
-void MainWindow::InitializeAboutDialog() {
-  about_dialog_ = new QDialog(this);
-  html_widget_ = new QTextBrowser(this);
-  html_widget_->setSource(QUrl("qrc:/rules/rules.html"));
-
-#ifdef Q_OS_ANDROID
-  AdjustFont(html_widget_);
-  html_widget_->setTextInteractionFlags(Qt::NoTextInteraction);
-  how_to_scroll_label_ =
-      new QLabel(tr("Tip: you can use two fingers to scroll the reference"));
-#endif
-
-  about_dialog_buttons_ =
-      new QDialogButtonBox(QDialogButtonBox::Ok, Qt::Horizontal, about_dialog_);
-
-  about_dialog_layout_ = new QVBoxLayout(about_dialog_);
-
-#ifdef Q_OS_ANDROID
-  about_dialog_layout_->addWidget(how_to_scroll_label_);
-#endif
-
-  about_dialog_layout_->addWidget(html_widget_);
-  about_dialog_layout_->addWidget(about_dialog_buttons_);
-
-  connect(about_dialog_buttons_, SIGNAL(accepted()), about_dialog_,
-          SLOT(accept()));
-
-  about_dialog_->setFixedSize(500, 500);
-  html_widget_->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-  html_widget_->setOpenExternalLinks(true);
 }
 
 void MainWindow::DetermineCurrentSettings() {

@@ -17,7 +17,7 @@ find_package(Qt5Widgets REQUIRED)
 find_package(Qt5Multimedia REQUIRED)
 
 set(SOURCES main.cpp
-        game_core/mainwindow.cpp game_core/map.cpp
+        game_core/mainwindow.cpp game_core/about_dialog.cpp game_core/map.cpp
         movable_objects/boom.cpp movable_objects/bot.cpp
         movable_objects/cleverbot.cpp movable_objects/improvedbot.cpp
         movable_objects/movable.cpp movable_objects/rocket.cpp
