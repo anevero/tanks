@@ -143,8 +143,8 @@ class MainWindow : public QMainWindow {
   // Initializes settings dialog with buttons and menus. Runs once (!) in the
   // constructor of main window.
   void InitializeSettingsDialog();
-  // Initializes About dialog with necessary content. Runs once (!) in the
-  // constructor of main window.
+  // Updates variables which store settings state with the information from
+  // settings file.
   void DetermineCurrentSettings();
   // Calls functions to change game settings according to variables state and
   // writes new info about settings to the settings file.
