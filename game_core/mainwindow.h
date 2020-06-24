@@ -40,6 +40,7 @@
 
 #include "game_core/about_dialog.h"
 #include "game_core/map.h"
+#include "game_core/new_game_dialog.h"
 #include "static_objects/objectonmap.h"
 #include "static_objects/portal.h"
 #include "movable_objects/boom.h"
@@ -49,14 +50,8 @@
 #include "movable_objects/rocket.h"
 #include "movable_objects/tank.h"
 
-struct GameOptions {
-  int map_number;
-  int tank_number;
-  int difficulty_level_number;
-};
-
 class MainWindow : public QMainWindow {
-  Q_OBJECT
+ Q_OBJECT
 
  public:
   explicit MainWindow(QWidget* parent = nullptr);
@@ -71,7 +66,7 @@ class MainWindow : public QMainWindow {
 
  private slots:  // NOLINT
   // Runs new game dialog and switches options inside it.
-  void NewGame();
+  void ExecNewGameDialog();
   // Pauses or continues the game (depending on its current state).
   void PauseOrContinue();
   // Runs settings dialog and switches options inside it.
@@ -85,10 +80,13 @@ class MainWindow : public QMainWindow {
   void ChangeChargeButton(int type);
 
  private:
+  void LoadTanksTypesInfo();
+  void LoadRocketsTypesInfo();
+
   // Clears all the data connected with the current round and initializes
   // objects with values necessary to start the new round. After that repaints
   // everything on the screen.
-  void RedrawContent();
+  void ResetGame();
   // Updates info about size of indents in the current window.
   void UpdateIndents();
   // Changes buttons coordinates in the window according to the window size.
@@ -137,9 +135,6 @@ class MainWindow : public QMainWindow {
   void SwitchVirtualButtonsLayout();
   void ToggleMusic();
   void ChangeFPSOption(int new_option, bool start_timer = false);
-  // Initializes new game dialog with buttons and menus. Runs once (!) in the
-  // constructor of main window.
-  void InitializeNewGameDialog();
   // Initializes settings dialog with buttons and menus. Runs once (!) in the
   // constructor of main window.
   void InitializeSettingsDialog();
@@ -155,17 +150,50 @@ class MainWindow : public QMainWindow {
       const QString& start_direction) const;
 
  private:
+  const int number_of_maps_ = 4;
+  const int number_of_tanks_ = 3;
+  const int number_of_difficulty_levels_ = 3;
+
+  int current_map_number_ = 0;
+  int current_tank_number_ = 0;
+  int current_difficulty_level_ = 0;
+
+  const int minutes_per_round_ = 10;
+
+  std::vector<TankQualities> types_of_tanks_ = {};
+  std::vector<RocketParameters> types_of_rockets_ = {};
+
+ private:
+  std::shared_ptr<Map> map_;
+  // List of all the tanks (including player's tank and all the types of bots).
+  // The player's tank, if exists, is always the first item in the list.
+  QList<std::shared_ptr<Movable>> tanks_ = {};
+  // List of rockets and booms.
+  QList<std::shared_ptr<Movable>> rockets_ = {};
+  std::vector<std::vector<std::shared_ptr<ObjectOnMap>>>
+      obstacles_and_bonuses_ = {};
+  // List of 'copies' of tanks. Every item is just a pointer to the real tank
+  // and coordinates of the copy. It's used while a tank is moving through the
+  // portal (while it must be shown in two places at the same time).
+  QList<QPair<std::shared_ptr<Movable>, Coordinates>> objects_copies_ = {};
+
+  int timer_id_ = 0;
+  int time_since_last_medicalkit_ = 0;
+  int time_since_last_charge_ = 0;
+
+ private:
   bool paused_ = false;
-  bool virtual_keys_shown_ = true;
-  bool new_virtual_keys_enabled_ = true;
+  bool virtual_keys_shown_;
+  bool new_virtual_keys_enabled_;
   bool charge_line_shown_;
   bool music_enabled_;
   int fps_option_;
   int timer_duration_;
 
-  GameOptions current_game_options_{0, 0, 0};
-  const int minutes_per_round_ = 10;
+  const QVector<QPair<QString, int>> available_fps_options_ = {
+      {"240", 4}, {"120", 8}, {"90", 11}, {"60", 17}, {"50", 20}, {"40", 25}};
 
+ private:
   QLCDNumber* screen_timer_;
   QPalette standart_lcdnumber_palette_;
   QPalette red_lcdnumber_palette_;
@@ -173,16 +201,7 @@ class MainWindow : public QMainWindow {
   int screen_timer_sec_ = 0;
   int screen_timer_min_ = 0;
 
-  QDialog* new_game_dialog_;
-  QDialogButtonBox* new_game_dialog_buttons_;
-  QVBoxLayout* new_game_dialog_layout_;
-  QComboBox* switch_map_menu_;
-  QComboBox* switch_tank_menu_;
-  QComboBox* switch_difficulty_menu_;
-  QLabel* new_game_info_label_;
-  QLabel* switch_map_label_;
-  QLabel* switch_tank_label_;
-  QLabel* switch_difficulty_label_;
+  NewGameDialog* new_game_dialog_;
 
   QDialog* settings_dialog_;
   QDialogButtonBox* settings_dialog_buttons_;
@@ -223,29 +242,6 @@ class MainWindow : public QMainWindow {
   QMediaPlayer music_player_;
   QMediaPlaylist music_playlist_;
 
-  std::shared_ptr<Map> map_;
-  // List of all the tanks (including player's tank and all the types of bots).
-  // The player's tank, if exists, is always the first item in the list.
-  QList<std::shared_ptr<Movable>> tanks_;
-  // List of rockets and booms.
-  QList<std::shared_ptr<Movable>> rockets_;
-  std::vector<std::vector<std::shared_ptr<ObjectOnMap>>> obstacles_and_bonuses_;
-  // List of 'copies' of tanks. Every item is just a pointer to the real tank
-  // and coordinates of the copy. It's used while a tank is moving through the
-  // portal (while it must be shown in two places at the same time).
-  QList<QPair<std::shared_ptr<Movable>, Coordinates>> objects_copies_;
-
-  const int number_of_player_tanks_ = 1;
-  const QVector<QString> difficulty_levels_names_ = {tr("Easy"), tr("Normal"),
-                                                     tr("Hard")};
-  const QVector<QPair<QString, int>> available_fps_options_ = {
-      {"240", 4}, {"120", 8}, {"90", 11}, {"60", 17}, {"50", 20}, {"40", 25}};
-  QVector<TankQualities> available_tank_types_;
-  const QVector<RocketParameters> types_of_rockets_;
-
-  int timer_id_ = 0;
-  int time_since_last_medicalkit_ = 0;
-  int time_since_last_charge_ = 0;
   int sq_width_;
   int sq_height_;
   int w_indent_;

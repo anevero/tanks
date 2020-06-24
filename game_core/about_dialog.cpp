@@ -22,4 +22,5 @@ AboutDialog::AboutDialog(QWidget* parent)
   layout_->addWidget(html_widget_);
   layout_->addWidget(buttons_);
   connect(buttons_, &QDialogButtonBox::accepted, this, &AboutDialog::accept);
+  connect(buttons_, &QDialogButtonBox::rejected, this, &AboutDialog::reject);
 }
