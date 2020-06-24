@@ -13,10 +13,10 @@ class NewGameDialog : public QDialog {
   Q_OBJECT
 
  public:
-  explicit NewGameDialog(int number_of_maps,
-                         int number_of_tanks,
-                         std::vector<QString> difficulty_levels_names,
-                         QWidget* parent = nullptr);
+  NewGameDialog(int number_of_maps,
+                int number_of_tanks,
+                std::vector<QString> difficulty_levels_names,
+                QWidget* parent = nullptr);
   ~NewGameDialog() override = default;
 
   void accept() override;
