@@ -10,7 +10,7 @@
 #include <vector>
 
 class NewGameDialog : public QDialog {
- Q_OBJECT
+  Q_OBJECT
 
  public:
   explicit NewGameDialog(QWidget* parent = nullptr);

@@ -797,8 +797,10 @@ void MainWindow::SetMobileVirtualKeysStyleEnabled(bool enabled) {
     mobile_virtual_buttons_layout_left_->removeWidget(virtual_keys_buttons_[1]);
     mobile_virtual_buttons_layout_left_->removeWidget(virtual_keys_buttons_[0]);
     mobile_virtual_buttons_layout_left_->removeWidget(virtual_keys_buttons_[3]);
-    mobile_virtual_buttons_layout_right_->removeWidget(virtual_keys_buttons_[2]);
-    mobile_virtual_buttons_layout_right_->removeWidget(virtual_keys_buttons_[4]);
+    mobile_virtual_buttons_layout_right_->removeWidget(
+        virtual_keys_buttons_[2]);
+    mobile_virtual_buttons_layout_right_->removeWidget(
+        virtual_keys_buttons_[4]);
 
     for (int i = 0; i < number_of_virtual_keys_in_first_row_; ++i) {
       virtual_buttons_layout_->addWidget(virtual_keys_buttons_[i], 0, i);
