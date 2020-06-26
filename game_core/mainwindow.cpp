@@ -23,8 +23,11 @@ MainWindow::MainWindow(QWidget* parent)
           {Qt::Key_Q, Qt::Key_W, Qt::Key_A, Qt::Key_S, Qt::Key_D}),
       new_virtual_buttons_layout_left_(new QVBoxLayout),
       new_virtual_buttons_layout_right_(new QHBoxLayout) {
+  LoadApplicationSettings();
+  settings_dialog_ = new SettingsDialog(this);
   LoadTanksTypesInfo();
   LoadRocketsTypesInfo();
+
   setMouseTracking(true);
 
   new_game_button_->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,
@@ -43,8 +46,7 @@ MainWindow::MainWindow(QWidget* parent)
 
   screen_timer_->setSegmentStyle(QLCDNumber::Flat);
   screen_timer_->setToolTip(
-      tr("You have") + " " + QString::number(minutes_per_round_) + " "
-          + tr("minutes per round"));
+      tr("You have %1 minutes per round").arg(constants::kMinutesPerRound));
   standart_lcdnumber_palette_ = screen_timer_->palette();
   red_lcdnumber_palette_ = standart_lcdnumber_palette_;
   red_lcdnumber_palette_.setColor(QPalette::WindowText, QColor(255, 0, 0));
@@ -65,7 +67,7 @@ MainWindow::MainWindow(QWidget* parent)
   connect(pause_continue_button_, &QPushButton::clicked,
           this, &MainWindow::PauseOrContinue);
   connect(settings_button_, &QPushButton::clicked,
-          this, &MainWindow::Settings);
+          this, &MainWindow::ExecSettingsDialog);
   connect(about_button_, &QPushButton::clicked,
           this, &MainWindow::ExecAboutDialog);
 
@@ -103,7 +105,6 @@ MainWindow::MainWindow(QWidget* parent)
   }
 
 #ifdef Q_OS_ANDROID
-  new_virtual_keys_enabled_ = false;
   AdjustFont(new_game_button_);
   AdjustFont(pause_continue_button_);
   AdjustFont(settings_button_);
@@ -115,16 +116,6 @@ MainWindow::MainWindow(QWidget* parent)
     AdjustFont(charge_buttons_[i]);
   }
 #endif
-
-  SwitchVirtualButtonsLayout();
-
-  if (QTouchDevice::devices().empty()) {
-    ToggleVirtualKeys();
-  }
-
-  InitializeSettingsDialog();
-
-  timer_duration_ = available_fps_options_[fps_option_].second;
 
   setMinimumSize(600, 450);
   resize(600, 450);
@@ -281,7 +272,7 @@ void MainWindow::paintEvent(QPaintEvent*) {
     object->Draw(&p);
   }
 
-  if (!tanks_.empty() && charge_line_shown_) {
+  if (!tanks_.empty() && charge_line_enabled_) {
     auto tank = std::dynamic_pointer_cast<Tank>(tanks_[0]);
     p.setBrush(charge_colors_[static_cast<int>(tank->GetChargeState())]);
     p.drawRect(w_indent_ + static_cast<int>(0.04 * sq_width_),
@@ -392,7 +383,7 @@ void MainWindow::timerEvent(QTimerEvent*) {
 
   for (const auto& object : tanks_) {
     std::dynamic_pointer_cast<Tank>(object)->IncreaseTimeSinceLastShot(
-        GetTimerDuration());
+        timer_duration_);
   }
 
   if (time_since_last_medicalkit_ >= 20000) {
@@ -425,15 +416,22 @@ void MainWindow::ExecNewGameDialog() {
   ResetGame();
 }
 
-void MainWindow::Settings() {
+void MainWindow::ExecSettingsDialog() {
   if (!paused_) PauseOrContinue();
 
-#ifdef Q_OS_ANDROID
-  settings_dialog_->showMaximized();
-#endif
+  settings_dialog_->show();
+  if (settings_dialog_->exec() == QDialog::Rejected) {
+    return;
+  }
 
-  settings_dialog_->exec();
-  DetermineCurrentSettings();
+  SetVirtualKeysEnabled(settings_dialog_->AreVirtualKeysEnabled());
+  SetMobileVirtualKeysStyleEnabled(
+      settings_dialog_->IsMobileVirtualKeysStyleEnabled());
+  charge_line_enabled_ = settings_dialog_->IsChargeLineEnabled();
+  SetMusicEnabled(settings_dialog_->IsMusicEnabled());
+  SetFpsOption(settings_dialog_->GetCurrentFpsOption());
+
+  repaint();
 }
 
 void MainWindow::ExecAboutDialog() {
@@ -465,14 +463,14 @@ void MainWindow::RedrawButtons() {
       static_cast<int>(0.2 * sq_width_),
       static_cast<int>(0.4 * sq_height_)));
 
-  if (virtual_keys_shown_ && !new_virtual_keys_enabled_) {
+  if (virtual_keys_enabled_ && !mobile_virtual_keys_style_enabled_) {
     virtual_buttons_layout_->setSpacing(static_cast<int>(0.01 * sq_height_));
     virtual_buttons_layout_->setGeometry(
         QRect(w_indent_ + static_cast<int>(0.04 * sq_width_),
               height() - h_indent_ - static_cast<int>(0.2 * sq_height_),
               static_cast<int>(0.2 * sq_width_),
               static_cast<int>(0.15 * sq_height_)));
-  } else if (virtual_keys_shown_ && new_virtual_keys_enabled_) {
+  } else if (virtual_keys_enabled_ && mobile_virtual_keys_style_enabled_) {
     new_virtual_buttons_layout_left_->setSpacing(
         static_cast<int>(0.01 * sq_height_));
     new_virtual_buttons_layout_right_->setSpacing(
@@ -518,9 +516,9 @@ void MainWindow::UpdateScreenTimer() {
   screen_timer_ms_ %= 1000;
   screen_timer_sec_ %= 60;
 
-  if (screen_timer_min_ >= minutes_per_round_) {
+  if (screen_timer_min_ >= constants::kMinutesPerRound) {
     GameOver(false);
-  } else if (screen_timer_min_ >= minutes_per_round_ - 2) {
+  } else if (screen_timer_min_ >= constants::kMinutesPerRound - 2) {
     if (screen_timer_sec_ % 2 == 0) {
       screen_timer_->setPalette(red_lcdnumber_palette_);
     } else {
@@ -667,7 +665,7 @@ void MainWindow::PauseOrContinue() {
 
 void MainWindow::PressVirtualKey(Qt::Key key) {
   auto event = new QKeyEvent(QEvent::KeyRelease, key, Qt::NoModifier);
-  QApplication::instance()->sendEvent(this, event);
+  QApplication::sendEvent(this, event);
 }
 
 void MainWindow::ChangeChargeButton(int type) {
@@ -675,6 +673,63 @@ void MainWindow::ChangeChargeButton(int type) {
   std::dynamic_pointer_cast<Tank>(tanks_[0])->ChangeTypeOfCharge(type);
   RedrawChargeButtons();
   repaint();
+}
+
+void MainWindow::LoadApplicationSettings() {
+  using namespace constants;
+  QSettings settings;
+
+  if (settings.contains(kVirtualKeysEnabledKey)) {
+    virtual_keys_enabled_ = settings.value(kVirtualKeysEnabledKey).toBool();
+  } else {
+    virtual_keys_enabled_ = !QTouchDevice::devices().empty();
+    settings.setValue(kVirtualKeysEnabledKey, virtual_keys_enabled_);
+  }
+
+  if (settings.contains(kMobileVirtualKeysStyleEnabledKey)) {
+    mobile_virtual_keys_style_enabled_ =
+        settings.value(kMobileVirtualKeysStyleEnabledKey).toBool();
+  } else {
+    mobile_virtual_keys_style_enabled_ = false;
+
+#ifdef Q_OS_ANDROID
+    mobile_virtual_keys_style_enabled_ = true;
+#endif
+
+    settings.setValue(kMobileVirtualKeysStyleEnabledKey,
+                      mobile_virtual_keys_style_enabled_);
+  }
+
+  if (settings.contains(kChargeLineEnabledKey)) {
+    charge_line_enabled_ = settings.value(kChargeLineEnabledKey).toBool();
+  } else {
+    charge_line_enabled_ = true;
+    settings.setValue(kChargeLineEnabledKey, charge_line_enabled_);
+  }
+
+  if (settings.contains(kMusicEnabledKey)) {
+    music_enabled_ = settings.value(kMusicEnabledKey).toBool();
+  } else {
+    music_enabled_ = true;
+    settings.setValue(kMusicEnabledKey, music_enabled_);
+  }
+
+  if (settings.contains(kCurrentFpsOptionKey)) {
+    current_fps_option_ = settings.value(kCurrentFpsOptionKey).toInt();
+  } else {
+    current_fps_option_ = 2;
+
+#ifdef Q_OS_ANDROID
+    current_fps_option = 1;
+#endif
+
+    settings.setValue(kCurrentFpsOptionKey, current_fps_option_);
+  }
+
+  SetVirtualKeysEnabled(virtual_keys_enabled_);
+  SetMobileVirtualKeysStyleEnabled(mobile_virtual_keys_style_enabled_);
+  SetMusicEnabled(music_enabled_);
+  SetFpsOption(current_fps_option_);
 }
 
 void MainWindow::LoadTanksTypesInfo() {
@@ -700,8 +755,76 @@ void MainWindow::LoadTanksTypesInfo() {
 }
 
 void MainWindow::LoadRocketsTypesInfo() {
-  // TODO(anevero): load this data from the file.
+  // TODO(anevero): загружать эти данные из файла. Или не загружать из файлы
+  //  данные по танкам в предыдущей функции.
   types_of_rockets_ = {{7, 100, true}, {15, 200, true}, {30, 300, false}};
+}
+
+void MainWindow::SetVirtualKeysEnabled(bool enabled) {
+  virtual_keys_enabled_ = enabled;
+
+  for (auto& button : virtual_keys_buttons_) {
+    button->setVisible(virtual_keys_enabled_);
+  }
+
+  RedrawButtons();
+}
+
+void MainWindow::SetMobileVirtualKeysStyleEnabled(bool enabled) {
+  mobile_virtual_keys_style_enabled_ = enabled;
+
+  if (!mobile_virtual_keys_style_enabled_) {
+    new_virtual_buttons_layout_left_->removeWidget(virtual_keys_buttons_[1]);
+    new_virtual_buttons_layout_left_->removeWidget(virtual_keys_buttons_[0]);
+    new_virtual_buttons_layout_left_->removeWidget(virtual_keys_buttons_[3]);
+    new_virtual_buttons_layout_right_->removeWidget(virtual_keys_buttons_[2]);
+    new_virtual_buttons_layout_right_->removeWidget(virtual_keys_buttons_[4]);
+
+    for (int i = 0; i < number_of_virtual_keys_in_first_row_; ++i) {
+      virtual_buttons_layout_->addWidget(virtual_keys_buttons_[i], 0, i);
+    }
+
+    for (int i = number_of_virtual_keys_in_first_row_;
+         i < virtual_keys_buttons_.size(); ++i) {
+      virtual_buttons_layout_->addWidget(
+          virtual_keys_buttons_[i], 1,
+          i - number_of_virtual_keys_in_first_row_);
+    }
+  } else {
+    for (auto& button : virtual_keys_buttons_) {
+      virtual_buttons_layout_->removeWidget(button);
+    }
+
+    new_virtual_buttons_layout_left_->addWidget(virtual_keys_buttons_[1]);
+    new_virtual_buttons_layout_left_->addWidget(virtual_keys_buttons_[0]);
+    new_virtual_buttons_layout_left_->addWidget(virtual_keys_buttons_[3]);
+    new_virtual_buttons_layout_right_->addWidget(virtual_keys_buttons_[2]);
+    new_virtual_buttons_layout_right_->addWidget(virtual_keys_buttons_[4]);
+  }
+
+  RedrawButtons();
+}
+
+void MainWindow::SetMusicEnabled(bool enabled) {
+  music_enabled_ = enabled;
+
+  if (!music_enabled_) {
+    music_player_.stop();
+  } else if (music_enabled_ && timer_id_ == 0 && paused_) {
+    music_player_.play();
+  }
+}
+
+void MainWindow::SetFpsOption(int index, bool start_timer) {
+  current_fps_option_ = index;
+  timer_duration_ = 1000 / constants::kFpsOptions[current_fps_option_];
+
+  if (timer_id_ != 0) {
+    killTimer(timer_id_);
+  }
+  if (start_timer) {
+    timer_id_ = startTimer(timer_duration_);
+  }
 }
 
 void MainWindow::FindInteractingObjects() {
@@ -811,70 +934,6 @@ bool MainWindow::IsRocketByThisTank(
   return false;
 }
 
-int MainWindow::GetTimerDuration() const { return timer_duration_; }
-
-void MainWindow::ToggleVirtualKeys() {
-  virtual_keys_shown_ = !virtual_keys_shown_;
-  for (auto& button : virtual_keys_buttons_) {
-    button->setVisible(virtual_keys_shown_);
-  }
-  RedrawButtons();
-}
-
-void MainWindow::SwitchVirtualButtonsLayout() {
-  if (new_virtual_keys_enabled_) {
-    new_virtual_buttons_layout_left_->removeWidget(virtual_keys_buttons_[1]);
-    new_virtual_buttons_layout_left_->removeWidget(virtual_keys_buttons_[0]);
-    new_virtual_buttons_layout_left_->removeWidget(virtual_keys_buttons_[3]);
-    new_virtual_buttons_layout_right_->removeWidget(virtual_keys_buttons_[2]);
-    new_virtual_buttons_layout_right_->removeWidget(virtual_keys_buttons_[4]);
-
-    for (int i = 0; i < number_of_virtual_keys_in_first_row_; ++i) {
-      virtual_buttons_layout_->addWidget(virtual_keys_buttons_[i], 0, i);
-    }
-    for (int i = number_of_virtual_keys_in_first_row_;
-         i < virtual_keys_buttons_.size(); ++i) {
-      virtual_buttons_layout_->addWidget(
-          virtual_keys_buttons_[i], 1,
-          i - number_of_virtual_keys_in_first_row_);
-    }
-    new_virtual_keys_enabled_ = false;
-  } else {
-    for (auto& button : virtual_keys_buttons_) {
-      virtual_buttons_layout_->removeWidget(button);
-    }
-
-    new_virtual_buttons_layout_left_->addWidget(virtual_keys_buttons_[1]);
-    new_virtual_buttons_layout_left_->addWidget(virtual_keys_buttons_[0]);
-    new_virtual_buttons_layout_left_->addWidget(virtual_keys_buttons_[3]);
-    new_virtual_buttons_layout_right_->addWidget(virtual_keys_buttons_[2]);
-    new_virtual_buttons_layout_right_->addWidget(virtual_keys_buttons_[4]);
-    new_virtual_keys_enabled_ = true;
-  }
-  RedrawButtons();
-}
-
-void MainWindow::ToggleMusic() {
-  music_enabled_ = !music_enabled_;
-  if (!music_enabled_) {
-    music_player_.stop();
-  } else if (music_enabled_ && timer_id_ == 0 && paused_) {
-    music_player_.play();
-  }
-}
-
-void MainWindow::ChangeFPSOption(const int new_option, bool start_timer) {
-  fps_option_ = new_option;
-  timer_duration_ = available_fps_options_[new_option].second;
-  fps_menu_->setCurrentIndex(new_option);
-  if (timer_id_ != 0) {
-    killTimer(timer_id_);
-  }
-  if (start_timer) {
-    timer_id_ = startTimer(timer_duration_);
-  }
-}
-
 void MainWindow::GameOver(bool win) {
   music_player_.stop();
 
@@ -895,143 +954,6 @@ void MainWindow::GameOver(bool win) {
            "on the left."));
   }
   message.exec();
-}
-
-void MainWindow::InitializeSettingsDialog() {
-  settings_dialog_ = new QDialog(this);
-
-  virtual_keys_checkbox_ = new QCheckBox(tr("Virtual keys"), settings_dialog_);
-  virtual_keys_checkbox_->setChecked(virtual_keys_shown_);
-
-  new_virtual_keys_checkbox_ = new QCheckBox(
-      tr("Experimental layout of virtual keys"), settings_dialog_);
-  new_virtual_keys_checkbox_->setChecked(new_virtual_keys_enabled_);
-
-  charge_line_checkbox_ =
-      new QCheckBox(tr("Activate charge line"), settings_dialog_);
-
-  music_checkbox_ = new QCheckBox(tr("Music"), settings_dialog_);
-
-  fps_menu_label_ =
-      new QLabel(QString(tr("Performance")) + QString(":"), settings_dialog_);
-
-  fps_menu_ = new QComboBox(settings_dialog_);
-  for (const auto& option : available_fps_options_) {
-    fps_menu_->addItem(option.first + QString(" ") +
-        QString(tr("frames per second")));
-  }
-
-  language_menu_label_ =
-      new QLabel(QString(tr("Language")) + QString(":"), settings_dialog_);
-
-  language_menu_ = new QComboBox(settings_dialog_);
-  language_menu_->addItem(tr("Belarusian"));
-  language_menu_->addItem(tr("English"));
-  language_menu_->addItem(tr("Russian"));
-
-  language_menu_restart_label_ = new QLabel(
-      QString(tr("Language will be changed after application restart")));
-  language_menu_restart_label_->setWordWrap(true);
-
-  DetermineCurrentSettings();
-
-  settings_dialog_layout_ = new QVBoxLayout(settings_dialog_);
-  settings_dialog_layout_->addWidget(virtual_keys_checkbox_);
-  settings_dialog_layout_->addWidget(new_virtual_keys_checkbox_);
-  settings_dialog_layout_->addWidget(charge_line_checkbox_);
-  settings_dialog_layout_->addWidget(music_checkbox_);
-  settings_dialog_layout_->addWidget(fps_menu_label_);
-  settings_dialog_layout_->addWidget(fps_menu_);
-  settings_dialog_layout_->addWidget(language_menu_label_);
-  settings_dialog_layout_->addWidget(language_menu_);
-  settings_dialog_layout_->addWidget(language_menu_restart_label_);
-
-#ifndef Q_OS_ANDROID
-  new_virtual_keys_checkbox_->setDisabled(true);
-#endif
-
-  settings_dialog_buttons_ = new QDialogButtonBox(
-      QDialogButtonBox::Ok, Qt::Horizontal, settings_dialog_);
-
-  settings_dialog_layout_->addWidget(settings_dialog_buttons_);
-
-  connect(settings_dialog_buttons_->button(QDialogButtonBox::Ok),
-          &QPushButton::clicked, [&]() {
-        ChangeCurrentSettings();
-        DetermineCurrentSettings();
-      });
-
-  connect(settings_dialog_buttons_, SIGNAL(accepted()), settings_dialog_,
-          SLOT(accept()));
-
-  settings_dialog_->layout()->setSizeConstraint(QLayout::SetFixedSize);
-}
-
-void MainWindow::DetermineCurrentSettings() {
-  QJsonObject json = GetJsonObjectFromFile("settings.json");
-
-  virtual_keys_checkbox_->setChecked(virtual_keys_shown_);
-  new_virtual_keys_checkbox_->setChecked(new_virtual_keys_enabled_);
-
-  QString language = json["language"].toString();
-  if (language == "be_BY") {
-    language_menu_->setCurrentIndex(0);
-  } else if (language == "en_US") {
-    language_menu_->setCurrentIndex(1);
-  } else if (language == "ru_RU") {
-    language_menu_->setCurrentIndex(2);
-  }
-
-  charge_line_shown_ = json["charge_line"].toBool();
-  charge_line_checkbox_->setChecked(charge_line_shown_);
-
-  music_enabled_ = json["music_enabled"].toBool();
-  music_checkbox_->setChecked(music_enabled_);
-
-  fps_option_ = json["fps"].toInt();
-  fps_menu_->setCurrentIndex(fps_option_);
-}
-
-void MainWindow::ChangeCurrentSettings() {
-  if (virtual_keys_shown_ != virtual_keys_checkbox_->isChecked()) {
-    ToggleVirtualKeys();
-  }
-  if (new_virtual_keys_enabled_ != new_virtual_keys_checkbox_->isChecked()) {
-    SwitchVirtualButtonsLayout();
-  }
-  if (music_enabled_ != music_checkbox_->isChecked()) {
-    ToggleMusic();
-  }
-
-  charge_line_shown_ = charge_line_checkbox_->isChecked();
-  ChangeFPSOption(fps_menu_->currentIndex());
-
-  QString language;
-  switch (language_menu_->currentIndex()) {
-    case 0:language = "be_BY";
-      break;
-    case 1:language = "en_US";
-      break;
-    case 2:language = "ru_RU";
-      break;
-  }
-
-  QFile settings_file("settings.json");
-  QJsonObject new_json_obj;
-
-  new_json_obj["language"] = language;
-  new_json_obj["charge_line"] = charge_line_shown_;
-  new_json_obj["music_enabled"] = music_enabled_;
-  new_json_obj["fps"] = fps_option_;
-
-  QJsonDocument new_json_document(new_json_obj);
-  QString new_json_string = new_json_document.toJson();
-
-  settings_file.open(QIODevice::WriteOnly);
-  settings_file.write(new_json_string.toUtf8());
-  settings_file.close();
-
-  repaint();
 }
 
 QJsonObject MainWindow::GetJsonObjectFromFile(const QString& filepath) {

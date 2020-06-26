@@ -1,72 +1,46 @@
 ﻿#include <QApplication>
-#include <QFile>
-#include <QJsonDocument>
-#include <QJsonObject>
+#include <QLibraryInfo>
+#include <QProcess>
+#include <QSettings>
 #include <QStyleFactory>
 #include <QTranslator>
+
+#include "game_core/constants.h"
 #include "game_core/mainwindow.h"
 
 int main(int argc, char* argv[]) {
   QApplication a(argc, argv);
   QApplication::setStyle(QStyleFactory::create("Fusion"));
-
-  QString language{};
-  bool charge_line = true;
-  bool music_enabled = true;
-  int fps_option;
+  QApplication::setOrganizationName(constants::kOrganizationName);
+  QApplication::setApplicationName(constants::kApplicationName);
 
 #ifdef Q_OS_ANDROID
   // Workaround for the bug with random selection controls appearing on
   // the screen (Android).
   qputenv("QT_QPA_NO_TEXT_HANDLES", "1");
-  // 60 FPS is enough for mobile devices.
-  fps_option = 3;
-#else
-  // Desktop devices can deal with more FPS.
-  fps_option = 1;
 #endif
 
-  QFile settings_file("settings.json");
-  // Checks whether settings file has been already created. If not, it will be
-  // created later.
-  if (settings_file.exists()) {
-    settings_file.open(QIODevice::ReadOnly);
-    QString text = settings_file.readAll();
-    settings_file.close();
-    QJsonDocument json_document(QJsonDocument::fromJson(text.toUtf8()));
-    QJsonObject json = json_document.object();
-    language = json["language"].toString();
-    charge_line = json["charge_line"].toBool();
-    music_enabled = json["music_enabled"].toBool();
-    fps_option = json["fps"].toInt();
-  }
-
-  QTranslator translator;
-
-  if (language.isEmpty()) {
-    language = QLocale::system().name();
-  }
-
-  // Loads english language if system locale name is different from Qt locale
-  // format (ISO 639  + ISO 3166).
-  if (!translator.load(":/translations/tanks_" + language)) {
-    translator.load(":/translations/tanks_en_US");
+  // Loading language settings. If no settings found, the en_US locale is
+  // set as the default.
+  QSettings settings;
+  QString language;
+  if (settings.contains(constants::kLanguageKey)) {
+    language = settings.value(constants::kLanguageKey, language).toString();
+  } else {
     language = "en_US";
+    settings.setValue(constants::kLanguageKey, language);
   }
-  QApplication::installTranslator(&translator);
 
-  // Creates new settings file based on current settings.
-  QJsonObject new_json_obj;
-  new_json_obj["language"] = language;
-  new_json_obj["charge_line"] = charge_line;
-  new_json_obj["music_enabled"] = music_enabled;
-  new_json_obj["fps"] = fps_option;
-  QJsonDocument new_json_document(new_json_obj);
-  QString new_json_string = new_json_document.toJson();
+  // Loading app translations.
+  QTranslator app_translator;
+  app_translator.load(":/translations/tanks_" + language);
+  QApplication::installTranslator(&app_translator);
 
-  settings_file.open(QIODevice::WriteOnly);
-  settings_file.write(new_json_string.toUtf8());
-  settings_file.close();
+  // Loading Qt components translations (QMessageBoxes, etc.).
+  QTranslator internal_translator;
+  internal_translator.load("qtbase_" + language,
+                           QLibraryInfo::location(QLibraryInfo::TranslationsPath));
+  QApplication::installTranslator(&internal_translator);
 
   MainWindow main_window;
   main_window.setWindowTitle("Tanks");
@@ -77,5 +51,15 @@ int main(int argc, char* argv[]) {
   main_window.show();
 #endif
 
-  return QApplication::exec();
+  int return_code = QApplication::exec();
+
+#ifdef Q_OS_ANDROID
+  return return_code;
+#endif
+
+  if (return_code != constants::kApplicationRestartCode) {
+    return return_code;
+  }
+
+  return !QProcess::startDetached(QApplication::applicationFilePath(), {});
 }

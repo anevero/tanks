@@ -18,16 +18,16 @@ NewGameDialog::NewGameDialog(QWidget* parent)
           new QLabel(QString(tr("Difficulty")) + ":", this)),
       buttons_(new QDialogButtonBox(
           QDialogButtonBox::Ok, Qt::Horizontal, this)) {
-  for (int i = 1; i <= constants::number_of_maps; ++i) {
+  for (int i = 1; i <= constants::kMapsNumber; ++i) {
     switch_map_menu_->addItem(tr("Map") + " " + QString::number(i));
   }
 
-  for (int i = 1; i <= constants::number_of_tanks; ++i) {
+  for (int i = 1; i <= constants::kTanksNumber; ++i) {
     switch_tank_menu_->addItem(tr("Tank") + " " + QString::number(i));
   }
 
-  for (int i = 0; i < constants::number_of_difficulty_levels; ++i) {
-    switch_difficulty_menu_->addItem(constants::difficulty_levels_names[i]);
+  for (int i = 0; i < constants::kDifficultyLevelsNumber; ++i) {
+    switch_difficulty_menu_->addItem(constants::kDifficultyLevelsNames[i]);
   }
 
   layout_->addWidget(new_game_label_);
