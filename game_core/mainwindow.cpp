@@ -689,7 +689,14 @@ void MainWindow::ChangeChargeButton(int type) {
 }
 
 void MainWindow::LoadApplicationSettings() {
-  using namespace constants;
+  using constants::kVirtualKeysEnabledKey;
+  using constants::kMobileVirtualKeysStyleEnabledKey;
+  using constants::kChargeLineEnabledKey;
+  using constants::kMusicEnabledKey;
+  using constants::kCurrentFpsOptionKey;
+  using constants::kLanguageKey;
+  using constants::kLanguages;
+
   QSettings settings;
 
   if (settings.contains(kVirtualKeysEnabledKey)) {

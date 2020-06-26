@@ -26,11 +26,18 @@ SettingsDialog::SettingsDialog(QWidget* parent)
   }
 
   for (int i = 0; i < constants::kLanguages.size(); ++i) {
-    switch_language_menu_->addItem(constants::kLanguagesNames[i]);
+    switch_language_menu_->addItem(kLanguagesNames[i]);
   }
 
   {
-    using namespace constants;
+    using constants::kVirtualKeysEnabledKey;
+    using constants::kMobileVirtualKeysStyleEnabledKey;
+    using constants::kChargeLineEnabledKey;
+    using constants::kMusicEnabledKey;
+    using constants::kCurrentFpsOptionKey;
+    using constants::kLanguageKey;
+    using constants::kLanguages;
+
     QSettings settings;
 
     virtual_keys_enabled_ = settings.value(kVirtualKeysEnabledKey).toBool();
@@ -124,14 +131,17 @@ void SettingsDialog::ResetSettings() {
 
 void SettingsDialog::WriteSettings() {
   QSettings settings;
-  using namespace constants;
 
-  settings.setValue(kVirtualKeysEnabledKey, virtual_keys_enabled_);
-  settings.setValue(kMobileVirtualKeysStyleEnabledKey,
+  settings.setValue(constants::kVirtualKeysEnabledKey,
+                    virtual_keys_enabled_);
+  settings.setValue(constants::kMobileVirtualKeysStyleEnabledKey,
                     mobile_virtual_keys_style_enabled_);
-  settings.setValue(kChargeLineEnabledKey, charge_line_enabled_);
-  settings.setValue(kMusicEnabledKey, music_enabled_);
-  settings.setValue(kCurrentFpsOptionKey, current_fps_option_);
+  settings.setValue(constants::kChargeLineEnabledKey,
+                    charge_line_enabled_);
+  settings.setValue(constants::kMusicEnabledKey,
+                    music_enabled_);
+  settings.setValue(constants::kCurrentFpsOptionKey,
+                    current_fps_option_);
 }
 
 void SettingsDialog::SwitchLanguage() {

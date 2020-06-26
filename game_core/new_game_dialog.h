@@ -10,7 +10,7 @@
 #include <vector>
 
 class NewGameDialog : public QDialog {
-  Q_OBJECT
+ Q_OBJECT
 
  public:
   explicit NewGameDialog(QWidget* parent = nullptr);
@@ -37,6 +37,9 @@ class NewGameDialog : public QDialog {
   QLabel* switch_tank_label_;
   QLabel* switch_difficulty_label_;
   QDialogButtonBox* buttons_;
+
+  const std::vector<QString> kDifficultyLevelsNames =
+      {QObject::tr("Easy"), QObject::tr("Normal"), QObject::tr("Hard")};
 };
 
 #endif  // GAME_CORE_NEW_GAME_DIALOG_H_

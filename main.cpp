@@ -38,8 +38,9 @@ int main(int argc, char* argv[]) {
 
   // Loading Qt components translations (QMessageBoxes, etc.).
   QTranslator internal_translator;
-  internal_translator.load("qtbase_" + language,
-                           QLibraryInfo::location(QLibraryInfo::TranslationsPath));
+  internal_translator.load(
+      "qtbase_" + language,
+      QLibraryInfo::location(QLibraryInfo::TranslationsPath));
   QApplication::installTranslator(&internal_translator);
 
   MainWindow main_window;

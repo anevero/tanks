@@ -6,10 +6,12 @@
 #include <QDialog>
 #include <QDialogButtonBox>
 #include <QLabel>
+#include <QString>
 #include <QVBoxLayout>
+#include <vector>
 
 class SettingsDialog : public QDialog {
-  Q_OBJECT
+ Q_OBJECT
 
  public:
   explicit SettingsDialog(QWidget* parent = nullptr);
@@ -47,6 +49,9 @@ class SettingsDialog : public QDialog {
   QLabel* language_menu_label_;
   QComboBox* switch_language_menu_;
   QDialogButtonBox* buttons_;
+
+  const std::vector<QString> kLanguagesNames =
+      {QObject::tr("en_US"), QObject::tr("ru_RU"), QObject::tr("be_BY")};
 };
 
 #endif  // GAME_CORE_SETTINGS_DIALOG_H_

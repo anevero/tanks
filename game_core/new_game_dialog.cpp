@@ -27,7 +27,7 @@ NewGameDialog::NewGameDialog(QWidget* parent)
   }
 
   for (int i = 0; i < constants::kDifficultyLevelsNumber; ++i) {
-    switch_difficulty_menu_->addItem(constants::kDifficultyLevelsNames[i]);
+    switch_difficulty_menu_->addItem(kDifficultyLevelsNames[i]);
   }
 
   layout_->addWidget(new_game_label_);
