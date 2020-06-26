@@ -9,16 +9,16 @@
 #include "game_core/mainwindow.h"
 
 int main(int argc, char* argv[]) {
-  QApplication a(argc, argv);
-  QApplication::setStyle(QStyleFactory::create("Fusion"));
-  QApplication::setOrganizationName(constants::kOrganizationName);
-  QApplication::setApplicationName(constants::kApplicationName);
-
 #ifdef Q_OS_ANDROID
   // Workaround for the bug with random selection controls appearing on
   // the screen (Android).
   qputenv("QT_QPA_NO_TEXT_HANDLES", "1");
 #endif
+
+  QApplication a(argc, argv);
+  QApplication::setStyle(QStyleFactory::create("Fusion"));
+  QApplication::setOrganizationName(constants::kOrganizationName);
+  QApplication::setApplicationName(constants::kApplicationName);
 
   // Loading language settings. If no settings found, the en_US locale is
   // set as the default.

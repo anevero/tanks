@@ -21,8 +21,8 @@ MainWindow::MainWindow(QWidget* parent)
            new QPushButton("D", this)}),
       virtual_keys_encodings_(
           {Qt::Key_Q, Qt::Key_W, Qt::Key_A, Qt::Key_S, Qt::Key_D}),
-      new_virtual_buttons_layout_left_(new QVBoxLayout),
-      new_virtual_buttons_layout_right_(new QHBoxLayout) {
+      mobile_virtual_buttons_layout_left_(new QVBoxLayout),
+      mobile_virtual_buttons_layout_right_(new QHBoxLayout) {
   LoadApplicationSettings();
   settings_dialog_ = new SettingsDialog(this);
   LoadTanksTypesInfo();
@@ -424,12 +424,21 @@ void MainWindow::ExecSettingsDialog() {
     return;
   }
 
-  SetVirtualKeysEnabled(settings_dialog_->AreVirtualKeysEnabled());
-  SetMobileVirtualKeysStyleEnabled(
-      settings_dialog_->IsMobileVirtualKeysStyleEnabled());
+  if (virtual_keys_enabled_ != settings_dialog_->AreVirtualKeysEnabled()) {
+    SetVirtualKeysEnabled(settings_dialog_->AreVirtualKeysEnabled());
+  }
+  if (mobile_virtual_keys_style_enabled_
+      != settings_dialog_->IsMobileVirtualKeysStyleEnabled()) {
+    SetMobileVirtualKeysStyleEnabled(
+        settings_dialog_->IsMobileVirtualKeysStyleEnabled());
+  }
+  if (music_enabled_ != settings_dialog_->IsMusicEnabled()) {
+    SetMusicEnabled(settings_dialog_->IsMusicEnabled());
+  }
+  if (current_fps_option_ != settings_dialog_->GetCurrentFpsOption()) {
+    SetFpsOption(settings_dialog_->GetCurrentFpsOption());
+  }
   charge_line_enabled_ = settings_dialog_->IsChargeLineEnabled();
-  SetMusicEnabled(settings_dialog_->IsMusicEnabled());
-  SetFpsOption(settings_dialog_->GetCurrentFpsOption());
 
   repaint();
 }
@@ -463,24 +472,28 @@ void MainWindow::RedrawButtons() {
       static_cast<int>(0.2 * sq_width_),
       static_cast<int>(0.4 * sq_height_)));
 
-  if (virtual_keys_enabled_ && !mobile_virtual_keys_style_enabled_) {
+  if (!virtual_keys_enabled_) {
+    return;
+  }
+
+  if (!mobile_virtual_keys_style_enabled_) {
     virtual_buttons_layout_->setSpacing(static_cast<int>(0.01 * sq_height_));
     virtual_buttons_layout_->setGeometry(
         QRect(w_indent_ + static_cast<int>(0.04 * sq_width_),
               height() - h_indent_ - static_cast<int>(0.2 * sq_height_),
               static_cast<int>(0.2 * sq_width_),
               static_cast<int>(0.15 * sq_height_)));
-  } else if (virtual_keys_enabled_ && mobile_virtual_keys_style_enabled_) {
-    new_virtual_buttons_layout_left_->setSpacing(
+  } else {
+    mobile_virtual_buttons_layout_left_->setSpacing(
         static_cast<int>(0.01 * sq_height_));
-    new_virtual_buttons_layout_right_->setSpacing(
+    mobile_virtual_buttons_layout_right_->setSpacing(
         static_cast<int>(0.01 * sq_height_));
-    new_virtual_buttons_layout_left_->setGeometry(
+    mobile_virtual_buttons_layout_left_->setGeometry(
         QRect(std::max(0, w_indent_ - static_cast<int>(0.2 * sq_width_)),
               height() - h_indent_ - static_cast<int>(0.5 * sq_height_),
               std::min(w_indent_, static_cast<int>(0.2 * sq_width_)),
               static_cast<int>(0.45 * sq_height_)));
-    new_virtual_buttons_layout_right_->setGeometry(
+    mobile_virtual_buttons_layout_right_->setGeometry(
         QRect(width() - w_indent_,
               height() - h_indent_ - static_cast<int>(0.5 * sq_height_),
               std::min(w_indent_, static_cast<int>(0.2 * sq_width_)),
@@ -720,7 +733,7 @@ void MainWindow::LoadApplicationSettings() {
     current_fps_option_ = 2;
 
 #ifdef Q_OS_ANDROID
-    current_fps_option = 1;
+    current_fps_option_ = 1;
 #endif
 
     settings.setValue(kCurrentFpsOptionKey, current_fps_option_);
@@ -774,11 +787,11 @@ void MainWindow::SetMobileVirtualKeysStyleEnabled(bool enabled) {
   mobile_virtual_keys_style_enabled_ = enabled;
 
   if (!mobile_virtual_keys_style_enabled_) {
-    new_virtual_buttons_layout_left_->removeWidget(virtual_keys_buttons_[1]);
-    new_virtual_buttons_layout_left_->removeWidget(virtual_keys_buttons_[0]);
-    new_virtual_buttons_layout_left_->removeWidget(virtual_keys_buttons_[3]);
-    new_virtual_buttons_layout_right_->removeWidget(virtual_keys_buttons_[2]);
-    new_virtual_buttons_layout_right_->removeWidget(virtual_keys_buttons_[4]);
+    mobile_virtual_buttons_layout_left_->removeWidget(virtual_keys_buttons_[1]);
+    mobile_virtual_buttons_layout_left_->removeWidget(virtual_keys_buttons_[0]);
+    mobile_virtual_buttons_layout_left_->removeWidget(virtual_keys_buttons_[3]);
+    mobile_virtual_buttons_layout_right_->removeWidget(virtual_keys_buttons_[2]);
+    mobile_virtual_buttons_layout_right_->removeWidget(virtual_keys_buttons_[4]);
 
     for (int i = 0; i < number_of_virtual_keys_in_first_row_; ++i) {
       virtual_buttons_layout_->addWidget(virtual_keys_buttons_[i], 0, i);
@@ -795,11 +808,11 @@ void MainWindow::SetMobileVirtualKeysStyleEnabled(bool enabled) {
       virtual_buttons_layout_->removeWidget(button);
     }
 
-    new_virtual_buttons_layout_left_->addWidget(virtual_keys_buttons_[1]);
-    new_virtual_buttons_layout_left_->addWidget(virtual_keys_buttons_[0]);
-    new_virtual_buttons_layout_left_->addWidget(virtual_keys_buttons_[3]);
-    new_virtual_buttons_layout_right_->addWidget(virtual_keys_buttons_[2]);
-    new_virtual_buttons_layout_right_->addWidget(virtual_keys_buttons_[4]);
+    mobile_virtual_buttons_layout_left_->addWidget(virtual_keys_buttons_[1]);
+    mobile_virtual_buttons_layout_left_->addWidget(virtual_keys_buttons_[0]);
+    mobile_virtual_buttons_layout_left_->addWidget(virtual_keys_buttons_[3]);
+    mobile_virtual_buttons_layout_right_->addWidget(virtual_keys_buttons_[2]);
+    mobile_virtual_buttons_layout_right_->addWidget(virtual_keys_buttons_[4]);
   }
 
   RedrawButtons();

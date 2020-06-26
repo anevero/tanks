@@ -127,7 +127,8 @@ void SettingsDialog::WriteSettings() {
   using namespace constants;
 
   settings.setValue(kVirtualKeysEnabledKey, virtual_keys_enabled_);
-  settings.setValue(kMobileVirtualKeysStyleEnabledKey, mobile_virtual_keys_style_enabled_);
+  settings.setValue(kMobileVirtualKeysStyleEnabledKey,
+                    mobile_virtual_keys_style_enabled_);
   settings.setValue(kChargeLineEnabledKey, charge_line_enabled_);
   settings.setValue(kMusicEnabledKey, music_enabled_);
   settings.setValue(kCurrentFpsOptionKey, current_fps_option_);
@@ -135,15 +136,13 @@ void SettingsDialog::WriteSettings() {
 
 void SettingsDialog::SwitchLanguage() {
   QMessageBox::StandardButton response;
+  QString message = tr(
+      "The app needs to be restarted to change the language.");
 
 #ifdef Q_OS_ANDROID
-  response = QMessageBox::question(
-      this, tr("Close application?"),
-      tr("We need to restart the app to change the language."));
+  response = QMessageBox::question(this, tr("Close application?"), message);
 #else
-  response = QMessageBox::question(
-      this, tr("Restart application?"),
-      tr("We need to restart the app to change the language."));
+  response = QMessageBox::question(this, tr("Restart application?"), message);
 #endif
 
   if (response != QMessageBox::Yes) {

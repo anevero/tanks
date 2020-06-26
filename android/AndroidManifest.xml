@@ -48,7 +48,7 @@
             <meta-data android:value="@string/unsupported_android_version"
                 android:name="android.app.unsupported_android_version" />
             <meta-data android:name="android.app.background_running"
-                android:value="false" />
+                android:value="true" />
             <meta-data android:name="android.app.auto_screen_scale_factor"
                 android:value="false" />
             <meta-data android:name="android.app.extract_android_style"

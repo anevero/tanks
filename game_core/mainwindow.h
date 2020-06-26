@@ -23,6 +23,7 @@
 #include <QPushButton>
 #include <QSettings>
 #include <QSize>
+#include <QScreen>
 #include <QString>
 #include <QTextBrowser>
 #include <QTimer>
@@ -205,8 +206,8 @@ class MainWindow : public QMainWindow {
   QVector<Qt::Key> virtual_keys_encodings_;
   const int number_of_virtual_keys_in_first_row_ = 2;
 
-  QVBoxLayout* new_virtual_buttons_layout_left_;
-  QHBoxLayout* new_virtual_buttons_layout_right_;
+  QVBoxLayout* mobile_virtual_buttons_layout_left_;
+  QHBoxLayout* mobile_virtual_buttons_layout_right_;
 
   QMediaPlayer music_player_;
   QMediaPlaylist music_playlist_;
