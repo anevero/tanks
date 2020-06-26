@@ -10,7 +10,7 @@ namespace constants {
 const int number_of_maps = 4;
 const int number_of_tanks = 3;
 const int number_of_difficulty_levels = 3;
-std::vector<QString> difficulty_levels_names =
+const std::vector<QString> difficulty_levels_names =
     {QObject::tr("Easy"), QObject::tr("Normal"), QObject::tr("Hard")};
 
 }  // namespace constants
