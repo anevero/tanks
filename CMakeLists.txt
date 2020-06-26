@@ -10,14 +10,15 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-Wall -Wextra -O3")
 
 set(CMAKE_PREFIX_PATH "~/Qt/5.15.0/gcc_64/lib/cmake")  # Linux
-#set(CMAKE_PREFIX_PATH "C:/Qt/5.15.0/mingw73_64/lib/cmake")  # Windows
+#set(CMAKE_PREFIX_PATH "C:/Qt/5.15.0/mingw81_64/lib/cmake")  # Windows
 
 find_package(Qt5Core REQUIRED)
 find_package(Qt5Widgets REQUIRED)
 find_package(Qt5Multimedia REQUIRED)
 
 set(SOURCES main.cpp
-        game_core/mainwindow.cpp game_core/about_dialog.cpp game_core/map.cpp
+        game_core/mainwindow.cpp game_core/about_dialog.cpp
+        game_core/new_game_dialog.cpp game_core/map.cpp
         movable_objects/boom.cpp movable_objects/bot.cpp
         movable_objects/cleverbot.cpp movable_objects/improvedbot.cpp
         movable_objects/movable.cpp movable_objects/rocket.cpp

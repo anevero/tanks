@@ -1,7 +1,7 @@
 #include "map.h"
 
 Map::Map(int map_number) {
-  QFile input_file(":/maps/map" + QString::number(map_number) + ".json");
+  QFile input_file(":/maps/map" + QString::number(map_number + 1) + ".json");
   input_file.open(QIODevice::ReadOnly);
   QString text = input_file.readAll();
   input_file.close();

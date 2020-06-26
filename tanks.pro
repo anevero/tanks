@@ -26,6 +26,7 @@ SOURCES += \
     main.cpp \
     game_core/about_dialog.cpp \
     game_core/mainwindow.cpp \
+    game_core/new_game_dialog.cpp \
     game_core/map.cpp \
     static_objects/objectonmap.cpp \
     static_objects/portal.cpp \
@@ -39,7 +40,9 @@ SOURCES += \
 
 HEADERS += \
     game_core/about_dialog.h \
+    game_core/constants.h \
     game_core/mainwindow.h \
+    game_core/new_game_dialog.h \
     game_core/map.h \
     static_objects/objectonmap.h \
     static_objects/portal.h \

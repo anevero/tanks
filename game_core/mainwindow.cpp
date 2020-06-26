@@ -2,7 +2,9 @@
 
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent),
+      map_(new Map(1)),
       screen_timer_(new QLCDNumber(this)),
+      new_game_dialog_(new NewGameDialog(this)),
       about_dialog_(new AboutDialog(this)),
       main_buttons_layout_(new QVBoxLayout()),
       new_game_button_(new QPushButton(tr("New game"), this)),
@@ -20,9 +22,9 @@ MainWindow::MainWindow(QWidget* parent)
       virtual_keys_encodings_(
           {Qt::Key_Q, Qt::Key_W, Qt::Key_A, Qt::Key_S, Qt::Key_D}),
       new_virtual_buttons_layout_left_(new QVBoxLayout),
-      new_virtual_buttons_layout_right_(new QHBoxLayout),
-      map_(new Map(1)),
-      types_of_rockets_({{7, 100, true}, {15, 200, true}, {30, 300, false}}) {
+      new_virtual_buttons_layout_right_(new QHBoxLayout) {
+  LoadTanksTypesInfo();
+  LoadRocketsTypesInfo();
   setMouseTracking(true);
 
   new_game_button_->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,
@@ -58,11 +60,14 @@ MainWindow::MainWindow(QWidget* parent)
     main_buttons_layout_->setStretch(i, 1);
   }
 
-  connect(new_game_button_, SIGNAL(clicked()), this, SLOT(NewGame()));
-  connect(
-      pause_continue_button_, SIGNAL(clicked()), this, SLOT(PauseOrContinue()));
-  connect(settings_button_, SIGNAL(clicked()), this, SLOT(Settings()));
-  connect(about_button_, SIGNAL(clicked()), this, SLOT(ExecAboutDialog()));
+  connect(new_game_button_, &QPushButton::clicked,
+          this, &MainWindow::ExecNewGameDialog);
+  connect(pause_continue_button_, &QPushButton::clicked,
+          this, &MainWindow::PauseOrContinue);
+  connect(settings_button_, &QPushButton::clicked,
+          this, &MainWindow::Settings);
+  connect(about_button_, &QPushButton::clicked,
+          this, &MainWindow::ExecAboutDialog);
 
   for (int i = 0; i < charge_buttons_.size(); ++i) {
     charge_buttons_[i]->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,
@@ -117,7 +122,6 @@ MainWindow::MainWindow(QWidget* parent)
     ToggleVirtualKeys();
   }
 
-  InitializeNewGameDialog();
   InitializeSettingsDialog();
 
   timer_duration_ = available_fps_options_[fps_option_].second;
@@ -407,18 +411,18 @@ void MainWindow::timerEvent(QTimerEvent*) {
   repaint();
 }
 
-void MainWindow::NewGame() {
+void MainWindow::ExecNewGameDialog() {
   if (!paused_) PauseOrContinue();
 
-#ifdef Q_OS_ANDROID
-  new_game_dialog_->showMaximized();
-#endif
+  new_game_dialog_->show();
+  if (new_game_dialog_->exec() == QDialog::Rejected) {
+    return;
+  }
 
-  new_game_dialog_->exec();
-  switch_map_menu_->setCurrentIndex(current_game_options_.map_number);
-  switch_tank_menu_->setCurrentIndex(current_game_options_.tank_number);
-  switch_difficulty_menu_->setCurrentIndex(
-      current_game_options_.difficulty_level_number);
+  current_map_number_ = new_game_dialog_->GetCurrentMapNumber();
+  current_tank_number_ = new_game_dialog_->GetCurrentTankNumber();
+  current_difficulty_level_ = new_game_dialog_->GetCurrentDifficultyLevel();
+  ResetGame();
 }
 
 void MainWindow::Settings() {
@@ -543,7 +547,7 @@ void MainWindow::AdjustFont(QWidget* widget) {
   widget->setFont(adjusted_font);
 }
 
-void MainWindow::RedrawContent() {
+void MainWindow::ResetGame() {
   killTimer(timer_id_);
   timer_id_ = 0;
 
@@ -554,7 +558,7 @@ void MainWindow::RedrawContent() {
   screen_timer_min_ = 0;
   screen_timer_->setPalette(standart_lcdnumber_palette_);
 
-  map_.reset(new Map(current_game_options_.map_number + 1));
+  map_.reset(new Map(current_map_number_));
   tanks_.clear();
   rockets_.clear();
   objects_copies_.clear();
@@ -562,30 +566,26 @@ void MainWindow::RedrawContent() {
   pause_continue_button_->setText(tr("Pause"));
   paused_ = false;
 
-  available_tank_types_[current_game_options_.tank_number].direction =
+  // TODO(anevero): странная логика, стоит поменять.
+  types_of_tanks_[current_tank_number_].direction =
       DetermineDirection(map_->GetTankStartDirection());
   tanks_.append(std::make_shared<Tank>(
       map_, map_->GetTankInitCellX(), map_->GetTankInitCellY(),
-      available_tank_types_[current_game_options_.tank_number]));
+      types_of_tanks_[current_tank_number_]));
 
+  // TODO(anevero): тоже странная логика, что-то загружает класс Map, а что-то
+  //  MainWindow.
   QJsonObject json = GetJsonObjectFromFile(
-      ":/maps/map" + QString::number(current_game_options_.map_number + 1)
-          + ".json");
+      ":/maps/map" + QString::number(current_map_number_ + 1) + ".json");
 
-  QJsonArray bots =
-      json["difficulty"]
-          .toArray()[current_game_options_.difficulty_level_number]
-          .toObject()["bots"]
-          .toArray();
+  QJsonArray bots = json["difficulty"]
+      .toArray()[current_difficulty_level_].toObject()["bots"].toArray();
 
-  for (const auto& bot : bots) {
+  for (auto bot : bots) {
     BotQualities qualities{};
-    qualities.tank.max_health =
-        70 + 15 * current_game_options_.difficulty_level_number;
-    qualities.tank.rate_of_fire =
-        1000 - 150 * current_game_options_.difficulty_level_number;
-    qualities.tank.speed =
-        1000 - 150 * current_game_options_.difficulty_level_number;
+    qualities.tank.max_health = 70 + 15 * current_difficulty_level_;
+    qualities.tank.rate_of_fire = 1000 - 150 * current_difficulty_level_;
+    qualities.tank.speed = 1000 - 150 * current_difficulty_level_;
     qualities.tank.max_light_charge = 1;
     qualities.tank.max_medium_charge = 1;
     qualities.tank.max_hard_charge = 1;
@@ -613,25 +613,19 @@ void MainWindow::RedrawContent() {
           std::vector<std::shared_ptr<ObjectOnMap>>(
               map_->GetNumberOfCellsHorizontally(), nullptr));
 
-  QJsonArray obstacles =
-      json["difficulty"]
-          .toArray()[current_game_options_.difficulty_level_number]
-          .toObject()["obstacles"]
-          .toArray();
+  QJsonArray obstacles = json["difficulty"]
+      .toArray()[current_difficulty_level_].toObject()["obstacles"].toArray();
 
-  for (const auto& obstacle : obstacles) {
+  for (auto obstacle : obstacles) {
     auto x = static_cast<uint32_t>(obstacle.toArray()[0].toInt());
     auto y = static_cast<uint32_t>(obstacle.toArray()[1].toInt());
     obstacles_and_bonuses_[x][y] = std::make_shared<Obstacle>(map_, x, y);
   }
 
-  QJsonArray portals =
-      json["difficulty"]
-          .toArray()[current_game_options_.difficulty_level_number]
-          .toObject()["portals"]
-          .toArray();
+  QJsonArray portals = json["difficulty"]
+      .toArray()[current_difficulty_level_].toObject()["portals"].toArray();
 
-  for (const auto& portal : portals) {
+  for (auto portal : portals) {
     auto curr_x = static_cast<uint32_t>(portal.toArray()[0].toInt());
     auto curr_y = static_cast<uint32_t>(portal.toArray()[1].toInt());
     auto new_x = static_cast<uint32_t>(portal.toArray()[2].toInt());
@@ -648,7 +642,7 @@ void MainWindow::RedrawContent() {
 
   timer_id_ = startTimer(timer_duration_);
 
-  music_playlist_.setCurrentIndex(current_game_options_.map_number);
+  music_playlist_.setCurrentIndex(current_map_number_);
   music_playlist_.setPlaybackMode(QMediaPlaylist::CurrentItemInLoop);
   if (music_enabled_) {
     music_player_.play();
@@ -681,6 +675,33 @@ void MainWindow::ChangeChargeButton(int type) {
   std::dynamic_pointer_cast<Tank>(tanks_[0])->ChangeTypeOfCharge(type);
   RedrawChargeButtons();
   repaint();
+}
+
+void MainWindow::LoadTanksTypesInfo() {
+  QJsonObject json = GetJsonObjectFromFile(":/tanks/tanks.json");
+  QJsonArray tanks = json["tanks"].toArray();
+
+  for (auto&& tank : tanks) {
+    auto tank_json_object = tank.toObject();
+    types_of_tanks_.push_back({});
+    types_of_tanks_.back().speed =
+        tank_json_object["speed"].toInt();
+    types_of_tanks_.back().rate_of_fire =
+        tank_json_object["rate_of_fire"].toInt();
+    types_of_tanks_.back().max_health =
+        tank_json_object["max_health"].toInt();
+    types_of_tanks_.back().max_light_charge =
+        tank_json_object["max_light_charge"].toInt();
+    types_of_tanks_.back().max_medium_charge =
+        tank_json_object["max_medium_charge"].toInt();
+    types_of_tanks_.back().max_hard_charge =
+        tank_json_object["max_hard_charge"].toInt();
+  }
+}
+
+void MainWindow::LoadRocketsTypesInfo() {
+  // TODO(anevero): load this data from the file.
+  types_of_rockets_ = {{7, 100, true}, {15, 200, true}, {30, 300, false}};
 }
 
 void MainWindow::FindInteractingObjects() {
@@ -720,14 +741,12 @@ bool MainWindow::HaveObjectsCollided(
 }
 
 void MainWindow::CheckDeadObjects() {
-  auto object = tanks_.begin();
-  for (int i = 0; i < number_of_player_tanks_; ++i) {
-    if (std::dynamic_pointer_cast<Tank>(tanks_[i])->IsDead()) {
-      GameOver(false);
-      return;
-    }
-    object = std::next(object);
+  if (std::dynamic_pointer_cast<Tank>(tanks_[0])->IsDead()) {
+    GameOver(false);
+    return;
   }
+
+  auto object = std::next(tanks_.begin());
   while (object != tanks_.end()) {
     if (std::dynamic_pointer_cast<Tank>(*object)->IsDead()) {
       MakeBoom(*object);
@@ -746,7 +765,7 @@ void MainWindow::CheckDeadObjects() {
     }
     ++copy;
   }
-  if (tanks_.size() == number_of_player_tanks_) {
+  if (tanks_.size() == 1) {
     GameOver(true);
   }
 }
@@ -876,82 +895,6 @@ void MainWindow::GameOver(bool win) {
            "on the left."));
   }
   message.exec();
-}
-
-void MainWindow::InitializeNewGameDialog() {
-  new_game_dialog_ = new QDialog(this);
-
-  new_game_info_label_ =
-      new QLabel(tr("Choose map, tank and difficulty"), new_game_dialog_);
-
-  switch_map_label_ =
-      new QLabel(QString(tr("Map")) + QString(":"), new_game_dialog_);
-  switch_map_menu_ = new QComboBox(new_game_dialog_);
-
-  int map_number = 1;
-  QFileInfo map_file(":/maps/map" + QString::number(map_number) + ".json");
-  while (map_file.exists() && map_file.isFile()) {
-    switch_map_menu_->addItem(tr("Map") + " " + QString::number(map_number));
-    map_number++;
-    map_file = QFileInfo(":/maps/map" + QString::number(map_number) + ".json");
-  }
-
-  switch_tank_label_ =
-      new QLabel(QString(tr("Tank")) + QString(":"), new_game_dialog_);
-  switch_tank_menu_ = new QComboBox(new_game_dialog_);
-
-  QJsonObject json = GetJsonObjectFromFile(":/tanks/tanks.json");
-  QJsonArray tanks = json["tanks"].toArray();
-
-  for (int i = 0; i < tanks.size(); ++i) {
-    TankQualities qualities{};
-    qualities.speed = tanks[i].toObject()["speed"].toInt();
-    qualities.rate_of_fire = tanks[i].toObject()["rate_of_fire"].toInt();
-    qualities.max_health = tanks[i].toObject()["max_health"].toInt();
-    qualities.max_light_charge =
-        tanks[i].toObject()["max_light_charge"].toInt();
-    qualities.max_medium_charge =
-        tanks[i].toObject()["max_medium_charge"].toInt();
-    qualities.max_hard_charge = tanks[i].toObject()["max_hard_charge"].toInt();
-    available_tank_types_.push_back(qualities);
-    switch_tank_menu_->addItem(tr("Tank") + " " + QString::number(i + 1));
-  }
-
-  switch_difficulty_label_ =
-      new QLabel(QString(tr("Difficulty")) + QString(":"), new_game_dialog_);
-  switch_difficulty_menu_ = new QComboBox(new_game_dialog_);
-
-  for (const auto& name : difficulty_levels_names_) {
-    switch_difficulty_menu_->addItem(name);
-  }
-
-  new_game_dialog_layout_ = new QVBoxLayout(new_game_dialog_);
-  new_game_dialog_layout_->addWidget(new_game_info_label_);
-  new_game_dialog_layout_->addWidget(switch_map_label_);
-  new_game_dialog_layout_->addWidget(switch_map_menu_);
-  new_game_dialog_layout_->addWidget(switch_tank_label_);
-  new_game_dialog_layout_->addWidget(switch_tank_menu_);
-  new_game_dialog_layout_->addWidget(switch_difficulty_label_);
-  new_game_dialog_layout_->addWidget(switch_difficulty_menu_);
-
-  new_game_dialog_buttons_ = new QDialogButtonBox(
-      QDialogButtonBox::Ok, Qt::Horizontal, new_game_dialog_);
-
-  new_game_dialog_layout_->addWidget(new_game_dialog_buttons_);
-
-  connect(new_game_dialog_buttons_->button(QDialogButtonBox::Ok),
-          &QPushButton::clicked, [&]() {
-        current_game_options_.map_number = switch_map_menu_->currentIndex();
-        current_game_options_.tank_number =
-            switch_tank_menu_->currentIndex();
-        current_game_options_.difficulty_level_number =
-            switch_difficulty_menu_->currentIndex();
-        RedrawContent();
-      });
-  connect(new_game_dialog_buttons_, SIGNAL(accepted()), new_game_dialog_,
-          SLOT(accept()));
-
-  new_game_dialog_->layout()->setSizeConstraint(QLayout::SetFixedSize);
 }
 
 void MainWindow::InitializeSettingsDialog() {
