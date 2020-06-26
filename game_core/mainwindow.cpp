@@ -4,8 +4,7 @@ MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent),
       map_(new Map(1)),
       screen_timer_(new QLCDNumber(this)),
-      new_game_dialog_(new NewGameDialog(
-          4, 3, {tr("Easy"), tr("Normal"), tr("Hard")}, this)),
+      new_game_dialog_(new NewGameDialog(this)),
       about_dialog_(new AboutDialog(this)),
       main_buttons_layout_(new QVBoxLayout()),
       new_game_button_(new QPushButton(tr("New game"), this)),
@@ -66,7 +65,7 @@ MainWindow::MainWindow(QWidget* parent)
   connect(pause_continue_button_, &QPushButton::clicked,
           this, &MainWindow::PauseOrContinue);
   connect(settings_button_, &QPushButton::clicked,
-          this, &MainWindow::ExecAboutDialog);
+          this, &MainWindow::Settings);
   connect(about_button_, &QPushButton::clicked,
           this, &MainWindow::ExecAboutDialog);
 

@@ -13,10 +13,7 @@ class NewGameDialog : public QDialog {
   Q_OBJECT
 
  public:
-  NewGameDialog(int number_of_maps,
-                int number_of_tanks,
-                std::vector<QString> difficulty_levels_names,
-                QWidget* parent = nullptr);
+  explicit NewGameDialog(QWidget* parent = nullptr);
   ~NewGameDialog() override = default;
 
   void accept() override;
@@ -27,12 +24,6 @@ class NewGameDialog : public QDialog {
   int GetCurrentDifficultyLevel() const;
 
  private:
-  int number_of_maps_;
-  int number_of_tanks_;
-  int number_of_difficulty_levels_;
-
-  const std::vector<QString> difficulty_levels_names_;
-
   int current_map_number_ = 0;
   int current_tank_number_ = 0;
   int current_difficulty_level_ = 0;

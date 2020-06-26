@@ -150,10 +150,6 @@ class MainWindow : public QMainWindow {
       const QString& start_direction) const;
 
  private:
-  const int number_of_maps_ = 4;
-  const int number_of_tanks_ = 3;
-  const int number_of_difficulty_levels_ = 3;
-
   int current_map_number_ = 0;
   int current_tank_number_ = 0;
   int current_difficulty_level_ = 0;

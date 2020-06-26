@@ -1,16 +1,9 @@
 #include "new_game_dialog.h"
 
-#include <utility>
+#include "constants.h"
 
-NewGameDialog::NewGameDialog(int number_of_maps,
-                             int number_of_tanks,
-                             std::vector<QString> difficulty_levels_names,
-                             QWidget* parent)
+NewGameDialog::NewGameDialog(QWidget* parent)
     : QDialog(parent),
-      number_of_maps_(number_of_maps),
-      number_of_tanks_(number_of_tanks),
-      number_of_difficulty_levels_(difficulty_levels_names.size()),
-      difficulty_levels_names_(std::move(difficulty_levels_names)),
       layout_(new QVBoxLayout(this)),
       switch_map_menu_(new QComboBox(this)),
       switch_tank_menu_(new QComboBox(this)),
@@ -25,16 +18,16 @@ NewGameDialog::NewGameDialog(int number_of_maps,
           new QLabel(QString(tr("Difficulty")) + ":", this)),
       buttons_(new QDialogButtonBox(
           QDialogButtonBox::Ok, Qt::Horizontal, this)) {
-  for (int i = 1; i <= number_of_maps_; ++i) {
+  for (int i = 1; i <= constants::number_of_maps; ++i) {
     switch_map_menu_->addItem(tr("Map") + " " + QString::number(i));
   }
 
-  for (int i = 1; i <= number_of_tanks_; ++i) {
+  for (int i = 1; i <= constants::number_of_tanks; ++i) {
     switch_tank_menu_->addItem(tr("Tank") + " " + QString::number(i));
   }
 
-  for (int i = 0; i < number_of_difficulty_levels_; ++i) {
-    switch_difficulty_menu_->addItem(difficulty_levels_names_[i]);
+  for (int i = 0; i < constants::number_of_difficulty_levels; ++i) {
+    switch_difficulty_menu_->addItem(constants::difficulty_levels_names[i]);
   }
 
   layout_->addWidget(new_game_label_);

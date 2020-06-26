@@ -40,6 +40,7 @@ SOURCES += \
 
 HEADERS += \
     game_core/about_dialog.h \
+    game_core/constants.h \
     game_core/mainwindow.h \
     game_core/new_game_dialog.h \
     game_core/map.h \
