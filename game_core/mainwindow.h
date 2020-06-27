@@ -69,8 +69,8 @@ class MainWindow : public QMainWindow {
   [[maybe_unused]] void timerEvent(QTimerEvent*) override;
 
  private:
-  void ExecNewGameDialog();
   void PauseOrContinue();
+  void ExecNewGameDialog();
   void ExecSettingsDialog();
   void ExecAboutDialog();
 

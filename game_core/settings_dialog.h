@@ -11,7 +11,7 @@
 #include <vector>
 
 class SettingsDialog : public QDialog {
-  Q_OBJECT
+ Q_OBJECT
 
  public:
   explicit SettingsDialog(QWidget* parent = nullptr);
@@ -51,7 +51,7 @@ class SettingsDialog : public QDialog {
   QDialogButtonBox* buttons_;
 
   const std::vector<QString> kLanguagesNames =
-      {QObject::tr("en_US"), QObject::tr("ru_RU"), QObject::tr("be_BY")};
+      {tr("en_US"), tr("ru_RU"), tr("be_BY")};
 };
 
 #endif  // GAME_CORE_SETTINGS_DIALOG_H_

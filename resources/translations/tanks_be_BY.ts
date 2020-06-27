@@ -56,13 +56,13 @@
         <translation>Працягнуць</translation>
     </message>
     <message>
-        <location filename="../../game_core/mainwindow.cpp" line="967"/>
+        <location filename="../../game_core/mainwindow.cpp" line="969"/>
         <source>You win! 
 You can start a new game with help of appropriate button on the left.</source>
         <translation>Вы перамаглі! Вы можаце пачаць новую гульню з дапамогаю адпаведнай кнопкі злева.</translation>
     </message>
     <message>
-        <location filename="../../game_core/mainwindow.cpp" line="972"/>
+        <location filename="../../game_core/mainwindow.cpp" line="974"/>
         <source>You died! 
 You can start a new game with help of appropriate button on the left.</source>
         <translation>Вы прайгралі! Вы можаце пачаць новую гульню з дапамогаю адпаведнай кнопкі злева.</translation>
@@ -92,9 +92,6 @@ You can start a new game with help of appropriate button on the left.</source>
         <source>Difficulty</source>
         <translation>Цяжкасць</translation>
     </message>
-</context>
-<context>
-    <name>QObject</name>
     <message>
         <location filename="../../game_core/new_game_dialog.h" line="42"/>
         <source>Easy</source>
@@ -109,21 +106,6 @@ You can start a new game with help of appropriate button on the left.</source>
         <location filename="../../game_core/new_game_dialog.h" line="42"/>
         <source>Hard</source>
         <translation>Складана</translation>
-    </message>
-    <message>
-        <location filename="../../game_core/settings_dialog.h" line="54"/>
-        <source>en_US</source>
-        <translation>Англійская</translation>
-    </message>
-    <message>
-        <location filename="../../game_core/settings_dialog.h" line="54"/>
-        <source>ru_RU</source>
-        <translation>Руская</translation>
-    </message>
-    <message>
-        <location filename="../../game_core/settings_dialog.h" line="54"/>
-        <source>be_BY</source>
-        <translation>Беларуская</translation>
     </message>
 </context>
 <context>
@@ -177,6 +159,21 @@ You can start a new game with help of appropriate button on the left.</source>
         <location filename="../../game_core/settings_dialog.cpp" line="155"/>
         <source>Restart application?</source>
         <translation>Перазапусціць прыкладанне?</translation>
+    </message>
+    <message>
+        <location filename="../../game_core/settings_dialog.h" line="54"/>
+        <source>en_US</source>
+        <translation>Англійская</translation>
+    </message>
+    <message>
+        <location filename="../../game_core/settings_dialog.h" line="54"/>
+        <source>ru_RU</source>
+        <translation>Руская</translation>
+    </message>
+    <message>
+        <location filename="../../game_core/settings_dialog.h" line="54"/>
+        <source>be_BY</source>
+        <translation>Беларуская</translation>
     </message>
 </context>
 </TS>
