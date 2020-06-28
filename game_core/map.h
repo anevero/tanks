@@ -13,9 +13,17 @@
 #include <QTextStream>
 #include <QVector>
 #include <utility>
+#include <string>
 #include <vector>
 
-enum class CellType { Wall = 0, Grass = 1, Sand = 2, Water = 3, Forest = 4 };
+enum class CellType {
+  Wall = 0,
+  Grass = 1,
+  Sand = 2,
+  Water = 3,
+  Forest = 4,
+  Last = 5
+};
 
 class Map {
  public:
@@ -38,15 +46,15 @@ class Map {
   int GetCellHeight() const;
   size_t GetTankInitCellX() const;
   size_t GetTankInitCellY() const;
-  QString GetTankStartDirection() const;
+  std::string GetTankStartDirection() const;
 
  private:
   void RescaleImages();
   void FormMapImage();
   void WallsPrecalc();
 
-  QVector<QVector<CellType>> map_;
-  QVector<QVector<int>> walls_precalc_;
+  std::vector<std::vector<CellType>> map_;
+  std::vector<std::vector<int>> walls_precalc_;
   std::vector<QImage> images_;
   std::vector<QPixmap> scaled_pixmaps_;
   QPixmap map_scaled_pixmap_;
@@ -59,10 +67,7 @@ class Map {
   int cur_cell_height_{};
   size_t tank_init_cell_x_;
   size_t tank_init_cell_y_;
-  QString tank_start_direction_;
-
-  // Number of types in CellType enum class, defined earlier in this file.
-  const uint32_t number_of_cell_types_ = 5;
+  std::string tank_start_direction_;
 };
 
 #endif  // GAME_CORE_MAP_H_

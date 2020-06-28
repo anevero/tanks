@@ -7,10 +7,13 @@
 
 class ImprovedBot : public Bot {
  public:
-  ImprovedBot(const std::shared_ptr<Map>& map, const BotQualities& qualities);
+  ImprovedBot(std::shared_ptr<Map> map, int init_cell_x, int init_cell_y,
+              TankParameters tank_parameters, BotParameters bot_parameters,
+              Direction direction);
+  ~ImprovedBot() override = default;
 
  protected:
-  bool CheckDirection(const int tank, const int bot, int direction) override;
+  bool CheckDirection(int tank, int bot, int direction) override;
   bool IsRotationStartNeeded(const std::shared_ptr<Tank>& tank) override;
   bool IsShotNeeded(const std::shared_ptr<Map>&,
                     const std::shared_ptr<Tank>&) override;

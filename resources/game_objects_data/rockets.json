@@ -1,0 +1,19 @@
+{
+  "rockets": [
+    {
+      "speed": 100,
+      "power": 7,
+      "obstacle_break": true
+    },
+    {
+      "speed": 200,
+      "power": 15,
+      "obstacle_break": true
+    },
+    {
+      "speed": 300,
+      "power": 30,
+      "obstacle_break": false
+    }
+  ]
+}

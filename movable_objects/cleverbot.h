@@ -3,19 +3,24 @@
 
 #include <QQueue>
 #include <QVector>
+#include <list>
 #include <memory>
+#include <utility>
 #include <vector>
 #include "improvedbot.h"
 #include "../static_objects/portal.h"
 
 class CleverBot : public ImprovedBot {
  public:
-  CleverBot(const std::shared_ptr<Map>& map, const BotQualities& qualities);
+  CleverBot(std::shared_ptr<Map> map, int init_cell_x, int init_cell_y,
+            TankParameters tank_parameters, BotParameters bot_parameters,
+            Direction direction);
+  ~CleverBot() override = default;
 
  protected:
   bool IsRotationStartNeeded(const std::shared_ptr<Tank>& tank) override;
   bool IsMovingStartNeeded(
-      const QList<std::shared_ptr<Movable>>& objects,
+      const std::list<std::shared_ptr<Movable>>& objects,
       const std::vector<std::vector<std::shared_ptr<ObjectOnMap>>>& portals)
   override;
 
@@ -27,10 +32,10 @@ class CleverBot : public ImprovedBot {
     int prev_cell_y;
     int distance;
   };
-  QVector<QVector<int>> distance_;
+  std::vector<std::vector<int>> distance_;
 
   void Bfs(
-      const QList<std::shared_ptr<Movable>>& objects,
+      const std::list<std::shared_ptr<Movable>>& objects,
       const std::vector<std::vector<std::shared_ptr<ObjectOnMap>>>& portals,
       int cell_x, int cell_y);
 

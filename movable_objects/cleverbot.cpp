@@ -1,8 +1,11 @@
 #include "cleverbot.h"
 
-CleverBot::CleverBot(const std::shared_ptr<Map>& map,
-                     const BotQualities& qualities)
-    : ImprovedBot(map, qualities) {
+CleverBot::CleverBot(
+    std::shared_ptr<Map> map, int init_cell_x, int init_cell_y,
+    TankParameters tank_parameters, BotParameters bot_parameters,
+    Direction direction)
+    : ImprovedBot(std::move(map), init_cell_x, init_cell_y,
+                  tank_parameters, bot_parameters, direction) {
   LoadImage(":/textures/clever_bot.png");
   height_ = map_->GetNumberOfCellsVertically();
   width_ = map_->GetNumberOfCellsHorizontally();
@@ -29,9 +32,9 @@ bool CleverBot::IsRotationStartNeeded(const std::shared_ptr<Tank>& tank) {
 }
 
 bool CleverBot::IsMovingStartNeeded(
-    const QList<std::shared_ptr<Movable>>& objects,
+    const std::list<std::shared_ptr<Movable>>& objects,
     const std::vector<std::vector<std::shared_ptr<ObjectOnMap>>>& portals) {
-  auto tank = objects[0];
+  auto tank = objects.front();
   if (time_to_finish_movement_ <= 0 && time_to_finish_rotation_ <= 0) {
     Bfs(objects, portals, tank->GetCellX(), tank->GetCellY());
     int direction = GetIntDirection();
@@ -89,7 +92,7 @@ bool CleverBot::IsMovingStartNeeded(
 }
 
 void CleverBot::Bfs(
-    const QList<std::shared_ptr<Movable>>& objects,
+    const std::list<std::shared_ptr<Movable>>& objects,
     const std::vector<std::vector<std::shared_ptr<ObjectOnMap>>>& portals,
     int cell_x, int cell_y) {
   QQueue<CellInfo> cells;
@@ -127,7 +130,7 @@ void CleverBot::Bfs(
     for (const auto& object : objects) {
       if (cell_x == static_cast<int>(object->GetCellX()) &&
           cell_y == static_cast<int>(object->GetCellY()) &&
-          object != objects[0]) {
+          object != objects.front()) {
         bad_cell = true;
         break;
       }

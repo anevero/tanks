@@ -1,19 +1,12 @@
 #ifndef GAME_CORE_MAINWINDOW_H_
 #define GAME_CORE_MAINWINDOW_H_
 
-#include <QBoxLayout>
-#include <QCheckBox>
-#include <QComboBox>
-#include <QDebug>
 #include <QDialog>
-#include <QDialogButtonBox>
-#include <QEvent>
 #include <QFileInfo>
 #include <QGridLayout>
 #include <QKeyEvent>
 #include <QLCDNumber>
 #include <QLabel>
-#include <QList>
 #include <QMainWindow>
 #include <QMediaPlayer>
 #include <QMediaPlaylist>
@@ -22,21 +15,20 @@
 #include <QPalette>
 #include <QPushButton>
 #include <QSettings>
-#include <QSize>
-#include <QScreen>
 #include <QString>
-#include <QTextBrowser>
 #include <QTimer>
 #include <QToolTip>
-#include <QTouchDevice>
 #include <QTranslator>
 #include <QUrl>
-#include <QVector>
-#include <QtGlobal>
+
 #include <algorithm>
+#include <chrono>
 #include <cstdint>
+#include <list>
 #include <memory>
+#include <random>
 #include <string>
+#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -59,7 +51,7 @@ class MainWindow : public QMainWindow {
 
  public:
   explicit MainWindow(QWidget* parent = nullptr);
-  ~MainWindow() override = default;
+  ~MainWindow() override;
 
  private:
   [[maybe_unused]] void mouseReleaseEvent(QMouseEvent* event) override;
@@ -74,12 +66,6 @@ class MainWindow : public QMainWindow {
   void ExecSettingsDialog();
   void ExecAboutDialog();
 
-  // Creates KeyEvent with specified key. It's used for virtual keys buttons.
-  void PressVirtualKey(Qt::Key key);
-  // Switches charge button on the screen and type of charge of the player's
-  // tank.
-  void ChangeChargeButton(int type);
-
  private:
   void LoadApplicationSettings();
   void LoadTanksTypesInfo();
@@ -90,10 +76,19 @@ class MainWindow : public QMainWindow {
   void SetMusicEnabled(bool enabled);
   void SetFpsOption(int index, bool start_timer = false);
 
+ private:
   // Clears all the data connected with the current round and initializes
-  // objects with values necessary to start the new round. After that repaints
-  // everything on the screen.
-  void ResetGame();
+  // objects with values necessary to start the new round.
+  void LoadRoundInfo();
+  // Resets the state of all Qt objects to start the new round, calls
+  // LoadRoundInfo for resetting state of game objects, and then starts a new
+  // round.
+  void StartRound();
+  // Runs game over dialog with the appropriate content (i.e 'you win' or
+  // 'you lose').
+  void FinishRound(bool win);
+
+ private:
   // Updates info about size of indents in the current window.
   void UpdateIndents();
   // Changes buttons coordinates in the window according to the window size.
@@ -101,31 +96,17 @@ class MainWindow : public QMainWindow {
   // Updates charge buttons color according to the state of charge of the
   // player's tank.
   void RedrawChargeButtons();
+  // Updates screen timer according to the current time.
   void UpdateScreenTimer();
-  // Workaround for the bug with not-adjusting fonts on buttons (Android).
-  void AdjustFont(QWidget* widget);
 
+ private:
   // Checks if rockets are interacting with the tanks at the moment and
   // destroys rockets / reduces tanks' health.
   void FindInteractingObjects();
-
-  // Checks if given objects have been collided, i.e. they have common points
-  // on the screen. Compares its coordinates for that.
-  bool HaveObjectsCollided(const std::shared_ptr<Movable>& obj1,
-                           const std::shared_ptr<Movable>& obj2) const;
-  // Checks if given rocket has been released by the given tank. The result of
-  // this function is used when we decide if we need to reduce tank's health
-  // (rockets released by the tank can't reduce its own health).
-  bool IsRocketByThisTank(const std::shared_ptr<Movable>& rocket,
-                          const std::shared_ptr<Movable>& tank) const;
   // Checks if some objects are 'dead', i.e. searches for the tanks with 0
   // health, rockets, which need to be destroyed. Erases such objects.
-  // If player's tank is 'dead', calls GameOver().
+  // If player's tank is 'dead', calls FinishRound().
   void CheckDeadObjects();
-  // Runs game over dialog with the appropriate content (i.e 'you win' or
-  // 'you lose').
-  void GameOver(bool win);
-
   // Creates a rocket which begins to move from the given tank. Rocket's
   // type is defined by the tank current type of charge. Rocket's geometry on
   // the map is defined by tank's geometry.
@@ -135,37 +116,42 @@ class MainWindow : public QMainWindow {
   void MakeBoom(const std::shared_ptr<Movable>& object);
   // Generates bonus of the given type. Erases old bonuses of such type from
   // the map.
-  void RandomBonus(Bonus bonus);
+  template<class Bonus>
+  void RandomBonus();
+  // Switches charge button on the screen and type of charge of the player's
+  // tank.
+  void SwitchCharge(int type);
 
-  QJsonObject GetJsonObjectFromFile(const QString& filepath);
-  // Returns direction object corresponding to the string.
-  Direction DetermineDirection(
-      const QString& start_direction) const;
+ private:
+  static QJsonObject GetJsonObjectFromFile(const QString& filepath);
+  // Workaround for the bug with not-adjusting fonts on buttons (Android).
+  static void AdjustFont(QWidget* widget);
 
  private:
   int current_map_number_ = 0;
   int current_tank_number_ = 0;
   int current_difficulty_level_ = 0;
 
-  std::vector<TankQualities> types_of_tanks_ = {};
-  std::vector<RocketParameters> types_of_rockets_ = {};
+  std::vector<TankParameters> tanks_types_ = {};
+  std::vector<RocketParameters> rockets_types_ = {};
 
  private:
   std::shared_ptr<Map> map_;
   // List of all the tanks (including player's tank and all the types of bots).
   // The player's tank, if exists, is always the first item in the list.
-  QList<std::shared_ptr<Movable>> tanks_ = {};
-  // List of rockets and booms.
-  QList<std::shared_ptr<Movable>> rockets_ = {};
+  std::list<std::shared_ptr<Movable>> tanks_ = {};
+  // Lists of rockets and booms.
+  std::list<std::shared_ptr<Movable>> rockets_ = {};
   std::vector<std::vector<std::shared_ptr<ObjectOnMap>>>
       obstacles_and_bonuses_ = {};
   // List of 'copies' of tanks. Every item is just a pointer to the real tank
   // and coordinates of the copy. It's used while a tank is moving through the
   // portal (while it must be shown in two places at the same time).
-  QList<QPair<std::shared_ptr<Movable>, Coordinates>> objects_copies_ = {};
+  std::list<std::pair<std::shared_ptr<Movable>, Coordinates>>
+      objects_copies_ = {};
 
   int timer_id_ = 0;
-  int time_since_last_medicalkit_ = 0;
+  int time_since_last_medical_kit_ = 0;
   int time_since_last_charge_ = 0;
   int timer_duration_;
   bool paused_ = false;
@@ -179,7 +165,7 @@ class MainWindow : public QMainWindow {
 
  private:
   QLCDNumber* screen_timer_;
-  QPalette standart_lcdnumber_palette_;
+  QPalette standard_lcdnumber_palette_;
   QPalette red_lcdnumber_palette_;
   int screen_timer_ms_ = 0;
   int screen_timer_sec_ = 0;
@@ -196,26 +182,31 @@ class MainWindow : public QMainWindow {
   QPushButton* about_button_;
 
   QHBoxLayout* charge_buttons_layout_;
-  QVector<QPushButton*> charge_buttons_;
-  QPalette standart_button_palette_;
-  QVector<Qt::GlobalColor> charge_colors_{Qt::red, Qt::yellow, Qt::green};
-  QVector<QPalette> charge_palettes_;
+  std::vector<QPushButton*> charge_buttons_;
+  QPalette standard_button_palette_;
+  const std::vector<Qt::GlobalColor> charge_colors_ =
+      {Qt::red, Qt::yellow, Qt::green};
+  std::vector<QPalette> charge_palettes_;
 
   QGridLayout* virtual_buttons_layout_;
-  QVector<QPushButton*> virtual_keys_buttons_;
-  QVector<Qt::Key> virtual_keys_encodings_;
+  std::vector<QPushButton*> virtual_keys_buttons_;
+
+  const QVector<Qt::Key> virtual_keys_encodings_ =
+      {Qt::Key_Q, Qt::Key_W, Qt::Key_A, Qt::Key_S, Qt::Key_D};
   const int number_of_virtual_keys_in_first_row_ = 2;
 
   QVBoxLayout* mobile_virtual_buttons_layout_left_;
   QHBoxLayout* mobile_virtual_buttons_layout_right_;
 
-  QMediaPlayer music_player_;
-  QMediaPlaylist music_playlist_;
+  QMediaPlayer* music_player_;
+  QMediaPlaylist* music_playlist_;
 
-  int sq_width_;
-  int sq_height_;
-  int w_indent_;
-  int h_indent_;
+  int game_width_;
+  int game_height_;
+  int width_indent_;
+  int height_indent_;
+
+  static std::mt19937 random_generator_;
 };
 
 #endif  // GAME_CORE_MAINWINDOW_H_

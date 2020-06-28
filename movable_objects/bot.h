@@ -1,20 +1,18 @@
 #ifndef MOVABLE_OBJECTS_BOT_H_
 #define MOVABLE_OBJECTS_BOT_H_
 
-#include <QDebug>
-#include <QImage>
 #include <QPainter>
+#include <chrono>
 #include <cmath>
+#include <list>
 #include <memory>
+#include <random>
 #include <utility>
 #include <vector>
 #include "../game_core/map.h"
 #include "tank.h"
 
-struct BotQualities {
-  TankQualities tank;
-  int init_cell_x;
-  int init_cell_y;
+struct BotParameters {
   int moving_length;
   int amount_of_turns;
   int side_rotation_frequency;
@@ -22,25 +20,18 @@ struct BotQualities {
 
 class Bot : public Tank {
  public:
-  Bot(const std::shared_ptr<Map>& map, const BotQualities& qualities);
+  Bot(std::shared_ptr<Map> map, int init_cell_x, int init_cell_y,
+      TankParameters tank_parameters, BotParameters bot_parameters,
+      Direction direction);
   ~Bot() override = default;
 
   virtual bool IsTurnNeeded() const;
   virtual bool IsRotationStartNeeded(const std::shared_ptr<Tank>&);
   virtual bool IsMovingStartNeeded(
-      const QList<std::shared_ptr<Movable>>&,
+      const std::list<std::shared_ptr<Movable>>&,
       const std::vector<std::vector<std::shared_ptr<ObjectOnMap>>>&);
   virtual bool IsShotNeeded(const std::shared_ptr<Map>&,
                             const std::shared_ptr<Tank>&);
-
-  void ChangeTypeOfCharge(int type) = delete;
-  void MinusCharge(int type, int charge = 1) = delete;
-  void PlusCharge() = delete;
-
-  int GetTypeOfCharge() const = delete;
-  int GetCurrentCharge(int type) const = delete;
-  int GetMaxCharge(int type) const = delete;
-  ChargeState GetChargeState() const = delete;
 
  protected:
   int number_of_cells_to_move_ = 0;
@@ -49,11 +40,15 @@ class Bot : public Tank {
   const int amount_of_turns_;
   const int side_rotation_frequency_;
 
-  virtual bool CheckDirection(const int tank, const int bot, int direction);
-  bool IsWallBetweenObjectsX(const std::shared_ptr<Map>& map, size_t tank_x,
-                             size_t tank_y, size_t bot_x, size_t bot_y);
-  bool IsWallBetweenObjectsY(const std::shared_ptr<Map>& map, size_t tank_x,
-                             size_t tank_y, size_t bot_x, size_t bot_y);
+  virtual bool CheckDirection(int tank, int bot, int direction);
+  static bool IsWallBetweenObjectsX(
+      const std::shared_ptr<Map>& map,
+      int tank_x, int tank_y, int bot_x, int bot_y);
+  static bool IsWallBetweenObjectsY(
+      const std::shared_ptr<Map>& map,
+      int tank_x, int tank_y, int bot_x, int bot_y);
+
+  static std::mt19937 random_generator_;
 };
 
 #endif  // MOVABLE_OBJECTS_BOT_H_

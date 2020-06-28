@@ -1,14 +1,22 @@
 #include "bot.h"
 
-Bot::Bot(const std::shared_ptr<Map>& map, const BotQualities& qualities)
-    : Tank(map, qualities.init_cell_x, qualities.init_cell_y, qualities.tank),
-      moving_length_(qualities.moving_length),
-      amount_of_turns_(qualities.amount_of_turns),
-      side_rotation_frequency_(qualities.side_rotation_frequency) {
+std::mt19937 Bot::random_generator_ = std::mt19937(
+    std::chrono::system_clock::now().time_since_epoch().count());
+
+Bot::Bot(std::shared_ptr<Map> map, int init_cell_x, int init_cell_y,
+         TankParameters tank_parameters, BotParameters bot_parameters,
+         Direction direction)
+    : Tank(std::move(map), init_cell_x, init_cell_y,
+           tank_parameters, direction),
+      moving_length_(bot_parameters.moving_length),
+      amount_of_turns_(bot_parameters.amount_of_turns),
+      side_rotation_frequency_(bot_parameters.side_rotation_frequency) {
   LoadImage(":/textures/bot.png");
 }
 
-bool Bot::IsTurnNeeded() const { return time_to_finish_rotation_ > 0; }
+bool Bot::IsTurnNeeded() const {
+  return time_to_finish_rotation_ > 0;
+}
 
 bool Bot::IsRotationStartNeeded(const std::shared_ptr<Tank>&) {
   if (time_to_finish_rotation_ <= 0 && time_to_finish_movement_ <= 0) {
@@ -17,7 +25,7 @@ bool Bot::IsRotationStartNeeded(const std::shared_ptr<Tank>&) {
       return number_of_turns_ > 0;
     }
     if (number_of_cells_to_move_ == 0) {
-      if (qrand() % side_rotation_frequency_ == 0) {
+      if (random_generator_() % side_rotation_frequency_ == 0) {
         TurnRotationReverseOn();
       } else {
         TurnRotationReverseOff();
@@ -31,7 +39,7 @@ bool Bot::IsRotationStartNeeded(const std::shared_ptr<Tank>&) {
 }
 
 bool Bot::IsMovingStartNeeded(
-    const QList<std::shared_ptr<Movable>>&,
+    const std::list<std::shared_ptr<Movable>>&,
     const std::vector<std::vector<std::shared_ptr<ObjectOnMap>>>&) {
   if (time_to_finish_movement_ <= 0 && time_to_finish_rotation_ <= 0) {
     if (number_of_cells_to_move_ == 0) {
@@ -98,8 +106,8 @@ bool Bot::CheckDirection(const int tank, const int bot, const int direction) {
 }
 
 bool Bot::IsWallBetweenObjectsX(const std::shared_ptr<Map>& map,
-                                const size_t tank_x, const size_t tank_y,
-                                const size_t bot_x, const size_t bot_y) {
+                                int tank_x, int tank_y,
+                                int bot_x, int bot_y) {
   int walls_count = map->GetWallsPrecalc(bot_x, bot_y);
   walls_count += map->GetWallsPrecalc(tank_x - 1, tank_y - 1);
   walls_count -= map->GetWallsPrecalc(tank_x, tank_y - 1);
@@ -108,8 +116,8 @@ bool Bot::IsWallBetweenObjectsX(const std::shared_ptr<Map>& map,
 }
 
 bool Bot::IsWallBetweenObjectsY(const std::shared_ptr<Map>& map,
-                                const size_t tank_x, const size_t tank_y,
-                                const size_t bot_x, const size_t bot_y) {
+                                int tank_x, int tank_y,
+                                int bot_x, int bot_y) {
   int walls_count = map->GetWallsPrecalc(bot_x, bot_y);
   walls_count += map->GetWallsPrecalc(tank_x - 1, tank_y - 1);
   walls_count -= map->GetWallsPrecalc(tank_x - 1, tank_y);

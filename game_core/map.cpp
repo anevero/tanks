@@ -27,9 +27,10 @@ Map::Map(int map_number) {
   QJsonObject player_tank = json["player_tank"].toObject();
   tank_init_cell_x_ = player_tank["initial_cell_x"].toInt();
   tank_init_cell_y_ = player_tank["initial_cell_y"].toInt();
-  tank_start_direction_ = player_tank["initial_direction"].toString();
+  tank_start_direction_ =
+      player_tank["initial_direction"].toString().toStdString();
 
-  for (size_t i = 0; i < number_of_cell_types_; ++i) {
+  for (size_t i = 0; i < static_cast<int>(CellType::Last); ++i) {
     images_.emplace_back(":/textures/" + QString::number(i) + ".png");
     scaled_pixmaps_.emplace_back(":/textures/" + QString::number(i) + ".png");
   }
@@ -59,17 +60,49 @@ int Map::GetWallsPrecalc(const size_t cell_x, const size_t cell_y) const {
   return walls_precalc_[cell_x][cell_y];
 }
 
-size_t Map::GetNumberOfCellsHorizontally() const { return map_[0].size(); }
-size_t Map::GetNumberOfCellsVertically() const { return map_.size(); }
-int Map::GetUpperLeftX() const { return cur_upper_left_x_; }
-int Map::GetUpperLeftY() const { return cur_upper_left_y_; }
-int Map::GetWidth() const { return cur_width_; }
-int Map::GetHeight() const { return cur_height_; }
-int Map::GetCellWidth() const { return cur_cell_width_; }
-int Map::GetCellHeight() const { return cur_cell_height_; }
-size_t Map::GetTankInitCellX() const { return tank_init_cell_x_; }
-size_t Map::GetTankInitCellY() const { return tank_init_cell_y_; }
-QString Map::GetTankStartDirection() const { return tank_start_direction_; }
+size_t Map::GetNumberOfCellsHorizontally() const {
+  return map_[0].size();
+}
+
+size_t Map::GetNumberOfCellsVertically() const {
+  return map_.size();
+}
+
+int Map::GetUpperLeftX() const {
+  return cur_upper_left_x_;
+}
+
+int Map::GetUpperLeftY() const {
+  return cur_upper_left_y_;
+}
+
+int Map::GetWidth() const {
+  return cur_width_;
+}
+
+int Map::GetHeight() const {
+  return cur_height_;
+}
+
+int Map::GetCellWidth() const {
+  return cur_cell_width_;
+}
+
+int Map::GetCellHeight() const {
+  return cur_cell_height_;
+}
+
+size_t Map::GetTankInitCellX() const {
+  return tank_init_cell_x_;
+}
+
+size_t Map::GetTankInitCellY() const {
+  return tank_init_cell_y_;
+}
+
+std::string Map::GetTankStartDirection() const {
+  return tank_start_direction_;
+}
 
 void Map::RescaleImages() {
   if (scaled_pixmaps_[0].width() == cur_cell_width_ + 2 &&
@@ -77,7 +110,7 @@ void Map::RescaleImages() {
     return;
   }
 
-  for (size_t i = 0; i < number_of_cell_types_; ++i) {
+  for (size_t i = 0; i < static_cast<int>(CellType::Last); ++i) {
     scaled_pixmaps_[i] = QPixmap::fromImage(images_[i].scaled(
         cur_cell_width_ + 2, cur_cell_height_ + 2, Qt::KeepAspectRatio));
   }

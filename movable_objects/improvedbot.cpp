@@ -1,8 +1,13 @@
 #include "improvedbot.h"
 
-ImprovedBot::ImprovedBot(const std::shared_ptr<Map>& map,
-                         const BotQualities& qualities)
-    : Bot(map, qualities) {
+ImprovedBot::ImprovedBot(std::shared_ptr<Map> map,
+                         int init_cell_x,
+                         int init_cell_y,
+                         TankParameters tank_parameters,
+                         BotParameters bot_parameters,
+                         Direction direction)
+    : Bot(std::move(map), init_cell_x, init_cell_y,
+          tank_parameters, bot_parameters, direction) {
   LoadImage(":/textures/improved_bot.png");
 }
 
@@ -16,7 +21,7 @@ bool ImprovedBot::IsRotationStartNeeded(const std::shared_ptr<Tank>& tank) {
       if (IsShotNeeded(map_, tank)) {
         return false;
       }
-      if (qrand() % side_rotation_frequency_ == 0) {
+      if (random_generator_() % side_rotation_frequency_ == 0) {
         TurnRotationReverseOn();
       } else {
         TurnRotationReverseOff();
@@ -82,8 +87,7 @@ bool ImprovedBot::IsShotNeeded(const std::shared_ptr<Map>& map,
   return false;
 }
 
-bool ImprovedBot::CheckDirection(const int tank, const int bot,
-                                 const int direction) {
+bool ImprovedBot::CheckDirection(int tank, int bot, int direction) {
   number_of_cells_to_move_ = 0;
   number_of_turns_ = 1;
   if (tank > bot) {

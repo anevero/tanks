@@ -12,8 +12,6 @@ const QString kOrganizationName = "Tanks";
 const QString kApplicationName = "Tanks";
 const int kApplicationRestartCode = 438254263;
 
-const int kMinutesPerRound = 10;
-
 // New game dialog constants.
 const int kMapsNumber = 4;
 const int kTanksNumber = 3;
@@ -31,6 +29,14 @@ const QString kLanguageKey = "language";
 // Available settings.
 const std::vector<int> kFpsOptions = {40, 50, 60, 90, 120, 240};
 const std::vector<QString> kLanguages = {"en_US", "ru_RU", "be_BY"};
+
+// Game constants;
+const int kChargesNumber = 3;
+const int kVirtualKeysNumber = 5;
+const int kMinutesPerRound = 10;
+
+const int kMedicalKitSpawnPeriod = 20000;
+const int kChargeSpawnPeriod = 15000;
 
 }  // namespace constants
 

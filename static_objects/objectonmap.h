@@ -10,8 +10,6 @@
 #include <memory>
 #include "../game_core/map.h"
 
-enum class Bonus { TypeMedicalKit, TypeCharge };
-
 class ObjectOnMap {
  public:
   ObjectOnMap(const std::shared_ptr<Map>& map, size_t x, size_t y);
