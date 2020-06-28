@@ -4,184 +4,176 @@
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../mainwindow.cpp" line="7"/>
+        <location filename="../../game_core/mainwindow.cpp" line="10"/>
         <source>New game</source>
         <translation>Новая игра</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="8"/>
-        <location filename="../mainwindow.cpp" line="525"/>
-        <location filename="../mainwindow.cpp" line="631"/>
+        <location filename="../../game_core/mainwindow.cpp" line="11"/>
+        <location filename="../../game_core/mainwindow.cpp" line="577"/>
+        <location filename="../../game_core/mainwindow.cpp" line="668"/>
         <source>Pause</source>
         <translation>Пауза</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="9"/>
+        <location filename="../../game_core/mainwindow.cpp" line="12"/>
         <source>Settings</source>
         <translation>Настройки</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="10"/>
+        <location filename="../../game_core/mainwindow.cpp" line="13"/>
         <source>About</source>
         <translation>Информация</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="42"/>
-        <source>You have</source>
-        <translation>У вас есть</translation>
+        <location filename="../../game_core/mainwindow.cpp" line="49"/>
+        <source>You have %1 minutes per round</source>
+        <translation>У вас есть %1 минут на раунд</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="44"/>
-        <source>minutes per round</source>
-        <translation>минут на игру</translation>
+        <location filename="../../game_core/mainwindow.cpp" line="96"/>
+        <source>Low speed, high charge, can&apos;t destroy obstacles</source>
+        <translation>Низкая скорость, высокий урон, не может уничтожать препятствия</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="84"/>
+        <location filename="../../game_core/mainwindow.cpp" line="92"/>
         <source>Hight speed, low charge, can destroy obstacles</source>
         <translation>Высокая скорость, низкий урон, может уничтожать препятствия</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="86"/>
+        <location filename="../../game_core/mainwindow.cpp" line="94"/>
         <source>Medium speed, medium charge, can destroy obstacles</source>
         <translation>Средняя скорость, средний урон, может уничтожать препятствия</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="88"/>
-        <source>Low speed, hight charge, can&apos;t destroy obstacles</source>
-        <translation>Низкая скорость, высокий урон, не может разрушать препятствия</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="146"/>
+        <location filename="../../game_core/mainwindow.cpp" line="140"/>
         <source>Health</source>
         <translation>Здоровье</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="635"/>
+        <location filename="../../game_core/mainwindow.cpp" line="672"/>
         <source>Continue</source>
         <translation>Продолжить</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="836"/>
+        <location filename="../../game_core/mainwindow.cpp" line="969"/>
         <source>You win! 
 You can start a new game with help of appropriate button on the left.</source>
         <translation>Вы победили! Вы можете начать новую игру с помощью соответствующей кнопки слева.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="841"/>
+        <location filename="../../game_core/mainwindow.cpp" line="974"/>
         <source>You died! 
 You can start a new game with help of appropriate button on the left.</source>
         <translation>Вы проиграли! Вы можете начать новую игру с помощью соответствующей кнопки слева.</translation>
     </message>
+</context>
+<context>
+    <name>NewGameDialog</name>
     <message>
-        <location filename="../mainwindow.cpp" line="852"/>
+        <location filename="../../game_core/new_game_dialog.cpp" line="12"/>
         <source>Choose map, tank and difficulty</source>
         <translation>Выберите карту, танк и сложность</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="855"/>
-        <location filename="../mainwindow.cpp" line="861"/>
+        <location filename="../../game_core/new_game_dialog.cpp" line="14"/>
+        <location filename="../../game_core/new_game_dialog.cpp" line="22"/>
         <source>Map</source>
         <translation>Карта</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="867"/>
-        <location filename="../mainwindow.cpp" line="884"/>
+        <location filename="../../game_core/new_game_dialog.cpp" line="16"/>
+        <location filename="../../game_core/new_game_dialog.cpp" line="26"/>
         <source>Tank</source>
         <translation>Танк</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="888"/>
+        <location filename="../../game_core/new_game_dialog.cpp" line="18"/>
         <source>Difficulty</source>
         <translation>Сложность</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="927"/>
-        <source>Virtual keys</source>
-        <translation>Виртуальные клавиши</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="931"/>
-        <source>Experimental layout of virtual keys</source>
-        <translation>Мобильная раскладка вирт. клавиш</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="937"/>
-        <source>Music</source>
-        <translation>Музыка</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="1003"/>
-        <source>Tip: you can use two fingers to scroll the reference</source>
-        <translation>Подсказка: прокручивайте страницу двумя пальцами</translation>
-    </message>
-    <message>
-        <source>Activate virtual keys</source>
-        <translation type="vanished">Виртуальные клавиши</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="935"/>
-        <source>Activate charge line</source>
-        <translation>Полоса перезарядки</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="940"/>
-        <source>Performance</source>
-        <translation>Производительность</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="945"/>
-        <source>frames per second</source>
-        <translation>кадров в секунду</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="949"/>
-        <source>Language</source>
-        <translation>Язык</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="957"/>
-        <source>Language will be changed after application restart</source>
-        <translation>Язык изменится после перезапуска приложения</translation>
-    </message>
-    <message>
-        <source>Language will be changed
-after application restart</source>
-        <translation type="vanished">Язык изменится после
-перезапуска приложения</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="952"/>
-        <source>Belarusian</source>
-        <translation>Беларуская</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="953"/>
-        <source>English</source>
-        <translation>English</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="954"/>
-        <source>Russian</source>
-        <translation>Русский</translation>
-    </message>
-    <message>
-        <source>App version</source>
-        <translation type="vanished">Версия</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.h" line="193"/>
+        <location filename="../../game_core/new_game_dialog.h" line="42"/>
         <source>Easy</source>
         <translation>Легко</translation>
     </message>
     <message>
-        <location filename="../mainwindow.h" line="193"/>
+        <location filename="../../game_core/new_game_dialog.h" line="42"/>
         <source>Normal</source>
         <translation>Нормально</translation>
     </message>
     <message>
-        <location filename="../mainwindow.h" line="194"/>
+        <location filename="../../game_core/new_game_dialog.h" line="42"/>
         <source>Hard</source>
         <translation>Тяжело</translation>
+    </message>
+</context>
+<context>
+    <name>SettingsDialog</name>
+    <message>
+        <location filename="../../game_core/settings_dialog.cpp" line="12"/>
+        <source>Virtual keys</source>
+        <translation>Виртуальные клавиши</translation>
+    </message>
+    <message>
+        <location filename="../../game_core/settings_dialog.cpp" line="13"/>
+        <source>Mobile virtual keys layout</source>
+        <translation>Мобильная раскладка клавиш</translation>
+    </message>
+    <message>
+        <location filename="../../game_core/settings_dialog.cpp" line="15"/>
+        <source>Charge line</source>
+        <translation>Полоса перезарядки</translation>
+    </message>
+    <message>
+        <location filename="../../game_core/settings_dialog.cpp" line="16"/>
+        <source>Music</source>
+        <translation>Музыка</translation>
+    </message>
+    <message>
+        <location filename="../../game_core/settings_dialog.cpp" line="17"/>
+        <source>Performance</source>
+        <translation>Производительность</translation>
+    </message>
+    <message>
+        <location filename="../../game_core/settings_dialog.cpp" line="19"/>
+        <source>Language</source>
+        <translation>Язык</translation>
+    </message>
+    <message>
+        <location filename="../../game_core/settings_dialog.cpp" line="24"/>
+        <source>%1 frames per second</source>
+        <translation>%1 кадров в секунду</translation>
+    </message>
+    <message>
+        <location filename="../../game_core/settings_dialog.cpp" line="149"/>
+        <source>The app needs to be restarted to change the language.</source>
+        <translation>Приложение нужно перезапустить, чтобы изменить язык.</translation>
+    </message>
+    <message>
+        <location filename="../../game_core/settings_dialog.cpp" line="153"/>
+        <source>Close application?</source>
+        <translation>Закрыть приложение?</translation>
+    </message>
+    <message>
+        <location filename="../../game_core/settings_dialog.cpp" line="155"/>
+        <source>Restart application?</source>
+        <translation>Перезапустить приложение?</translation>
+    </message>
+    <message>
+        <location filename="../../game_core/settings_dialog.h" line="54"/>
+        <source>en_US</source>
+        <translation>Английский</translation>
+    </message>
+    <message>
+        <location filename="../../game_core/settings_dialog.h" line="54"/>
+        <source>ru_RU</source>
+        <translation>Русский</translation>
+    </message>
+    <message>
+        <location filename="../../game_core/settings_dialog.h" line="54"/>
+        <source>be_BY</source>
+        <translation>Белорусский</translation>
     </message>
 </context>
 </TS>

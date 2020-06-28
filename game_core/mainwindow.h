@@ -21,7 +21,9 @@
 #include <QPainter>
 #include <QPalette>
 #include <QPushButton>
+#include <QSettings>
 #include <QSize>
+#include <QScreen>
 #include <QString>
 #include <QTextBrowser>
 #include <QTimer>
@@ -39,8 +41,10 @@
 #include <vector>
 
 #include "game_core/about_dialog.h"
+#include "game_core/constants.h"
 #include "game_core/map.h"
 #include "game_core/new_game_dialog.h"
+#include "game_core/settings_dialog.h"
 #include "static_objects/objectonmap.h"
 #include "static_objects/portal.h"
 #include "movable_objects/boom.h"
@@ -64,13 +68,10 @@ class MainWindow : public QMainWindow {
   [[maybe_unused]] void resizeEvent(QResizeEvent*) override;
   [[maybe_unused]] void timerEvent(QTimerEvent*) override;
 
- private slots:  // NOLINT
-  // Runs new game dialog and switches options inside it.
-  void ExecNewGameDialog();
-  // Pauses or continues the game (depending on its current state).
+ private:
   void PauseOrContinue();
-  // Runs settings dialog and switches options inside it.
-  void Settings();
+  void ExecNewGameDialog();
+  void ExecSettingsDialog();
   void ExecAboutDialog();
 
   // Creates KeyEvent with specified key. It's used for virtual keys buttons.
@@ -80,8 +81,14 @@ class MainWindow : public QMainWindow {
   void ChangeChargeButton(int type);
 
  private:
+  void LoadApplicationSettings();
   void LoadTanksTypesInfo();
   void LoadRocketsTypesInfo();
+
+  void SetVirtualKeysEnabled(bool enabled);
+  void SetMobileVirtualKeysStyleEnabled(bool enabled);
+  void SetMusicEnabled(bool enabled);
+  void SetFpsOption(int index, bool start_timer = false);
 
   // Clears all the data connected with the current round and initializes
   // objects with values necessary to start the new round. After that repaints
@@ -130,20 +137,6 @@ class MainWindow : public QMainWindow {
   // the map.
   void RandomBonus(Bonus bonus);
 
-  int GetTimerDuration() const;
-  void ToggleVirtualKeys();
-  void SwitchVirtualButtonsLayout();
-  void ToggleMusic();
-  void ChangeFPSOption(int new_option, bool start_timer = false);
-  // Initializes settings dialog with buttons and menus. Runs once (!) in the
-  // constructor of main window.
-  void InitializeSettingsDialog();
-  // Updates variables which store settings state with the information from
-  // settings file.
-  void DetermineCurrentSettings();
-  // Calls functions to change game settings according to variables state and
-  // writes new info about settings to the settings file.
-  void ChangeCurrentSettings();
   QJsonObject GetJsonObjectFromFile(const QString& filepath);
   // Returns direction object corresponding to the string.
   Direction DetermineDirection(
@@ -153,8 +146,6 @@ class MainWindow : public QMainWindow {
   int current_map_number_ = 0;
   int current_tank_number_ = 0;
   int current_difficulty_level_ = 0;
-
-  const int minutes_per_round_ = 10;
 
   std::vector<TankQualities> types_of_tanks_ = {};
   std::vector<RocketParameters> types_of_rockets_ = {};
@@ -176,18 +167,15 @@ class MainWindow : public QMainWindow {
   int timer_id_ = 0;
   int time_since_last_medicalkit_ = 0;
   int time_since_last_charge_ = 0;
+  int timer_duration_;
+  bool paused_ = false;
 
  private:
-  bool paused_ = false;
-  bool virtual_keys_shown_;
-  bool new_virtual_keys_enabled_;
-  bool charge_line_shown_;
+  bool virtual_keys_enabled_;
+  bool mobile_virtual_keys_style_enabled_;
+  bool charge_line_enabled_;
   bool music_enabled_;
-  int fps_option_;
-  int timer_duration_;
-
-  const QVector<QPair<QString, int>> available_fps_options_ = {
-      {"240", 4}, {"120", 8}, {"90", 11}, {"60", 17}, {"50", 20}, {"40", 25}};
+  int current_fps_option_;
 
  private:
   QLCDNumber* screen_timer_;
@@ -198,20 +186,7 @@ class MainWindow : public QMainWindow {
   int screen_timer_min_ = 0;
 
   NewGameDialog* new_game_dialog_;
-
-  QDialog* settings_dialog_;
-  QDialogButtonBox* settings_dialog_buttons_;
-  QVBoxLayout* settings_dialog_layout_;
-  QCheckBox* virtual_keys_checkbox_;
-  QCheckBox* new_virtual_keys_checkbox_;
-  QCheckBox* charge_line_checkbox_;
-  QCheckBox* music_checkbox_;
-  QComboBox* fps_menu_;
-  QComboBox* language_menu_;
-  QLabel* fps_menu_label_;
-  QLabel* language_menu_label_;
-  QLabel* language_menu_restart_label_;
-
+  SettingsDialog* settings_dialog_;
   AboutDialog* about_dialog_;
 
   QVBoxLayout* main_buttons_layout_;
@@ -230,10 +205,9 @@ class MainWindow : public QMainWindow {
   QVector<QPushButton*> virtual_keys_buttons_;
   QVector<Qt::Key> virtual_keys_encodings_;
   const int number_of_virtual_keys_in_first_row_ = 2;
-  const int number_of_virtual_keys_in_second_row_ = 3;
 
-  QVBoxLayout* new_virtual_buttons_layout_left_;
-  QHBoxLayout* new_virtual_buttons_layout_right_;
+  QVBoxLayout* mobile_virtual_buttons_layout_left_;
+  QHBoxLayout* mobile_virtual_buttons_layout_right_;
 
   QMediaPlayer music_player_;
   QMediaPlaylist music_playlist_;
