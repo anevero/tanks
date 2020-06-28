@@ -139,9 +139,9 @@ MainWindow::~MainWindow() {
 }
 
 void MainWindow::mouseReleaseEvent(QMouseEvent* event) {
-  auto current_cell_x = (event->x() - map_->GetUpperLeftX())
+  int current_cell_x = (event->x() - map_->GetUpperLeftX())
       * map_->GetNumberOfCellsHorizontally() / map_->GetWidth();
-  auto current_cell_y = (event->y() - map_->GetUpperLeftY()) *
+  int current_cell_y = (event->y() - map_->GetUpperLeftY()) *
       map_->GetNumberOfCellsVertically() / map_->GetHeight();
   for (const auto& object : tanks_) {
     if (object->GetCellX() == current_cell_x &&
@@ -608,7 +608,7 @@ void MainWindow::SetMobileVirtualKeysStyleEnabled(bool enabled) {
     }
 
     for (int i = number_of_virtual_keys_in_first_row_;
-         i < virtual_keys_buttons_.size(); ++i) {
+         i < constants::kVirtualKeysNumber; ++i) {
       virtual_buttons_layout_->addWidget(
           virtual_keys_buttons_[i], 1,
           i - number_of_virtual_keys_in_first_row_);
@@ -979,8 +979,8 @@ void MainWindow::RandomBonus() {
   int attempts = 100;
   bool flag = true;
   while (attempts > 0) {
-    auto x = random_generator_() % (map_->GetNumberOfCellsHorizontally() - 1);
-    auto y = random_generator_() % (map_->GetNumberOfCellsVertically() - 1);
+    int x = random_generator_() % (map_->GetNumberOfCellsHorizontally() - 1);
+    int y = random_generator_() % (map_->GetNumberOfCellsVertically() - 1);
     for (auto& object : tanks_) {
       if (object->GetCellX() == x && object->GetCellY() == y) {
         flag = false;

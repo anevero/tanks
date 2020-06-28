@@ -11,7 +11,8 @@
 
 class Boom : public Movable {
  public:
-  Boom(std::shared_ptr<Map> map, const std::shared_ptr<Movable>& tank, int speed);
+  Boom(std::shared_ptr<Map> map, const std::shared_ptr<Movable>& tank,
+       int speed);
   ~Boom() override = default;
 
   void UpdateCoordinates(int cell_x, int cell_y) override;

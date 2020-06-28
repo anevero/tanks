@@ -125,10 +125,14 @@ void Map::FormMapImage() {
   QImage temp_image = QImage(cur_width_, cur_height_, QImage::Format_ARGB32);
   QPainter p;
   p.begin(&temp_image);
-  for (int i = 0; i < map_.size(); ++i) {
-    for (int j = 0; j < map_[i].size(); ++j) {
+
+  int width = map_.size();
+  int height = map_[0].size();
+
+  for (int i = 0; i < width; ++i) {
+    for (int j = 0; j < height; ++j) {
       p.drawPixmap(i * cur_cell_width_, j * cur_cell_height_,
-                   scaled_pixmaps_[static_cast<size_t>(map_[i][j])]);
+                   scaled_pixmaps_[static_cast<int>(map_[i][j])]);
     }
   }
   p.end();

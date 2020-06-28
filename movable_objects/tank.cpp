@@ -27,7 +27,8 @@ void Tank::Draw(QPainter* painter) {
                      current_upper_left_y_ + current_height_ / 2);
   painter->rotate(current_rotate_degree_);
   painter->setOpacity(opacity_);
-  painter->drawPixmap(-current_width_ / 2, -current_height_ / 2, scaled_pixmap_);
+  painter->drawPixmap(-current_width_ / 2, -current_height_ / 2,
+                      scaled_pixmap_);
   painter->restore();
   DrawHealth(painter);
 }

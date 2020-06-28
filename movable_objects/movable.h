@@ -10,6 +10,8 @@
 #include <cmath>
 #include <list>
 #include <memory>
+#include <string>
+#include <unordered_map>
 #include <utility>
 #include <vector>
 #include "../game_core/map.h"
