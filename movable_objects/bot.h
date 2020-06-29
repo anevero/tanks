@@ -47,8 +47,6 @@ class Bot : public Tank {
   static bool IsWallBetweenObjectsY(
       const std::shared_ptr<Map>& map,
       int tank_x, int tank_y, int bot_x, int bot_y);
-
-  static std::mt19937 random_generator_;
 };
 
 #endif  // MOVABLE_OBJECTS_BOT_H_

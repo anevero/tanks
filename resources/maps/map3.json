@@ -187,7 +187,7 @@
         },
         {
           "type": "improved",
-          "initial_cell_x": 13,
+          "initial_cell_x": 10,
           "initial_cell_y": 1,
           "moving_length": 4,
           "amount_of_turns": 1,

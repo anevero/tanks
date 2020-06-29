@@ -14,6 +14,7 @@
 #include <unordered_map>
 #include <utility>
 #include <vector>
+#include "../game_core/constants.h"
 #include "../game_core/map.h"
 #include "../static_objects/objectonmap.h"
 #include "../static_objects/portal.h"

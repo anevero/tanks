@@ -30,14 +30,14 @@ Map::Map(int map_number) {
   tank_start_direction_ =
       player_tank["initial_direction"].toString().toStdString();
 
-  for (size_t i = 0; i < static_cast<int>(CellType::Last); ++i) {
+  for (int i = 0; i < static_cast<int>(CellType::Last); ++i) {
     images_.emplace_back(":/textures/" + QString::number(i) + ".png");
     scaled_pixmaps_.emplace_back(":/textures/" + QString::number(i) + ".png");
   }
 }
 
-void Map::UpdateCoordinates(const int upper_left_x, const int upper_left_y,
-                            const int width, const int height) {
+void Map::UpdateCoordinates(int upper_left_x, int upper_left_y,
+                            int width, int height) {
   cur_upper_left_x_ = upper_left_x;
   cur_upper_left_y_ = upper_left_y;
   cur_cell_width_ = width / map_.size();
@@ -52,19 +52,19 @@ void Map::DrawMap(QPainter* painter) {
   painter->drawPixmap(cur_upper_left_x_, cur_upper_left_y_, map_scaled_pixmap_);
 }
 
-CellType Map::GetField(const size_t cell_x, const size_t cell_y) const {
+CellType Map::GetField(int cell_x, int cell_y) const {
   return map_[cell_x][cell_y];
 }
 
-int Map::GetWallsPrecalc(const size_t cell_x, const size_t cell_y) const {
+int Map::GetWallsPrecalc(int cell_x, int cell_y) const {
   return walls_precalc_[cell_x][cell_y];
 }
 
-size_t Map::GetNumberOfCellsHorizontally() const {
+int Map::GetNumberOfCellsHorizontally() const {
   return map_[0].size();
 }
 
-size_t Map::GetNumberOfCellsVertically() const {
+int Map::GetNumberOfCellsVertically() const {
   return map_.size();
 }
 
@@ -92,11 +92,11 @@ int Map::GetCellHeight() const {
   return cur_cell_height_;
 }
 
-size_t Map::GetTankInitCellX() const {
+int Map::GetTankInitCellX() const {
   return tank_init_cell_x_;
 }
 
-size_t Map::GetTankInitCellY() const {
+int Map::GetTankInitCellY() const {
   return tank_init_cell_y_;
 }
 
@@ -110,7 +110,7 @@ void Map::RescaleImages() {
     return;
   }
 
-  for (size_t i = 0; i < static_cast<int>(CellType::Last); ++i) {
+  for (int i = 0; i < static_cast<int>(CellType::Last); ++i) {
     scaled_pixmaps_[i] = QPixmap::fromImage(images_[i].scaled(
         cur_cell_width_ + 2, cur_cell_height_ + 2, Qt::KeepAspectRatio));
   }

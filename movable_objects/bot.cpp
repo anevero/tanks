@@ -1,8 +1,5 @@
 #include "bot.h"
 
-std::mt19937 Bot::random_generator_ = std::mt19937(
-    std::chrono::system_clock::now().time_since_epoch().count());
-
 Bot::Bot(std::shared_ptr<Map> map, int init_cell_x, int init_cell_y,
          TankParameters tank_parameters, BotParameters bot_parameters,
          Direction direction)

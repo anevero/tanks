@@ -189,7 +189,7 @@ void Movable::UpdateCoordinates(int cell_x, int cell_y) {
 
   if (map_->GetField(cell_x_, cell_y_) == CellType::Forest) {
     if (movement_proportion <= 0.5) {
-      opacity_ = 0.5;
+      opacity_ = constants::kOpacityLevel;
     }
   } else if (map_->GetField(prev_cell_x_, prev_cell_y_) == CellType::Forest) {
     if (movement_proportion <= 0.5) {

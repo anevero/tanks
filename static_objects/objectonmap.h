@@ -8,24 +8,25 @@
 #include <QPixmap>
 #include <QVector>
 #include <memory>
+#include "../game_core/constants.h"
 #include "../game_core/map.h"
 
 class ObjectOnMap {
  public:
-  ObjectOnMap(const std::shared_ptr<Map>& map, size_t x, size_t y);
+  ObjectOnMap(std::shared_ptr<Map> map, int x, int y);
   virtual ~ObjectOnMap() = default;
 
   void LoadImage(const QString& path);
   void Draw(QPainter* painter);
   void RescaleImage();
   void UpdateCoordinates();
-  size_t GetX() const;
-  size_t GetY() const;
+  int GetX() const;
+  int GetY() const;
 
  protected:
   const std::shared_ptr<Map> map_;
-  size_t x_;
-  size_t y_;
+  int x_;
+  int y_;
   int cur_width_{};
   int cur_height_{};
   int cur_upper_left_x_{};
@@ -36,17 +37,17 @@ class ObjectOnMap {
 
 class Obstacle : public ObjectOnMap {
  public:
-  Obstacle(const std::shared_ptr<Map>& map, size_t x, size_t y);
+  Obstacle(std::shared_ptr<Map> map, int x, int y);
 };
 
 class MedicalKit : public ObjectOnMap {
  public:
-  MedicalKit(const std::shared_ptr<Map>& map, size_t x, size_t y);
+  MedicalKit(std::shared_ptr<Map> map, int x, int y);
 };
 
 class Charge : public ObjectOnMap {
  public:
-  Charge(const std::shared_ptr<Map>& map, size_t x, size_t y);
+  Charge(std::shared_ptr<Map> map, int x, int y);
 };
 
 #endif  // STATIC_OBJECTS_OBJECTONMAP_H_

@@ -8,15 +8,15 @@
 
 class Portal : public ObjectOnMap {
  public:
-  Portal(const std::shared_ptr<Map>& map, size_t cell_x, size_t cell_y,
-         size_t new_cell_x, size_t new_cell_y);
+  Portal(std::shared_ptr<Map> map, int cell_x, int cell_y,
+         int new_cell_x, int new_cell_y);
 
-  size_t GetNewCellX() const;
-  size_t GetNewCellY() const;
+  int GetNewCellX() const;
+  int GetNewCellY() const;
 
  private:
-  size_t new_cell_x_;
-  size_t new_cell_y_;
+  int new_cell_x_;
+  int new_cell_y_;
 };
 
 #endif  // STATIC_OBJECTS_PORTAL_H_

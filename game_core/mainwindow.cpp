@@ -74,7 +74,7 @@ MainWindow::MainWindow(QWidget* parent)
 
   standard_button_palette_ = charge_buttons_[0]->palette();
   charge_palettes_.resize(charge_colors_.size(), standard_button_palette_);
-  for (int i = 0; i < charge_palettes_.size(); ++i) {
+  for (int i = 0; i < constants::kChargesNumber; ++i) {
     charge_palettes_[i].setColor(QPalette::Button, charge_colors_[i]);
   }
 
@@ -103,10 +103,10 @@ MainWindow::MainWindow(QWidget* parent)
   AdjustFont(pause_continue_button_);
   AdjustFont(settings_button_);
   AdjustFont(about_button_);
-  for (int i = 0; i < virtual_keys_buttons_.size(); ++i) {
+  for (int i = 0; i < constants::kVirtualKeysNumber; ++i) {
     AdjustFont(virtual_keys_buttons_[i]);
   }
-  for (int i = 0; i < charge_buttons_.size(); ++i) {
+  for (int i = 0; i < constants::kChargesNumber; ++i) {
     AdjustFont(charge_buttons_[i]);
   }
 #endif
@@ -820,16 +820,16 @@ void MainWindow::RedrawButtons() {
   } else {
     mobile_virtual_buttons_layout_left_->setSpacing(0.01 * game_height_);
     mobile_virtual_buttons_layout_right_->setSpacing(0.01 * game_height_);
-    mobile_virtual_buttons_layout_left_->setGeometry(
-        QRect(std::max(0, width_indent_ - static_cast<int>(0.2 * game_width_)),
-              height() - height_indent_ - static_cast<int>(0.5 * game_height_),
-              std::min(width_indent_, static_cast<int>(0.2 * game_width_)),
-              static_cast<int>(0.45 * game_height_)));
-    mobile_virtual_buttons_layout_right_->setGeometry(
-        QRect(width() - width_indent_,
-              height() - height_indent_ - static_cast<int>(0.5 * game_height_),
-              std::min(width_indent_, static_cast<int>(0.2 * game_width_)),
-              static_cast<int>(0.45 * game_height_)));
+    mobile_virtual_buttons_layout_left_->setGeometry(QRect(
+        std::max(10, width_indent_ - static_cast<int>(0.2 * game_width_)),
+        height() - height_indent_ - static_cast<int>(0.5 * game_height_),
+        std::min(width_indent_, static_cast<int>(0.2 * game_width_)) - 10,
+        static_cast<int>(0.45 * game_height_)));
+    mobile_virtual_buttons_layout_right_->setGeometry(QRect(
+        width() - width_indent_,
+        height() - height_indent_ - static_cast<int>(0.5 * game_height_),
+        std::min(width_indent_, static_cast<int>(0.2 * game_width_)) - 10,
+        static_cast<int>(0.45 * game_height_)));
   }
 }
 

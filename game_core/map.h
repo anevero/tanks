@@ -34,18 +34,18 @@ class Map {
                          int width, int height);
   void DrawMap(QPainter* painter);
 
-  CellType GetField(size_t cell_x, size_t cell_y) const;
-  int GetWallsPrecalc(size_t x, size_t y) const;
-  size_t GetNumberOfCellsHorizontally() const;
-  size_t GetNumberOfCellsVertically() const;
+  CellType GetField(int cell_x, int cell_y) const;
+  int GetWallsPrecalc(int x, int y) const;
+  int GetNumberOfCellsHorizontally() const;
+  int GetNumberOfCellsVertically() const;
   int GetUpperLeftX() const;
   int GetUpperLeftY() const;
   int GetWidth() const;
   int GetHeight() const;
   int GetCellWidth() const;
   int GetCellHeight() const;
-  size_t GetTankInitCellX() const;
-  size_t GetTankInitCellY() const;
+  int GetTankInitCellX() const;
+  int GetTankInitCellY() const;
   std::string GetTankStartDirection() const;
 
  private:
@@ -65,8 +65,8 @@ class Map {
   int cur_height_{};
   int cur_cell_width_{};
   int cur_cell_height_{};
-  size_t tank_init_cell_x_;
-  size_t tank_init_cell_y_;
+  int tank_init_cell_x_;
+  int tank_init_cell_y_;
   std::string tank_start_direction_;
 };
 

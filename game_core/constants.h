@@ -35,6 +35,7 @@ const int kChargesNumber = 3;
 const int kVirtualKeysNumber = 5;
 const int kMinutesPerRound = 10;
 
+const double kOpacityLevel = 0.6;
 const int kMedicalKitSpawnPeriod = 20000;
 const int kChargeSpawnPeriod = 15000;
 
