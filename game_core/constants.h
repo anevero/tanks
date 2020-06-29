@@ -38,6 +38,7 @@ const int kMinutesPerRound = 10;
 const double kOpacityLevel = 0.6;
 const int kMedicalKitSpawnPeriod = 20000;
 const int kChargeSpawnPeriod = 15000;
+const int kBoomCharge = 25;
 
 }  // namespace constants
 

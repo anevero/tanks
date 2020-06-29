@@ -353,7 +353,8 @@ void MainWindow::timerEvent(QTimerEvent*) {
       if (std::dynamic_pointer_cast<Boom>(*it) != nullptr) {
         for (const auto& tank : tanks_) {
           if (Movable::HaveObjectsCollided(*it, tank)) {
-            std::dynamic_pointer_cast<Tank>(tank)->DecreaseHealth(25);
+            std::dynamic_pointer_cast<Tank>(tank)->DecreaseHealth(
+                constants::kBoomCharge);
           }
         }
 
