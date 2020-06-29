@@ -92,6 +92,8 @@ class MainWindow : public QMainWindow {
   void UpdateIndents();
   // Changes buttons coordinates in the window according to the window size.
   void RedrawButtons();
+  // Scales buttons fonts (it is not scaled automatically).
+  void SetButtonsFontPixelSize(int pixel_size);
   // Updates charge buttons color according to the state of charge of the
   // player's tank.
   void RedrawChargeButtons();
@@ -123,8 +125,6 @@ class MainWindow : public QMainWindow {
 
  private:
   static QJsonObject GetJsonObjectFromFile(const QString& filepath);
-  // Workaround for the bug with not-adjusting fonts on buttons (Android).
-  static void AdjustFont(QWidget* widget);
 
  private:
   int current_map_number_ = 0;
@@ -190,7 +190,7 @@ class MainWindow : public QMainWindow {
   QGridLayout* virtual_buttons_layout_;
   std::vector<QPushButton*> virtual_keys_buttons_;
 
-  const QVector<Qt::Key> virtual_keys_encodings_ =
+  const std::vector<Qt::Key> virtual_keys_encodings_ =
       {Qt::Key_Q, Qt::Key_W, Qt::Key_A, Qt::Key_S, Qt::Key_D};
   const int number_of_virtual_keys_in_first_row_ = 2;
 

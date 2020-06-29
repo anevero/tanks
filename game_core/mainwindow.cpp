@@ -97,20 +97,6 @@ MainWindow::MainWindow(QWidget* parent)
     virtual_keys_buttons_[i]->setFocusPolicy(Qt::NoFocus);
   }
 
-  // TODO(anevero): херня тут какая-то, надо с Android побороться
-#ifdef Q_OS_ANDROID
-  AdjustFont(new_game_button_);
-  AdjustFont(pause_continue_button_);
-  AdjustFont(settings_button_);
-  AdjustFont(about_button_);
-  for (int i = 0; i < constants::kVirtualKeysNumber; ++i) {
-    AdjustFont(virtual_keys_buttons_[i]);
-  }
-  for (int i = 0; i < constants::kChargesNumber; ++i) {
-    AdjustFont(charge_buttons_[i]);
-  }
-#endif
-
   screen_timer_->setSegmentStyle(QLCDNumber::Flat);
   screen_timer_->setToolTip(
       tr("You have %1 minutes per round").arg(constants::kMinutesPerRound));
@@ -831,6 +817,26 @@ void MainWindow::RedrawButtons() {
         std::min(width_indent_, static_cast<int>(0.2 * game_width_)) - 10,
         static_cast<int>(0.45 * game_height_)));
   }
+
+  SetButtonsFontPixelSize(5 * new_game_button_->height() / 12);
+}
+
+void MainWindow::SetButtonsFontPixelSize(int pixel_size) {
+  QFont adjusted_font = new_game_button_->font();
+  adjusted_font.setPixelSize(pixel_size);
+
+  new_game_button_->setFont(adjusted_font);
+  pause_continue_button_->setFont(adjusted_font);
+  settings_button_->setFont(adjusted_font);
+  about_button_->setFont(adjusted_font);
+
+  for (auto& charge_button : charge_buttons_) {
+    charge_button->setFont(adjusted_font);
+  }
+
+  for (auto& virtual_key_button : virtual_keys_buttons_) {
+    virtual_key_button->setFont(adjusted_font);
+  }
 }
 
 void MainWindow::RedrawChargeButtons() {
@@ -1011,10 +1017,4 @@ QJsonObject MainWindow::GetJsonObjectFromFile(const QString& filepath) {
   file.close();
   QJsonDocument json_document(QJsonDocument::fromJson(text.toUtf8()));
   return json_document.object();
-}
-
-void MainWindow::AdjustFont(QWidget* widget) {
-  QFont adjusted_font = widget->font();
-  adjusted_font.setPixelSize(widget->height());
-  widget->setFont(adjusted_font);
 }
