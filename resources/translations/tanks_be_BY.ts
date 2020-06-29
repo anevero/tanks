@@ -4,65 +4,65 @@
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../../game_core/mainwindow.cpp" line="10"/>
+        <location filename="../../game_core/mainwindow.cpp" line="13"/>
         <source>New game</source>
         <translation>Новая гульня</translation>
     </message>
     <message>
-        <location filename="../../game_core/mainwindow.cpp" line="11"/>
-        <location filename="../../game_core/mainwindow.cpp" line="577"/>
-        <location filename="../../game_core/mainwindow.cpp" line="668"/>
+        <location filename="../../game_core/mainwindow.cpp" line="14"/>
+        <location filename="../../game_core/mainwindow.cpp" line="403"/>
+        <location filename="../../game_core/mainwindow.cpp" line="736"/>
         <source>Pause</source>
         <translation>Паўза</translation>
     </message>
     <message>
-        <location filename="../../game_core/mainwindow.cpp" line="12"/>
+        <location filename="../../game_core/mainwindow.cpp" line="15"/>
         <source>Settings</source>
         <translation>Налады</translation>
     </message>
     <message>
-        <location filename="../../game_core/mainwindow.cpp" line="13"/>
+        <location filename="../../game_core/mainwindow.cpp" line="16"/>
         <source>About</source>
         <translation>Інфармацыя</translation>
     </message>
     <message>
-        <location filename="../../game_core/mainwindow.cpp" line="49"/>
+        <location filename="../../game_core/mainwindow.cpp" line="82"/>
+        <source>High speed, low charge, can destroy obstacles</source>
+        <translation>Высокая хуткасць, нізкая шкода, можа знішчаць перашкоды</translation>
+    </message>
+    <message>
+        <location filename="../../game_core/mainwindow.cpp" line="102"/>
         <source>You have %1 minutes per round</source>
         <translation>У вас ёсць %1 хвілін на раўнд</translation>
     </message>
     <message>
-        <location filename="../../game_core/mainwindow.cpp" line="96"/>
+        <location filename="../../game_core/mainwindow.cpp" line="86"/>
         <source>Low speed, high charge, can&apos;t destroy obstacles</source>
         <translation>Нізкая хуткасць, высокая шкода, не можа знішчаць перашкоды</translation>
     </message>
     <message>
-        <location filename="../../game_core/mainwindow.cpp" line="92"/>
-        <source>Hight speed, low charge, can destroy obstacles</source>
-        <translation>Высокая хуткасць, нізкая шкода, можа знішчаць перашкоды</translation>
-    </message>
-    <message>
-        <location filename="../../game_core/mainwindow.cpp" line="94"/>
+        <location filename="../../game_core/mainwindow.cpp" line="84"/>
         <source>Medium speed, medium charge, can destroy obstacles</source>
         <translation>Сярэдняя хуткасць, сярэдняя шкода, можа знішчаць перашкоды</translation>
     </message>
     <message>
-        <location filename="../../game_core/mainwindow.cpp" line="140"/>
+        <location filename="../../game_core/mainwindow.cpp" line="136"/>
         <source>Health</source>
         <translation>Здароўе</translation>
     </message>
     <message>
-        <location filename="../../game_core/mainwindow.cpp" line="672"/>
+        <location filename="../../game_core/mainwindow.cpp" line="407"/>
         <source>Continue</source>
         <translation>Працягнуць</translation>
     </message>
     <message>
-        <location filename="../../game_core/mainwindow.cpp" line="969"/>
+        <location filename="../../game_core/mainwindow.cpp" line="767"/>
         <source>You win! 
 You can start a new game with help of appropriate button on the left.</source>
         <translation>Вы перамаглі! Вы можаце пачаць новую гульню з дапамогаю адпаведнай кнопкі злева.</translation>
     </message>
     <message>
-        <location filename="../../game_core/mainwindow.cpp" line="974"/>
+        <location filename="../../game_core/mainwindow.cpp" line="772"/>
         <source>You died! 
 You can start a new game with help of appropriate button on the left.</source>
         <translation>Вы прайгралі! Вы можаце пачаць новую гульню з дапамогаю адпаведнай кнопкі злева.</translation>
@@ -146,17 +146,17 @@ You can start a new game with help of appropriate button on the left.</source>
         <translation>%1 кадраў у секунду</translation>
     </message>
     <message>
-        <location filename="../../game_core/settings_dialog.cpp" line="149"/>
+        <location filename="../../game_core/settings_dialog.cpp" line="148"/>
         <source>The app needs to be restarted to change the language.</source>
         <translation>Прыкладанне трэба перазапусціць, каб змяніць мову.</translation>
     </message>
     <message>
-        <location filename="../../game_core/settings_dialog.cpp" line="153"/>
+        <location filename="../../game_core/settings_dialog.cpp" line="152"/>
         <source>Close application?</source>
         <translation>Зачыніць прыкладанне?</translation>
     </message>
     <message>
-        <location filename="../../game_core/settings_dialog.cpp" line="155"/>
+        <location filename="../../game_core/settings_dialog.cpp" line="154"/>
         <source>Restart application?</source>
         <translation>Перазапусціць прыкладанне?</translation>
     </message>
