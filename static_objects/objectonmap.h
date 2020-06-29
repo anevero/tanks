@@ -8,6 +8,7 @@
 #include <QPixmap>
 #include <QVector>
 #include <memory>
+#include <utility>
 #include "../game_core/constants.h"
 #include "../game_core/map.h"
 

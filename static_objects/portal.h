@@ -4,6 +4,7 @@
 #include <QDebug>
 #include <QImage>
 #include <memory>
+#include <utility>
 #include "objectonmap.h"
 
 class Portal : public ObjectOnMap {
