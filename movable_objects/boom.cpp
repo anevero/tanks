@@ -24,8 +24,8 @@ void Boom::Draw(QPainter* painter) {
 }
 
 void Boom::StartMovement(
-    const int number_of_cells, const std::list<std::shared_ptr<Movable>>&,
-    std::list<std::pair<std::shared_ptr<Movable>, Coordinates>>*,
+    int number_of_cells, const std::list<std::shared_ptr<Tank>>&,
+    std::list<std::pair<std::shared_ptr<Tank>, Coordinates>>*,
     std::vector<std::vector<std::shared_ptr<ObjectOnMap>>>*) {
   time_to_finish_movement_ = current_speed_;
   cells_to_finish_movement_ = number_of_cells - 1;

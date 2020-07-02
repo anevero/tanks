@@ -17,8 +17,8 @@ void Movable::LoadImage(const QString& path) {
 }
 
 void Movable::StartMovement(
-    int number_of_cells, const std::list<std::shared_ptr<Movable>>& tanks,
-    std::list<std::pair<std::shared_ptr<Movable>, Coordinates>>*
+    int number_of_cells, const std::list<std::shared_ptr<Tank>>& tanks,
+    std::list<std::pair<std::shared_ptr<Tank>, Coordinates>>*
     objects_copies_,
     std::vector<std::vector<std::shared_ptr<ObjectOnMap>>>* objects) {
   int new_cell_x = cell_x_ + reverse_ * (directions_[1] - directions_[3]);
@@ -52,31 +52,28 @@ void Movable::StartMovement(
             basic_speed_);
   }
 
-  if (std::dynamic_pointer_cast<Portal>((*objects)[new_cell_x][new_cell_y])
-      != nullptr) {
-    if (dynamic_cast<Rocket*>(this) == nullptr) {
-      auto portal = std::dynamic_pointer_cast<Portal>(
-          (*objects)[new_cell_x][new_cell_y]);
+  if (auto portal = std::dynamic_pointer_cast<Portal>(
+        (*objects)[new_cell_x][new_cell_y]);
+      portal != nullptr && dynamic_cast<Rocket*>(this) == nullptr) {
+    Coordinates cells = GetNewPortalCells(
+        portal->GetNewCellX(), portal->GetNewCellY(), new_cell_x, new_cell_y);
 
-      Coordinates cells = GetNewPortalCells(
-          portal->GetNewCellX(), portal->GetNewCellY(), new_cell_x, new_cell_y);
+    if (map_->GetField(cells.x, cells.y) == CellType::Wall) {
+      return;
+    }
 
-      if (map_->GetField(cells.x, cells.y) == CellType::Wall) {
+    for (auto& object : tanks) {
+      if (object->GetCellX() == cells.x && object->GetCellY() == cells.y) {
         return;
       }
-
-      for (auto& object : tanks) {
-        if (object->GetCellX() == cells.x && object->GetCellY() == cells.y) {
-          return;
-        }
-      }
-      objects_copies_->emplace_back(shared_from_this(),
-                                    Coordinates{cells.x, cells.y});
-      copy_existence_ = true;
-
-      new_cell_x = cells.x;
-      new_cell_y = cells.y;
     }
+    objects_copies_->emplace_back(
+        std::static_pointer_cast<Tank>(shared_from_this()),
+        Coordinates{cells.x, cells.y});
+    copy_existence_ = true;
+
+    new_cell_x = cells.x;
+    new_cell_y = cells.y;
   }
 
   if ((*objects)[new_cell_x][new_cell_y] != nullptr &&
@@ -86,8 +83,7 @@ void Movable::StartMovement(
         (*objects)[new_cell_x][new_cell_y]) != nullptr) {
       current_speed_ *= 2;
     }
-    if (dynamic_cast<Tank*>(this) != nullptr) {
-      auto tank = dynamic_cast<Tank*>(this);
+    if (auto tank = dynamic_cast<Tank*>(this); tank != nullptr) {
       if (std::dynamic_pointer_cast<MedicalKit>(
           (*objects)[new_cell_x][new_cell_y]) != nullptr) {
         tank->IncreaseHealth(
@@ -141,7 +137,7 @@ void Movable::StartRotation() {
   time_to_finish_rotation_ = current_speed_;
 }
 
-void Movable::Rotate(const int milliseconds_passed) {
+void Movable::Rotate(int milliseconds_passed) {
   time_to_finish_rotation_ -= milliseconds_passed;
   time_to_finish_rotation_ = std::max(time_to_finish_rotation_, 0);
 }

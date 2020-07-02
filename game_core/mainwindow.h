@@ -46,7 +46,7 @@
 #include "movable_objects/tank.h"
 
 class MainWindow : public QMainWindow {
-  Q_OBJECT
+ Q_OBJECT
 
  public:
   explicit MainWindow(QWidget* parent = nullptr);
@@ -138,15 +138,15 @@ class MainWindow : public QMainWindow {
   std::shared_ptr<Map> map_;
   // List of all the tanks (including player's tank and all the types of bots).
   // The player's tank, if exists, is always the first item in the list.
-  std::list<std::shared_ptr<Movable>> tanks_ = {};
-  // Lists of rockets and booms.
-  std::list<std::shared_ptr<Movable>> rockets_ = {};
+  std::list<std::shared_ptr<Tank>> tanks_ = {};
+  std::list<std::shared_ptr<Rocket>> rockets_ = {};
+  std::list<std::shared_ptr<Boom>> booms_ = {};
   std::vector<std::vector<std::shared_ptr<ObjectOnMap>>>
       obstacles_and_bonuses_ = {};
   // List of 'copies' of tanks. Every item is just a pointer to the real tank
   // and coordinates of the copy. It's used while a tank is moving through the
   // portal (while it must be shown in two places at the same time).
-  std::list<std::pair<std::shared_ptr<Movable>, Coordinates>>
+  std::list<std::pair<std::shared_ptr<Tank>, Coordinates>>
       objects_copies_ = {};
 
   int timer_id_ = 0;

@@ -32,7 +32,7 @@ bool CleverBot::IsRotationStartNeeded(const std::shared_ptr<Tank>& tank) {
 }
 
 bool CleverBot::IsMovingStartNeeded(
-    const std::list<std::shared_ptr<Movable>>& objects,
+    const std::list<std::shared_ptr<Tank>>& objects,
     const std::vector<std::vector<std::shared_ptr<ObjectOnMap>>>& portals) {
   auto tank = objects.front();
   if (time_to_finish_movement_ <= 0 && time_to_finish_rotation_ <= 0) {
@@ -92,7 +92,7 @@ bool CleverBot::IsMovingStartNeeded(
 }
 
 void CleverBot::Bfs(
-    const std::list<std::shared_ptr<Movable>>& objects,
+    const std::list<std::shared_ptr<Tank>>& objects,
     const std::vector<std::vector<std::shared_ptr<ObjectOnMap>>>& portals,
     int cell_x, int cell_y) {
   QQueue<CellInfo> cells;

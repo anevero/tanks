@@ -36,7 +36,7 @@ bool Bot::IsRotationStartNeeded(const std::shared_ptr<Tank>&) {
 }
 
 bool Bot::IsMovingStartNeeded(
-    const std::list<std::shared_ptr<Movable>>&,
+    const std::list<std::shared_ptr<Tank>>&,
     const std::vector<std::vector<std::shared_ptr<ObjectOnMap>>>&) {
   if (time_to_finish_movement_ <= 0 && time_to_finish_rotation_ <= 0) {
     if (number_of_cells_to_move_ == 0) {

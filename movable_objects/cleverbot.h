@@ -20,7 +20,7 @@ class CleverBot : public ImprovedBot {
  protected:
   bool IsRotationStartNeeded(const std::shared_ptr<Tank>& tank) override;
   bool IsMovingStartNeeded(
-      const std::list<std::shared_ptr<Movable>>& objects,
+      const std::list<std::shared_ptr<Tank>>& objects,
       const std::vector<std::vector<std::shared_ptr<ObjectOnMap>>>& portals)
   override;
 
@@ -35,7 +35,7 @@ class CleverBot : public ImprovedBot {
   std::vector<std::vector<int>> distance_;
 
   void Bfs(
-      const std::list<std::shared_ptr<Movable>>& objects,
+      const std::list<std::shared_ptr<Tank>>& objects,
       const std::vector<std::vector<std::shared_ptr<ObjectOnMap>>>& portals,
       int cell_x, int cell_y);
 

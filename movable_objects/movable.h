@@ -31,6 +31,9 @@ struct Coordinates {
   int y;
 };
 
+// Forward declaration to use this class in StartMovement function.
+class Tank;
+
 class Movable : public std::enable_shared_from_this<Movable> {
  public:
   Movable(std::shared_ptr<Map> map, int cell_x, int cell_y,
@@ -45,8 +48,9 @@ class Movable : public std::enable_shared_from_this<Movable> {
   // These variables are initialized accordingly to the current state of the
   // object, e.g. obstacles or walls in front of him.
   virtual void StartMovement(
-      int number_of_cells, const std::list<std::shared_ptr<Movable>>& tanks,
-      std::list<std::pair<std::shared_ptr<Movable>, Coordinates>>*
+      int number_of_cells,
+      const std::list<std::shared_ptr<Tank>>& tanks,
+      std::list<std::pair<std::shared_ptr<Tank>, Coordinates>>*
       objects_copies_,
       std::vector<std::vector<std::shared_ptr<ObjectOnMap>>>* objects);
   // Updates state of current move by updating time to finish movement variable.

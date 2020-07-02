@@ -133,13 +133,12 @@ void MainWindow::mouseReleaseEvent(QMouseEvent* event) {
       * map_->GetNumberOfCellsHorizontally() / map_->GetWidth();
   int current_cell_y = (event->y() - map_->GetUpperLeftY()) *
       map_->GetNumberOfCellsVertically() / map_->GetHeight();
-  for (const auto& object : tanks_) {
-    if (object->GetCellX() == current_cell_x &&
-        object->GetCellY() == current_cell_y) {
-      QToolTip::showText(event->globalPos(),
-                         tr("Health") + ": "
-                             + QString::number(std::dynamic_pointer_cast<Tank>(
-                                 object)->GetCurrentHealth()));
+  for (const auto& tank : tanks_) {
+    if (tank->GetCellX() == current_cell_x &&
+        tank->GetCellY() == current_cell_y) {
+      QToolTip::showText(
+          event->globalPos(),
+          tr("Health") + ": " + QString::number(tank->GetCurrentHealth()));
       break;
     }
   }
@@ -150,7 +149,7 @@ void MainWindow::mouseReleaseEvent(QMouseEvent* event) {
 void MainWindow::keyReleaseEvent(QKeyEvent* event) {
   // Returns if the game is not running.
   if (timer_id_ == 0 && !paused_) return;
-  auto tank = std::dynamic_pointer_cast<Tank>(tanks_.front());
+  auto tank = tanks_.front();
 
   // Returns if the game is paused and event key is not Esc / 1 / 2 / 3 (these
   // keys can be processed while the game is paused).
@@ -240,9 +239,11 @@ void MainWindow::paintEvent(QPaintEvent*) {
   for (auto& object : rockets_) {
     object->UpdateCoordinates(object->GetCellX(), object->GetCellY());
   }
+  for (auto& object : booms_) {
+    object->UpdateCoordinates(object->GetCellX(), object->GetCellY());
+  }
   for (auto& object : objects_copies_) {
-    auto tank = std::dynamic_pointer_cast<Tank>(object.first);
-    tank->UpdateCoordinates(object.second.x, object.second.y);
+    object.first->UpdateCoordinates(object.second.x, object.second.y);
   }
   for (auto& vector : obstacles_and_bonuses_) {
     for (auto& object : vector) {
@@ -271,9 +272,12 @@ void MainWindow::paintEvent(QPaintEvent*) {
   for (auto& object : rockets_) {
     object->Draw(&p);
   }
+  for (auto& object : booms_) {
+    object->Draw(&p);
+  }
 
   if (!tanks_.empty() && charge_line_enabled_) {
-    auto tank = std::dynamic_pointer_cast<Tank>(tanks_.front());
+    auto tank = tanks_.front();
     p.setBrush(charge_colors_[static_cast<int>(tank->GetChargeState())]);
     p.drawRect(width_indent_ + 0.04 * view_width_,
                height() - height_indent_ - 0.25 * view_height_,
@@ -297,15 +301,13 @@ void MainWindow::timerEvent(QTimerEvent*) {
   screen_timer_ms_ += timer_duration_;
   UpdateScreenTimer();
 
-  for (auto& object : tanks_) {
-    auto bot = std::dynamic_pointer_cast<Bot>(object);
+  for (auto& tank : tanks_) {
+    auto bot = std::dynamic_pointer_cast<Bot>(tank);
     if (bot == nullptr) {
       continue;
     }
 
-    if (bot->IsAbleToShoot() && bot->IsShotNeeded(
-        map_, std::dynamic_pointer_cast<Tank>(tanks_.front()))) {
-      auto tank = std::dynamic_pointer_cast<Tank>(object);
+    if (bot->IsAbleToShoot() && bot->IsShotNeeded(map_, tanks_.front())) {
       ShootRocket(tank);
       bot->SetZeroTimeFromLastShot();
     }
@@ -313,8 +315,7 @@ void MainWindow::timerEvent(QTimerEvent*) {
     if (bot->IsMovingStartNeeded(tanks_, obstacles_and_bonuses_)) {
       bot->StartMovement(1, tanks_, &objects_copies_,
                          &obstacles_and_bonuses_);
-    } else if (bot->IsRotationStartNeeded(
-        std::dynamic_pointer_cast<Tank>(tanks_.front()))) {
+    } else if (bot->IsRotationStartNeeded(tanks_.front())) {
       bot->StartRotation();
     }
 
@@ -336,56 +337,72 @@ void MainWindow::timerEvent(QTimerEvent*) {
       object->Move(timer_duration_);
     }
   }
+  for (auto& object : booms_) {
+    if (object->GetTimeToFinishMovement() > 0) {
+      object->Move(timer_duration_);
+    }
+  }
 
   auto copy = objects_copies_.begin();
   while (copy != objects_copies_.end()) {
     if (copy->first->GetTimeToFinishMovement() <= 0) {
-      std::dynamic_pointer_cast<Tank>(copy->first)->
-          UpdateCoordinates(copy->second.x, copy->second.y);
+      copy->first->UpdateCoordinates(copy->second.x, copy->second.y);
       copy = objects_copies_.erase(copy);
       continue;
     }
     ++copy;
   }
 
-  auto it = rockets_.begin();
-  while (it != rockets_.end()) {
-    if ((*it)->GetTimeToFinishMovement() <= 0 &&
-        (*it)->GetCellsToFinishMovement() > 0) {
-      (*it)->StartMovement(((*it)->GetCellsToFinishMovement()), tanks_,
-                           &objects_copies_, &obstacles_and_bonuses_);
+  auto rocket_it = rockets_.begin();
+  while (rocket_it != rockets_.end()) {
+    if ((*rocket_it)->GetTimeToFinishMovement() <= 0 &&
+        (*rocket_it)->GetCellsToFinishMovement() > 0) {
+      (*rocket_it)->StartMovement(
+          ((*rocket_it)->GetCellsToFinishMovement()),
+          tanks_, &objects_copies_, &obstacles_and_bonuses_);
     }
-    if (!(*it)->IsMovingOrRotating()) {
-      if (std::dynamic_pointer_cast<Boom>(*it) != nullptr) {
-        for (const auto& tank : tanks_) {
-          if (Movable::HaveObjectsCollided(*it, tank)) {
-            std::dynamic_pointer_cast<Tank>(tank)->DecreaseHealth(
-                constants::kBoomCharge);
-          }
-        }
+    if (!(*rocket_it)->IsMovingOrRotating()) {
+      rocket_it = rockets_.erase(rocket_it);
+      continue;
+    }
+    ++rocket_it;
+  }
 
-        auto cell_x = (*it)->GetCellX();
-        auto cell_y = (*it)->GetCellY();
-
-        if (std::dynamic_pointer_cast<Portal>(
-            obstacles_and_bonuses_[cell_x - 1][cell_y]) == nullptr) {
-          obstacles_and_bonuses_[cell_x - 1][cell_y] = nullptr;
-        }
-        if (std::dynamic_pointer_cast<Portal>(
-            obstacles_and_bonuses_[cell_x + 1][cell_y]) == nullptr) {
-          obstacles_and_bonuses_[cell_x + 1][cell_y] = nullptr;
+  auto boom_it = booms_.begin();
+  while (boom_it != booms_.end()) {
+    if ((*boom_it)->GetTimeToFinishMovement() <= 0 &&
+        (*boom_it)->GetCellsToFinishMovement() > 0) {
+      (*boom_it)->StartMovement(
+          ((*boom_it)->GetCellsToFinishMovement()),
+          tanks_, &objects_copies_, &obstacles_and_bonuses_);
+    }
+    if (!(*boom_it)->IsMovingOrRotating()) {
+      for (const auto& tank : tanks_) {
+        if (Movable::HaveObjectsCollided(*boom_it, tank)) {
+          tank->DecreaseHealth(constants::kBoomCharge);
         }
       }
 
-      it = rockets_.erase(it);
+      auto cell_x = (*boom_it)->GetCellX();
+      auto cell_y = (*boom_it)->GetCellY();
+
+      if (std::dynamic_pointer_cast<Portal>(
+          obstacles_and_bonuses_[cell_x - 1][cell_y]) == nullptr) {
+        obstacles_and_bonuses_[cell_x - 1][cell_y] = nullptr;
+      }
+      if (std::dynamic_pointer_cast<Portal>(
+          obstacles_and_bonuses_[cell_x + 1][cell_y]) == nullptr) {
+        obstacles_and_bonuses_[cell_x + 1][cell_y] = nullptr;
+      }
+
+      boom_it = booms_.erase(boom_it);
       continue;
     }
-    ++it;
+    ++boom_it;
   }
 
   for (const auto& object : tanks_) {
-    std::dynamic_pointer_cast<Tank>(object)->IncreaseTimeSinceLastShot(
-        timer_duration_);
+    object->IncreaseTimeSinceLastShot(timer_duration_);
   }
 
   if (time_since_last_medical_kit_ >= constants::kMedicalKitSpawnPeriod) {
@@ -647,6 +664,7 @@ void MainWindow::LoadRoundInfo() {
   map_.reset(new Map(current_map_number_));
   tanks_.clear();
   rockets_.clear();
+  booms_.clear();
   obstacles_and_bonuses_.clear();
   objects_copies_.clear();
 
@@ -848,7 +866,7 @@ void MainWindow::SetButtonsFontPixelSize(int pixel_size) {
 
 void MainWindow::RedrawChargeButtons() {
   if (tanks_.empty()) return;
-  auto tank = std::dynamic_pointer_cast<Tank>(tanks_.front());
+  auto tank = tanks_.front();
 
   for (int i = 0; i < constants::kChargesNumber; ++i) {
     if (i == tank->GetTypeOfCharge()) {
@@ -898,35 +916,28 @@ void MainWindow::UpdateScreenTimer() {
 }
 
 void MainWindow::FindInteractingObjects() {
-  auto tank = tanks_.begin();
-  while (tank != tanks_.end()) {
+  for (auto& tank : tanks_) {
     auto rocket = rockets_.begin();
     while (rocket != rockets_.end()) {
-      if (std::dynamic_pointer_cast<Rocket>(*rocket) == nullptr) {
-        ++rocket;
-        continue;
-      }
-      if (Movable::HaveObjectsCollided(*rocket, *tank)) {
-        std::dynamic_pointer_cast<Tank>(*tank)->DecreaseHealth(
-            std::dynamic_pointer_cast<Rocket>(*rocket)->GetPower());
+      if (Movable::HaveObjectsCollided(*rocket, tank)) {
+        tank->DecreaseHealth((*rocket)->GetPower());
         rocket = rockets_.erase(rocket);
         continue;
       }
       ++rocket;
     }
-    ++tank;
   }
 }
 
 void MainWindow::CheckDeadObjects() {
-  if (std::dynamic_pointer_cast<Tank>(tanks_.front())->IsDead()) {
+  if (tanks_.front()->IsDead()) {
     FinishRound(false);
     return;
   }
 
   auto object = std::next(tanks_.begin());
   while (object != tanks_.end()) {
-    if (std::dynamic_pointer_cast<Tank>(*object)->IsDead()) {
+    if ((*object)->IsDead()) {
       MakeBoom(*object);
       object = tanks_.erase(object);
       continue;
@@ -936,7 +947,7 @@ void MainWindow::CheckDeadObjects() {
 
   auto copy = objects_copies_.begin();
   while (copy != objects_copies_.end()) {
-    if (std::dynamic_pointer_cast<Tank>(copy->first)->IsDead()) {
+    if (copy->first->IsDead()) {
       MakeBoom(copy->first);
       copy = objects_copies_.erase(copy);
       continue;
@@ -970,9 +981,9 @@ void MainWindow::ShootRocket(const std::shared_ptr<Tank>& tank) {
 }
 
 void MainWindow::MakeBoom(const std::shared_ptr<Movable>& object) {
-  auto boom = std::make_shared<Boom>(map_, object, 1000);
-  rockets_.push_back(boom);
-  boom->StartMovement(1, tanks_, &objects_copies_, &obstacles_and_bonuses_);
+  booms_.push_back(std::make_shared<Boom>(map_, object, 1000));
+  booms_.back()->StartMovement(
+      1, tanks_, &objects_copies_, &obstacles_and_bonuses_);
 }
 
 template<class Bonus>
@@ -1014,7 +1025,7 @@ void MainWindow::SwitchCharge(int type) {
   if (timer_id_ == 0 && !paused_) {
     return;
   }
-  std::dynamic_pointer_cast<Tank>(tanks_.front())->ChangeTypeOfCharge(type);
+  tanks_.front()->ChangeTypeOfCharge(type);
   RedrawChargeButtons();
   repaint();
 }
