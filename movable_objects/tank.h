@@ -5,27 +5,35 @@
 #include <QMessageBox>
 #include <QPainter>
 #include <algorithm>
+#include <chrono>
 #include <memory>
+#include <random>
+#include <utility>
+#include <vector>
 #include "../game_core/map.h"
 #include "movable.h"
 
-struct TankQualities {
+struct TankParameters {
   int speed;
   int rate_of_fire;
   int max_health;
   int max_light_charge;
   int max_medium_charge;
   int max_hard_charge;
-  Direction direction;
 };
 
-enum class ChargeState { Empty = 0, LessThanHalf = 1, MoreThanHalf = 2 };
+enum class ChargeState {
+  Empty = 0,
+  LessThanHalf = 1,
+  MoreThanHalf = 2
+};
 
 class Tank : public Movable {
  public:
-  Tank(const std::shared_ptr<Map>& map, int init_cell_x,
-       int init_cell_y, const TankQualities& qualities);
+  Tank(std::shared_ptr<const Map> map, int init_cell_x, int init_cell_y,
+       TankParameters parameters, Direction direction);
   ~Tank() override = default;
+
   void Draw(QPainter* painter) override;
   virtual void DrawHealth(QPainter* painter);
 
@@ -34,29 +42,31 @@ class Tank : public Movable {
   virtual void SetZeroTimeFromLastShot();
   virtual int GetCurrentHealth() const;
   virtual int GetMaxHealth() const;
-  virtual void MinusHealth(int health = 10);
-  virtual void PlusHealth(int health = 10);
+  virtual void DecreaseHealth(int health);
+  virtual void IncreaseHealth(int health);
   virtual bool IsDead() const;
   virtual int GetTimeSinceLastShot() const;
   virtual int GetRateOfFire() const;
 
   void ChangeTypeOfCharge(int type);
-  void MinusCharge(int type, int charge = 1);
-  void PlusCharge();
+  void DecreaseCharge(int type, int charge = 1);
+  void IncreaseCharge();
 
   int GetTypeOfCharge() const;
   int GetCurrentCharge(int type) const;
-  [[maybe_unused]] int GetMaxCharge(int type) const;
   ChargeState GetChargeState() const;
 
  protected:
   int rate_of_fire_;
-  int time_since_last_shot_{};
-  int type_of_charge_{};
-  QVector<int> current_charge_;
-  const QVector<int> max_charge_;
-  const int max_health_{};
-  int current_health_{};
+  int time_since_last_shot_;
+  int current_type_of_charge_;
+  int current_health_;
+  std::vector<int> current_charge_;
+
+  const std::vector<int> max_charge_;
+  const int max_health_;
+
+  static std::mt19937 random_generator_;
 };
 
 #endif  // MOVABLE_OBJECTS_TANK_H_

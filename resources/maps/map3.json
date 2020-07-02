@@ -29,7 +29,7 @@
     {
       "bots": [
         {
-          "type": "standart",
+          "type": "standard",
           "initial_cell_x": 3,
           "initial_cell_y": 12,
           "moving_length": 6,
@@ -38,7 +38,7 @@
           "initial_direction": "down"
         },
         {
-          "type": "standart",
+          "type": "standard",
           "initial_cell_x": 3,
           "initial_cell_y": 3,
           "moving_length": 3,
@@ -47,7 +47,7 @@
           "initial_direction": "right"
         },
         {
-          "type": "standart",
+          "type": "standard",
           "initial_cell_x": 13,
           "initial_cell_y": 13,
           "moving_length": 6,
@@ -77,7 +77,7 @@
     {
       "bots": [
         {
-          "type": "standart",
+          "type": "standard",
           "initial_cell_x": 3,
           "initial_cell_y": 12,
           "moving_length": 6,
@@ -86,7 +86,7 @@
           "initial_direction": "down"
         },
         {
-          "type": "standart",
+          "type": "standard",
           "initial_cell_x": 3,
           "initial_cell_y": 3,
           "moving_length": 8,
@@ -95,7 +95,7 @@
           "initial_direction": "right"
         },
         {
-          "type": "standart",
+          "type": "standard",
           "initial_cell_x": 9,
           "initial_cell_y": 6,
           "moving_length": 6,
@@ -150,7 +150,7 @@
     {
       "bots": [
         {
-          "type": "standart",
+          "type": "standard",
           "initial_cell_x": 3,
           "initial_cell_y": 12,
           "moving_length": 6,
@@ -159,7 +159,7 @@
           "initial_direction": "down"
         },
         {
-          "type": "standart",
+          "type": "standard",
           "initial_cell_x": 3,
           "initial_cell_y": 3,
           "moving_length": 8,
@@ -168,7 +168,7 @@
           "initial_direction": "right"
         },
         {
-          "type": "standart",
+          "type": "standard",
           "initial_cell_x": 9,
           "initial_cell_y": 6,
           "moving_length": 6,
@@ -187,7 +187,7 @@
         },
         {
           "type": "improved",
-          "initial_cell_x": 13,
+          "initial_cell_x": 10,
           "initial_cell_y": 1,
           "moving_length": 4,
           "amount_of_turns": 1,

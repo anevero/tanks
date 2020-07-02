@@ -1,8 +1,7 @@
 #include "objectonmap.h"
 
-ObjectOnMap::ObjectOnMap(const std::shared_ptr<Map>& map, const size_t x,
-                         const size_t y)
-    : map_(map), x_(x), y_(y) {}
+ObjectOnMap::ObjectOnMap(std::shared_ptr<const Map> map, int x, int y)
+    : map_(std::move(map)), x_(x), y_(y) {}
 
 void ObjectOnMap::LoadImage(const QString& path) {
   image_.load(path);
@@ -14,6 +13,9 @@ void ObjectOnMap::Draw(QPainter* painter) {
   painter->save();
   painter->translate(cur_upper_left_x_ + cur_width_ / 2,
                      cur_upper_left_y_ + cur_height_ / 2);
+  if (map_->GetField(x_, y_) == CellType::Forest) {
+    painter->setOpacity(constants::kOpacityLevel);
+  }
   painter->drawPixmap(-cur_width_ / 2, -cur_height_ / 2, scaled_pixmap_);
   painter->restore();
 }
@@ -28,34 +30,33 @@ void ObjectOnMap::RescaleImage() {
 }
 
 void ObjectOnMap::UpdateCoordinates() {
-  cur_width_ =
-      static_cast<int>(map_->GetWidth() / map_->GetNumberOfCellsHorizontally());
-  cur_height_ =
-      static_cast<int>(map_->GetHeight() / map_->GetNumberOfCellsVertically());
-  cur_upper_left_x_ = map_->GetUpperLeftX() + static_cast<int>(x_) * cur_width_;
-  cur_upper_left_y_ =
-      map_->GetUpperLeftY() + static_cast<int>(y_) * cur_height_;
+  cur_width_ = map_->GetWidth() / map_->GetNumberOfCellsHorizontally();
+  cur_height_ = map_->GetHeight() / map_->GetNumberOfCellsVertically();
+  cur_upper_left_x_ = map_->GetUpperLeftX() + x_ * cur_width_;
+  cur_upper_left_y_ = map_->GetUpperLeftY() + y_ * cur_height_;
 
   RescaleImage();
 }
 
-size_t ObjectOnMap::GetX() const { return x_; }
+int ObjectOnMap::GetX() const {
+  return x_;
+}
 
-size_t ObjectOnMap::GetY() const { return y_; }
+int ObjectOnMap::GetY() const {
+  return y_;
+}
 
-MedicalKit::MedicalKit(const std::shared_ptr<Map>& map, const size_t x,
-                       const size_t y)
-    : ObjectOnMap(map, x, y) {
+MedicalKit::MedicalKit(std::shared_ptr<const Map> map, int x, int y)
+    : ObjectOnMap(std::move(map), x, y) {
   LoadImage(":/textures/medicalkit.png");
 }
 
-Obstacle::Obstacle(const std::shared_ptr<Map>& map, const size_t x,
-                   const size_t y)
-    : ObjectOnMap(map, x, y) {
+Obstacle::Obstacle(std::shared_ptr<const Map> map, int x, int y)
+    : ObjectOnMap(std::move(map), x, y) {
   LoadImage(":/textures/log.png");
 }
 
-Charge::Charge(const std::shared_ptr<Map>& map, size_t x, size_t y)
-    : ObjectOnMap(map, x, y) {
+Charge::Charge(std::shared_ptr<const Map> map, int x, int y)
+    : ObjectOnMap(std::move(map), x, y) {
   LoadImage(":/textures/charge.png");
 }

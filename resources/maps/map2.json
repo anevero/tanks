@@ -29,7 +29,7 @@
     {
       "bots": [
         {
-          "type": "standart",
+          "type": "standard",
           "initial_cell_x": 2,
           "initial_cell_y": 2,
           "moving_length": 2,
@@ -38,7 +38,7 @@
           "initial_direction": "right"
         },
         {
-          "type": "standart",
+          "type": "standard",
           "initial_cell_x": 2,
           "initial_cell_y": 9,
           "moving_length": 3,
@@ -47,7 +47,7 @@
           "initial_direction": "up"
         },
         {
-          "type": "standart",
+          "type": "standard",
           "initial_cell_x": 9,
           "initial_cell_y": 13,
           "moving_length": 10,
@@ -56,7 +56,7 @@
           "initial_direction": "left"
         },
         {
-          "type": "standart",
+          "type": "standard",
           "initial_cell_x": 13,
           "initial_cell_y": 7,
           "moving_length": 1,
@@ -84,7 +84,7 @@
     {
       "bots": [
         {
-          "type": "standart",
+          "type": "standard",
           "initial_cell_x": 2,
           "initial_cell_y": 2,
           "moving_length": 2,
@@ -93,7 +93,7 @@
           "initial_direction": "right"
         },
         {
-          "type": "standart",
+          "type": "standard",
           "initial_cell_x": 2,
           "initial_cell_y": 9,
           "moving_length": 3,
@@ -102,7 +102,7 @@
           "initial_direction": "up"
         },
         {
-          "type": "standart",
+          "type": "standard",
           "initial_cell_x": 9,
           "initial_cell_y": 13,
           "moving_length": 10,
@@ -111,7 +111,7 @@
           "initial_direction": "left"
         },
         {
-          "type": "standart",
+          "type": "standard",
           "initial_cell_x": 13,
           "initial_cell_y": 7,
           "moving_length": 1,
@@ -163,7 +163,7 @@
     {
       "bots": [
         {
-          "type": "standart",
+          "type": "standard",
           "initial_cell_x": 2,
           "initial_cell_y": 2,
           "moving_length": 2,
@@ -172,7 +172,7 @@
           "initial_direction": "right"
         },
         {
-          "type": "standart",
+          "type": "standard",
           "initial_cell_x": 2,
           "initial_cell_y": 9,
           "moving_length": 3,
@@ -181,7 +181,7 @@
           "initial_direction": "up"
         },
         {
-          "type": "standart",
+          "type": "standard",
           "initial_cell_x": 9,
           "initial_cell_y": 13,
           "moving_length": 10,

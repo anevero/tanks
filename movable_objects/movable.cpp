@@ -2,18 +2,11 @@
 #include "rocket.h"
 #include "tank.h"
 
-Movable::Movable(const std::shared_ptr<Map>& map,
-                 const size_t cell_x,
-                 const size_t cell_y,
-                 const Direction direction,
-                 const int speed)
-    : cell_x_(cell_x),
-      cell_y_(cell_y),
-      prev_cell_x_(cell_x),
-      prev_cell_y_(cell_y_),
-      map_(map),
-      current_speed_(speed),
-      basic_speed_(speed),
+Movable::Movable(std::shared_ptr<const Map> map, int cell_x, int cell_y,
+                 Direction direction, int speed)
+    : cell_x_(cell_x), cell_y_(cell_y),
+      prev_cell_x_(cell_x), prev_cell_y_(cell_y_),
+      map_(std::move(map)), current_speed_(speed), basic_speed_(speed),
       current_rotate_degree_(90 * static_cast<int>(direction)) {
   directions_[static_cast<int>(direction)] = 1;
 }
@@ -24,20 +17,22 @@ void Movable::LoadImage(const QString& path) {
 }
 
 void Movable::StartMovement(
-    const int number_of_cells, const QList<std::shared_ptr<Movable>>& tanks,
-    QList<QPair<std::shared_ptr<Movable>, Coordinates>>* objects_copies_,
+    int number_of_cells,
+    const std::list<std::shared_ptr<Tank>>& tanks,
+    std::list<std::pair<std::shared_ptr<Tank>, Coordinates>>*
+    objects_copies_,
     std::vector<std::vector<std::shared_ptr<ObjectOnMap>>>* objects) {
-  size_t new_cell_x = cell_x_ + reverse_ * (directions_[1] - directions_[3]);
-  size_t new_cell_y = cell_y_ + reverse_ * (directions_[2] - directions_[0]);
-  size_t old_cell_x = new_cell_x;
-  size_t old_cell_y = new_cell_y;
+  int new_cell_x = cell_x_ + reverse_ * (directions_[1] - directions_[3]);
+  int new_cell_y = cell_y_ + reverse_ * (directions_[2] - directions_[0]);
+  int old_cell_x = new_cell_x;
+  int old_cell_y = new_cell_y;
   if (map_->GetField(new_cell_x, new_cell_y) == CellType::Wall) {
     cells_to_finish_movement_ = 0;
     return;
   }
 
   if (dynamic_cast<Tank*>(this) != nullptr) {
-    for (const auto& object : tanks) {
+    for (auto& object : tanks) {
       if (object->GetCellX() == new_cell_x &&
           object->GetCellY() == new_cell_y) {
         cells_to_finish_movement_ = 0;
@@ -45,7 +40,7 @@ void Movable::StartMovement(
         return;
       }
     }
-    for (const auto& object : *objects_copies_) {
+    for (auto& object : *objects_copies_) {
       if (object.second.x == new_cell_x && object.second.y == new_cell_y) {
         cells_to_finish_movement_ = 0;
         object.first->cells_to_finish_movement_ = 0;
@@ -58,30 +53,28 @@ void Movable::StartMovement(
             basic_speed_);
   }
 
-  if (std::dynamic_pointer_cast<Portal>((*objects)[new_cell_x][new_cell_y])
-      != nullptr) {
-    if (dynamic_cast<Rocket*>(this) == nullptr) {
-      auto portal = std::dynamic_pointer_cast<Portal>(
-          (*objects)[new_cell_x][new_cell_y]);
+  if (auto portal = std::dynamic_pointer_cast<Portal>(
+        (*objects)[new_cell_x][new_cell_y]);
+      portal != nullptr && dynamic_cast<Rocket*>(this) == nullptr) {
+    Coordinates cells = GetNewPortalCells(
+        portal->GetNewCellX(), portal->GetNewCellY(), new_cell_x, new_cell_y);
 
-      Coordinates cells = GetNewPortalCells(
-          portal->GetNewCellX(), portal->GetNewCellY(), new_cell_x, new_cell_y);
+    if (map_->GetField(cells.x, cells.y) == CellType::Wall) {
+      return;
+    }
 
-      if (map_->GetField(cells.x, cells.y) == CellType::Wall) {
+    for (auto& object : tanks) {
+      if (object->GetCellX() == cells.x && object->GetCellY() == cells.y) {
         return;
       }
-
-      for (const auto& object : tanks) {
-        if (object->GetCellX() == cells.x && object->GetCellY() == cells.y) {
-          return;
-        }
-      }
-      (*objects_copies_).append({shared_from_this(), {cells.x, cells.y}});
-      copy_existence_ = true;
-
-      new_cell_x = cells.x;
-      new_cell_y = cells.y;
     }
+    objects_copies_->emplace_back(
+        std::static_pointer_cast<Tank>(shared_from_this()),
+        Coordinates{cells.x, cells.y});
+    copy_existence_ = true;
+
+    new_cell_x = cells.x;
+    new_cell_y = cells.y;
   }
 
   if ((*objects)[new_cell_x][new_cell_y] != nullptr &&
@@ -91,21 +84,19 @@ void Movable::StartMovement(
         (*objects)[new_cell_x][new_cell_y]) != nullptr) {
       current_speed_ *= 2;
     }
-    if (dynamic_cast<Tank*>(this) != nullptr) {
-      auto tank = dynamic_cast<Tank*>(this);
+    if (auto tank = dynamic_cast<Tank*>(this); tank != nullptr) {
       if (std::dynamic_pointer_cast<MedicalKit>(
           (*objects)[new_cell_x][new_cell_y]) != nullptr) {
-        tank->PlusHealth(
+        tank->IncreaseHealth(
             std::min(35, tank->GetMaxHealth() - tank->GetCurrentHealth()));
       } else if (std::dynamic_pointer_cast<Charge>(
           (*objects)[new_cell_x][new_cell_y]) != nullptr) {
-        tank->PlusCharge();
+        tank->IncreaseCharge();
       }
     }
-    if (dynamic_cast<Rocket*>(this) != nullptr) {
-      auto rocket = dynamic_cast<Rocket*>(this);
+    if (auto rocket = dynamic_cast<Rocket*>(this); rocket != nullptr) {
       cells_to_finish_movement_ = 0;
-      if (rocket->GetTypeOfRocket() != TypeOfRocket::HardRocket) {
+      if (rocket->CanBreakObstacles()) {
         (*objects)[new_cell_x][new_cell_y] = nullptr;
       }
       return;
@@ -128,9 +119,13 @@ void Movable::Move(const int milliseconds_passed) {
       std::max(time_to_finish_movement_ - milliseconds_passed, 0);
 }
 
-void Movable::TurnReverseOn() { reverse_ = -1; }
+void Movable::TurnReverseOn() {
+  reverse_ = -1;
+}
 
-void Movable::TurnReverseOff() { reverse_ = 1; }
+void Movable::TurnReverseOff() {
+  reverse_ = 1;
+}
 
 void Movable::StartRotation() {
   current_speed_ =
@@ -143,16 +138,20 @@ void Movable::StartRotation() {
   time_to_finish_rotation_ = current_speed_;
 }
 
-void Movable::Rotate(const int milliseconds_passed) {
+void Movable::Rotate(int milliseconds_passed) {
   time_to_finish_rotation_ -= milliseconds_passed;
   time_to_finish_rotation_ = std::max(time_to_finish_rotation_, 0);
 }
 
-void Movable::TurnRotationReverseOn() { rotate_reverse_ = -1; }
+void Movable::TurnRotationReverseOn() {
+  rotate_reverse_ = -1;
+}
 
-void Movable::TurnRotationReverseOff() { rotate_reverse_ = 1; }
+void Movable::TurnRotationReverseOff() {
+  rotate_reverse_ = 1;
+}
 
-void Movable::UpdateCoordinates(const size_t cell_x, const size_t cell_y) {
+void Movable::UpdateCoordinates(int cell_x, int cell_y) {
   if ((cell_x_ != cell_x || cell_y_ != cell_y) &&
       GetTimeToFinishMovement() == 0) {
     cell_x_ = cell_x;
@@ -160,11 +159,10 @@ void Movable::UpdateCoordinates(const size_t cell_x, const size_t cell_y) {
     copy_existence_ = false;
   }
 
-  cur_width_ = map_->GetCellWidth();
-  cur_height_ = map_->GetCellHeight();
+  current_width_ = map_->GetCellWidth();
+  current_height_ = map_->GetCellHeight();
 
-  double movement_proportion =
-      static_cast<double>(time_to_finish_movement_) / current_speed_;
+  double movement_proportion = 1.0 * time_to_finish_movement_ / current_speed_;
   if (copy_existence_ && cell_x_ == cell_x && cell_y_ == cell_y) {
     opacity_ = movement_proportion;
     prev_opacity_ = opacity_;
@@ -172,23 +170,21 @@ void Movable::UpdateCoordinates(const size_t cell_x, const size_t cell_y) {
     opacity_ = 1 - movement_proportion;
   }
 
-  prev_upper_left_x_ = cur_upper_left_x_;
-  prev_upper_left_y_ = cur_upper_left_y_;
-  cur_upper_left_x_ =
-      map_->GetUpperLeftX() + (cur_width_ * static_cast<int>(cell_x))
-          - reverse_ * static_cast<int>(
-              (directions_[1] * cur_width_ * movement_proportion)
-                  - (directions_[3] * cur_width_ * movement_proportion));
+  prev_upper_left_x_ = current_upper_left_x_;
+  prev_upper_left_y_ = current_upper_left_y_;
+  current_upper_left_x_ =
+      map_->GetUpperLeftX() + (current_width_ * cell_x) - reverse_ *
+          ((directions_[1] * current_width_ * movement_proportion)
+              - (directions_[3] * current_width_ * movement_proportion));
 
-  cur_upper_left_y_ =
-      map_->GetUpperLeftY() + (cur_height_ * static_cast<int>(cell_y))
-          - reverse_ * static_cast<int>(
-              (directions_[2] * cur_height_ * movement_proportion)
-                  - (directions_[0] * cur_height_ * movement_proportion));
+  current_upper_left_y_ =
+      map_->GetUpperLeftY() + (current_height_ * cell_y) - reverse_ *
+          ((directions_[2] * current_height_ * movement_proportion)
+              - (directions_[0] * current_height_ * movement_proportion));
 
   if (map_->GetField(cell_x_, cell_y_) == CellType::Forest) {
     if (movement_proportion <= 0.5) {
-      opacity_ = 0.5;
+      opacity_ = constants::kOpacityLevel;
     }
   } else if (map_->GetField(prev_cell_x_, prev_cell_y_) == CellType::Forest) {
     if (movement_proportion <= 0.5) {
@@ -209,8 +205,8 @@ void Movable::UpdateCoordinates(const size_t cell_x, const size_t cell_y) {
 }
 
 void Movable::ReturnToOriginal() {
-  cur_upper_left_x_ = prev_upper_left_x_;
-  cur_upper_left_y_ = prev_upper_left_y_;
+  current_upper_left_x_ = prev_upper_left_x_;
+  current_upper_left_y_ = prev_upper_left_y_;
   opacity_ = prev_opacity_;
 }
 
@@ -232,10 +228,6 @@ bool Movable::IsMovingOrRotating() const {
       GetCellsToFinishMovement() > 0);
 }
 
-int Movable::GetReverseState() const { return reverse_; }
-
-int Movable::GetRotationReverseState() const { return rotate_reverse_; }
-
 int Movable::GetIntDirection() const {
   if (directions_[0] == 1) {
     return 0;
@@ -253,27 +245,67 @@ Direction Movable::GetDirection() const {
   return static_cast<Direction>(GetIntDirection());
 }
 
-int Movable::GetUpperLeftX() const { return cur_upper_left_x_; }
-int Movable::GetUpperLeftY() const { return cur_upper_left_y_; }
-int Movable::GetWidth() const { return cur_width_; }
-int Movable::GetHeight() const { return cur_height_; }
-size_t Movable::GetCellX() const { return cell_x_; }
-size_t Movable::GetCellY() const { return cell_y_; }
+int Movable::GetUpperLeftX() const {
+  return current_upper_left_x_;
+}
 
-Coordinates Movable::GetNewPortalCells(
-    size_t portal_cell_x, size_t portal_cell_y,
-    size_t new_cell_x, size_t new_cell_y) {
-  Coordinates cells = {portal_cell_x, portal_cell_y};
-  if (new_cell_y == cell_y_ - 1) {
-    cells.y--;
-  } else if (new_cell_y == cell_y_ + 1) {
-    cells.y++;
-  } else if (new_cell_x == cell_x_ - 1) {
-    cells.x--;
-  } else {
-    cells.x++;
+int Movable::GetUpperLeftY() const {
+  return current_upper_left_y_;
+}
+
+int Movable::GetWidth() const {
+  return current_width_;
+}
+
+int Movable::GetHeight() const {
+  return current_height_;
+}
+
+int Movable::GetCellX() const {
+  return cell_x_;
+}
+
+int Movable::GetCellY() const {
+  return cell_y_;
+}
+
+bool Movable::HaveObjectsCollided(const std::shared_ptr<const Movable>& obj1,
+                                  const std::shared_ptr<const Movable>& obj2) {
+  if (obj1 == obj2 || Movable::IsRocketByThisTank(obj1, obj2)) {
+    return false;
   }
-  return cells;
+
+  if (obj1->GetUpperLeftX() >= obj2->GetUpperLeftX() + obj2->GetWidth()) {
+    return false;
+  }
+  if (obj1->GetUpperLeftX() + obj1->GetWidth() <= obj2->GetUpperLeftX()) {
+    return false;
+  }
+  if (obj1->GetUpperLeftY() >= obj2->GetUpperLeftY() + obj2->GetHeight()) {
+    return false;
+  }
+  if (obj1->GetUpperLeftY() + obj1->GetHeight() <= obj2->GetUpperLeftY()) {
+    return false;
+  }
+
+  return true;
+}
+
+bool Movable::IsRocketByThisTank(const std::shared_ptr<const Movable>& rocket,
+                                 const std::shared_ptr<const Movable>& tank) {
+  auto casted_rocket = std::dynamic_pointer_cast<const Rocket>(rocket);
+  auto casted_tank = std::dynamic_pointer_cast<const Tank>(tank);
+  if (casted_rocket != nullptr && casted_tank != nullptr) {
+    return casted_tank == casted_rocket->GetAttachedTank();
+  }
+  return false;
+}
+
+Direction Movable::GetDirectionFromString(const std::string& direction) {
+  static std::unordered_map<std::string, Direction> map = {
+      {"up", Direction::Up}, {"down", Direction::Down},
+      {"left", Direction::Left}, {"right", Direction::Right}};
+  return map[direction];
 }
 
 void Movable::SwitchToNextDirection() {
@@ -289,10 +321,25 @@ void Movable::SwitchToPrevDirection() {
 }
 
 void Movable::RescaleImage() {
-  if (scaled_pixmap_.width() == cur_width_ &&
-      scaled_pixmap_.height() == cur_height_) {
+  if (scaled_pixmap_.width() == current_width_ &&
+      scaled_pixmap_.height() == current_height_) {
     return;
   }
   scaled_pixmap_ = QPixmap::fromImage(
-      image_.scaled(cur_width_, cur_height_, Qt::KeepAspectRatio));
+      image_.scaled(current_width_, current_height_, Qt::KeepAspectRatio));
+}
+
+Coordinates Movable::GetNewPortalCells(int portal_cell_x, int portal_cell_y,
+                                       int new_cell_x, int new_cell_y) const {
+  Coordinates cells = {portal_cell_x, portal_cell_y};
+  if (new_cell_y == cell_y_ - 1) {
+    --cells.y;
+  } else if (new_cell_y == cell_y_ + 1) {
+    ++cells.y;
+  } else if (new_cell_x == cell_x_ - 1) {
+    --cells.x;
+  } else {
+    ++cells.x;
+  }
+  return cells;
 }

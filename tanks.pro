@@ -66,4 +66,4 @@ TRANSLATIONS += \
 
 RC_ICONS = resources/app_icon.ico
 
-VERSION = 0.8.3.0
+VERSION = 0.8.4.0

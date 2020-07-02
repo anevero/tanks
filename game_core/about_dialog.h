@@ -13,7 +13,12 @@ class AboutDialog : public QDialog {
   explicit AboutDialog(QWidget* parent = nullptr);
   ~AboutDialog() override = default;
 
+  void accept() override;
+  void reject() override;
+
  private:
+  void ResetCursor();
+
   QVBoxLayout* layout_;
   QTextBrowser* html_widget_;
   QDialogButtonBox* buttons_;

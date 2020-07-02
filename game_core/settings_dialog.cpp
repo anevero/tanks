@@ -20,13 +20,12 @@ SettingsDialog::SettingsDialog(QWidget* parent)
       switch_language_menu_(new QComboBox(this)),
       buttons_(new QDialogButtonBox(
           QDialogButtonBox::Ok, Qt::Horizontal, this)) {
-  for (int i = 0; i < constants::kFpsOptions.size(); ++i) {
-    switch_fps_menu_->addItem(tr("%1 frames per second").arg(
-        constants::kFpsOptions[i]));
+  for (int fps_option : constants::kFpsOptions) {
+    switch_fps_menu_->addItem(tr("%1 frames per second").arg(fps_option));
   }
 
-  for (int i = 0; i < constants::kLanguages.size(); ++i) {
-    switch_language_menu_->addItem(kLanguagesNames[i]);
+  for (auto& language : kLanguagesNames) {
+    switch_language_menu_->addItem(language);
   }
 
   {

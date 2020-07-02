@@ -1,6 +1,7 @@
 #include "about_dialog.h"
 
 #include <QScroller>
+#include <QTextCursor>
 #include <QUrl>
 
 AboutDialog::AboutDialog(QWidget* parent)
@@ -23,4 +24,20 @@ AboutDialog::AboutDialog(QWidget* parent)
   layout_->addWidget(buttons_);
   connect(buttons_, &QDialogButtonBox::accepted, this, &AboutDialog::accept);
   connect(buttons_, &QDialogButtonBox::rejected, this, &AboutDialog::reject);
+}
+
+void AboutDialog::accept() {
+  ResetCursor();
+  return QDialog::accept();
+}
+
+void AboutDialog::reject() {
+  ResetCursor();
+  return QDialog::reject();
+}
+
+void AboutDialog::ResetCursor() {
+  QTextCursor cursor = html_widget_->textCursor();
+  cursor.setPosition(0);
+  html_widget_->setTextCursor(cursor);
 }
