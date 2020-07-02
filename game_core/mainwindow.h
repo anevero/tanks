@@ -200,8 +200,8 @@ class MainWindow : public QMainWindow {
   QMediaPlayer* music_player_;
   QMediaPlaylist* music_playlist_;
 
-  int game_width_;
-  int game_height_;
+  int view_width_;
+  int view_height_;
   int width_indent_;
   int height_indent_;
 

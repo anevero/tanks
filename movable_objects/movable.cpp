@@ -176,16 +176,14 @@ void Movable::UpdateCoordinates(int cell_x, int cell_y) {
   prev_upper_left_x_ = current_upper_left_x_;
   prev_upper_left_y_ = current_upper_left_y_;
   current_upper_left_x_ =
-      map_->GetUpperLeftX() + (current_width_ * static_cast<int>(cell_x))
-          - reverse_ * static_cast<int>(
-              (directions_[1] * current_width_ * movement_proportion)
-                  - (directions_[3] * current_width_ * movement_proportion));
+      map_->GetUpperLeftX() + (current_width_ * cell_x) - reverse_ *
+          ((directions_[1] * current_width_ * movement_proportion)
+              - (directions_[3] * current_width_ * movement_proportion));
 
   current_upper_left_y_ =
-      map_->GetUpperLeftY() + (current_height_ * static_cast<int>(cell_y))
-          - reverse_ * static_cast<int>(
-              (directions_[2] * current_height_ * movement_proportion)
-                  - (directions_[0] * current_height_ * movement_proportion));
+      map_->GetUpperLeftY() + (current_height_ * cell_y) - reverse_ *
+          ((directions_[2] * current_height_ * movement_proportion)
+              - (directions_[0] * current_height_ * movement_proportion));
 
   if (map_->GetField(cell_x_, cell_y_) == CellType::Forest) {
     if (movement_proportion <= 0.5) {
@@ -280,12 +278,20 @@ bool Movable::HaveObjectsCollided(const std::shared_ptr<Movable>& obj1,
     return false;
   }
 
-  return !(
-      (obj1->GetUpperLeftX() >= obj2->GetUpperLeftX() + obj2->GetWidth()) ||
-          (obj1->GetUpperLeftX() + obj1->GetWidth() <= obj2->GetUpperLeftX()) ||
-          (obj1->GetUpperLeftY() >=
-              obj2->GetUpperLeftY() + obj2->GetHeight()) ||
-          (obj1->GetUpperLeftY() + obj1->GetHeight() <= obj2->GetUpperLeftY()));
+  if (obj1->GetUpperLeftX() >= obj2->GetUpperLeftX() + obj2->GetWidth()) {
+    return false;
+  }
+  if (obj1->GetUpperLeftX() + obj1->GetWidth() <= obj2->GetUpperLeftX()) {
+    return false;
+  }
+  if (obj1->GetUpperLeftY() >= obj2->GetUpperLeftY() + obj2->GetHeight()) {
+    return false;
+  }
+  if (obj1->GetUpperLeftY() + obj1->GetHeight() <= obj2->GetUpperLeftY()) {
+    return false;
+  }
+
+  return true;
 }
 
 bool Movable::IsRocketByThisTank(const std::shared_ptr<Movable>& rocket,

@@ -230,10 +230,10 @@ void MainWindow::keyReleaseEvent(QKeyEvent* event) {
 }
 
 void MainWindow::paintEvent(QPaintEvent*) {
-  map_->UpdateCoordinates(width_indent_ + 0.28 * game_width_,
-                          height_indent_ + 0.05 * game_height_,
-                          0.68 * game_width_,
-                          0.9 * game_height_);
+  map_->UpdateCoordinates(width_indent_ + 0.28 * view_width_,
+                          height_indent_ + 0.05 * view_height_,
+                          0.68 * view_width_,
+                          0.9 * view_height_);
   for (auto& object : tanks_) {
     object->UpdateCoordinates(object->GetCellX(), object->GetCellY());
   }
@@ -275,11 +275,11 @@ void MainWindow::paintEvent(QPaintEvent*) {
   if (!tanks_.empty() && charge_line_enabled_) {
     auto tank = std::dynamic_pointer_cast<Tank>(tanks_.front());
     p.setBrush(charge_colors_[static_cast<int>(tank->GetChargeState())]);
-    p.drawRect(width_indent_ + 0.04 * game_width_,
-               height() - height_indent_ - 0.25 * game_height_,
-               0.2 * game_width_ * tank->GetTimeSinceLastShot()
+    p.drawRect(width_indent_ + 0.04 * view_width_,
+               height() - height_indent_ - 0.25 * view_height_,
+               0.2 * view_width_ * tank->GetTimeSinceLastShot()
                    / tank->GetRateOfFire(),
-               game_height_ / 32);
+               view_height_ / 32);
   }
 
   p.end();
@@ -784,45 +784,45 @@ void MainWindow::FinishRound(bool win) {
 }
 
 void MainWindow::UpdateIndents() {
-  game_width_ = 4 * std::min(width() / 4, height() / 3);
-  game_height_ = 3 * std::min(width() / 4, height() / 3);
+  view_width_ = 4 * std::min(width() / 4, height() / 3);
+  view_height_ = 3 * std::min(width() / 4, height() / 3);
 
-  width_indent_ = (width() - game_width_) / 2;
-  height_indent_ = (height() - game_height_) / 2;
+  width_indent_ = (width() - view_width_) / 2;
+  height_indent_ = (height() - view_height_) / 2;
 }
 
 void MainWindow::RedrawButtons() {
-  main_buttons_layout_->setSpacing(0.01 * game_height_);
+  main_buttons_layout_->setSpacing(0.01 * view_height_);
   main_buttons_layout_->setGeometry(QRect(
-      width_indent_ + 0.04 * game_width_,
-      height_indent_ + 0.05 * game_height_,
-      0.2 * game_width_,
-      0.4 * game_height_));
+      width_indent_ + 0.04 * view_width_,
+      height_indent_ + 0.05 * view_height_,
+      0.2 * view_width_,
+      0.4 * view_height_));
 
   if (!virtual_keys_enabled_) {
     return;
   }
 
   if (!mobile_virtual_keys_style_enabled_) {
-    virtual_buttons_layout_->setSpacing(0.01 * game_height_);
+    virtual_buttons_layout_->setSpacing(0.01 * view_height_);
     virtual_buttons_layout_->setGeometry(QRect(
-        width_indent_ + 0.04 * game_width_,
-        height() - height_indent_ - 0.2 * game_height_,
-        0.2 * game_width_,
-        0.15 * game_height_));
+        width_indent_ + 0.04 * view_width_,
+        height() - height_indent_ - 0.2 * view_height_,
+        0.2 * view_width_,
+        0.15 * view_height_));
   } else {
-    mobile_virtual_buttons_layout_left_->setSpacing(0.01 * game_height_);
-    mobile_virtual_buttons_layout_right_->setSpacing(0.01 * game_height_);
+    mobile_virtual_buttons_layout_left_->setSpacing(0.01 * view_height_);
+    mobile_virtual_buttons_layout_right_->setSpacing(0.01 * view_height_);
     mobile_virtual_buttons_layout_left_->setGeometry(QRect(
-        std::max(10, width_indent_ - static_cast<int>(0.2 * game_width_)),
-        height() - height_indent_ - static_cast<int>(0.5 * game_height_),
-        std::min(width_indent_, static_cast<int>(0.2 * game_width_)) - 10,
-        static_cast<int>(0.45 * game_height_)));
+        std::max(10, width_indent_ - static_cast<int>(0.2 * view_width_)),
+        height() - height_indent_ - static_cast<int>(0.5 * view_height_),
+        std::min(width_indent_, static_cast<int>(0.2 * view_width_)) - 10,
+        static_cast<int>(0.45 * view_height_)));
     mobile_virtual_buttons_layout_right_->setGeometry(QRect(
         width() - width_indent_,
-        height() - height_indent_ - static_cast<int>(0.5 * game_height_),
-        std::min(width_indent_, static_cast<int>(0.2 * game_width_)) - 10,
-        static_cast<int>(0.45 * game_height_)));
+        height() - height_indent_ - static_cast<int>(0.5 * view_height_),
+        std::min(width_indent_, static_cast<int>(0.2 * view_width_)) - 10,
+        static_cast<int>(0.45 * view_height_)));
   }
 
   SetButtonsFontPixelSize(5 * new_game_button_->height() / 12);
@@ -860,12 +860,12 @@ void MainWindow::RedrawChargeButtons() {
     charge_buttons_[i]->setText(QString::number(tank->GetCurrentCharge(i)));
   }
 
-  charge_buttons_layout_->setSpacing(0.01 * game_height_);
+  charge_buttons_layout_->setSpacing(0.01 * view_height_);
   charge_buttons_layout_->setGeometry(QRect(
-      width_indent_ + 0.04 * game_width_,
-      height() - height_indent_ - 0.385 * game_height_,
-      0.2 * game_width_,
-      0.13 * game_height_));
+      width_indent_ + 0.04 * view_width_,
+      height() - height_indent_ - 0.385 * view_height_,
+      0.2 * view_width_,
+      0.13 * view_height_));
 }
 
 void MainWindow::UpdateScreenTimer() {
@@ -1011,7 +1011,9 @@ void MainWindow::RandomBonus() {
 }
 
 void MainWindow::SwitchCharge(int type) {
-  if (timer_id_ == 0 && !paused_) return;
+  if (timer_id_ == 0 && !paused_) {
+    return;
+  }
   std::dynamic_pointer_cast<Tank>(tanks_.front())->ChangeTypeOfCharge(type);
   RedrawChargeButtons();
   repaint();

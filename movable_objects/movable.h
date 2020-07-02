@@ -130,6 +130,9 @@ class Movable : public std::enable_shared_from_this<Movable> {
   int current_height_{};
 
   const std::shared_ptr<Map> map_;
+
+  // Item at index i is responsible for the i-th direction in Direction enum
+  // class.
   std::vector<int> directions_ = {0, 0, 0, 0};
 
   int current_speed_;
