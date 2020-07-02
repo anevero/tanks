@@ -14,7 +14,7 @@
 
 class ObjectOnMap {
  public:
-  ObjectOnMap(std::shared_ptr<Map> map, int x, int y);
+  ObjectOnMap(std::shared_ptr<const Map> map, int x, int y);
   virtual ~ObjectOnMap() = default;
 
   void LoadImage(const QString& path);
@@ -25,7 +25,7 @@ class ObjectOnMap {
   int GetY() const;
 
  protected:
-  const std::shared_ptr<Map> map_;
+  const std::shared_ptr<const Map> map_;
   int x_;
   int y_;
   int cur_width_{};
@@ -38,17 +38,17 @@ class ObjectOnMap {
 
 class Obstacle : public ObjectOnMap {
  public:
-  Obstacle(std::shared_ptr<Map> map, int x, int y);
+  Obstacle(std::shared_ptr<const Map> map, int x, int y);
 };
 
 class MedicalKit : public ObjectOnMap {
  public:
-  MedicalKit(std::shared_ptr<Map> map, int x, int y);
+  MedicalKit(std::shared_ptr<const Map> map, int x, int y);
 };
 
 class Charge : public ObjectOnMap {
  public:
-  Charge(std::shared_ptr<Map> map, int x, int y);
+  Charge(std::shared_ptr<const Map> map, int x, int y);
 };
 
 #endif  // STATIC_OBJECTS_OBJECTONMAP_H_

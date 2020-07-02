@@ -1,7 +1,7 @@
 #include "boom.h"
 
-Boom::Boom(std::shared_ptr<Map> map, const std::shared_ptr<Movable>& tank,
-           int speed)
+Boom::Boom(std::shared_ptr<const Map> map,
+           const std::shared_ptr<Movable>& tank, int speed)
     : Movable(std::move(map), tank->GetCellX(), tank->GetCellY(),
               tank->GetDirection(), speed),
       boom_sound_() {

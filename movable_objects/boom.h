@@ -11,7 +11,7 @@
 
 class Boom : public Movable {
  public:
-  Boom(std::shared_ptr<Map> map, const std::shared_ptr<Movable>& tank,
+  Boom(std::shared_ptr<const Map> map, const std::shared_ptr<Movable>& tank,
        int speed);
   ~Boom() override = default;
 

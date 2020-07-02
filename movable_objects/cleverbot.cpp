@@ -1,7 +1,7 @@
 #include "cleverbot.h"
 
 CleverBot::CleverBot(
-    std::shared_ptr<Map> map, int init_cell_x, int init_cell_y,
+    std::shared_ptr<const Map> map, int init_cell_x, int init_cell_y,
     TankParameters tank_parameters, BotParameters bot_parameters,
     Direction direction)
     : ImprovedBot(std::move(map), init_cell_x, init_cell_y,
@@ -17,7 +17,8 @@ CleverBot::CleverBot(
   }
 }
 
-bool CleverBot::IsRotationStartNeeded(const std::shared_ptr<Tank>& tank) {
+bool CleverBot::IsRotationStartNeeded(
+    const std::shared_ptr<const Tank>& tank) {
   if (time_to_finish_rotation_ <= 0 && time_to_finish_movement_ <= 0) {
     if (number_of_turns_ > 0) {
       number_of_turns_--;
@@ -95,8 +96,8 @@ void CleverBot::Bfs(
     const std::list<std::shared_ptr<Tank>>& objects,
     const std::vector<std::vector<std::shared_ptr<ObjectOnMap>>>& portals,
     int cell_x, int cell_y) {
-  QQueue<CellInfo> cells;
-  cells.push_back({cell_x, cell_y, cell_x, cell_y, 0});
+  std::queue<CellInfo> cells;
+  cells.emplace(cell_x, cell_y, cell_x, cell_y, 0);
 
   for (int i = 0; i < height_; ++i) {
     for (int j = 0; j < width_; ++j) {
@@ -110,7 +111,7 @@ void CleverBot::Bfs(
     int prev_cell_x = cells.front().prev_cell_x;
     int prev_cell_y = cells.front().prev_cell_y;
     int current_distance = cells.front().distance;
-    cells.pop_front();
+    cells.pop();
     if (cell_x <= 0 || cell_x >= width_ || cell_y <= 0 || cell_y >= height_) {
       continue;
     }
@@ -156,18 +157,16 @@ void CleverBot::Bfs(
         portal_cell_y--;
       }
 
-      cells.push_back({portal_cell_x,
-                       portal_cell_y,
-                       static_cast<int>(portal->GetX()),
-                       static_cast<int>(portal->GetY()),
-                       current_distance});
+      cells.emplace(portal_cell_x, portal_cell_y,
+                    portal->GetX(), portal->GetY(),
+                    current_distance);
       continue;
     }
 
     distance_[cell_x][cell_y] = current_distance;
-    cells.push_back({cell_x + 1, cell_y, cell_x, cell_y, current_distance + 1});
-    cells.push_back({cell_x - 1, cell_y, cell_x, cell_y, current_distance + 1});
-    cells.push_back({cell_x, cell_y + 1, cell_x, cell_y, current_distance + 1});
-    cells.push_back({cell_x, cell_y - 1, cell_x, cell_y, current_distance + 1});
+    cells.emplace(cell_x + 1, cell_y, cell_x, cell_y, current_distance + 1);
+    cells.emplace(cell_x - 1, cell_y, cell_x, cell_y, current_distance + 1);
+    cells.emplace(cell_x, cell_y + 1, cell_x, cell_y, current_distance + 1);
+    cells.emplace(cell_x, cell_y - 1, cell_x, cell_y, current_distance + 1);
   }
 }

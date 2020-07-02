@@ -30,7 +30,7 @@ enum class ChargeState {
 
 class Tank : public Movable {
  public:
-  Tank(std::shared_ptr<Map> map, int init_cell_x, int init_cell_y,
+  Tank(std::shared_ptr<const Map> map, int init_cell_x, int init_cell_y,
        TankParameters parameters, Direction direction);
   ~Tank() override = default;
 

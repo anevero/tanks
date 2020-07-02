@@ -36,7 +36,7 @@ class Tank;
 
 class Movable : public std::enable_shared_from_this<Movable> {
  public:
-  Movable(std::shared_ptr<Map> map, int cell_x, int cell_y,
+  Movable(std::shared_ptr<const Map> map, int cell_x, int cell_y,
           Direction direction, int speed);
   virtual ~Movable() = default;
 
@@ -102,14 +102,14 @@ class Movable : public std::enable_shared_from_this<Movable> {
 
   // Checks if given objects have been collided, i.e. they have common points
   // on the screen. Compares their coordinates for that.
-  static bool HaveObjectsCollided(const std::shared_ptr<Movable>& obj1,
-                                  const std::shared_ptr<Movable>& obj2);
+  static bool HaveObjectsCollided(const std::shared_ptr<const Movable>& obj1,
+                                  const std::shared_ptr<const Movable>& obj2);
 
   // Checks if given rocket has been released by the given tank. The result of
   // this function is used when we decide if we need to reduce tank's health
   // (rockets released by the tank can't reduce its own health).
-  static bool IsRocketByThisTank(const std::shared_ptr<Movable>& rocket,
-                                 const std::shared_ptr<Movable>& tank);
+  static bool IsRocketByThisTank(const std::shared_ptr<const Movable>& rocket,
+                                 const std::shared_ptr<const Movable>& tank);
 
   // Returns direction object corresponding to the string.
   static Direction GetDirectionFromString(const std::string& direction);
@@ -133,7 +133,7 @@ class Movable : public std::enable_shared_from_this<Movable> {
   int current_width_{};
   int current_height_{};
 
-  const std::shared_ptr<Map> map_;
+  const std::shared_ptr<const Map> map_;
 
   // Item at index i is responsible for the i-th direction in Direction enum
   // class.

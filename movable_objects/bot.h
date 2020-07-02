@@ -20,18 +20,17 @@ struct BotParameters {
 
 class Bot : public Tank {
  public:
-  Bot(std::shared_ptr<Map> map, int init_cell_x, int init_cell_y,
+  Bot(std::shared_ptr<const Map> map, int init_cell_x, int init_cell_y,
       TankParameters tank_parameters, BotParameters bot_parameters,
       Direction direction);
   ~Bot() override = default;
 
   virtual bool IsTurnNeeded() const;
-  virtual bool IsRotationStartNeeded(const std::shared_ptr<Tank>&);
+  virtual bool IsRotationStartNeeded(const std::shared_ptr<const Tank>&);
   virtual bool IsMovingStartNeeded(
       const std::list<std::shared_ptr<Tank>>&,
       const std::vector<std::vector<std::shared_ptr<ObjectOnMap>>>&);
-  virtual bool IsShotNeeded(const std::shared_ptr<Map>&,
-                            const std::shared_ptr<Tank>&);
+  virtual bool IsShotNeeded(const std::shared_ptr<const Tank>&);
 
  protected:
   int number_of_cells_to_move_ = 0;
@@ -41,12 +40,12 @@ class Bot : public Tank {
   const int side_rotation_frequency_;
 
   virtual bool CheckDirection(int tank, int bot, int direction);
-  static bool IsWallBetweenObjectsX(
-      const std::shared_ptr<Map>& map,
-      int tank_x, int tank_y, int bot_x, int bot_y);
-  static bool IsWallBetweenObjectsY(
-      const std::shared_ptr<Map>& map,
-      int tank_x, int tank_y, int bot_x, int bot_y);
+
+  bool IsWallBetweenObjectsX(
+      int tank_x, int tank_y, int bot_x, int bot_y) const;
+
+  bool IsWallBetweenObjectsY(
+      int tank_x, int tank_y, int bot_x, int bot_y) const;
 };
 
 #endif  // MOVABLE_OBJECTS_BOT_H_

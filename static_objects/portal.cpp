@@ -1,6 +1,6 @@
 #include "portal.h"
 
-Portal::Portal(std::shared_ptr<Map> map,
+Portal::Portal(std::shared_ptr<const Map> map,
                int x, int y, int new_cell_x, int new_cell_y)
     : ObjectOnMap(std::move(map), x, y),
       new_cell_x_(new_cell_x),

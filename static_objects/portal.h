@@ -9,7 +9,7 @@
 
 class Portal : public ObjectOnMap {
  public:
-  Portal(std::shared_ptr<Map> map, int cell_x, int cell_y,
+  Portal(std::shared_ptr<const Map> map, int cell_x, int cell_y,
          int new_cell_x, int new_cell_y);
 
   int GetNewCellX() const;

@@ -1,6 +1,6 @@
 #include "improvedbot.h"
 
-ImprovedBot::ImprovedBot(std::shared_ptr<Map> map,
+ImprovedBot::ImprovedBot(std::shared_ptr<const Map> map,
                          int init_cell_x,
                          int init_cell_y,
                          TankParameters tank_parameters,
@@ -11,14 +11,15 @@ ImprovedBot::ImprovedBot(std::shared_ptr<Map> map,
   LoadImage(":/textures/improved_bot.png");
 }
 
-bool ImprovedBot::IsRotationStartNeeded(const std::shared_ptr<Tank>& tank) {
+bool ImprovedBot::IsRotationStartNeeded(
+    const std::shared_ptr<const Tank>& tank) {
   if (time_to_finish_rotation_ <= 0 && time_to_finish_movement_ <= 0) {
     if (number_of_turns_ > 0) {
       number_of_turns_--;
       return true;
     }
     if (number_of_cells_to_move_ == 0) {
-      if (IsShotNeeded(map_, tank)) {
+      if (IsShotNeeded(tank)) {
         return false;
       }
       if (random_generator_() % side_rotation_frequency_ == 0) {
@@ -34,8 +35,7 @@ bool ImprovedBot::IsRotationStartNeeded(const std::shared_ptr<Tank>& tank) {
   return false;
 }
 
-bool ImprovedBot::IsShotNeeded(const std::shared_ptr<Map>& map,
-                               const std::shared_ptr<Tank>& tank) {
+bool ImprovedBot::IsShotNeeded(const std::shared_ptr<const Tank>& tank) {
   if (time_to_finish_rotation_ <= 0 && time_to_finish_movement_ <= 0) {
     int direction = GetIntDirection();
     int tank_x = tank->GetCellX();
@@ -47,7 +47,7 @@ bool ImprovedBot::IsShotNeeded(const std::shared_ptr<Map>& map,
     }
 
     if (tank_x == bot_x) {
-      if (IsWallBetweenObjectsX(map, tank_x, tank_y, bot_x, bot_y)) {
+      if (IsWallBetweenObjectsX(tank_x, tank_y, bot_x, bot_y)) {
         return false;
       }
 
@@ -66,7 +66,7 @@ bool ImprovedBot::IsShotNeeded(const std::shared_ptr<Map>& map,
     }
 
     if (tank_y == bot_y) {
-      if (IsWallBetweenObjectsY(map, tank_x, tank_y, bot_x, bot_y)) {
+      if (IsWallBetweenObjectsY(tank_x, tank_y, bot_x, bot_y)) {
         return false;
       }
 

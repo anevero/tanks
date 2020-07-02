@@ -1,6 +1,6 @@
 #include "objectonmap.h"
 
-ObjectOnMap::ObjectOnMap(std::shared_ptr<Map> map, int x, int y)
+ObjectOnMap::ObjectOnMap(std::shared_ptr<const Map> map, int x, int y)
     : map_(std::move(map)), x_(x), y_(y) {}
 
 void ObjectOnMap::LoadImage(const QString& path) {
@@ -46,17 +46,17 @@ int ObjectOnMap::GetY() const {
   return y_;
 }
 
-MedicalKit::MedicalKit(std::shared_ptr<Map> map, int x, int y)
+MedicalKit::MedicalKit(std::shared_ptr<const Map> map, int x, int y)
     : ObjectOnMap(std::move(map), x, y) {
   LoadImage(":/textures/medicalkit.png");
 }
 
-Obstacle::Obstacle(std::shared_ptr<Map> map, int x, int y)
+Obstacle::Obstacle(std::shared_ptr<const Map> map, int x, int y)
     : ObjectOnMap(std::move(map), x, y) {
   LoadImage(":/textures/log.png");
 }
 
-Charge::Charge(std::shared_ptr<Map> map, int x, int y)
+Charge::Charge(std::shared_ptr<const Map> map, int x, int y)
     : ObjectOnMap(std::move(map), x, y) {
   LoadImage(":/textures/charge.png");
 }

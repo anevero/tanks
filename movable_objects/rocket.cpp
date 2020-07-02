@@ -1,6 +1,6 @@
 #include "rocket.h"
 
-Rocket::Rocket(std::shared_ptr<Map> map, std::shared_ptr<Tank> tank,
+Rocket::Rocket(std::shared_ptr<const Map> map, std::shared_ptr<Tank> tank,
                RocketParameters parameters)
     : Movable(std::move(map), tank->GetCellX(), tank->GetCellY(),
               tank->GetDirection(), parameters.speed),
@@ -22,7 +22,7 @@ void Rocket::Draw(QPainter* painter) {
   painter->restore();
 }
 
-std::shared_ptr<Tank> Rocket::GetAttachedTank() const {
+std::shared_ptr<const Tank> Rocket::GetAttachedTank() const {
   return tank_;
 }
 

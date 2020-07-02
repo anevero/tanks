@@ -307,7 +307,7 @@ void MainWindow::timerEvent(QTimerEvent*) {
       continue;
     }
 
-    if (bot->IsAbleToShoot() && bot->IsShotNeeded(map_, tanks_.front())) {
+    if (bot->IsAbleToShoot() && bot->IsShotNeeded(tanks_.front())) {
       ShootRocket(tank);
       bot->SetZeroTimeFromLastShot();
     }

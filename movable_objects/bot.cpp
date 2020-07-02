@@ -1,6 +1,6 @@
 #include "bot.h"
 
-Bot::Bot(std::shared_ptr<Map> map, int init_cell_x, int init_cell_y,
+Bot::Bot(std::shared_ptr<const Map> map, int init_cell_x, int init_cell_y,
          TankParameters tank_parameters, BotParameters bot_parameters,
          Direction direction)
     : Tank(std::move(map), init_cell_x, init_cell_y,
@@ -15,7 +15,7 @@ bool Bot::IsTurnNeeded() const {
   return time_to_finish_rotation_ > 0;
 }
 
-bool Bot::IsRotationStartNeeded(const std::shared_ptr<Tank>&) {
+bool Bot::IsRotationStartNeeded(const std::shared_ptr<const Tank>&) {
   if (time_to_finish_rotation_ <= 0 && time_to_finish_movement_ <= 0) {
     if (number_of_turns_ > 0) {
       number_of_turns_--;
@@ -53,21 +53,20 @@ bool Bot::IsMovingStartNeeded(
   return false;
 }
 
-bool Bot::IsShotNeeded(const std::shared_ptr<Map>& map,
-                       const std::shared_ptr<Tank>& tank) {
+bool Bot::IsShotNeeded(const std::shared_ptr<const Tank>& tank) {
   if (time_to_finish_rotation_ == 0 && time_to_finish_movement_ == 0) {
     int direction = GetIntDirection();
-    size_t tank_x = tank->GetCellX();
-    size_t tank_y = tank->GetCellY();
-    size_t bot_x = GetCellX();
-    size_t bot_y = GetCellY();
+    int tank_x = tank->GetCellX();
+    int tank_y = tank->GetCellY();
+    int bot_x = GetCellX();
+    int bot_y = GetCellY();
     if (map_->GetField(tank_x, tank_y) == CellType::Forest) {
       return false;
     }
 
     if (direction == 0 || direction == 2) {
       if (tank_x == bot_x) {
-        if (IsWallBetweenObjectsX(map, tank_x, tank_y, bot_x, bot_y)) {
+        if (IsWallBetweenObjectsX(tank_x, tank_y, bot_x, bot_y)) {
           return false;
         }
 
@@ -78,7 +77,7 @@ bool Bot::IsShotNeeded(const std::shared_ptr<Map>& map,
     }
     if (direction == 1 || direction == 3) {
       if (tank_y == bot_y) {
-        if (IsWallBetweenObjectsY(map, tank_x, tank_y, bot_x, bot_y)) {
+        if (IsWallBetweenObjectsY(tank_x, tank_y, bot_x, bot_y)) {
           return false;
         }
 
@@ -91,7 +90,7 @@ bool Bot::IsShotNeeded(const std::shared_ptr<Map>& map,
   return false;
 }
 
-bool Bot::CheckDirection(const int tank, const int bot, const int direction) {
+bool Bot::CheckDirection(int tank, int bot, int direction) {
   if (tank > bot) {
     if (direction == 0 || direction == 3) {
       return false;
@@ -102,22 +101,20 @@ bool Bot::CheckDirection(const int tank, const int bot, const int direction) {
   return true;
 }
 
-bool Bot::IsWallBetweenObjectsX(const std::shared_ptr<Map>& map,
-                                int tank_x, int tank_y,
-                                int bot_x, int bot_y) {
-  int walls_count = map->GetWallsPrecalc(bot_x, bot_y);
-  walls_count += map->GetWallsPrecalc(tank_x - 1, tank_y - 1);
-  walls_count -= map->GetWallsPrecalc(tank_x, tank_y - 1);
-  walls_count -= map->GetWallsPrecalc(bot_x - 1, bot_y);
+bool Bot::IsWallBetweenObjectsX(int tank_x, int tank_y,
+                                int bot_x, int bot_y) const {
+  int walls_count = map_->GetWallsPrecalc(bot_x, bot_y);
+  walls_count += map_->GetWallsPrecalc(tank_x - 1, tank_y - 1);
+  walls_count -= map_->GetWallsPrecalc(tank_x, tank_y - 1);
+  walls_count -= map_->GetWallsPrecalc(bot_x - 1, bot_y);
   return (walls_count != 0);
 }
 
-bool Bot::IsWallBetweenObjectsY(const std::shared_ptr<Map>& map,
-                                int tank_x, int tank_y,
-                                int bot_x, int bot_y) {
-  int walls_count = map->GetWallsPrecalc(bot_x, bot_y);
-  walls_count += map->GetWallsPrecalc(tank_x - 1, tank_y - 1);
-  walls_count -= map->GetWallsPrecalc(tank_x - 1, tank_y);
-  walls_count -= map->GetWallsPrecalc(bot_x, bot_y - 1);
+bool Bot::IsWallBetweenObjectsY(int tank_x, int tank_y,
+                                int bot_x, int bot_y) const {
+  int walls_count = map_->GetWallsPrecalc(bot_x, bot_y);
+  walls_count += map_->GetWallsPrecalc(tank_x - 1, tank_y - 1);
+  walls_count -= map_->GetWallsPrecalc(tank_x - 1, tank_y);
+  walls_count -= map_->GetWallsPrecalc(bot_x, bot_y - 1);
   return (walls_count != 0);
 }

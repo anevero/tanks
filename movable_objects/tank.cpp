@@ -3,7 +3,7 @@
 std::mt19937 Tank::random_generator_ = std::mt19937(
     std::chrono::system_clock::now().time_since_epoch().count());
 
-Tank::Tank(std::shared_ptr<Map> map, int init_cell_x,
+Tank::Tank(std::shared_ptr<const Map> map, int init_cell_x,
            int init_cell_y, TankParameters parameters, Direction direction)
     : Movable(std::move(map), init_cell_x, init_cell_y, direction,
               parameters.speed),
@@ -37,7 +37,7 @@ void Tank::DrawHealth(QPainter* painter) {
   painter->save();
   painter->translate(current_upper_left_x_ + current_width_ / 2,
                      current_upper_left_y_ + current_height_ / 4);
-  if (current_health_ > static_cast<int>(max_health_ * 0.3)) {
+  if (current_health_ > 0.3 * max_health_ * 0.3) {
     painter->setBrush(Qt::blue);
   } else {
     painter->setBrush(Qt::red);

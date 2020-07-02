@@ -2,7 +2,7 @@
 #include "rocket.h"
 #include "tank.h"
 
-Movable::Movable(std::shared_ptr<Map> map, int cell_x, int cell_y,
+Movable::Movable(std::shared_ptr<const Map> map, int cell_x, int cell_y,
                  Direction direction, int speed)
     : cell_x_(cell_x), cell_y_(cell_y),
       prev_cell_x_(cell_x), prev_cell_y_(cell_y_),
@@ -17,7 +17,8 @@ void Movable::LoadImage(const QString& path) {
 }
 
 void Movable::StartMovement(
-    int number_of_cells, const std::list<std::shared_ptr<Tank>>& tanks,
+    int number_of_cells,
+    const std::list<std::shared_ptr<Tank>>& tanks,
     std::list<std::pair<std::shared_ptr<Tank>, Coordinates>>*
     objects_copies_,
     std::vector<std::vector<std::shared_ptr<ObjectOnMap>>>* objects) {
@@ -268,8 +269,8 @@ int Movable::GetCellY() const {
   return cell_y_;
 }
 
-bool Movable::HaveObjectsCollided(const std::shared_ptr<Movable>& obj1,
-                                  const std::shared_ptr<Movable>& obj2) {
+bool Movable::HaveObjectsCollided(const std::shared_ptr<const Movable>& obj1,
+                                  const std::shared_ptr<const Movable>& obj2) {
   if (obj1 == obj2 || Movable::IsRocketByThisTank(obj1, obj2)) {
     return false;
   }
@@ -290,10 +291,10 @@ bool Movable::HaveObjectsCollided(const std::shared_ptr<Movable>& obj1,
   return true;
 }
 
-bool Movable::IsRocketByThisTank(const std::shared_ptr<Movable>& rocket,
-                                 const std::shared_ptr<Movable>& tank) {
-  auto casted_rocket = std::dynamic_pointer_cast<Rocket>(rocket);
-  auto casted_tank = std::dynamic_pointer_cast<Tank>(tank);
+bool Movable::IsRocketByThisTank(const std::shared_ptr<const Movable>& rocket,
+                                 const std::shared_ptr<const Movable>& tank) {
+  auto casted_rocket = std::dynamic_pointer_cast<const Rocket>(rocket);
+  auto casted_tank = std::dynamic_pointer_cast<const Tank>(tank);
   if (casted_rocket != nullptr && casted_tank != nullptr) {
     return casted_tank == casted_rocket->GetAttachedTank();
   }

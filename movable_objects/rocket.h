@@ -15,18 +15,18 @@ struct RocketParameters {
 
 class Rocket : public Movable {
  public:
-  Rocket(std::shared_ptr<Map> map, std::shared_ptr<Tank> tank,
+  Rocket(std::shared_ptr<const Map> map, std::shared_ptr<Tank> tank,
          RocketParameters parameters);
   ~Rocket() override = default;
 
   void Draw(QPainter* painter) override;
 
-  std::shared_ptr<Tank> GetAttachedTank() const;
+  std::shared_ptr<const Tank> GetAttachedTank() const;
   int GetPower() const;
   bool CanBreakObstacles() const;
 
  private:
-  const std::shared_ptr<Tank> tank_;
+  const std::shared_ptr<const Tank> tank_;
   int power_;
   bool obstacle_break_;
 };
