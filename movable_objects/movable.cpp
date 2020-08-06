@@ -172,16 +172,14 @@ void Movable::UpdateCoordinates(Coordinates cell) {
 
   previous_upper_left_cell_coordinates_ = current_upper_left_cell_coordinates_;
   current_upper_left_cell_coordinates_.x =
-      map_->GetUpperLeftCellCoordinates().x + (current_width_ * current_cell_.x)
-          - linear_movement_direction_ *
-              ((directions_[1] * current_width_ * movement_proportion)
-                  - (directions_[3] * current_width_ * movement_proportion));
+      map_->GetUpperLeftCellCoordinates().x + (current_width_ * cell.x)
+      - linear_movement_direction_ * movement_proportion
+      * (directions_[1] * current_width_ - directions_[3] * current_width_ );
 
   current_upper_left_cell_coordinates_.y =
-      map_->GetUpperLeftCellCoordinates().y +
-          (current_height_ * current_cell_.y) - linear_movement_direction_ *
-          ((directions_[2] * current_height_ * movement_proportion)
-              - (directions_[0] * current_height_ * movement_proportion));
+      map_->GetUpperLeftCellCoordinates().y + (current_height_ * cell.y)
+      - linear_movement_direction_ * movement_proportion
+      * (directions_[2] * current_height_ - directions_[0] * current_height_);
 
   if (map_->GetField(current_cell_) == CellType::Forest) {
     if (movement_proportion <= 0.5) {
