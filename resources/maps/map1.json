@@ -33,7 +33,7 @@
           "initial_cell_x": 2,
           "initial_cell_y": 7,
           "moving_length": 1,
-          "amount_of_turns": 1,
+          "number_of_turns": 1,
           "side_rotation_frequency": 2,
           "initial_direction": "right"
         },
@@ -42,7 +42,7 @@
           "initial_cell_x": 8,
           "initial_cell_y": 12,
           "moving_length": 5,
-          "amount_of_turns": 1,
+          "number_of_turns": 1,
           "side_rotation_frequency": 2,
           "initial_direction": "down"
         },
@@ -51,7 +51,7 @@
           "initial_cell_x": 13,
           "initial_cell_y": 3,
           "moving_length": 3,
-          "amount_of_turns": 1,
+          "number_of_turns": 1,
           "side_rotation_frequency": 2,
           "initial_direction": "left"
         }
@@ -84,7 +84,7 @@
           "initial_cell_x": 2,
           "initial_cell_y": 7,
           "moving_length": 1,
-          "amount_of_turns": 1,
+          "number_of_turns": 1,
           "side_rotation_frequency": 2,
           "initial_direction": "right"
         },
@@ -93,7 +93,7 @@
           "initial_cell_x": 8,
           "initial_cell_y": 12,
           "moving_length": 5,
-          "amount_of_turns": 1,
+          "number_of_turns": 1,
           "side_rotation_frequency": 2,
           "initial_direction": "down"
         },
@@ -102,7 +102,7 @@
           "initial_cell_x": 13,
           "initial_cell_y": 3,
           "moving_length": 3,
-          "amount_of_turns": 1,
+          "number_of_turns": 1,
           "side_rotation_frequency": 2,
           "initial_direction": "left"
         },
@@ -111,7 +111,7 @@
           "initial_cell_x": 8,
           "initial_cell_y": 3,
           "moving_length": 4,
-          "amount_of_turns": 1,
+          "number_of_turns": 1,
           "side_rotation_frequency": 1,
           "initial_direction": "down"
         },
@@ -120,7 +120,7 @@
           "initial_cell_x": 13,
           "initial_cell_y": 13,
           "moving_length": 10,
-          "amount_of_turns": 1,
+          "number_of_turns": 1,
           "side_rotation_frequency": 4,
           "initial_direction": "up"
         }
@@ -158,7 +158,7 @@
           "initial_cell_x": 2,
           "initial_cell_y": 7,
           "moving_length": 1,
-          "amount_of_turns": 1,
+          "number_of_turns": 1,
           "side_rotation_frequency": 2,
           "initial_direction": "right"
         },
@@ -167,7 +167,7 @@
           "initial_cell_x": 8,
           "initial_cell_y": 12,
           "moving_length": 5,
-          "amount_of_turns": 1,
+          "number_of_turns": 1,
           "side_rotation_frequency": 3,
           "initial_direction": "up"
         },
@@ -176,7 +176,7 @@
           "initial_cell_x": 4,
           "initial_cell_y": 2,
           "moving_length": 8,
-          "amount_of_turns": 1,
+          "number_of_turns": 1,
           "side_rotation_frequency": 2,
           "initial_direction": "left"
         },
@@ -185,7 +185,7 @@
           "initial_cell_x": 13,
           "initial_cell_y": 3,
           "moving_length": 3,
-          "amount_of_turns": 1,
+          "number_of_turns": 1,
           "side_rotation_frequency": 2,
           "initial_direction": "left"
         },
@@ -194,7 +194,7 @@
           "initial_cell_x": 8,
           "initial_cell_y": 3,
           "moving_length": 10,
-          "amount_of_turns": 1,
+          "number_of_turns": 1,
           "side_rotation_frequency": 4,
           "initial_direction": "down"
         },
@@ -203,7 +203,7 @@
           "initial_cell_x": 2,
           "initial_cell_y": 13,
           "moving_length": 0,
-          "amount_of_turns": 1,
+          "number_of_turns": 1,
           "side_rotation_frequency": 10,
           "initial_direction": "left"
         },
@@ -212,7 +212,7 @@
           "initial_cell_x": 12,
           "initial_cell_y": 1,
           "moving_length": 5,
-          "amount_of_turns": 1,
+          "number_of_turns": 1,
           "side_rotation_frequency": 10,
           "initial_direction": "up"
         }

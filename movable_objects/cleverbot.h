@@ -1,18 +1,19 @@
 #ifndef MOVABLE_OBJECTS_CLEVERBOT_H_
 #define MOVABLE_OBJECTS_CLEVERBOT_H_
 
-#include <QVector>
 #include <list>
 #include <memory>
-#include <queue>
 #include <utility>
 #include <vector>
+
 #include "improvedbot.h"
+#include "tank.h"
+#include "../game_core/map.h"
 #include "../static_objects/portal.h"
 
 class CleverBot : public ImprovedBot {
  public:
-  CleverBot(std::shared_ptr<const Map> map, int init_cell_x, int init_cell_y,
+  CleverBot(std::shared_ptr<const Map> map, Coordinates init_cell,
             TankParameters tank_parameters, BotParameters bot_parameters,
             Direction direction);
   ~CleverBot() override = default;
@@ -26,25 +27,19 @@ class CleverBot : public ImprovedBot {
 
  private:
   struct CellInfo {
-    int cell_x;
-    int cell_y;
-    int prev_cell_x;
-    int prev_cell_y;
+    Coordinates cell;
+    Coordinates previous_cell;
     int distance;
 
-    CellInfo(int cell_x, int cell_y,
-             int prev_cell_x, int prev_cell_y,
-             int distance)
-        : cell_x(cell_x), cell_y(cell_y),
-          prev_cell_x(prev_cell_x), prev_cell_y(prev_cell_y),
-          distance(distance) {}
+    CellInfo(Coordinates cell, Coordinates previous_cell, int distance)
+        : cell(cell), previous_cell(previous_cell), distance(distance) {}
   };
   std::vector<std::vector<int>> distance_;
 
   void Bfs(
       const std::list<std::shared_ptr<Tank>>& objects,
       const std::vector<std::vector<std::shared_ptr<ObjectOnMap>>>& portals,
-      int cell_x, int cell_y);
+      Coordinates cell);
 
   int height_;
   int width_;

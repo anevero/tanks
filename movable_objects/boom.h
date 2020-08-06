@@ -3,10 +3,12 @@
 
 #include <QMediaPlayer>
 #include <QPainter>
+
 #include <list>
 #include <memory>
 #include <utility>
 #include <vector>
+
 #include "tank.h"
 
 class Boom : public Movable {
@@ -15,13 +17,14 @@ class Boom : public Movable {
        int speed);
   ~Boom() override = default;
 
-  void UpdateCoordinates(int cell_x, int cell_y) override;
+  void UpdateCoordinates(Coordinates cell) override;
   void Draw(QPainter* painter) override;
 
-  void StartMovement(
-      int number_of_cells, const std::list<std::shared_ptr<Tank>>&,
-      std::list<std::pair<std::shared_ptr<Tank>, Coordinates>>*,
-      std::vector<std::vector<std::shared_ptr<ObjectOnMap>>>*) override;
+  void StartMovement(const std::list<std::shared_ptr<Tank>>&,
+                       std::list<std::pair<std::shared_ptr<Tank>,
+                                                  Coordinates>>*,
+                       std::vector<std::vector<std::shared_ptr<ObjectOnMap>>>*,
+                       int number_of_cells) override;
 
  private:
   QMediaPlayer boom_sound_;

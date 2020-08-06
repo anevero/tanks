@@ -1,7 +1,10 @@
 #include "objectonmap.h"
 
-ObjectOnMap::ObjectOnMap(std::shared_ptr<const Map> map, int x, int y)
-    : map_(std::move(map)), x_(x), y_(y) {}
+#include "../game_core/constants.h"
+
+ObjectOnMap::ObjectOnMap(
+    std::shared_ptr<const Map> map, Coordinates coordinates)
+    : map_(std::move(map)), coordinates_(coordinates) {}
 
 void ObjectOnMap::LoadImage(const QString& path) {
   image_.load(path);
@@ -11,52 +14,50 @@ void ObjectOnMap::LoadImage(const QString& path) {
 void ObjectOnMap::Draw(QPainter* painter) {
   RescaleImage();
   painter->save();
-  painter->translate(cur_upper_left_x_ + cur_width_ / 2,
-                     cur_upper_left_y_ + cur_height_ / 2);
-  if (map_->GetField(x_, y_) == CellType::Forest) {
+  painter->translate(
+      current_upper_left_cell_coordinates_.x + width_ / 2,
+      current_upper_left_cell_coordinates_.y + height_ / 2);
+  if (map_->GetField(coordinates_) == CellType::Forest) {
     painter->setOpacity(constants::kOpacityLevel);
   }
-  painter->drawPixmap(-cur_width_ / 2, -cur_height_ / 2, scaled_pixmap_);
+  painter->drawPixmap(-width_ / 2, -height_ / 2, scaled_pixmap_);
   painter->restore();
 }
 
 void ObjectOnMap::RescaleImage() {
-  if (scaled_pixmap_.width() == cur_width_ &&
-      scaled_pixmap_.height() == cur_height_) {
+  if (scaled_pixmap_.width() == width_ && scaled_pixmap_.height() == height_) {
     return;
   }
   scaled_pixmap_ = QPixmap::fromImage(
-      image_.scaled(cur_width_, cur_height_, Qt::KeepAspectRatio));
+      image_.scaled(width_, height_, Qt::KeepAspectRatio));
 }
 
 void ObjectOnMap::UpdateCoordinates() {
-  cur_width_ = map_->GetWidth() / map_->GetNumberOfCellsHorizontally();
-  cur_height_ = map_->GetHeight() / map_->GetNumberOfCellsVertically();
-  cur_upper_left_x_ = map_->GetUpperLeftX() + x_ * cur_width_;
-  cur_upper_left_y_ = map_->GetUpperLeftY() + y_ * cur_height_;
+  width_ = map_->GetWidth() / map_->GetNumberOfCellsHorizontally();
+  height_ = map_->GetHeight() / map_->GetNumberOfCellsVertically();
+  current_upper_left_cell_coordinates_.x =
+      map_->GetUpperLeftCellCoordinates().x + coordinates_.x * width_;
+  current_upper_left_cell_coordinates_.y =
+      map_->GetUpperLeftCellCoordinates().y + coordinates_.y * height_;
 
   RescaleImage();
 }
 
-int ObjectOnMap::GetX() const {
-  return x_;
+Coordinates ObjectOnMap::GetCoordinates() const {
+  return coordinates_;
 }
 
-int ObjectOnMap::GetY() const {
-  return y_;
-}
-
-MedicalKit::MedicalKit(std::shared_ptr<const Map> map, int x, int y)
-    : ObjectOnMap(std::move(map), x, y) {
+MedicalKit::MedicalKit(std::shared_ptr<const Map> map, Coordinates coordinates)
+    : ObjectOnMap(std::move(map), coordinates) {
   LoadImage(":/textures/medicalkit.png");
 }
 
-Obstacle::Obstacle(std::shared_ptr<const Map> map, int x, int y)
-    : ObjectOnMap(std::move(map), x, y) {
+Obstacle::Obstacle(std::shared_ptr<const Map> map, Coordinates coordinates)
+    : ObjectOnMap(std::move(map), coordinates) {
   LoadImage(":/textures/log.png");
 }
 
-Charge::Charge(std::shared_ptr<const Map> map, int x, int y)
-    : ObjectOnMap(std::move(map), x, y) {
+Charge::Charge(std::shared_ptr<const Map> map, Coordinates coordinates)
+    : ObjectOnMap(std::move(map), coordinates) {
   LoadImage(":/textures/charge.png");
 }

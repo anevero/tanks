@@ -1,15 +1,14 @@
 #ifndef MOVABLE_OBJECTS_TANK_H_
 #define MOVABLE_OBJECTS_TANK_H_
 
-#include <QApplication>
-#include <QMessageBox>
 #include <QPainter>
-#include <algorithm>
+
 #include <chrono>
 #include <memory>
 #include <random>
 #include <utility>
 #include <vector>
+
 #include "../game_core/map.h"
 #include "movable.h"
 
@@ -30,7 +29,7 @@ enum class ChargeState {
 
 class Tank : public Movable {
  public:
-  Tank(std::shared_ptr<const Map> map, int init_cell_x, int init_cell_y,
+  Tank(std::shared_ptr<const Map> map, Coordinates init_cell,
        TankParameters parameters, Direction direction);
   ~Tank() override = default;
 
@@ -40,13 +39,16 @@ class Tank : public Movable {
   virtual bool IsAbleToShoot() const;
   virtual void IncreaseTimeSinceLastShot(int delta);
   virtual void SetZeroTimeFromLastShot();
-  virtual int GetCurrentHealth() const;
-  virtual int GetMaxHealth() const;
-  virtual void DecreaseHealth(int health);
-  virtual void IncreaseHealth(int health);
-  virtual bool IsDead() const;
+
   virtual int GetTimeSinceLastShot() const;
   virtual int GetRateOfFire() const;
+
+  virtual void DecreaseHealth(int health);
+  virtual void IncreaseHealth(int health);
+
+  virtual int GetCurrentHealth() const;
+  virtual int GetMaxHealth() const;
+  virtual bool IsDead() const;
 
   void ChangeTypeOfCharge(int type);
   void DecreaseCharge(int type, int charge = 1);
@@ -59,9 +61,11 @@ class Tank : public Movable {
  protected:
   int rate_of_fire_;
   int time_since_last_shot_;
+
   int current_type_of_charge_;
-  int current_health_;
   std::vector<int> current_charge_;
+
+  int current_health_;
 
   const std::vector<int> max_charge_;
   const int max_health_;

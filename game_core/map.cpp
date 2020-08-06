@@ -1,5 +1,12 @@
 #include "map.h"
 
+#include <QFile>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QString>
+#include <utility>
+
 Map::Map(int map_number) {
   QFile input_file(":/maps/map" + QString::number(map_number + 1) + ".json");
   input_file.open(QIODevice::ReadOnly);
@@ -12,7 +19,6 @@ Map::Map(int map_number) {
   int map_width_in_cells = map["width"].toInt();
   int map_height_in_cells = map["height"].toInt();
   map_.resize(map_height_in_cells);
-  walls_precalc_.resize(map_height_in_cells);
 
   QJsonArray array2D = map["map"].toArray();
   QJsonArray array;
@@ -22,11 +28,14 @@ Map::Map(int map_number) {
       map_[i].push_back(static_cast<CellType>(array[j].toInt()));
     }
   }
-  WallsPrecalc();
+
+  walls_precalculation_.resize(map_height_in_cells);
+  WallsPrecalculation();
 
   QJsonObject player_tank = json["player_tank"].toObject();
-  tank_init_cell_x_ = player_tank["initial_cell_x"].toInt();
-  tank_init_cell_y_ = player_tank["initial_cell_y"].toInt();
+  tank_init_cell_ =
+      {player_tank["initial_cell_x"].toInt(),
+       player_tank["initial_cell_y"].toInt()};
   tank_start_direction_ =
       player_tank["initial_direction"].toString().toStdString();
 
@@ -36,28 +45,29 @@ Map::Map(int map_number) {
   }
 }
 
-void Map::UpdateCoordinates(int upper_left_x, int upper_left_y,
-                            int width, int height) {
-  cur_upper_left_x_ = upper_left_x;
-  cur_upper_left_y_ = upper_left_y;
-  cur_cell_width_ = width / map_.size();
-  cur_cell_height_ = height / map_[0].size();
-  cur_width_ = cur_cell_width_ * map_.size();
-  cur_height_ = cur_cell_height_ * map_[0].size();
+void Map::UpdateCoordinates(Coordinates upper_left_cell_coordinates,
+                            int width,
+                            int height) {
+  current_upper_left_cell_ = upper_left_cell_coordinates;
+  current_cell_width_ = width / map_.size();
+  current_cell_height_ = height / map_[0].size();
+  current_width_ = current_cell_width_ * map_.size();
+  current_height_ = current_cell_height_ * map_[0].size();
   RescaleImages();
   FormMapImage();
 }
 
 void Map::DrawMap(QPainter* painter) {
-  painter->drawPixmap(cur_upper_left_x_, cur_upper_left_y_, map_scaled_pixmap_);
+  painter->drawPixmap(current_upper_left_cell_.x, current_upper_left_cell_.y,
+                      map_scaled_pixmap_);
 }
 
-CellType Map::GetField(int cell_x, int cell_y) const {
-  return map_[cell_x][cell_y];
+CellType Map::GetField(Coordinates cell) const {
+  return map_[cell.x][cell.y];
 }
 
-int Map::GetWallsPrecalc(int cell_x, int cell_y) const {
-  return walls_precalc_[cell_x][cell_y];
+int Map::GetWallsPrecalculation(int cell_x, int cell_y) const {
+  return walls_precalculation_[cell_x][cell_y];
 }
 
 int Map::GetNumberOfCellsHorizontally() const {
@@ -68,36 +78,28 @@ int Map::GetNumberOfCellsVertically() const {
   return map_.size();
 }
 
-int Map::GetUpperLeftX() const {
-  return cur_upper_left_x_;
-}
-
-int Map::GetUpperLeftY() const {
-  return cur_upper_left_y_;
+Coordinates Map::GetUpperLeftCellCoordinates() const {
+  return current_upper_left_cell_;
 }
 
 int Map::GetWidth() const {
-  return cur_width_;
+  return current_width_;
 }
 
 int Map::GetHeight() const {
-  return cur_height_;
+  return current_height_;
 }
 
 int Map::GetCellWidth() const {
-  return cur_cell_width_;
+  return current_cell_width_;
 }
 
 int Map::GetCellHeight() const {
-  return cur_cell_height_;
+  return current_cell_height_;
 }
 
-int Map::GetTankInitCellX() const {
-  return tank_init_cell_x_;
-}
-
-int Map::GetTankInitCellY() const {
-  return tank_init_cell_y_;
+Coordinates Map::GetTankInitCell() const {
+  return tank_init_cell_;
 }
 
 std::string Map::GetTankStartDirection() const {
@@ -105,24 +107,27 @@ std::string Map::GetTankStartDirection() const {
 }
 
 void Map::RescaleImages() {
-  if (scaled_pixmaps_[0].width() == cur_cell_width_ + 2 &&
-      scaled_pixmaps_[0].height() == cur_cell_height_ + 2) {
+  if (scaled_pixmaps_[0].width() == current_cell_width_ + 2 &&
+      scaled_pixmaps_[0].height() == current_cell_height_ + 2) {
     return;
   }
 
   for (int i = 0; i < static_cast<int>(CellType::Last); ++i) {
     scaled_pixmaps_[i] = QPixmap::fromImage(images_[i].scaled(
-        cur_cell_width_ + 2, cur_cell_height_ + 2, Qt::KeepAspectRatio));
+        current_cell_width_ + 2,
+        current_cell_height_ + 2,
+        Qt::KeepAspectRatio));
   }
 }
 
 void Map::FormMapImage() {
-  if (map_scaled_pixmap_.width() == cur_width_ &&
-      map_scaled_pixmap_.height() == cur_height_) {
+  if (map_scaled_pixmap_.width() == current_width_ &&
+      map_scaled_pixmap_.height() == current_height_) {
     return;
   }
 
-  QImage temp_image = QImage(cur_width_, cur_height_, QImage::Format_ARGB32);
+  QImage temp_image =
+      QImage(current_width_, current_height_, QImage::Format_ARGB32);
   QPainter p;
   p.begin(&temp_image);
 
@@ -131,7 +136,7 @@ void Map::FormMapImage() {
 
   for (int i = 0; i < width; ++i) {
     for (int j = 0; j < height; ++j) {
-      p.drawPixmap(i * cur_cell_width_, j * cur_cell_height_,
+      p.drawPixmap(i * current_cell_width_, j * current_cell_height_,
                    scaled_pixmaps_[static_cast<int>(map_[i][j])]);
     }
   }
@@ -140,18 +145,18 @@ void Map::FormMapImage() {
   map_scaled_pixmap_ = QPixmap::fromImage(std::move(temp_image));
 }
 
-void Map::WallsPrecalc() {
+void Map::WallsPrecalculation() {
   int height = GetNumberOfCellsVertically();
   int width = GetNumberOfCellsHorizontally();
   for (int i = 0; i < height - 1; ++i) {
     for (int j = 0; j < width - 1; ++j) {
-      walls_precalc_[j].push_back(0);
+      walls_precalculation_[j].push_back(0);
       if (i > 0 && j > 0) {
-        walls_precalc_[j][i] = walls_precalc_[j - 1][i] +
-            walls_precalc_[j][i - 1] -
-            walls_precalc_[j - 1][i - 1];
+        walls_precalculation_[j][i] = walls_precalculation_[j - 1][i] +
+            walls_precalculation_[j][i - 1]
+            - walls_precalculation_[j - 1][i - 1];
         if (map_[j][i] == CellType::Wall) {
-          walls_precalc_[j][i]++;
+          walls_precalculation_[j][i]++;
         }
       }
     }

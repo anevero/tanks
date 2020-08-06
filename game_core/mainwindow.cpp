@@ -1,5 +1,11 @@
 #include "mainwindow.h"
 
+#include <QApplication>
+#include <QFile>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
+
 std::mt19937 MainWindow::random_generator_ = std::mt19937(
     std::chrono::system_clock::now().time_since_epoch().count());
 
@@ -129,13 +135,13 @@ void MainWindow::mouseReleaseEvent(QMouseEvent* event) {
   // in QToolTip class in Qt 5.15, which leads to the segmentation fault
   // when you try to use it.
 #ifndef Q_OS_ANDROID
-  int current_cell_x = (event->x() - map_->GetUpperLeftX())
+  Coordinates current_cell;
+  current_cell.x = (event->x() - map_->GetUpperLeftCellCoordinates().x)
       * map_->GetNumberOfCellsHorizontally() / map_->GetWidth();
-  int current_cell_y = (event->y() - map_->GetUpperLeftY()) *
+  current_cell.y = (event->y() - map_->GetUpperLeftCellCoordinates().y) *
       map_->GetNumberOfCellsVertically() / map_->GetHeight();
   for (const auto& tank : tanks_) {
-    if (tank->GetCellX() == current_cell_x &&
-        tank->GetCellY() == current_cell_y) {
+    if (tank->GetCoordinates() == current_cell) {
       QToolTip::showText(
           event->globalPos(),
           tr("Health") + ": " + QString::number(tank->GetCurrentHealth()));
@@ -181,14 +187,14 @@ void MainWindow::keyReleaseEvent(QKeyEvent* event) {
     case Qt::Key_Up:
     case Qt::Key_W: {
       tank->TurnReverseOff();
-      tank->StartMovement(1, tanks_, &objects_copies_, &obstacles_and_bonuses_);
+      tank->StartMovement(tanks_, &objects_copies_, &obstacles_and_bonuses_, 1);
       break;
     }
     case 1067:
     case Qt::Key_Down:
     case Qt::Key_S: {
       tank->TurnReverseOn();
-      tank->StartMovement(1, tanks_, &objects_copies_, &obstacles_and_bonuses_);
+      tank->StartMovement(tanks_, &objects_copies_, &obstacles_and_bonuses_, 1);
       break;
     }
     case 1060:
@@ -229,21 +235,22 @@ void MainWindow::keyReleaseEvent(QKeyEvent* event) {
 }
 
 void MainWindow::paintEvent(QPaintEvent*) {
-  map_->UpdateCoordinates(width_indent_ + 0.28 * view_width_,
-                          height_indent_ + 0.05 * view_height_,
-                          0.68 * view_width_,
-                          0.9 * view_height_);
+  map_->UpdateCoordinates(
+      {static_cast<int>(width_indent_ + 0.28 * view_width_),
+       static_cast<int>(height_indent_ + 0.05 * view_height_)},
+      0.68 * view_width_,
+      0.9 * view_height_);
   for (auto& object : tanks_) {
-    object->UpdateCoordinates(object->GetCellX(), object->GetCellY());
+    object->UpdateCoordinates(object->GetCoordinates());
   }
   for (auto& object : rockets_) {
-    object->UpdateCoordinates(object->GetCellX(), object->GetCellY());
+    object->UpdateCoordinates(object->GetCoordinates());
   }
   for (auto& object : booms_) {
-    object->UpdateCoordinates(object->GetCellX(), object->GetCellY());
+    object->UpdateCoordinates(object->GetCoordinates());
   }
   for (auto& object : objects_copies_) {
-    object.first->UpdateCoordinates(object.second.x, object.second.y);
+    object.first->UpdateCoordinates(object.second);
   }
   for (auto& vector : obstacles_and_bonuses_) {
     for (auto& object : vector) {
@@ -313,8 +320,8 @@ void MainWindow::timerEvent(QTimerEvent*) {
     }
 
     if (bot->IsMovingStartNeeded(tanks_, obstacles_and_bonuses_)) {
-      bot->StartMovement(1, tanks_, &objects_copies_,
-                         &obstacles_and_bonuses_);
+      bot->StartMovement(tanks_, &objects_copies_,
+                         &obstacles_and_bonuses_, 1);
     } else if (bot->IsRotationStartNeeded(tanks_.front())) {
       bot->StartRotation();
     }
@@ -346,7 +353,7 @@ void MainWindow::timerEvent(QTimerEvent*) {
   auto copy = objects_copies_.begin();
   while (copy != objects_copies_.end()) {
     if (copy->first->GetTimeToFinishMovement() <= 0) {
-      copy->first->UpdateCoordinates(copy->second.x, copy->second.y);
+      copy->first->UpdateCoordinates(copy->second);
       copy = objects_copies_.erase(copy);
       continue;
     }
@@ -358,8 +365,8 @@ void MainWindow::timerEvent(QTimerEvent*) {
     if ((*rocket_it)->GetTimeToFinishMovement() <= 0 &&
         (*rocket_it)->GetCellsToFinishMovement() > 0) {
       (*rocket_it)->StartMovement(
-          ((*rocket_it)->GetCellsToFinishMovement()),
-          tanks_, &objects_copies_, &obstacles_and_bonuses_);
+          tanks_, &objects_copies_, &obstacles_and_bonuses_,
+          ((*rocket_it)->GetCellsToFinishMovement()));
     }
     if (!(*rocket_it)->IsMovingOrRotating()) {
       rocket_it = rockets_.erase(rocket_it);
@@ -373,8 +380,8 @@ void MainWindow::timerEvent(QTimerEvent*) {
     if ((*boom_it)->GetTimeToFinishMovement() <= 0 &&
         (*boom_it)->GetCellsToFinishMovement() > 0) {
       (*boom_it)->StartMovement(
-          ((*boom_it)->GetCellsToFinishMovement()),
-          tanks_, &objects_copies_, &obstacles_and_bonuses_);
+          tanks_, &objects_copies_, &obstacles_and_bonuses_,
+          ((*boom_it)->GetCellsToFinishMovement()));
     }
     if (!(*boom_it)->IsMovingOrRotating()) {
       for (const auto& tank : tanks_) {
@@ -383,16 +390,15 @@ void MainWindow::timerEvent(QTimerEvent*) {
         }
       }
 
-      auto cell_x = (*boom_it)->GetCellX();
-      auto cell_y = (*boom_it)->GetCellY();
+      auto cell = (*boom_it)->GetCoordinates();
 
       if (std::dynamic_pointer_cast<Portal>(
-          obstacles_and_bonuses_[cell_x - 1][cell_y]) == nullptr) {
-        obstacles_and_bonuses_[cell_x - 1][cell_y] = nullptr;
+          obstacles_and_bonuses_[cell.x - 1][cell.y]) == nullptr) {
+        obstacles_and_bonuses_[cell.x - 1][cell.y] = nullptr;
       }
       if (std::dynamic_pointer_cast<Portal>(
-          obstacles_and_bonuses_[cell_x + 1][cell_y]) == nullptr) {
-        obstacles_and_bonuses_[cell_x + 1][cell_y] = nullptr;
+          obstacles_and_bonuses_[cell.x + 1][cell.y]) == nullptr) {
+        obstacles_and_bonuses_[cell.x + 1][cell.y] = nullptr;
       }
 
       boom_it = booms_.erase(boom_it);
@@ -586,8 +592,8 @@ void MainWindow::LoadRocketsTypesInfo() {
         rocket_json_object["power"].toInt();
     rockets_types_.back().speed =
         rocket_json_object["speed"].toInt();
-    rockets_types_.back().obstacle_break =
-        rocket_json_object["obstacle_break"].toBool();
+    rockets_types_.back().can_break_obstacle =
+        rocket_json_object["can_break_obstacle"].toBool();
   }
 }
 
@@ -670,8 +676,7 @@ void MainWindow::LoadRoundInfo() {
 
   tanks_.push_back(std::make_shared<Tank>(
       map_,
-      map_->GetTankInitCellX(),
-      map_->GetTankInitCellY(),
+      map_->GetTankInitCell(),
       tanks_types_[current_tank_number_],
       Movable::GetDirectionFromString(map_->GetTankStartDirection())));
 
@@ -694,27 +699,24 @@ void MainWindow::LoadRoundInfo() {
     BotParameters bot_parameters = {};
 
     bot_parameters.moving_length = bot_object["moving_length"].toInt();
-    bot_parameters.amount_of_turns = bot_object["amount_of_turns"].toInt();
+    bot_parameters.number_of_turns = bot_object["number_of_turns"].toInt();
     bot_parameters.side_rotation_frequency =
         bot_object["side_rotation_frequency"].toInt();
 
-    int init_cell_x = bot_object["initial_cell_x"].toInt();
-    int init_cell_y = bot_object["initial_cell_y"].toInt();
+    Coordinates init_cell = {bot_object["initial_cell_x"].toInt(),
+                             bot_object["initial_cell_y"].toInt()};
     Direction direction = Movable::GetDirectionFromString(
         bot_object["initial_direction"].toString().toStdString());
 
     if (bot_object["type"].toString() == "standard") {
       tanks_.push_back(std::make_shared<Bot>(
-          map_, init_cell_x, init_cell_y,
-          tank_parameters, bot_parameters, direction));
+          map_, init_cell, tank_parameters, bot_parameters, direction));
     } else if (bot_object["type"].toString() == "improved") {
       tanks_.push_back(std::make_shared<ImprovedBot>(
-          map_, init_cell_x, init_cell_y,
-          tank_parameters, bot_parameters, direction));
+          map_, init_cell, tank_parameters, bot_parameters, direction));
     } else {
       tanks_.push_back(std::make_shared<CleverBot>(
-          map_, init_cell_x, init_cell_y,
-          tank_parameters, bot_parameters, direction));
+          map_, init_cell, tank_parameters, bot_parameters, direction));
     }
   }
 
@@ -729,7 +731,8 @@ void MainWindow::LoadRoundInfo() {
   for (auto obstacle : obstacles) {
     auto x = obstacle.toArray()[0].toInt();
     auto y = obstacle.toArray()[1].toInt();
-    obstacles_and_bonuses_[x][y] = std::make_shared<Obstacle>(map_, x, y);
+    obstacles_and_bonuses_[x][y] =
+        std::make_shared<Obstacle>(map_, Coordinates(x, y));
   }
 
   QJsonArray portals = json["difficulty"]
@@ -741,9 +744,11 @@ void MainWindow::LoadRoundInfo() {
     auto new_x = portal.toArray()[2].toInt();
     auto new_y = portal.toArray()[3].toInt();
     obstacles_and_bonuses_[current_x][current_y] =
-        std::make_shared<Portal>(map_, current_x, current_y, new_x, new_y);
+        std::make_shared<Portal>(map_, Coordinates(current_x, current_y),
+                                 Coordinates(new_x, new_y));
     obstacles_and_bonuses_[new_x][new_y] =
-        std::make_shared<Portal>(map_, new_x, new_y, current_x, current_y);
+        std::make_shared<Portal>(map_, Coordinates(new_x, new_y),
+                                 Coordinates(current_x, current_y));
   }
 }
 
@@ -971,19 +976,25 @@ void MainWindow::ShootRocket(const std::shared_ptr<Tank>& tank) {
   }
 
   rockets_.push_back(rocket);
-  if (rocket->GetIntDirection() == 1 || rocket->GetIntDirection() == 3) {
-    rocket->StartMovement(map_->GetNumberOfCellsHorizontally(), tanks_,
-                          &objects_copies_, &obstacles_and_bonuses_);
+  if (rocket->GetDirectionAsInt() == 1 || rocket->GetDirectionAsInt() == 3) {
+    rocket->StartMovement(tanks_,
+                          &objects_copies_,
+                          &obstacles_and_bonuses_,
+                          map_->GetNumberOfCellsHorizontally());
   } else {
-    rocket->StartMovement(map_->GetNumberOfCellsVertically(), tanks_,
-                          &objects_copies_, &obstacles_and_bonuses_);
+    rocket->StartMovement(tanks_,
+                          &objects_copies_,
+                          &obstacles_and_bonuses_,
+                          map_->GetNumberOfCellsVertically());
   }
 }
 
 void MainWindow::MakeBoom(const std::shared_ptr<Movable>& object) {
   booms_.push_back(std::make_shared<Boom>(map_, object, 1000));
-  booms_.back()->StartMovement(
-      1, tanks_, &objects_copies_, &obstacles_and_bonuses_);
+  booms_.back()->StartMovement(tanks_,
+                               &objects_copies_,
+                               &obstacles_and_bonuses_,
+                               1);
 }
 
 template<class Bonus>
@@ -1006,15 +1017,15 @@ void MainWindow::RandomBonus() {
     int x = random_generator_() % (map_->GetNumberOfCellsHorizontally() - 1);
     int y = random_generator_() % (map_->GetNumberOfCellsVertically() - 1);
     for (auto& object : tanks_) {
-      if (object->GetCellX() == x && object->GetCellY() == y) {
+      if (object->GetCoordinates() == Coordinates(x, y)) {
         flag = false;
         break;
       }
     }
     if (obstacles_and_bonuses_[x][y] == nullptr &&
-        flag && map_->GetField(x, y) != CellType::Wall) {
+        flag && map_->GetField({x, y}) != CellType::Wall) {
       obstacles_and_bonuses_[x][y] =
-          std::make_shared<Bonus>(map_, x, y);
+          std::make_shared<Bonus>(map_, Coordinates(x, y));
       return;
     }
     --attempts;

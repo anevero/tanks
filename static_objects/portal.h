@@ -1,23 +1,20 @@
 #ifndef STATIC_OBJECTS_PORTAL_H_
 #define STATIC_OBJECTS_PORTAL_H_
 
-#include <QDebug>
-#include <QImage>
 #include <memory>
 #include <utility>
 #include "objectonmap.h"
+#include "../game_core/map.h"
 
 class Portal : public ObjectOnMap {
  public:
-  Portal(std::shared_ptr<const Map> map, int cell_x, int cell_y,
-         int new_cell_x, int new_cell_y);
+  Portal(std::shared_ptr<const Map> map, Coordinates cell,
+         Coordinates new_cell);
 
-  int GetNewCellX() const;
-  int GetNewCellY() const;
+  Coordinates GetNewCell() const;
 
  private:
-  int new_cell_x_;
-  int new_cell_y_;
+  Coordinates new_cell_;
 };
 
 #endif  // STATIC_OBJECTS_PORTAL_H_
