@@ -174,7 +174,7 @@ void Movable::UpdateCoordinates(Coordinates cell) {
   current_upper_left_cell_coordinates_.x =
       map_->GetUpperLeftCellCoordinates().x + (current_width_ * cell.x)
       - linear_movement_direction_ * movement_proportion
-      * (directions_[1] * current_width_ - directions_[3] * current_width_ );
+      * (directions_[1] * current_width_ - directions_[3] * current_width_);
 
   current_upper_left_cell_coordinates_.y =
       map_->GetUpperLeftCellCoordinates().y + (current_height_ * cell.y)
