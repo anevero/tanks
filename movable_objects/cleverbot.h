@@ -36,6 +36,8 @@ class CleverBot : public ImprovedBot {
   };
   std::vector<std::vector<int>> distance_;
 
+  void MaybeChangeRotationDirection(int delta_x, bool condition);
+
   void Bfs(
       const std::list<std::shared_ptr<Tank>>& objects,
       const std::vector<std::vector<std::shared_ptr<ObjectOnMap>>>& portals,

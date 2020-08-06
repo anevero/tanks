@@ -21,6 +21,12 @@ class ImprovedBot : public Bot {
 
  private:
   bool ChangeDirection();
+  bool MaybeChangeDirection(int tank_coordinate,
+                            int bot_coordinate,
+                            int current_direction,
+                            int first_direction,
+                            int second_direction);
+  void MaybeChangeRotationDirection(int direction, bool condition);
 };
 
 #endif  // MOVABLE_OBJECTS_IMPROVEDBOT_H_

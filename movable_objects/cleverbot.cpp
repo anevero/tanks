@@ -66,20 +66,12 @@ bool CleverBot::IsMovingStartNeeded(
       return true;
     } else if (distance_[current_cell.x - delta_y][current_cell.y - delta_x]
         == distance_[current_cell.x][current_cell.y] - 1) {
-      if (delta_x == 0) {
-        TurnRotationReverseOn();
-      } else {
-        TurnRotationReverseOff();
-      }
+      MaybeChangeRotationDirection(delta_x, false);
       current_number_of_turns_ = 2;
       return false;
     } else if (distance_[current_cell.x + delta_y][current_cell.y + delta_x]
         == distance_[current_cell.x][current_cell.y] - 1) {
-      if (delta_x == 0) {
-        TurnRotationReverseOff();
-      } else {
-        TurnRotationReverseOn();
-      }
+      MaybeChangeRotationDirection(delta_x, true);
       current_number_of_turns_ = 2;
       return false;
     } else if (distance_[current_cell.x + delta_x][current_cell.y + delta_y]
@@ -89,6 +81,14 @@ bool CleverBot::IsMovingStartNeeded(
     }
   }
   return false;
+}
+
+void CleverBot::MaybeChangeRotationDirection(int delta_x, bool condition) {
+  if ((delta_x == 0) ^ condition) {
+    TurnRotationReverseOn();
+  } else {
+    TurnRotationReverseOff();
+  }
 }
 
 void CleverBot::Bfs(

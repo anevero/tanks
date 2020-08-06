@@ -21,13 +21,7 @@ bool Bot::IsRotationStartNeeded(const std::shared_ptr<const Tank>&) {
       return current_number_of_turns_ > 0;
     }
     if (number_of_cells_to_move_ == 0) {
-      if (random_generator_() % side_rotation_frequency_ == 0) {
-        TurnRotationReverseOn();
-      } else {
-        TurnRotationReverseOff();
-      }
-      current_number_of_turns_ = number_of_turns_;
-      current_number_of_turns_--;
+      TryToChangeRotationDirectionAndRotate();
       return true;
     }
   }
@@ -97,6 +91,16 @@ bool Bot::CheckDirection(int tank_coordinate, int bot_coordinate,
     return false;
   }
   return true;
+}
+
+void Bot::TryToChangeRotationDirectionAndRotate() {
+  if (random_generator_() % side_rotation_frequency_ == 0) {
+    TurnRotationReverseOn();
+  } else {
+    TurnRotationReverseOff();
+  }
+  current_number_of_turns_ = number_of_turns_;
+  current_number_of_turns_--;
 }
 
 bool Bot::IsWallBetweenTankAndBotHorizontally(

@@ -42,6 +42,8 @@ class Bot : public Tank {
   virtual bool CheckDirection(int tank_coordinate, int bot_coordinate,
                               int direction);
 
+  virtual void TryToChangeRotationDirectionAndRotate();
+
   bool IsWallBetweenTankAndBotHorizontally(
       Coordinates tank_cell, Coordinates bot_cell) const;
   bool IsWallBetweenTankAndBotVertically(
