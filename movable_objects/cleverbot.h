@@ -13,7 +13,7 @@
 
 class CleverBot : public ImprovedBot {
  public:
-  CleverBot(std::shared_ptr<const Map> map, Coordinates init_cell,
+  CleverBot(std::shared_ptr<const Map> map, Coordinates initial_cell,
             TankParameters tank_parameters, BotParameters bot_parameters,
             Direction direction);
   ~CleverBot() override = default;

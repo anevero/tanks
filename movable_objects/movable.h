@@ -39,8 +39,9 @@ class Movable : public std::enable_shared_from_this<Movable> {
   // object, e.g. obstacles or walls in front of him.
   virtual void StartMovement(const std::list<std::shared_ptr<Tank>>& tanks,
                              std::list<std::pair<std::shared_ptr<Tank>,
-                                                Coordinates>>* objects_copies_,
-                             std::vector<std::vector<std::shared_ptr<ObjectOnMap>>>* objects,
+                                                 Coordinates>>* objects_copies_,
+                             std::vector<std::vector<std::shared_ptr<
+                                 ObjectOnMap>>>* objects,
                              int number_of_cells);
   // Updates state of current move by updating time to finish movement variable.
   virtual void Move(int milliseconds_passed);
@@ -142,7 +143,6 @@ class Movable : public std::enable_shared_from_this<Movable> {
   double opacity_ = 1;
   double previous_opacity_ = 1;
 
-  // TODO(lessy): Add description.
   bool copy_existence_ = false;
 
   QImage image_;

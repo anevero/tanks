@@ -320,8 +320,7 @@ void MainWindow::timerEvent(QTimerEvent*) {
     }
 
     if (bot->IsMovingStartNeeded(tanks_, obstacles_and_bonuses_)) {
-      bot->StartMovement(tanks_, &objects_copies_,
-                         &obstacles_and_bonuses_, 1);
+      bot->StartMovement(tanks_, &objects_copies_, &obstacles_and_bonuses_, 1);
     } else if (bot->IsRotationStartNeeded(tanks_.front())) {
       bot->StartRotation();
     }
@@ -676,7 +675,7 @@ void MainWindow::LoadRoundInfo() {
 
   tanks_.push_back(std::make_shared<Tank>(
       map_,
-      map_->GetTankInitCell(),
+      map_->GetTankInitialCoordinates(),
       tanks_types_[current_tank_number_],
       Movable::GetDirectionFromString(map_->GetTankStartDirection())));
 
@@ -703,20 +702,20 @@ void MainWindow::LoadRoundInfo() {
     bot_parameters.side_rotation_frequency =
         bot_object["side_rotation_frequency"].toInt();
 
-    Coordinates init_cell = {bot_object["initial_cell_x"].toInt(),
-                             bot_object["initial_cell_y"].toInt()};
+    Coordinates initial_cell = {bot_object["initial_cell_x"].toInt(),
+                                bot_object["initial_cell_y"].toInt()};
     Direction direction = Movable::GetDirectionFromString(
         bot_object["initial_direction"].toString().toStdString());
 
     if (bot_object["type"].toString() == "standard") {
       tanks_.push_back(std::make_shared<Bot>(
-          map_, init_cell, tank_parameters, bot_parameters, direction));
+          map_, initial_cell, tank_parameters, bot_parameters, direction));
     } else if (bot_object["type"].toString() == "improved") {
       tanks_.push_back(std::make_shared<ImprovedBot>(
-          map_, init_cell, tank_parameters, bot_parameters, direction));
+          map_, initial_cell, tank_parameters, bot_parameters, direction));
     } else {
       tanks_.push_back(std::make_shared<CleverBot>(
-          map_, init_cell, tank_parameters, bot_parameters, direction));
+          map_, initial_cell, tank_parameters, bot_parameters, direction));
     }
   }
 

@@ -1,9 +1,9 @@
 #include "bot.h"
 
-Bot::Bot(std::shared_ptr<const Map> map, Coordinates init_cell,
+Bot::Bot(std::shared_ptr<const Map> map, Coordinates initial_cell,
          TankParameters tank_parameters, BotParameters bot_parameters,
          Direction direction)
-    : Tank(std::move(map), init_cell, tank_parameters, direction),
+    : Tank(std::move(map), initial_cell, tank_parameters, direction),
       moving_length_(bot_parameters.moving_length),
       number_of_turns_(bot_parameters.number_of_turns),
       side_rotation_frequency_(bot_parameters.side_rotation_frequency) {

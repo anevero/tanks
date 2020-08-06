@@ -21,12 +21,8 @@ struct Coordinates {
   Coordinates() : x(0), y(0) {}
   Coordinates(int x, int y) : x(x), y(y) {}
 
-  bool operator==(Coordinates coordinates) {
-    return x == coordinates.x && y == coordinates.y;
-  }
-  bool operator!=(Coordinates coordinates) {
-    return !(*this == coordinates);
-  }
+  bool operator==(Coordinates coordinates);
+  bool operator!=(Coordinates coordinates);
 
   int x;
   int y;
@@ -55,7 +51,7 @@ class Map {
   int GetCellWidth() const;
   int GetCellHeight() const;
 
-  Coordinates GetTankInitCell() const;
+  Coordinates GetTankInitialCoordinates() const;
   std::string GetTankStartDirection() const;
 
  private:
@@ -76,8 +72,8 @@ class Map {
   int current_cell_width_;
   int current_cell_height_;
 
-  Coordinates current_upper_left_cell_;
-  Coordinates tank_init_cell_;
+  Coordinates current_upper_left_cell_coordinates_;
+  Coordinates tank_initial_cell_;
   std::string tank_start_direction_;
 };
 

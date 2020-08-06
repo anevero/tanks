@@ -7,7 +7,16 @@
 #include <QString>
 #include <utility>
 
-Map::Map(int map_number) {
+bool Coordinates::operator==(Coordinates coordinates) {
+  return x == coordinates.x && y == coordinates.y;
+}
+
+bool Coordinates::operator!=(Coordinates coordinates) {
+  return !(*this == coordinates);
+}
+
+Map::Map(int map_number) : current_width_(0), current_height_(0),
+                           current_cell_width_(0), current_cell_height_(0) {
   QFile input_file(":/maps/map" + QString::number(map_number + 1) + ".json");
   input_file.open(QIODevice::ReadOnly);
   QString text = input_file.readAll();
@@ -33,7 +42,7 @@ Map::Map(int map_number) {
   WallsPrecalculation();
 
   QJsonObject player_tank = json["player_tank"].toObject();
-  tank_init_cell_ =
+  tank_initial_cell_ =
       {player_tank["initial_cell_x"].toInt(),
        player_tank["initial_cell_y"].toInt()};
   tank_start_direction_ =
@@ -48,7 +57,7 @@ Map::Map(int map_number) {
 void Map::UpdateCoordinates(Coordinates upper_left_cell_coordinates,
                             int width,
                             int height) {
-  current_upper_left_cell_ = upper_left_cell_coordinates;
+  current_upper_left_cell_coordinates_ = upper_left_cell_coordinates;
   current_cell_width_ = width / map_.size();
   current_cell_height_ = height / map_[0].size();
   current_width_ = current_cell_width_ * map_.size();
@@ -58,7 +67,8 @@ void Map::UpdateCoordinates(Coordinates upper_left_cell_coordinates,
 }
 
 void Map::DrawMap(QPainter* painter) {
-  painter->drawPixmap(current_upper_left_cell_.x, current_upper_left_cell_.y,
+  painter->drawPixmap(current_upper_left_cell_coordinates_.x,
+                      current_upper_left_cell_coordinates_.y,
                       map_scaled_pixmap_);
 }
 
@@ -79,7 +89,7 @@ int Map::GetNumberOfCellsVertically() const {
 }
 
 Coordinates Map::GetUpperLeftCellCoordinates() const {
-  return current_upper_left_cell_;
+  return current_upper_left_cell_coordinates_;
 }
 
 int Map::GetWidth() const {
@@ -98,8 +108,8 @@ int Map::GetCellHeight() const {
   return current_cell_height_;
 }
 
-Coordinates Map::GetTankInitCell() const {
-  return tank_init_cell_;
+Coordinates Map::GetTankInitialCoordinates() const {
+  return tank_initial_cell_;
 }
 
 std::string Map::GetTankStartDirection() const {
@@ -153,8 +163,8 @@ void Map::WallsPrecalculation() {
       walls_precalculation_[j].push_back(0);
       if (i > 0 && j > 0) {
         walls_precalculation_[j][i] = walls_precalculation_[j - 1][i] +
-            walls_precalculation_[j][i - 1]
-            - walls_precalculation_[j - 1][i - 1];
+            walls_precalculation_[j][i - 1] -
+            walls_precalculation_[j - 1][i - 1];
         if (map_[j][i] == CellType::Wall) {
           walls_precalculation_[j][i]++;
         }

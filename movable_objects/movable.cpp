@@ -1,10 +1,10 @@
 #include "movable.h"
 
+#include <algorithm>
 #include <unordered_map>
 
 #include "rocket.h"
 #include "tank.h"
-
 #include "../game_core/constants.h"
 #include "../static_objects/portal.h"
 

@@ -4,7 +4,7 @@
 
 ObjectOnMap::ObjectOnMap(
     std::shared_ptr<const Map> map, Coordinates coordinates)
-    : map_(std::move(map)), coordinates_(coordinates) {}
+    : map_(std::move(map)), coordinates_(coordinates), width_(0), height_(0) {}
 
 void ObjectOnMap::LoadImage(const QString& path) {
   image_.load(path);

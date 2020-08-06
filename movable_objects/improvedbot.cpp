@@ -1,11 +1,11 @@
 #include "improvedbot.h"
 
 ImprovedBot::ImprovedBot(std::shared_ptr<const Map> map,
-                         Coordinates init_cell,
+                         Coordinates initial_cell,
                          TankParameters tank_parameters,
                          BotParameters bot_parameters,
                          Direction direction)
-    : Bot(std::move(map), init_cell,
+    : Bot(std::move(map), initial_cell,
           tank_parameters, bot_parameters, direction) {
   LoadImage(":/textures/improved_bot.png");
 }
