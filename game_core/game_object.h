@@ -42,4 +42,4 @@ class GameObject {
   QPixmap scaled_pixmap_;
 };
 
-#endif // TANKS_GAME_OBJECT_H
+#endif  // TANKS_GAME_OBJECT_H
