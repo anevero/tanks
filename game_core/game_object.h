@@ -1,5 +1,5 @@
-#ifndef TANKS_OBJECT_ON_MAP_H
-#define TANKS_OBJECT_ON_MAP_H
+#ifndef TANKS_GAME_OBJECT_H
+#define TANKS_GAME_OBJECT_H
 
 #include <QImage>
 #include <QPainter>
@@ -17,7 +17,7 @@ class GameObject {
              Coordinates coordinates);
   virtual ~GameObject() = default;
 
-  virtual void LoadImage(const QString& path) final;
+  void LoadImage(const QString& path);
   virtual void Draw(QPainter* painter) = 0;
 
   Coordinates GetCoordinates() const;
@@ -42,4 +42,4 @@ class GameObject {
   QPixmap scaled_pixmap_;
 };
 
-#endif //TANKS_OBJECT_ON_MAP_H
+#endif // TANKS_GAME_OBJECT_H

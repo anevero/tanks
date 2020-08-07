@@ -1,5 +1,5 @@
-#ifndef MOVABLE_OBJECTS_CLEVERBOT_H_
-#define MOVABLE_OBJECTS_CLEVERBOT_H_
+#ifndef MOVABLE_OBJECTS_CLEVER_BOT_H_
+#define MOVABLE_OBJECTS_CLEVER_BOT_H_
 
 #include <list>
 #include <memory>
@@ -47,4 +47,4 @@ class CleverBot : public ImprovedBot {
   int width_;
 };
 
-#endif  // MOVABLE_OBJECTS_CLEVERBOT_H_
+#endif  // MOVABLE_OBJECTS_CLEVER_BOT_H_

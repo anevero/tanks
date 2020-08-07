@@ -1,5 +1,5 @@
-#ifndef STATIC_OBJECTS_OBJECTONMAP_H_
-#define STATIC_OBJECTS_OBJECTONMAP_H_
+#ifndef STATIC_OBJECTS_STATIC_OBJECT_H_
+#define STATIC_OBJECTS_STATIC_OBJECT_H_
 
 #include <memory>
 #include <utility>
@@ -33,4 +33,4 @@ class Charge : public StaticObject {
   Charge(std::shared_ptr<const Map> map, Coordinates coordinates);
 };
 
-#endif  // STATIC_OBJECTS_OBJECTONMAP_H_
+#endif  // STATIC_OBJECTS_STATIC_OBJECT_H_
