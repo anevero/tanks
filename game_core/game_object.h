@@ -1,5 +1,5 @@
-#ifndef TANKS_GAME_OBJECT_H
-#define TANKS_GAME_OBJECT_H
+#ifndef GAME_CORE_GAME_OBJECT_H_
+#define GAME_CORE_GAME_OBJECT_H_
 
 #include <QImage>
 #include <QPainter>
@@ -42,4 +42,4 @@ class GameObject {
   QPixmap scaled_pixmap_;
 };
 
-#endif  // TANKS_GAME_OBJECT_H
+#endif  // GAME_CORE_GAME_OBJECT_H_
