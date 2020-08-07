@@ -675,6 +675,7 @@ void MainWindow::LoadRoundInfo() {
 
   tanks_.push_back(std::make_shared<Tank>(
       map_,
+      ":/textures/tank.png",
       map_->GetTankInitialCoordinates(),
       tanks_types_[current_tank_number_],
       Movable::GetDirectionFromString(map_->GetTankStartDirection())));
@@ -709,19 +710,22 @@ void MainWindow::LoadRoundInfo() {
 
     if (bot_object["type"].toString() == "standard") {
       tanks_.push_back(std::make_shared<Bot>(
-          map_, initial_cell, tank_parameters, bot_parameters, direction));
+          map_, ":/textures/bot.png", initial_cell, tank_parameters,
+          bot_parameters, direction));
     } else if (bot_object["type"].toString() == "improved") {
       tanks_.push_back(std::make_shared<ImprovedBot>(
-          map_, initial_cell, tank_parameters, bot_parameters, direction));
+          map_, ":/textures/improved_bot.png", initial_cell, tank_parameters,
+          bot_parameters, direction));
     } else {
       tanks_.push_back(std::make_shared<CleverBot>(
-          map_, initial_cell, tank_parameters, bot_parameters, direction));
+          map_, ":/textures/clever_bot.png", initial_cell, tank_parameters,
+          bot_parameters, direction));
     }
   }
 
   obstacles_and_bonuses_.resize(
       map_->GetNumberOfCellsVertically(),
-      std::vector<std::shared_ptr<ObjectOnMap>>(
+      std::vector<std::shared_ptr<StaticObject>>(
           map_->GetNumberOfCellsHorizontally(), nullptr));
 
   QJsonArray obstacles = json["difficulty"]

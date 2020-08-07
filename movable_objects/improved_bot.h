@@ -8,9 +8,9 @@
 
 class ImprovedBot : public Bot {
  public:
-  ImprovedBot(std::shared_ptr<const Map> map, Coordinates initial_cell,
-              TankParameters tank_parameters, BotParameters bot_parameters,
-              Direction direction);
+  ImprovedBot(std::shared_ptr<const Map> map, const QString& path,
+              Coordinates initial_cell, TankParameters tank_parameters,
+              BotParameters bot_parameters, Direction direction);
   ~ImprovedBot() override = default;
 
  protected:

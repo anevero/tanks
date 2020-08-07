@@ -1,14 +1,11 @@
-#include "improvedbot.h"
+#include "improved_bot.h"
 
-ImprovedBot::ImprovedBot(std::shared_ptr<const Map> map,
-                         Coordinates initial_cell,
-                         TankParameters tank_parameters,
-                         BotParameters bot_parameters,
-                         Direction direction)
-    : Bot(std::move(map), initial_cell,
-          tank_parameters, bot_parameters, direction) {
-  LoadImage(":/textures/improved_bot.png");
-}
+ImprovedBot::ImprovedBot(
+    std::shared_ptr<const Map> map, const QString& path,
+    Coordinates initial_cell, TankParameters tank_parameters,
+    BotParameters bot_parameters, Direction direction)
+    : Bot(std::move(map), path, initial_cell, tank_parameters, bot_parameters,
+          direction) {}
 
 bool ImprovedBot::IsRotationStartNeeded(
     const std::shared_ptr<const Tank>& tank) {

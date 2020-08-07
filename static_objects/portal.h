@@ -3,10 +3,10 @@
 
 #include <memory>
 #include <utility>
-#include "objectonmap.h"
+#include "static_object.h"
 #include "../game_core/map.h"
 
-class Portal : public ObjectOnMap {
+class Portal : public StaticObject {
  public:
   Portal(std::shared_ptr<const Map> map, Coordinates cell,
          Coordinates new_cell);

@@ -55,16 +55,18 @@ class Map {
   std::string GetTankStartDirection() const;
 
  private:
-  std::vector<std::vector<CellType>> map_;
-
   void RescaleImages();
   void FormMapImage();
+
+  void WallsPrecalculation();
+
+ private:
+  std::vector<std::vector<CellType>> map_;
 
   std::vector<QImage> images_;
   std::vector<QPixmap> scaled_pixmaps_;
   QPixmap map_scaled_pixmap_;
 
-  void WallsPrecalculation();
   std::vector<std::vector<int>> walls_precalculation_;
 
   int current_width_;
@@ -72,7 +74,7 @@ class Map {
   int current_cell_width_;
   int current_cell_height_;
 
-  Coordinates current_upper_left_cell_coordinates_;
+  Coordinates upper_left_cell_coordinates_;
   Coordinates tank_initial_cell_;
   std::string tank_start_direction_;
 };

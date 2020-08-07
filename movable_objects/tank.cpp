@@ -5,10 +5,10 @@
 std::mt19937 Tank::random_generator_ = std::mt19937(
     std::chrono::system_clock::now().time_since_epoch().count());
 
-Tank::Tank(std::shared_ptr<const Map> map, Coordinates init_cell,
-           TankParameters parameters, Direction direction)
-    : Movable(std::move(map), init_cell, direction,
-              parameters.speed),
+Tank::Tank(std::shared_ptr<const Map> map, const QString& path,
+           Coordinates init_cell, TankParameters parameters,
+           Direction direction)
+    : Movable(std::move(map), path, init_cell, direction, parameters.speed),
       rate_of_fire_(parameters.rate_of_fire),
       time_since_last_shot_(0),
       current_type_of_charge_(0),
@@ -19,18 +19,16 @@ Tank::Tank(std::shared_ptr<const Map> map, Coordinates init_cell,
       max_charge_({parameters.max_light_charge,
                    parameters.max_medium_charge,
                    parameters.max_hard_charge}),
-      max_health_(parameters.max_health) {
-  LoadImage(":/textures/tank.png");
-}
+      max_health_(parameters.max_health) {}
 
 void Tank::Draw(QPainter* painter) {
   painter->save();
   painter->translate(
-      current_upper_left_cell_coordinates_.x + current_width_ / 2,
-      current_upper_left_cell_coordinates_.y + current_height_ / 2);
-  painter->rotate(current_rotate_degree_);
+      upper_left_cell_coordinates_.x + width_ / 2,
+      upper_left_cell_coordinates_.y + height_ / 2);
+  painter->rotate(rotate_degree_);
   painter->setOpacity(opacity_);
-  painter->drawPixmap(-current_width_ / 2, -current_height_ / 2,
+  painter->drawPixmap(-width_ / 2, -height_ / 2,
                       scaled_pixmap_);
   painter->restore();
   DrawHealth(painter);
@@ -39,23 +37,23 @@ void Tank::Draw(QPainter* painter) {
 void Tank::DrawHealth(QPainter* painter) {
   painter->save();
   painter->translate(
-      current_upper_left_cell_coordinates_.x + current_width_ / 2,
-      current_upper_left_cell_coordinates_.y + current_height_ / 4);
+      upper_left_cell_coordinates_.x + width_ / 2,
+      upper_left_cell_coordinates_.y + height_ / 4);
   if (current_health_ > 0.3 * max_health_ * 0.3) {
     painter->setBrush(Qt::blue);
   } else {
     painter->setBrush(Qt::red);
   }
-  painter->drawRect(-current_width_ / 2,
-                    5 * current_height_ / 8,
-                    current_health_ * current_width_ / max_health_,
-                    current_height_ / 8);
+  painter->drawRect(-width_ / 2,
+                    5 * height_ / 8,
+                    current_health_ * width_ / max_health_,
+                    height_ / 8);
   painter->setBrush(Qt::white);
   painter->drawRect(
-      -current_width_ / 2 + current_health_ * current_width_ / max_health_,
-      5 * current_height_ / 8,
-      (max_health_ - current_health_) * current_width_ / max_health_,
-      current_height_ / 8);
+      -width_ / 2 + current_health_ * width_ / max_health_,
+      5 * height_ / 8,
+      (max_health_ - current_health_) * width_ / max_health_,
+      height_ / 8);
   painter->restore();
 }
 

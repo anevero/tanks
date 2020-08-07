@@ -19,12 +19,12 @@ find_package(Qt5Multimedia REQUIRED)
 set(SOURCES main.cpp
         game_core/mainwindow.cpp game_core/about_dialog.cpp
         game_core/new_game_dialog.cpp game_core/settings_dialog.cpp
-        game_core/map.cpp
+        game_core/map.cpp game_core/game_object.cpp
         movable_objects/boom.cpp movable_objects/bot.cpp
-        movable_objects/cleverbot.cpp movable_objects/improvedbot.cpp
+        movable_objects/clever_bot.cpp movable_objects/improved_bot.cpp
         movable_objects/movable.cpp movable_objects/rocket.cpp
         movable_objects/tank.cpp
-        static_objects/objectonmap.cpp static_objects/portal.cpp)
+        static_objects/static_object.cpp static_objects/portal.cpp)
 
 qt5_add_big_resources(RESOURCES resources/resources.qrc)
 add_executable(Tanks ${SOURCES} ${RESOURCES})

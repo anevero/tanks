@@ -29,8 +29,8 @@ enum class ChargeState {
 
 class Tank : public Movable {
  public:
-  Tank(std::shared_ptr<const Map> map, Coordinates init_cell,
-       TankParameters parameters, Direction direction);
+  Tank(std::shared_ptr<const Map> map, const QString& path,
+       Coordinates init_cell, TankParameters parameters, Direction direction);
   ~Tank() override = default;
 
   void Draw(QPainter* painter) override;

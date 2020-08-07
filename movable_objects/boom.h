@@ -20,11 +20,11 @@ class Boom : public Movable {
   void UpdateCoordinates(Coordinates cell) override;
   void Draw(QPainter* painter) override;
 
-  void StartMovement(const std::list<std::shared_ptr<Tank>>&,
-                       std::list<std::pair<std::shared_ptr<Tank>,
-                                                  Coordinates>>*,
-                       std::vector<std::vector<std::shared_ptr<ObjectOnMap>>>*,
-                       int number_of_cells) override;
+  void StartMovement(
+      const std::list<std::shared_ptr<Tank>>&,
+      std::list<std::pair<std::shared_ptr<Tank>, Coordinates>>*,
+      std::vector<std::vector<std::shared_ptr<StaticObject>>>*,
+      int number_of_cells) override;
 
  private:
   QMediaPlayer boom_sound_;

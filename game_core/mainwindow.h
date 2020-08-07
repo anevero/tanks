@@ -36,12 +36,12 @@
 #include "game_core/map.h"
 #include "game_core/new_game_dialog.h"
 #include "game_core/settings_dialog.h"
-#include "static_objects/objectonmap.h"
+#include "static_objects/static_object.h"
 #include "static_objects/portal.h"
 #include "movable_objects/boom.h"
 #include "movable_objects/bot.h"
-#include "movable_objects/cleverbot.h"
-#include "movable_objects/improvedbot.h"
+#include "movable_objects/clever_bot.h"
+#include "movable_objects/improved_bot.h"
 #include "movable_objects/rocket.h"
 #include "movable_objects/tank.h"
 
@@ -141,7 +141,7 @@ class MainWindow : public QMainWindow {
   std::list<std::shared_ptr<Tank>> tanks_ = {};
   std::list<std::shared_ptr<Rocket>> rockets_ = {};
   std::list<std::shared_ptr<Boom>> booms_ = {};
-  std::vector<std::vector<std::shared_ptr<ObjectOnMap>>>
+  std::vector<std::vector<std::shared_ptr<StaticObject>>>
       obstacles_and_bonuses_ = {};
   // List of 'copies' of tanks. Every item is just a pointer to the real tank
   // and coordinates of the copy. It's used while a tank is moving through the

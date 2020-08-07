@@ -55,9 +55,8 @@ Map::Map(int map_number) : current_width_(0), current_height_(0),
 }
 
 void Map::UpdateCoordinates(Coordinates upper_left_cell_coordinates,
-                            int width,
-                            int height) {
-  current_upper_left_cell_coordinates_ = upper_left_cell_coordinates;
+                            int width, int height) {
+  upper_left_cell_coordinates_ = upper_left_cell_coordinates;
   current_cell_width_ = width / map_.size();
   current_cell_height_ = height / map_[0].size();
   current_width_ = current_cell_width_ * map_.size();
@@ -67,8 +66,8 @@ void Map::UpdateCoordinates(Coordinates upper_left_cell_coordinates,
 }
 
 void Map::DrawMap(QPainter* painter) {
-  painter->drawPixmap(current_upper_left_cell_coordinates_.x,
-                      current_upper_left_cell_coordinates_.y,
+  painter->drawPixmap(upper_left_cell_coordinates_.x,
+                      upper_left_cell_coordinates_.y,
                       map_scaled_pixmap_);
 }
 
@@ -89,7 +88,7 @@ int Map::GetNumberOfCellsVertically() const {
 }
 
 Coordinates Map::GetUpperLeftCellCoordinates() const {
-  return current_upper_left_cell_coordinates_;
+  return upper_left_cell_coordinates_;
 }
 
 int Map::GetWidth() const {
@@ -163,8 +162,8 @@ void Map::WallsPrecalculation() {
       walls_precalculation_[j].push_back(0);
       if (i > 0 && j > 0) {
         walls_precalculation_[j][i] = walls_precalculation_[j - 1][i] +
-            walls_precalculation_[j][i - 1] -
-            walls_precalculation_[j - 1][i - 1];
+            walls_precalculation_[j][i - 1]
+            - walls_precalculation_[j - 1][i - 1];
         if (map_[j][i] == CellType::Wall) {
           walls_precalculation_[j][i]++;
         }

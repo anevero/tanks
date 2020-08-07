@@ -25,16 +25,17 @@ DISTFILES += \
 SOURCES += \
     main.cpp \
     game_core/about_dialog.cpp \
+    game_core/game_object.cpp \
     game_core/mainwindow.cpp \
-    game_core/new_game_dialog.cpp \
     game_core/map.cpp \
+    game_core/new_game_dialog.cpp \
     game_core/settings_dialog.cpp \
-    static_objects/objectonmap.cpp \
     static_objects/portal.cpp \
+    static_objects/static_object.cpp \
     movable_objects/boom.cpp \
     movable_objects/bot.cpp \
-    movable_objects/cleverbot.cpp \
-    movable_objects/improvedbot.cpp \
+    movable_objects/clever_bot.cpp \
+    movable_objects/improved_bot.cpp \
     movable_objects/movable.cpp \
     movable_objects/rocket.cpp \
     movable_objects/tank.cpp
@@ -42,16 +43,17 @@ SOURCES += \
 HEADERS += \
     game_core/about_dialog.h \
     game_core/constants.h \
+    game_core/game_object.h \
     game_core/mainwindow.h \
-    game_core/new_game_dialog.h \
     game_core/map.h \
+    game_core/new_game_dialog.h \
     game_core/settings_dialog.h \
-    static_objects/objectonmap.h \
     static_objects/portal.h \
+    static_objects/static_object.h \
     movable_objects/boom.h \
     movable_objects/bot.h \
-    movable_objects/cleverbot.h \
-    movable_objects/improvedbot.h \
+    movable_objects/clever_bot.h \
+    movable_objects/improved_bot.h \
     movable_objects/movable.h \
     movable_objects/rocket.h \
     movable_objects/tank.h

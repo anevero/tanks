@@ -1,14 +1,13 @@
-#include "cleverbot.h"
+#include "clever_bot.h"
 
 #include <queue>
 
 CleverBot::CleverBot(
-    std::shared_ptr<const Map> map, Coordinates initial_cell,
-    TankParameters tank_parameters, BotParameters bot_parameters,
-    Direction direction)
-    : ImprovedBot(std::move(map), initial_cell,
+    std::shared_ptr<const Map> map, const QString& path,
+    Coordinates initial_cell, TankParameters tank_parameters,
+    BotParameters bot_parameters, Direction direction)
+    : ImprovedBot(std::move(map), path, initial_cell,
                   tank_parameters, bot_parameters, direction) {
-  LoadImage(":/textures/clever_bot.png");
   height_ = map_->GetNumberOfCellsVertically();
   width_ = map_->GetNumberOfCellsHorizontally();
   distance_.resize(width_);
@@ -35,7 +34,7 @@ bool CleverBot::IsRotationStartNeeded(
 
 bool CleverBot::IsMovingStartNeeded(
     const std::list<std::shared_ptr<Tank>>& objects,
-    const std::vector<std::vector<std::shared_ptr<ObjectOnMap>>>& portals) {
+    const std::vector<std::vector<std::shared_ptr<StaticObject>>>& portals) {
   auto tank = objects.front();
   if (time_to_finish_movement_ <= 0 && time_to_finish_rotation_ <= 0) {
     Bfs(objects, portals, tank->GetCoordinates());
@@ -93,7 +92,7 @@ void CleverBot::MaybeChangeRotationDirection(int delta_x, bool condition) {
 
 void CleverBot::Bfs(
     const std::list<std::shared_ptr<Tank>>& objects,
-    const std::vector<std::vector<std::shared_ptr<ObjectOnMap>>>& portals,
+    const std::vector<std::vector<std::shared_ptr<StaticObject>>>& portals,
     Coordinates cell) {
   std::queue<CellInfo> cells;
   cells.emplace(cell, cell, 0);

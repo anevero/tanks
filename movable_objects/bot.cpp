@@ -1,14 +1,12 @@
 #include "bot.h"
 
-Bot::Bot(std::shared_ptr<const Map> map, Coordinates initial_cell,
-         TankParameters tank_parameters, BotParameters bot_parameters,
-         Direction direction)
-    : Tank(std::move(map), initial_cell, tank_parameters, direction),
+Bot::Bot(std::shared_ptr<const Map> map, const QString& path,
+         Coordinates initial_cell, TankParameters tank_parameters,
+         BotParameters bot_parameters, Direction direction)
+    : Tank(std::move(map), path, initial_cell, tank_parameters, direction),
       moving_length_(bot_parameters.moving_length),
       number_of_turns_(bot_parameters.number_of_turns),
-      side_rotation_frequency_(bot_parameters.side_rotation_frequency) {
-  LoadImage(":/textures/bot.png");
-}
+      side_rotation_frequency_(bot_parameters.side_rotation_frequency) {}
 
 bool Bot::IsTurnNeeded() const {
   return time_to_finish_rotation_ > 0;
@@ -30,7 +28,7 @@ bool Bot::IsRotationStartNeeded(const std::shared_ptr<const Tank>&) {
 
 bool Bot::IsMovingStartNeeded(
     const std::list<std::shared_ptr<Tank>>&,
-    const std::vector<std::vector<std::shared_ptr<ObjectOnMap>>>&) {
+    const std::vector<std::vector<std::shared_ptr<StaticObject>>>&) {
   if (time_to_finish_movement_ <= 0 && time_to_finish_rotation_ <= 0) {
     if (number_of_cells_to_move_ == 0) {
       if (current_number_of_turns_ == 0) {
