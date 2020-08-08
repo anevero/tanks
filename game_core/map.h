@@ -1,18 +1,10 @@
 #ifndef GAME_CORE_MAP_H_
 #define GAME_CORE_MAP_H_
 
-#include <QDebug>
-#include <QFile>
 #include <QImage>
-#include <QJsonArray>
-#include <QJsonDocument>
-#include <QJsonObject>
 #include <QPainter>
-#include <QPair>
-#include <QString>
-#include <QTextStream>
-#include <QVector>
-#include <utility>
+#include <QPixmap>
+
 #include <string>
 #include <vector>
 
@@ -25,48 +17,65 @@ enum class CellType {
   Last = 5
 };
 
+struct Coordinates {
+  Coordinates() : x(0), y(0) {}
+  Coordinates(int x, int y) : x(x), y(y) {}
+
+  bool operator==(Coordinates coordinates);
+  bool operator!=(Coordinates coordinates);
+
+  int x;
+  int y;
+};
+
 class Map {
  public:
   // The constructor creates necessary object by reading corresponding to
   // map_number file.
   explicit Map(int map_number);
-  void UpdateCoordinates(int upper_left_x, int upper_left_y,
-                         int width, int height);
   void DrawMap(QPainter* painter);
 
-  CellType GetField(int cell_x, int cell_y) const;
-  int GetWallsPrecalc(int x, int y) const;
+  void UpdateCoordinates(Coordinates upper_left_cell_coordinates,
+                         int width, int height);
+
+  CellType GetField(Coordinates cell) const;
+  int GetWallsPrecalculation(int cell_x, int cell_y) const;
+
   int GetNumberOfCellsHorizontally() const;
   int GetNumberOfCellsVertically() const;
-  int GetUpperLeftX() const;
-  int GetUpperLeftY() const;
+
+  Coordinates GetUpperLeftCellCoordinates() const;
+
   int GetWidth() const;
   int GetHeight() const;
   int GetCellWidth() const;
   int GetCellHeight() const;
-  int GetTankInitCellX() const;
-  int GetTankInitCellY() const;
+
+  Coordinates GetTankInitialCoordinates() const;
   std::string GetTankStartDirection() const;
 
  private:
   void RescaleImages();
   void FormMapImage();
-  void WallsPrecalc();
 
+  void WallsPrecalculation();
+
+ private:
   std::vector<std::vector<CellType>> map_;
-  std::vector<std::vector<int>> walls_precalc_;
+
   std::vector<QImage> images_;
   std::vector<QPixmap> scaled_pixmaps_;
   QPixmap map_scaled_pixmap_;
 
-  int cur_upper_left_x_{};
-  int cur_upper_left_y_{};
-  int cur_width_{};
-  int cur_height_{};
-  int cur_cell_width_{};
-  int cur_cell_height_{};
-  int tank_init_cell_x_;
-  int tank_init_cell_y_;
+  std::vector<std::vector<int>> walls_precalculation_;
+
+  int current_width_;
+  int current_height_;
+  int current_cell_width_;
+  int current_cell_height_;
+
+  Coordinates upper_left_cell_coordinates_;
+  Coordinates tank_initial_cell_;
   std::string tank_start_direction_;
 };
 

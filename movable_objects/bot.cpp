@@ -1,15 +1,13 @@
 #include "bot.h"
 
-Bot::Bot(std::shared_ptr<const Map> map, int init_cell_x, int init_cell_y,
-         TankParameters tank_parameters, BotParameters bot_parameters,
-         Direction direction)
-    : Tank(std::move(map), init_cell_x, init_cell_y,
-           tank_parameters, direction),
+Bot::Bot(std::shared_ptr<const Map> map, const QString& texture_path,
+         Coordinates initial_cell, TankParameters tank_parameters,
+         BotParameters bot_parameters, Direction direction)
+    : Tank(std::move(map), texture_path, initial_cell, tank_parameters,
+           direction),
       moving_length_(bot_parameters.moving_length),
-      amount_of_turns_(bot_parameters.amount_of_turns),
-      side_rotation_frequency_(bot_parameters.side_rotation_frequency) {
-  LoadImage(":/textures/bot.png");
-}
+      number_of_turns_(bot_parameters.number_of_turns),
+      side_rotation_frequency_(bot_parameters.side_rotation_frequency) {}
 
 bool Bot::IsTurnNeeded() const {
   return time_to_finish_rotation_ > 0;
@@ -17,18 +15,12 @@ bool Bot::IsTurnNeeded() const {
 
 bool Bot::IsRotationStartNeeded(const std::shared_ptr<const Tank>&) {
   if (time_to_finish_rotation_ <= 0 && time_to_finish_movement_ <= 0) {
-    if (number_of_turns_ > 0) {
-      number_of_turns_--;
-      return number_of_turns_ > 0;
+    if (current_number_of_turns_ > 0) {
+      current_number_of_turns_--;
+      return current_number_of_turns_ > 0;
     }
     if (number_of_cells_to_move_ == 0) {
-      if (random_generator_() % side_rotation_frequency_ == 0) {
-        TurnRotationReverseOn();
-      } else {
-        TurnRotationReverseOff();
-      }
-      number_of_turns_ = amount_of_turns_;
-      number_of_turns_--;
+      TryToChangeRotationDirectionAndRotate();
       return true;
     }
   }
@@ -37,10 +29,10 @@ bool Bot::IsRotationStartNeeded(const std::shared_ptr<const Tank>&) {
 
 bool Bot::IsMovingStartNeeded(
     const std::list<std::shared_ptr<Tank>>&,
-    const std::vector<std::vector<std::shared_ptr<ObjectOnMap>>>&) {
+    const std::vector<std::vector<std::shared_ptr<StaticObject>>>&) {
   if (time_to_finish_movement_ <= 0 && time_to_finish_rotation_ <= 0) {
     if (number_of_cells_to_move_ == 0) {
-      if (number_of_turns_ == 0) {
+      if (current_number_of_turns_ == 0) {
         number_of_cells_to_move_ = moving_length_;
       } else {
         return false;
@@ -55,33 +47,31 @@ bool Bot::IsMovingStartNeeded(
 
 bool Bot::IsShotNeeded(const std::shared_ptr<const Tank>& tank) {
   if (time_to_finish_rotation_ == 0 && time_to_finish_movement_ == 0) {
-    int direction = GetIntDirection();
-    int tank_x = tank->GetCellX();
-    int tank_y = tank->GetCellY();
-    int bot_x = GetCellX();
-    int bot_y = GetCellY();
-    if (map_->GetField(tank_x, tank_y) == CellType::Forest) {
+    int direction = GetDirectionAsInt();
+    Coordinates tank_cell = tank->GetCoordinates();
+    Coordinates bot_cell = GetCoordinates();
+    if (map_->GetField(tank_cell) == CellType::Forest) {
       return false;
     }
 
     if (direction == 0 || direction == 2) {
-      if (tank_x == bot_x) {
-        if (IsWallBetweenObjectsX(tank_x, tank_y, bot_x, bot_y)) {
+      if (tank_cell.x == bot_cell.x) {
+        if (IsWallBetweenTankAndBotHorizontally(tank_cell, bot_cell)) {
           return false;
         }
 
-        if (CheckDirection(tank_y, bot_y, direction)) {
+        if (CheckDirection(tank_cell.y, bot_cell.y, direction)) {
           return true;
         }
       }
     }
     if (direction == 1 || direction == 3) {
-      if (tank_y == bot_y) {
-        if (IsWallBetweenObjectsY(tank_x, tank_y, bot_x, bot_y)) {
+      if (tank_cell.y == bot_cell.y) {
+        if (IsWallBetweenTankAndBotVertically(tank_cell, bot_cell)) {
           return false;
         }
 
-        if (CheckDirection(tank_x, bot_x, direction)) {
+        if (CheckDirection(tank_cell.x, bot_cell.x, direction)) {
           return true;
         }
       }
@@ -90,8 +80,9 @@ bool Bot::IsShotNeeded(const std::shared_ptr<const Tank>& tank) {
   return false;
 }
 
-bool Bot::CheckDirection(int tank, int bot, int direction) {
-  if (tank > bot) {
+bool Bot::CheckDirection(int tank_coordinate, int bot_coordinate,
+                         int direction) {
+  if (tank_coordinate > bot_coordinate) {
     if (direction == 0 || direction == 3) {
       return false;
     }
@@ -101,20 +92,28 @@ bool Bot::CheckDirection(int tank, int bot, int direction) {
   return true;
 }
 
-bool Bot::IsWallBetweenObjectsX(int tank_x, int tank_y,
-                                int bot_x, int bot_y) const {
-  int walls_count = map_->GetWallsPrecalc(bot_x, bot_y);
-  walls_count += map_->GetWallsPrecalc(tank_x - 1, tank_y - 1);
-  walls_count -= map_->GetWallsPrecalc(tank_x, tank_y - 1);
-  walls_count -= map_->GetWallsPrecalc(bot_x - 1, bot_y);
-  return (walls_count != 0);
+void Bot::TryToChangeRotationDirectionAndRotate() {
+  if (random_generator_() % side_rotation_frequency_ == 0) {
+    TurnRotationReverseOn();
+  } else {
+    TurnRotationReverseOff();
+  }
+  current_number_of_turns_ = number_of_turns_;
+  current_number_of_turns_--;
 }
 
-bool Bot::IsWallBetweenObjectsY(int tank_x, int tank_y,
-                                int bot_x, int bot_y) const {
-  int walls_count = map_->GetWallsPrecalc(bot_x, bot_y);
-  walls_count += map_->GetWallsPrecalc(tank_x - 1, tank_y - 1);
-  walls_count -= map_->GetWallsPrecalc(tank_x - 1, tank_y);
-  walls_count -= map_->GetWallsPrecalc(bot_x, bot_y - 1);
-  return (walls_count != 0);
+bool Bot::IsWallBetweenTankAndBotHorizontally(
+    Coordinates tank_cell, Coordinates bot_cell) const {
+  return (map_->GetWallsPrecalculation(bot_cell.x, bot_cell.y) +
+      map_->GetWallsPrecalculation(tank_cell.x - 1, tank_cell.y - 1)) -
+      map_->GetWallsPrecalculation(tank_cell.x, tank_cell.y - 1) -
+      map_->GetWallsPrecalculation(bot_cell.x - 1, bot_cell.y) != 0;
+}
+
+bool Bot::IsWallBetweenTankAndBotVertically(
+    Coordinates tank_cell, Coordinates bot_cell) const {
+  return (map_->GetWallsPrecalculation(bot_cell.x, bot_cell.y) +
+      map_->GetWallsPrecalculation(tank_cell.x - 1, tank_cell.y - 1)) -
+      map_->GetWallsPrecalculation(tank_cell.x - 1, tank_cell.y) -
+      map_->GetWallsPrecalculation(bot_cell.x, bot_cell.y - 1) != 0;
 }

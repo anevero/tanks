@@ -1,23 +1,19 @@
 #ifndef MOVABLE_OBJECTS_MOVABLE_H_
 #define MOVABLE_OBJECTS_MOVABLE_H_
 
-#include <QDebug>
-#include <QImage>
-#include <QList>
+#include <QString>
 #include <QPixmap>
-#include <QVector>
-#include <algorithm>
-#include <cmath>
+#include <QImage>
+
 #include <list>
 #include <memory>
 #include <string>
-#include <unordered_map>
 #include <utility>
 #include <vector>
-#include "../game_core/constants.h"
+
 #include "../game_core/map.h"
-#include "../static_objects/objectonmap.h"
-#include "../static_objects/portal.h"
+#include "game_core/game_object.h"
+#include "../static_objects/static_object.h"
 
 enum class Direction {
   Up = 0,
@@ -26,21 +22,15 @@ enum class Direction {
   Left = 3
 };
 
-struct Coordinates {
-  int x;
-  int y;
-};
-
 // Forward declaration to use this class in StartMovement function.
 class Tank;
 
-class Movable : public std::enable_shared_from_this<Movable> {
+class Movable : public std::enable_shared_from_this<Movable>,
+                public GameObject {
  public:
-  Movable(std::shared_ptr<const Map> map, int cell_x, int cell_y,
-          Direction direction, int speed);
-  virtual ~Movable() = default;
-
-  void LoadImage(const QString& path);
+  Movable(std::shared_ptr<const Map> map, const QString& texture_path,
+          Coordinates cell, Direction direction, int speed);
+  ~Movable() override = default;
 
   // Defines current move characteristics by initializing several variables,
   // including current speed, number of cells to finish movement, time to
@@ -48,13 +38,14 @@ class Movable : public std::enable_shared_from_this<Movable> {
   // These variables are initialized accordingly to the current state of the
   // object, e.g. obstacles or walls in front of him.
   virtual void StartMovement(
-      int number_of_cells,
       const std::list<std::shared_ptr<Tank>>& tanks,
-      std::list<std::pair<std::shared_ptr<Tank>, Coordinates>>*
-      objects_copies_,
-      std::vector<std::vector<std::shared_ptr<ObjectOnMap>>>* objects);
+      std::list<std::pair<std::shared_ptr<Tank>, Coordinates>>* objects_copies_,
+      std::vector<std::vector<std::shared_ptr<StaticObject>>>* objects,
+      int number_of_cells);
+
   // Updates state of current move by updating time to finish movement variable.
   virtual void Move(int milliseconds_passed);
+
   // Changes current move direction to the reverse.
   virtual void TurnReverseOn();
   // Changes current move direction from the reverse to normal.
@@ -65,18 +56,20 @@ class Movable : public std::enable_shared_from_this<Movable> {
   // These variables are initialized accordingly to the current state of the
   // object, e.g. obstacles or walls in front of him.
   virtual void StartRotation();
+
   // Updates state of current rotation by updating time to finish rotation
   // variable.
   virtual void Rotate(int milliseconds_passed);
+
   // Changes current rotation direction to the reverse.
   virtual void TurnRotationReverseOn();
+
   // Changes current rotation direction from the reverse to normal.
   virtual void TurnRotationReverseOff();
 
   // Updates object's coordinates on the map according to the cell numbers and
   // the state of movement or rotation.
-  virtual void UpdateCoordinates(int cell_x, int cell_y);
-  virtual void Draw(QPainter* painter) = 0;
+  virtual void UpdateCoordinates(Coordinates cell);
 
   // Changes object's coordinates from current to previous. It's used in
   // portals implementation. To draw one tank in two places at the same time
@@ -90,15 +83,8 @@ class Movable : public std::enable_shared_from_this<Movable> {
   int GetTimeToFinishRotation() const;
   bool IsMovingOrRotating() const;
 
-  int GetIntDirection() const;
+  int GetDirectionAsInt() const;
   Direction GetDirection() const;
-
-  int GetUpperLeftX() const;
-  int GetUpperLeftY() const;
-  int GetWidth() const;
-  int GetHeight() const;
-  int GetCellX() const;
-  int GetCellY() const;
 
   // Checks if given objects have been collided, i.e. they have common points
   // on the screen. Compares their coordinates for that.
@@ -108,32 +94,22 @@ class Movable : public std::enable_shared_from_this<Movable> {
   // Checks if given rocket has been released by the given tank. The result of
   // this function is used when we decide if we need to reduce tank's health
   // (rockets released by the tank can't reduce its own health).
-  static bool IsRocketByThisTank(const std::shared_ptr<const Movable>& rocket,
-                                 const std::shared_ptr<const Movable>& tank);
+  static bool CanRocketKillTank(const std::shared_ptr<const Movable>& rocket,
+                                const std::shared_ptr<const Movable>& tank);
 
   // Returns direction object corresponding to the string.
   static Direction GetDirectionFromString(const std::string& direction);
 
  protected:
   void SwitchToNextDirection();
-  void SwitchToPrevDirection();
-  void RescaleImage();
-  Coordinates GetNewPortalCells(int portal_cell_x, int portal_cell_y,
-                                int new_cell_x, int new_cell_y) const;
+  void SwitchToPreviousDirection();
 
-  int cell_x_;
-  int cell_y_;
-  int prev_cell_x_;
-  int prev_cell_y_;
+  Coordinates GetNewPortalCells(Coordinates portal_coordinates,
+                                Coordinates new_cells) const;
 
-  int current_upper_left_x_{};
-  int current_upper_left_y_{};
-  int prev_upper_left_x_{};
-  int prev_upper_left_y_{};
-  int current_width_{};
-  int current_height_{};
-
-  const std::shared_ptr<const Map> map_;
+ protected:
+  Coordinates previous_cell_;
+  Coordinates previous_upper_left_cell_coordinates_;
 
   // Item at index i is responsible for the i-th direction in Direction enum
   // class.
@@ -142,19 +118,23 @@ class Movable : public std::enable_shared_from_this<Movable> {
   int current_speed_;
   const int basic_speed_;
 
-  int reverse_ = 1;
   int time_to_finish_movement_ = 0;
   int cells_to_finish_movement_ = 0;
-  int current_rotate_degree_;
+  int rotate_degree_;
   int time_to_finish_rotation_ = 0;
-  int rotate_reverse_ = 1;
+
+  // Responsible for the direction of movement along the line
+  // (vertically or horizontally).
+  // Equals to 1 when the movable object going forward, and -1 otherwise.
+  int linear_movement_direction_ = 1;
+
+  // Equals to 1 when the movable object rotates clockwise, and -1 otherwise.
+  int rotation_direction_ = 1;
 
   double opacity_ = 1;
-  double prev_opacity_ = 1;
-  bool copy_existence_ = false;
+  double previous_opacity_ = 1;
 
-  QImage image_;
-  QPixmap scaled_pixmap_;
+  bool copy_existence_ = false;
 };
 
 #endif  // MOVABLE_OBJECTS_MOVABLE_H_

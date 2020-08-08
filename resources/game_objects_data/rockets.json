@@ -3,17 +3,17 @@
     {
       "speed": 100,
       "power": 7,
-      "obstacle_break": true
+      "can_break_obstacle": true
     },
     {
       "speed": 200,
       "power": 15,
-      "obstacle_break": true
+      "can_break_obstacle": true
     },
     {
       "speed": 300,
       "power": 30,
-      "obstacle_break": false
+      "can_break_obstacle": false
     }
   ]
 }

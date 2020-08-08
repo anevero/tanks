@@ -1,16 +1,16 @@
 #ifndef MOVABLE_OBJECTS_ROCKET_H_
 #define MOVABLE_OBJECTS_ROCKET_H_
 
-#include <QDebug>
 #include <QPainter>
 #include <memory>
 #include <utility>
+
 #include "tank.h"
 
 struct RocketParameters {
   int power;
   int speed;
-  bool obstacle_break;
+  bool can_break_obstacle;
 };
 
 class Rocket : public Movable {
@@ -28,7 +28,7 @@ class Rocket : public Movable {
  private:
   const std::shared_ptr<const Tank> tank_;
   int power_;
-  bool obstacle_break_;
+  bool can_break_obstacle_;
 };
 
 #endif  // MOVABLE_OBJECTS_ROCKET_H_

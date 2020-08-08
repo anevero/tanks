@@ -2,22 +2,21 @@
 
 Rocket::Rocket(std::shared_ptr<const Map> map, std::shared_ptr<Tank> tank,
                RocketParameters parameters)
-    : Movable(std::move(map), tank->GetCellX(), tank->GetCellY(),
+    : Movable(std::move(map), ":/textures/rocket.png", tank->GetCoordinates(),
               tank->GetDirection(), parameters.speed),
       tank_(std::move(tank)),
       power_(parameters.power),
-      obstacle_break_(parameters.obstacle_break) {
-  LoadImage(":/textures/rocket.png");
-}
+      can_break_obstacle_(parameters.can_break_obstacle) {}
 
 void Rocket::Draw(QPainter* painter) {
   painter->save();
-  painter->translate(current_upper_left_x_ + current_width_ / 2,
-                     current_upper_left_y_ + current_height_ / 2);
+  painter->translate(
+      upper_left_cell_coordinates_.x + width_ / 2,
+      upper_left_cell_coordinates_.y + height_ / 2);
   painter->setOpacity(opacity_);
-  painter->rotate(current_rotate_degree_);
-  painter->drawPixmap(-current_width_ / 2,
-                      -current_height_ / 2,
+  painter->rotate(rotate_degree_);
+  painter->drawPixmap(-width_ / 2,
+                      -height_ / 2,
                       scaled_pixmap_);
   painter->restore();
 }
@@ -31,5 +30,5 @@ int Rocket::GetPower() const {
 }
 
 bool Rocket::CanBreakObstacles() const {
-  return obstacle_break_;
+  return can_break_obstacle_;
 }
