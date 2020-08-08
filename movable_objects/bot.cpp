@@ -1,9 +1,10 @@
 #include "bot.h"
 
-Bot::Bot(std::shared_ptr<const Map> map, const QString& path,
+Bot::Bot(std::shared_ptr<const Map> map, const QString& texture_path,
          Coordinates initial_cell, TankParameters tank_parameters,
          BotParameters bot_parameters, Direction direction)
-    : Tank(std::move(map), path, initial_cell, tank_parameters, direction),
+    : Tank(std::move(map), texture_path, initial_cell, tank_parameters,
+           direction),
       moving_length_(bot_parameters.moving_length),
       number_of_turns_(bot_parameters.number_of_turns),
       side_rotation_frequency_(bot_parameters.side_rotation_frequency) {}

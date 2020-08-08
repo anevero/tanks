@@ -29,7 +29,7 @@ enum class ChargeState {
 
 class Tank : public Movable {
  public:
-  Tank(std::shared_ptr<const Map> map, const QString& path,
+  Tank(std::shared_ptr<const Map> map, const QString& texture_path,
        Coordinates init_cell, TankParameters parameters, Direction direction);
   ~Tank() override = default;
 

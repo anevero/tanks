@@ -1,10 +1,10 @@
 #include "game_object.h"
 
 GameObject::GameObject(
-    std::shared_ptr<const Map> map, const QString& path,
+    std::shared_ptr<const Map> map, const QString& texture_path,
     Coordinates coordinates)
     : map_(std::move(map)), cell_(coordinates), width_(0), height_(0) {
-  LoadImage(path);
+  LoadImage(texture_path);
 }
 
 void GameObject::LoadImage(const QString& path) {

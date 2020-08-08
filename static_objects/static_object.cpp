@@ -3,9 +3,9 @@
 #include "../game_core/constants.h"
 
 StaticObject::StaticObject(
-    std::shared_ptr<const Map> map, const QString& path,
+    std::shared_ptr<const Map> map, const QString& texture_path,
     Coordinates coordinates)
-    : GameObject(std::move(map), path, coordinates) {}
+    : GameObject(std::move(map), texture_path, coordinates) {}
 
 void StaticObject::Draw(QPainter* painter) {
   RescaleImage();

@@ -28,7 +28,7 @@ class Tank;
 class Movable : public std::enable_shared_from_this<Movable>,
                 public GameObject {
  public:
-  Movable(std::shared_ptr<const Map> map, const QString& path,
+  Movable(std::shared_ptr<const Map> map, const QString& texture_path,
           Coordinates cell, Direction direction, int speed);
   ~Movable() override = default;
 

@@ -5,10 +5,11 @@
 std::mt19937 Tank::random_generator_ = std::mt19937(
     std::chrono::system_clock::now().time_since_epoch().count());
 
-Tank::Tank(std::shared_ptr<const Map> map, const QString& path,
+Tank::Tank(std::shared_ptr<const Map> map, const QString& texture_path,
            Coordinates init_cell, TankParameters parameters,
            Direction direction)
-    : Movable(std::move(map), path, init_cell, direction, parameters.speed),
+    : Movable(std::move(map), texture_path, init_cell, direction,
+              parameters.speed),
       rate_of_fire_(parameters.rate_of_fire),
       time_since_last_shot_(0),
       current_type_of_charge_(0),

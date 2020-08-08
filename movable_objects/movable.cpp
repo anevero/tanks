@@ -8,9 +8,9 @@
 #include "../game_core/constants.h"
 #include "../static_objects/portal.h"
 
-Movable::Movable(std::shared_ptr<const Map> map, const QString& path,
+Movable::Movable(std::shared_ptr<const Map> map, const QString& texture_path,
                  Coordinates cell, Direction direction, int speed)
-    : GameObject(std::move(map), path, cell),
+    : GameObject(std::move(map), texture_path, cell),
       previous_cell_(cell), current_speed_(speed), basic_speed_(speed),
       rotate_degree_(90 * static_cast<int>(direction)) {
   directions_[static_cast<int>(direction)] = 1;
@@ -185,7 +185,7 @@ void Movable::UpdateCoordinates(Coordinates cell) {
   double rotation_proportion =
       static_cast<double>(time_to_finish_rotation_) / current_speed_;
   rotate_degree_ = GetDirectionAsInt() * 90 -
-      rotation_direction_ * static_cast<int>(90 * rotation_proportion);
+      rotation_direction_ * 90 * rotation_proportion;
   rotate_degree_ %= 360;
 
   RescaleImage();

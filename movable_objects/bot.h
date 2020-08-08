@@ -17,7 +17,7 @@ struct BotParameters {
 
 class Bot : public Tank {
  public:
-  Bot(std::shared_ptr<const Map> map, const QString& path,
+  Bot(std::shared_ptr<const Map> map, const QString& texture_path,
       Coordinates initial_cell, TankParameters tank_parameters,
       BotParameters bot_parameters, Direction direction);
   ~Bot() override = default;

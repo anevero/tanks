@@ -13,7 +13,7 @@
 
 class GameObject {
  public:
-  GameObject(std::shared_ptr<const Map> map, const QString& path,
+  GameObject(std::shared_ptr<const Map> map, const QString& texture_path,
              Coordinates coordinates);
   virtual ~GameObject() = default;
 

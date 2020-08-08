@@ -3,10 +3,10 @@
 #include <queue>
 
 CleverBot::CleverBot(
-    std::shared_ptr<const Map> map, const QString& path,
+    std::shared_ptr<const Map> map, const QString& texture_path,
     Coordinates initial_cell, TankParameters tank_parameters,
     BotParameters bot_parameters, Direction direction)
-    : ImprovedBot(std::move(map), path, initial_cell,
+    : ImprovedBot(std::move(map), texture_path, initial_cell,
                   tank_parameters, bot_parameters, direction) {
   height_ = map_->GetNumberOfCellsVertically();
   width_ = map_->GetNumberOfCellsHorizontally();
