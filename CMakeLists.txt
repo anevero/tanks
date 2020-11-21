@@ -16,12 +16,13 @@ if (NOT CMAKE_PREFIX_PATH)
             "(-DCMAKE_PREFIX_PATH=\"path/to/Qt/lib/cmake\")")
 endif ()
 
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
-set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-Wall -O3")
-
 set(QT_VERSION 5)
 set(REQUIRED_LIBS Core Widgets Multimedia)
 set(REQUIRED_LIBS_QUALIFIED Qt5::Core Qt5::Widgets Qt5::Multimedia)
+find_package(Qt${QT_VERSION} COMPONENTS ${REQUIRED_LIBS} REQUIRED)
+
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-Wall -O3")
 
 set(SOURCES main.cpp
         game_core/mainwindow.cpp game_core/about_dialog.cpp
@@ -35,6 +36,4 @@ set(SOURCES main.cpp
 
 qt5_add_big_resources(RESOURCES resources/resources.qrc)
 add_executable(${PROJECT_NAME} ${SOURCES} ${RESOURCES})
-
-find_package(Qt${QT_VERSION} COMPONENTS ${REQUIRED_LIBS} REQUIRED)
 target_link_libraries(${PROJECT_NAME} ${REQUIRED_LIBS_QUALIFIED})
