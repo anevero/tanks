@@ -42,7 +42,7 @@ jobs:
     - uses: actions/checkout@v2
     
     - name: Add PPA
-      run: sudo add-apt-repository ppa:beineri/opt-qt-5.15.0-focal -y
+      run: sudo add-apt-repository ppa:beineri/opt-qt-5.15.2-focal -y
     
     - name: Update packages list
       run: sudo apt update
