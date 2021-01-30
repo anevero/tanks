@@ -131,10 +131,6 @@ MainWindow::~MainWindow() {
 }
 
 void MainWindow::mouseReleaseEvent(QMouseEvent* event) {
-  // This code block is temporarily disabled for Android because of the bug
-  // in QToolTip class in Qt 5.15, which leads to the segmentation fault
-  // when you try to use it.
-#ifndef Q_OS_ANDROID
   Coordinates current_cell;
   current_cell.x = (event->x() - map_->GetUpperLeftCellCoordinates().x)
       * map_->GetNumberOfCellsHorizontally() / map_->GetWidth();
@@ -148,7 +144,6 @@ void MainWindow::mouseReleaseEvent(QMouseEvent* event) {
       break;
     }
   }
-#endif
   return QMainWindow::mouseReleaseEvent(event);
 }
 
