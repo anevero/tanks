@@ -18,9 +18,12 @@ ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
 DISTFILES += \
     android/AndroidManifest.xml \
     android/build.gradle \
+    android/gradle.properties \
     android/gradle/wrapper/gradle-wrapper.jar \
     android/gradle/wrapper/gradle-wrapper.properties \
-    android-sources/res/values/libs.xml
+    android/gradlew \
+    android/gradlew.bat \
+    android/res/values/libs.xml
 
 SOURCES += \
     main.cpp \
@@ -68,4 +71,4 @@ TRANSLATIONS += \
 
 RC_ICONS = resources/app_icon.ico
 
-VERSION = 0.8.4.0
+VERSION = 0.8.6.0

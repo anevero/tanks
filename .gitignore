@@ -1,6 +1,6 @@
-cpplint_light.py
 **/tanks.pro.user*
 .idea/
-cmake-build-debug/
-cmake-build-release/
-cmake-build-qt/
+cmake-build-*/
+.gradle/
+signing_config.gradle
+tanks.keystore

@@ -121,6 +121,20 @@ MainWindow::MainWindow(QWidget* parent)
   music_playlist_->addMedia(QUrl("qrc:/sounds/backgroundmusic4.mp3"));
   music_player_->setPlaylist(music_playlist_);
   music_player_->setVolume(50);
+
+  connect(qApp, &QApplication::applicationStateChanged, [this] {
+    if (qApp->applicationState() == Qt::ApplicationActive) {
+      if (music_player_->state() == QMediaPlayer::PausedState) {
+        music_player_->play();
+      }
+    }
+    if (qApp->applicationState() == Qt::ApplicationHidden ||
+        qApp->applicationState() == Qt::ApplicationSuspended) {
+      if (music_player_->state() == QMediaPlayer::PlayingState) {
+        music_player_->pause();
+      }
+    }
+  });
 }
 
 MainWindow::~MainWindow() {
