@@ -15,6 +15,7 @@ repositories {
 }
 
 apply plugin: 'com.android.application'
+apply from: './signing_config.gradle'
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
@@ -35,8 +36,16 @@ android {
      *******************************************************/
 
     compileSdkVersion androidCompileSdkVersion.toInteger()
+    buildToolsVersion androidBuildToolsVersion
 
-    buildToolsVersion '29.0.2'
+    signingConfigs {
+        release {
+            storeFile file('./tanks.keystore')
+            storePassword project.ext.storePassword
+            keyAlias project.ext.keyAlias
+            keyPassword project.ext.keyPassword
+        }
+    }
 
     sourceSets {
         main {
@@ -51,18 +60,31 @@ android {
        }
     }
 
+    tasks.withType(JavaCompile) {
+        options.incremental = true
+    }
+
+    defaultConfig {
+        resConfigs 'en'
+        minSdkVersion = qtMinSdkVersion
+        targetSdkVersion = qtTargetSdkVersion
+
+        applicationId 'com.github.tanks'
+        versionName '0.8.6'
+        versionCode 10
+        // signingConfig signingConfigs.release
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
     lintOptions {
         abortOnError false
     }
 
-    // Do not compress Qt binary resources file
     aaptOptions {
         noCompress 'rcc'
-    }
-
-    defaultConfig {
-        resConfig "en"
-        minSdkVersion = qtMinSdkVersion
-        targetSdkVersion = qtTargetSdkVersion
     }
 }
