@@ -30,9 +30,7 @@ Tanks - 2D-игра, написанная на C++ с использование
 
 ## Установка игры
 
-Последняя версия программы - [0.8.4](https://github.com/anevero/tanks/tree/0.8.4).
-
-В секции [releases](https://github.com/anevero/tanks/releases/tag/0.8.4) 
+В секции [releases](https://github.com/anevero/tanks/releases) 
 можно найти установщики игры для 32- и 64-разрядной Windows, 64-разрядной
 Ubuntu, а также apk-файл для установки игры на Android-смартфон. 
 
